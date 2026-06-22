@@ -36,3 +36,7 @@ Zeigt bis zu zwei Zeilen Text an und stellt die Hintergrundbeleuchtung farbig ei
 Wähle die **Version** passend zu deinem Display (V4 = ältere Platine, V5 = neuere).
 
 > Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Generator: siehe `js/generator.js`.
+>
+> **Achtung Spannung:** Die Grove-Ports des Maker-Pi liefern **3,3 V**. Der **V4**-LCD
+> ist 5-V-only – an 3,3 V geht die Beleuchtung, aber der Text bleibt leer. Nimm ein
+> **V5**-Display (3,3 V) oder versorge das V4 separat mit 5 V.
