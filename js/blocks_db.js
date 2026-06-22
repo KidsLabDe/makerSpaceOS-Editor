@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-22T12:01:46.176Z
+// Generiert: 2026-06-22T12:05:32.378Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -1064,6 +1064,126 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/motor_stop.md"
+  },
+  {
+    "id": "neopixel_ext_fill",
+    "blockCategory": "NeoPixel",
+    "subCategory": "",
+    "label": "🌈 Streifen ganz füllen",
+    "colour": "#006064",
+    "tooltip": "Setzt alle LEDs eines externen NeoPixel-Streifens am Grove-Port auf eine Farbe",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🌈 Streifen füllen (Grove)  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      },
+      {
+        "label": "LEDs:",
+        "name": "COUNT",
+        "fieldType": "number_field",
+        "default": 8,
+        "min": 1,
+        "max": 300,
+        "precision": 1
+      },
+      {
+        "label": "Farbe:",
+        "name": "COLOR",
+        "fieldType": "colour_picker",
+        "default": "#ff0000"
+      }
+    ],
+    "hardware": {
+      "commonName": "NeoPixel-Streifen (extern) / WS2812B",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/neopixel_ext_fill.md"
+  },
+  {
+    "id": "neopixel_ext_off",
+    "blockCategory": "NeoPixel",
+    "subCategory": "",
+    "label": "🌈 Streifen aus",
+    "colour": "#006064",
+    "tooltip": "Schaltet alle LEDs eines externen NeoPixel-Streifens am Grove-Port aus",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🌈 Streifen aus (Grove)  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      },
+      {
+        "label": "LEDs:",
+        "name": "COUNT",
+        "fieldType": "number_field",
+        "default": 8,
+        "min": 1,
+        "max": 300,
+        "precision": 1
+      }
+    ],
+    "hardware": {
+      "commonName": "NeoPixel-Streifen (extern) / WS2812B",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/neopixel_ext_off.md"
+  },
+  {
+    "id": "neopixel_ext_set",
+    "blockCategory": "NeoPixel",
+    "subCategory": "",
+    "label": "🌈 Streifen LED setzen",
+    "colour": "#006064",
+    "tooltip": "Setzt eine einzelne LED eines externen NeoPixel-Streifens am Grove-Port",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🌈 Streifen (Grove)  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      },
+      {
+        "label": "LEDs:",
+        "name": "COUNT",
+        "fieldType": "number_field",
+        "default": 8,
+        "min": 1,
+        "max": 300,
+        "precision": 1
+      },
+      {
+        "label": "LED Nr.",
+        "name": "INDEX",
+        "fieldType": "number_field",
+        "default": 1,
+        "min": 1,
+        "max": 300,
+        "precision": 1
+      },
+      {
+        "label": "Farbe:",
+        "name": "COLOR",
+        "fieldType": "colour_picker",
+        "default": "#ff0000"
+      }
+    ],
+    "hardware": {
+      "commonName": "NeoPixel-Streifen (extern) / WS2812B",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/neopixel_ext_set.md"
   },
   {
     "id": "neopixel_fill",

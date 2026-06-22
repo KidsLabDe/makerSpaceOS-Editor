@@ -394,6 +394,34 @@ Blockly.Python['neopixel_off'] = function(_block) {
   return `_pixels.fill((0, 0, 0))\n_pixels.show()\n`;
 };
 
+// Externer NeoPixel-Streifen am Grove-Port (Signal-Pin + Anzahl LEDs).
+// Variablenname enthält den Pin → mehrere Streifen an verschiedenen Ports möglich.
+function _neopixelExtDefs(pin, count) {
+  _defs['import_board']    = 'import board';
+  _defs['import_neopixel'] = 'import neopixel';
+  _defs[`init_npx_${pin}`] =
+    `_npx_${pin} = neopixel.NeoPixel(board.${pin}, ${count}, brightness=0.3, auto_write=False)`;
+}
+
+Blockly.Python['neopixel_ext_set'] = function(block) {
+  const pin = block.getFieldValue('PORT');
+  _neopixelExtDefs(pin, block.getFieldValue('COUNT'));
+  const idx = parseInt(block.getFieldValue('INDEX'), 10) - 1;
+  return `_npx_${pin}[${idx}] = ${hexToRgbTuple(block.getFieldValue('COLOR'))}\n_npx_${pin}.show()\n`;
+};
+
+Blockly.Python['neopixel_ext_fill'] = function(block) {
+  const pin = block.getFieldValue('PORT');
+  _neopixelExtDefs(pin, block.getFieldValue('COUNT'));
+  return `_npx_${pin}.fill(${hexToRgbTuple(block.getFieldValue('COLOR'))})\n_npx_${pin}.show()\n`;
+};
+
+Blockly.Python['neopixel_ext_off'] = function(block) {
+  const pin = block.getFieldValue('PORT');
+  _neopixelExtDefs(pin, block.getFieldValue('COUNT'));
+  return `_npx_${pin}.fill((0, 0, 0))\n_npx_${pin}.show()\n`;
+};
+
 // ── Hilfsfunktionen für neue Blöcke ──────────────────────────────────────────
 
 function _digitalInDef(pin, varPrefix, pull) {
