@@ -10,6 +10,10 @@
     switch (inp.fieldType) {
       case 'pin_dropdown':
         return BOARD[inp.pinSource || 'externalPins'].map(p => [p, p]);
+      case 'grove_dropdown':
+        return BOARD.groveOptions(inp.groveRole || 'digital');
+      case 'lcd_version_dropdown':
+        return [['Version 4', '0x62'], ['Version 5', '0x30']];
       case 'on_off_dropdown':
         return [['einschalten', 'True'], ['ausschalten', 'False']];
       case 'op_dropdown':

@@ -11,7 +11,9 @@
 
   // ── Feld-Helfer (jeweils frische Field-Instanzen pro Block) ─────────────────
 
-  const pinField    = () => new Blockly.FieldDropdown(BOARD.externalPins.map(p => [p, p]));
+  // Grove-Port-Dropdowns (Anzeige „Grove 1…7", Wert = Signal-Pin bzw. Port-ID)
+  const groveField  = (role) => new Blockly.FieldDropdown(BOARD.groveOptions(role || 'digital'));
+  const pinField    = () => groveField('digital');
   const buttonField = () => new Blockly.FieldDropdown(
     Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]));
   const stateField  = () => new Blockly.FieldDropdown([['gedrückt', 'pressed'], ['losgelassen', 'released']]);
@@ -36,7 +38,7 @@
       init: function () {
         this.appendStatementInput('DO')
             .appendField(label)
-            .appendField('  Pin:')
+            .appendField('  Port:')
             .appendField(pinField(), 'PIN')
             .appendField('→ dann');
         this.setColour(EVENT_COLOUR);
@@ -74,10 +76,8 @@
     init: function () {
       this.appendValueInput('VALUE')
           .setCheck('Number')
-          .appendField('📡 Wenn Abstand  Trig:')
-          .appendField(pinField(), 'TRIG')
-          .appendField('Echo:')
-          .appendField(pinField(), 'ECHO')
+          .appendField('📡 Wenn Abstand  Port:')
+          .appendField(groveField('digital'), 'SIG')
           .appendField(opField(), 'OP');
       this.appendStatementInput('DO').appendField('cm → dann');
       this.setInputsInline(true);
@@ -90,8 +90,8 @@
     init: function () {
       this.appendValueInput('VALUE')
           .setCheck('Number')
-          .appendField('☀️ Wenn Helligkeit  Pin:')
-          .appendField(pinField(), 'PIN')
+          .appendField('☀️ Wenn Helligkeit  Port:')
+          .appendField(groveField('analog'), 'PIN')
           .appendField(opField(), 'OP');
       this.appendStatementInput('DO').appendField('% → dann');
       this.setInputsInline(true);
@@ -104,8 +104,8 @@
     init: function () {
       this.appendValueInput('VALUE')
           .setCheck('Number')
-          .appendField('🌡️ Wenn Temperatur  Pin:')
-          .appendField(pinField(), 'PIN')
+          .appendField('🌡️ Wenn Temperatur  Port:')
+          .appendField(groveField('digital'), 'PIN')
           .appendField(opField(), 'OP');
       this.appendStatementInput('DO').appendField('°C → dann');
       this.setInputsInline(true);

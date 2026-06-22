@@ -8,10 +8,10 @@ tooltip: "Führt Code aus, wenn die Helligkeit einen Wert überschreitet/untersc
 blockType: event
 inline: true
 inputs:
-  - label: "☀️ Wenn Helligkeit  Pin:"
+  - label: "☀️ Wenn Helligkeit  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: analog
   - name: OP
     fieldType: op_dropdown
   - label: "%"

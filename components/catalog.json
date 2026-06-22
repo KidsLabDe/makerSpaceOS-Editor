@@ -21,6 +21,12 @@
       "subCategories": ["LED", "Ton", "Weitere"]
     },
     {
+      "id": "Anzeige",
+      "label": "📟 Anzeige",
+      "colour": "#00838F",
+      "subCategories": []
+    },
+    {
       "id": "Motor",
       "label": "🟣 Motor",
       "colour": "#6A1B9A",

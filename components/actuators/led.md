@@ -7,10 +7,10 @@ colour: "#E65100"
 tooltip: "Schaltet eine LED ein oder aus"
 blockType: statement
 inputs:
-  - label: "💡 LED  Pin:"
+  - label: "💡 LED  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
   - name: STATE
     fieldType: on_off_dropdown
 generator:

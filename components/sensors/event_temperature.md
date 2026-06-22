@@ -8,10 +8,10 @@ tooltip: "Führt Code aus, wenn die Temperatur einen Wert überschreitet/untersc
 blockType: event
 inline: true
 inputs:
-  - label: "🌡️ Wenn Temperatur  Pin:"
+  - label: "🌡️ Wenn Temperatur  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
   - name: OP
     fieldType: op_dropdown
 valueInputs:

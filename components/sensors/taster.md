@@ -8,10 +8,10 @@ tooltip: "Gibt Wahr zurück, wenn der externe Taster an einem beliebigen Pin ged
 blockType: value
 output: Boolean
 inputs:
-  - label: "🔘 Taster gedrückt?  Pin:"
+  - label: "🔘 Taster gedrückt?  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
 generator:
   imports:
     - "import board"

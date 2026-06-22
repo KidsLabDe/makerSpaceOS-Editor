@@ -8,10 +8,10 @@ tooltip: "Gibt Wahr zurück, wenn der Mikrofon-Sensor ein Geräusch über dem Sc
 blockType: value
 output: Boolean
 inputs:
-  - label: "🔊 Geräusch erkannt?  Pin:"
+  - label: "🔊 Geräusch erkannt?  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
 generator:
   imports:
     - "import board"

@@ -8,10 +8,10 @@ tooltip: "Gibt Wahr zurück, wenn der PIR-Sensor eine Bewegung erkennt (HC-SR501
 blockType: value
 output: Boolean
 inputs:
-  - label: "🚶 Bewegung erkannt?  Pin:"
+  - label: "🚶 Bewegung erkannt?  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
 generator:
   imports:
     - "import board"

@@ -8,10 +8,10 @@ tooltip: "Lässt eine LED mehrmals blinken"
 blockType: statement
 inline: true
 inputs:
-  - label: "💡 LED  Pin:"
+  - label: "💡 LED  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
 valueInputs:
   - name: TIMES
     label: "blinken"

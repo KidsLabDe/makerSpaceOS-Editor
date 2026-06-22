@@ -8,10 +8,10 @@ tooltip: "Liest die Temperatur in Grad Celsius vom DHT11 Sensor (KY-015)"
 blockType: value
 output: Number
 inputs:
-  - label: "🌡️ DHT11 Temperatur (°C)  Pin:"
+  - label: "🌡️ DHT11 Temperatur (°C)  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
 generator:
   imports:
     - "import board"

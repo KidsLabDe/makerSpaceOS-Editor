@@ -7,10 +7,10 @@ colour: "#E65100"
 tooltip: "Schaltet eine Mini-Tauchpumpe ein oder aus (über Relais oder Motorkanal)"
 blockType: statement
 inputs:
-  - label: "💧 Wasserpumpe  Pin:"
+  - label: "💧 Wasserpumpe  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
   - name: STATE
     fieldType: on_off_dropdown
 generator:

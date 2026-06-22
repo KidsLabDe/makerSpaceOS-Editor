@@ -8,10 +8,10 @@ tooltip: "Gibt Wahr zurück, wenn der Berührungssensor berührt wird (KY-036)"
 blockType: value
 output: Boolean
 inputs:
-  - label: "👆 Berührt?  Pin:"
+  - label: "👆 Berührt?  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
 generator:
   imports:
     - "import board"

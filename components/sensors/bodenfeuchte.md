@@ -8,10 +8,10 @@ tooltip: "Liest die Bodenfeuchte in Prozent aus (0 = trocken, 100 = nass). Kapaz
 blockType: value
 output: Number
 inputs:
-  - label: "🌱 Bodenfeuchte (0–100%)  Pin:"
+  - label: "🌱 Bodenfeuchte (0–100%)  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: analog
 generator:
   imports:
     - "import board"

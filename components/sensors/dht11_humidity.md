@@ -8,10 +8,10 @@ tooltip: "Liest die Luftfeuchtigkeit in % vom DHT11 Sensor (KY-015)"
 blockType: value
 output: Number
 inputs:
-  - label: "💧 DHT11 Luftfeuchte (%)  Pin:"
+  - label: "💧 DHT11 Luftfeuchte (%)  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
 generator:
   imports:
     - "import board"

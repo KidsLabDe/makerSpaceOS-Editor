@@ -163,14 +163,40 @@ Blockly.Python['sensor_dht_humidity'] = function(block) {
   return [`_dht_${pin}.humidity`, Blockly.Python.ORDER_MEMBER];
 };
 
+// Grove-Ultraschall-Ranger: ein einziger Signal-Pin (Trigger + Echo).
+// Helfer-Funktion misst die Distanz in cm (-1 bei Timeout).
+function _groveSonarDef() {
+  _defs['import_board']     = 'import board';
+  _defs['import_digitalio'] = 'import digitalio';
+  _defs['import_time']      = 'import time';
+  _defs['fn_grove_sonar'] =
+    'def _grove_sonar(pin):\n' +
+    '    _io = digitalio.DigitalInOut(pin)\n' +
+    '    _io.direction = digitalio.Direction.OUTPUT\n' +
+    '    _io.value = False\n' +
+    '    time.sleep(0.000002)\n' +
+    '    _io.value = True\n' +
+    '    time.sleep(0.00001)\n' +
+    '    _io.value = False\n' +
+    '    _io.switch_to_input()\n' +
+    '    _t0 = time.monotonic_ns()\n' +
+    '    while not _io.value:\n' +
+    '        if time.monotonic_ns() - _t0 > 30000000:\n' +
+    '            _io.deinit()\n' +
+    '            return -1\n' +
+    '    _start = time.monotonic_ns()\n' +
+    '    while _io.value:\n' +
+    '        if time.monotonic_ns() - _start > 30000000:\n' +
+    '            break\n' +
+    '    _dur = time.monotonic_ns() - _start\n' +
+    '    _io.deinit()\n' +
+    '    return (_dur / 1000) / 58';
+}
+
 Blockly.Python['sensor_ultrasonic'] = function(block) {
-  const trig = block.getFieldValue('TRIG');
-  const echo = block.getFieldValue('ECHO');
-  _defs['import_board']   = 'import board';
-  _defs['import_hcsr04']  = 'import adafruit_hcsr04';
-  _defs['init_sonar']     =
-    `_sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.${trig}, echo_pin=board.${echo})`;
-  return ['_sonar.distance', Blockly.Python.ORDER_MEMBER];
+  const sig = block.getFieldValue('SIG');
+  _groveSonarDef();
+  return [`round(_grove_sonar(board.${sig}), 1)`, Blockly.Python.ORDER_FUNCTION_CALL];
 };
 
 Blockly.Python['sensor_ldr'] = function(block) {
@@ -207,16 +233,12 @@ Blockly.Python['event_temperature'] = function(block) {
 };
 
 Blockly.Python['event_ultrasonic'] = function(block) {
-  const trig = block.getFieldValue('TRIG');
-  const echo = block.getFieldValue('ECHO');
+  const sig  = block.getFieldValue('SIG');
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _defs['import_board']  = 'import board';
-  _defs['import_hcsr04'] = 'import adafruit_hcsr04';
-  _defs['init_sonar']    =
-    `_sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.${trig}, echo_pin=board.${echo})`;
-  return `if _sonar.distance ${op} ${val}:\n${body}`;
+  _groveSonarDef();
+  return `if _grove_sonar(board.${sig}) ${op} ${val}:\n${body}`;
 };
 
 Blockly.Python['event_ldr'] = function(block) {
@@ -548,8 +570,9 @@ Blockly.Python['sensor_bmp280_pressure'] = function(block) {
 // ── Drehgeber-Generator (KY-040) ──────────────────────────────────────────────
 
 Blockly.Python['sensor_encoder'] = function(block) {
-  const pinA = block.getFieldValue('PIN_A');
-  const pinB = block.getFieldValue('PIN_B');
+  const port = BOARD.grovePortById(block.getFieldValue('PORT'));
+  const pinA = port.pin1;
+  const pinB = port.signal;
   _defs['import_board']    = 'import board';
   _defs['import_rotaryio'] = 'import rotaryio';
   _defs[`init_enc_${pinA}_${pinB}`] =
@@ -603,34 +626,6 @@ Blockly.Python['event_line'] = function(block) {
 
 // ── Neue Aktor-Generatoren ────────────────────────────────────────────────────
 
-const _RGB_COLORS = {
-  red:    [true,  false, false],
-  green:  [false, true,  false],
-  blue:   [false, false, true ],
-  yellow: [true,  true,  false],
-  cyan:   [false, true,  true ],
-  pink:   [true,  false, true ],
-  white:  [true,  true,  true ],
-  off:    [false, false, false],
-};
-
-Blockly.Python['actuator_rgb_led'] = function(block) {
-  const pinR  = block.getFieldValue('PIN_R');
-  const pinG  = block.getFieldValue('PIN_G');
-  const pinB  = block.getFieldValue('PIN_B');
-  const color = block.getFieldValue('COLOR');
-  _digitalOutDef(pinR, 'rgbr');
-  _digitalOutDef(pinG, 'rgbg');
-  _digitalOutDef(pinB, 'rgbb');
-  const [r, g, b] = _RGB_COLORS[color];
-  const py = v => v ? 'True' : 'False';
-  return (
-    `_rgbr_${pinR}.value = ${py(r)}\n` +
-    `_rgbg_${pinG}.value = ${py(g)}\n` +
-    `_rgbb_${pinB}.value = ${py(b)}\n`
-  );
-};
-
 const _2C_COLORS = {
   red:    [true,  false],
   green:  [false, true ],
@@ -664,6 +659,30 @@ Blockly.Python['actuator_active_buzzer'] = function(block) {
   const state = block.getFieldValue('STATE');
   _digitalOutDef(pin, 'abuzz');
   return `_abuzz_${pin}.value = ${state}\n`;
+};
+
+// ── Grove-LCD RGB Backlight (I2C) ─────────────────────────────────────────────
+// Nutzt lib/grove_rgb_lcd.py (eigene CircuitPython-Lib, V4+V5). rgb_addr wählt die
+// Version: 0x62 (V4 / PCA9633) bzw. 0x30 (V5 / SGM31323). Text-Adresse fest 0x3E.
+function _groveLcdDef(portId, rgbAddr) {
+  const port = BOARD.grovePortById(portId);
+  _defs['import_board'] = 'import board';
+  _defs['import_busio'] = 'import busio';
+  _defs['from_grove_rgb_lcd'] = 'from grove_rgb_lcd import GroveRgbLcd';
+  // I2C + LCD-Objekt in einem Eintrag (Reihenfolge garantiert)
+  _defs['init_grove_lcd'] =
+    `_i2c_lcd = busio.I2C(board.${port.signal}, board.${port.pin1})\n` +
+    `_lcd = GroveRgbLcd(_i2c_lcd, rgb_addr=${rgbAddr})`;
+}
+
+Blockly.Python['actuator_lcd'] = function(block) {
+  const portId  = block.getFieldValue('PORT');
+  const rgbAddr = block.getFieldValue('VERSION');
+  const colour  = block.getFieldValue('COLOR') || '#ffffff';
+  const text    = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_NONE) || '""';
+  _groveLcdDef(portId, rgbAddr);
+  const rgb = hexToRgbTuple(colour);  // "(r, g, b)"
+  return `_lcd.set_rgb${rgb}\n_lcd.set_text(${text})\n`;
 };
 
 // ── Ereignis-Hut-Blöcke (je eine parallele async-Aufgabe) ─────────────────────
@@ -703,16 +722,12 @@ Blockly.Python['when_touch']     = function(b) { return _whenDigital(b, 'touch',
 Blockly.Python['when_vibration'] = function(b) { return _whenDigital(b, 'vib',      'DOWN', true);  };
 
 Blockly.Python['when_distance'] = function(block) {
-  const trig = block.getFieldValue('TRIG');
-  const echo = block.getFieldValue('ECHO');
+  const sig  = block.getFieldValue('SIG');
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _defs['import_board']  = 'import board';
-  _defs['import_hcsr04'] = 'import adafruit_hcsr04';
-  _defs['init_sonar']    =
-    `_sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.${trig}, echo_pin=board.${echo})`;
-  return _whenTask(`(_sonar.distance ${op} ${val})`, body, '0.05');
+  _groveSonarDef();
+  return _whenTask(`(_grove_sonar(board.${sig}) ${op} ${val})`, body, '0.05');
 };
 
 Blockly.Python['when_light'] = function(block) {

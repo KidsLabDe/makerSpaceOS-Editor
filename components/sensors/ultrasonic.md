@@ -4,34 +4,22 @@ blockCategory: Sensoren
 subCategory: Abstand & Licht
 label: "📡 Abstand (cm)"
 colour: "#1565C0"
-tooltip: "Misst den Abstand in cm mit dem HC-SR04 Ultraschall-Sensor"
+tooltip: "Misst den Abstand in cm mit dem Grove-Ultraschall-Ranger (ein Signal-Pin)"
 blockType: value
 output: Number
 inputs:
-  - label: "📡 Abstand (cm)  Trig:"
-    name: TRIG
-    fieldType: pin_dropdown
-    pinSource: externalPins
-  - label: "  Echo:"
-    name: ECHO
-    fieldType: pin_dropdown
-    pinSource: externalPins
-generator:
-  imports:
-    - "import board"
-    - "import adafruit_hcsr04"
-  defs:
-    - key: "init_sonar"
-      val: "_sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.${TRIG}, echo_pin=board.${ECHO})"
-  expression: "_sonar.distance"
-  order: MEMBER
+  - label: "📡 Abstand (cm)  Port:"
+    name: SIG
+    fieldType: grove_dropdown
+    groveRole: digital
 hardware:
-  commonName: "HC-SR04"
+  commonName: "Grove Ultrasonic Ranger"
   verbrauch3j: 13
   kitStandard: true
-legacyGenerator: false
+legacyGenerator: true
 ---
 
-# Ultraschall-Abstandssensor HC-SR04
+# Grove Ultraschall-Abstandssensor
 
-Misst Abstände von ca. 2 cm bis 400 cm. Wird oft in Roboter-Hinderniserkennung und Parkassistenten eingesetzt.
+Misst Abstände von ca. 2 cm bis 350 cm. Der Grove-Ranger nutzt **einen einzigen Signal-Pin**
+(Trigger und Echo teilen sich Pin 2 des Grove-Steckers). Generator: siehe `js/generator.js`.

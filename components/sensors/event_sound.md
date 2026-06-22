@@ -7,10 +7,10 @@ colour: "#0D47A1"
 tooltip: "Führt Code aus, wenn der Mikrofon-Sensor ein Geräusch über dem Schwellwert erkennt"
 blockType: event_simple
 inputs:
-  - label: "🔊 Wenn Geräusch erkannt  Pin:"
+  - label: "🔊 Wenn Geräusch erkannt  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: digital
 statementInput:
   name: DO
   label: "→ dann"

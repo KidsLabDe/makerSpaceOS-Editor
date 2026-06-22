@@ -8,10 +8,10 @@ tooltip: "Liest die Helligkeit in Prozent (0 = dunkel, 100 = hell)"
 blockType: value
 output: Number
 inputs:
-  - label: "☀️ Helligkeit (0–100%)  Pin:"
+  - label: "☀️ Helligkeit (0–100%)  Port:"
     name: PIN
-    fieldType: pin_dropdown
-    pinSource: externalPins
+    fieldType: grove_dropdown
+    groveRole: analog
 generator:
   imports:
     - "import board"

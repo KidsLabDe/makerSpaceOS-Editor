@@ -8,14 +8,10 @@ tooltip: "Führt Code aus, wenn der Abstand einen Wert überschreitet/unterschre
 blockType: event
 inline: true
 inputs:
-  - label: "📡 Wenn Abstand  Trig:"
-    name: TRIG
-    fieldType: pin_dropdown
-    pinSource: externalPins
-  - label: "Echo:"
-    name: ECHO
-    fieldType: pin_dropdown
-    pinSource: externalPins
+  - label: "📡 Wenn Abstand  Port:"
+    name: SIG
+    fieldType: grove_dropdown
+    groveRole: digital
   - name: OP
     fieldType: op_dropdown
   - label: "cm"
@@ -27,21 +23,14 @@ valueInputs:
 statementInput:
   name: DO
   label: "dann"
-generator:
-  imports:
-    - "import board"
-    - "import adafruit_hcsr04"
-  defs:
-    - key: "init_sonar"
-      val: "_sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.${TRIG}, echo_pin=board.${ECHO})"
-  code: "if _sonar.distance ${OP} ${VALUE}:\n${DO}"
 hardware:
-  commonName: "HC-SR04"
+  commonName: "Grove Ultrasonic Ranger"
   verbrauch3j: 13
   kitStandard: true
-legacyGenerator: false
+legacyGenerator: true
 ---
 
-# Ereignis: Wenn Abstand (HC-SR04)
+# Ereignis: Wenn Abstand (Grove Ultrasonic Ranger)
 
 Führt Aktionen aus, wenn der gemessene Abstand einen Schwellwert über- oder unterschreitet.
+Single-Pin-Messung – Generator: siehe `js/generator.js`.

@@ -4,35 +4,22 @@ blockCategory: Sensoren
 subCategory: Joystick & Encoder
 label: "🔄 Drehgeber Position"
 colour: "#1565C0"
-tooltip: "Liest die Position des Drehgebers (positiv = rechts, negativ = links, KY-040)"
+tooltip: "Liest die Position des Drehgebers (positiv = rechts, negativ = links)"
 blockType: value
 output: Number
 inputs:
-  - label: "🔄 Drehgeber Position  CLK:"
-    name: PIN_A
-    fieldType: pin_dropdown
-    pinSource: externalPins
-  - label: "DT:"
-    name: PIN_B
-    fieldType: pin_dropdown
-    pinSource: externalPins
-generator:
-  imports:
-    - "import board"
-    - "import rotaryio"
-  defs:
-    - key: "init_enc_${PIN_A}_${PIN_B}"
-      val: "_enc_${PIN_A}_${PIN_B} = rotaryio.IncrementalEncoder(board.${PIN_A}, board.${PIN_B})"
-  expression: "_enc_${PIN_A}_${PIN_B}.position"
-  order: MEMBER
+  - label: "🔄 Drehgeber Position  Port:"
+    name: PORT
+    fieldType: grove_dropdown
+    groveRole: 2pin
 hardware:
-  kyNumber: "KY-040"
-  commonName: "Rotary Encoder / Drehgeber"
+  commonName: "Grove Encoder / Drehgeber"
   verbrauch3j: 0
   kitStandard: true
-legacyGenerator: false
+legacyGenerator: true
 ---
 
-# Drehgeber / Rotary Encoder (KY-040)
+# Drehgeber / Rotary Encoder (Grove)
 
 Zählt Drehbewegungen (unbegrenzt). Positiver Wert = Rechtsdrehung, negativer Wert = Linksdrehung.
+Nutzt beide Pins des Grove-Ports (Pin1 = CLK, Pin2 = DT). Generator: siehe `js/generator.js`.

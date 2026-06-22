@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-22T08:03:15.504Z
+// Generiert: 2026-06-22T11:06:58.708Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -29,6 +29,12 @@ const BLOCKS_CATALOG = {
       ]
     },
     {
+      "id": "Anzeige",
+      "label": "📟 Anzeige",
+      "colour": "#00838F",
+      "subCategories": []
+    },
+    {
       "id": "Motor",
       "label": "🟣 Motor",
       "colour": "#6A1B9A",
@@ -55,10 +61,10 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "💧 DHT11 Luftfeuchte (%)  Pin:",
+        "label": "💧 DHT11 Luftfeuchte (%)  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       }
     ],
     "generator": {
@@ -95,10 +101,10 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "🌡️ DHT11 Temperatur (°C)  Pin:",
+        "label": "🌡️ DHT11 Temperatur (°C)  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       }
     ],
     "generator": {
@@ -135,10 +141,10 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "☀️ Helligkeit (0–100%)  Pin:",
+        "label": "☀️ Helligkeit (0–100%)  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
       }
     ],
     "generator": {
@@ -170,44 +176,61 @@ const BLOCKS_DB = [
     "subCategory": "Abstand & Licht",
     "label": "📡 Abstand (cm)",
     "colour": "#1565C0",
-    "tooltip": "Misst den Abstand in cm mit dem HC-SR04 Ultraschall-Sensor",
+    "tooltip": "Misst den Abstand in cm mit dem Grove-Ultraschall-Ranger (ein Signal-Pin)",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "📡 Abstand (cm)  Trig:",
-        "name": "TRIG",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
-      },
+        "label": "📡 Abstand (cm)  Port:",
+        "name": "SIG",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      }
+    ],
+    "hardware": {
+      "commonName": "Grove Ultrasonic Ranger",
+      "verbrauch3j": 13,
+      "kitStandard": true
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/ultrasonic.md"
+  },
+  {
+    "id": "sensor_battery",
+    "blockCategory": "Sensoren",
+    "subCategory": "Analog",
+    "label": "🔋 Batteriespannung (V)",
+    "colour": "#1565C0",
+    "tooltip": "Misst die Versorgungsspannung (VBAT) in Volt über GP29",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
       {
-        "label": "  Echo:",
-        "name": "ECHO",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "label": "🔋 Batteriespannung (V)",
+        "fieldType": "fixed_label"
       }
     ],
     "generator": {
       "imports": [
         "import board",
-        "import adafruit_hcsr04"
+        "import analogio"
       ],
       "defs": [
         {
-          "key": "init_sonar",
-          "val": "_sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.${TRIG}, echo_pin=board.${ECHO})"
+          "key": "init_battery",
+          "val": "_battery = analogio.AnalogIn(board.GP29)"
         }
       ],
-      "expression": "_sonar.distance",
-      "order": "MEMBER"
+      "expression": "round(_battery.value / 65535 * 3.3 * 2, 2)",
+      "order": "FUNCTION_CALL"
     },
     "hardware": {
-      "commonName": "HC-SR04",
-      "verbrauch3j": 13,
+      "commonName": "Batterie-Messung (VBAT/2)",
+      "verbrauch3j": 0,
       "kitStandard": true
     },
     "legacyGenerator": false,
-    "_file": "sensors/ultrasonic.md"
+    "_file": "sensors/battery.md"
   },
   {
     "id": "sensor_bodenfeuchte",
@@ -220,10 +243,10 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "🌱 Bodenfeuchte (0–100%)  Pin:",
+        "label": "🌱 Bodenfeuchte (0–100%)  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
       }
     ],
     "generator": {
@@ -287,10 +310,10 @@ const BLOCKS_DB = [
     "output": "Boolean",
     "inputs": [
       {
-        "label": "🚶 Bewegung erkannt?  Pin:",
+        "label": "🚶 Bewegung erkannt?  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       }
     ],
     "generator": {
@@ -326,10 +349,10 @@ const BLOCKS_DB = [
     "output": "Boolean",
     "inputs": [
       {
-        "label": "🔊 Geräusch erkannt?  Pin:",
+        "label": "🔊 Geräusch erkannt?  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       }
     ],
     "generator": {
@@ -366,10 +389,10 @@ const BLOCKS_DB = [
     "output": "Boolean",
     "inputs": [
       {
-        "label": "🔘 Taster gedrückt?  Pin:",
+        "label": "🔘 Taster gedrückt?  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       }
     ],
     "generator": {
@@ -406,10 +429,10 @@ const BLOCKS_DB = [
     "output": "Boolean",
     "inputs": [
       {
-        "label": "👆 Berührt?  Pin:",
+        "label": "👆 Berührt?  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       }
     ],
     "generator": {
@@ -441,44 +464,23 @@ const BLOCKS_DB = [
     "subCategory": "Joystick & Encoder",
     "label": "🔄 Drehgeber Position",
     "colour": "#1565C0",
-    "tooltip": "Liest die Position des Drehgebers (positiv = rechts, negativ = links, KY-040)",
+    "tooltip": "Liest die Position des Drehgebers (positiv = rechts, negativ = links)",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "🔄 Drehgeber Position  CLK:",
-        "name": "PIN_A",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
-      },
-      {
-        "label": "DT:",
-        "name": "PIN_B",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "label": "🔄 Drehgeber Position  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin"
       }
     ],
-    "generator": {
-      "imports": [
-        "import board",
-        "import rotaryio"
-      ],
-      "defs": [
-        {
-          "key": "init_enc_${PIN_A}_${PIN_B}",
-          "val": "_enc_${PIN_A}_${PIN_B} = rotaryio.IncrementalEncoder(board.${PIN_A}, board.${PIN_B})"
-        }
-      ],
-      "expression": "_enc_${PIN_A}_${PIN_B}.position",
-      "order": "MEMBER"
-    },
     "hardware": {
-      "kyNumber": "KY-040",
-      "commonName": "Rotary Encoder / Drehgeber",
+      "commonName": "Grove Encoder / Drehgeber",
       "verbrauch3j": 0,
       "kitStandard": true
     },
-    "legacyGenerator": false,
+    "legacyGenerator": true,
     "_file": "sensors/encoder.md"
   },
   {
@@ -523,10 +525,10 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "☀️ Wenn Helligkeit  Pin:",
+        "label": "☀️ Wenn Helligkeit  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
       },
       {
         "name": "OP",
@@ -580,10 +582,10 @@ const BLOCKS_DB = [
     "blockType": "event_simple",
     "inputs": [
       {
-        "label": "🔊 Wenn Geräusch erkannt  Pin:",
+        "label": "🔊 Wenn Geräusch erkannt  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       }
     ],
     "statementInput": {
@@ -623,10 +625,10 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "🌡️ Wenn Temperatur  Pin:",
+        "label": "🌡️ Wenn Temperatur  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       },
       {
         "name": "OP",
@@ -676,16 +678,10 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "📡 Wenn Abstand  Trig:",
-        "name": "TRIG",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
-      },
-      {
-        "label": "Echo:",
-        "name": "ECHO",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "label": "📡 Wenn Abstand  Port:",
+        "name": "SIG",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       },
       {
         "name": "OP",
@@ -707,25 +703,12 @@ const BLOCKS_DB = [
       "name": "DO",
       "label": "dann"
     },
-    "generator": {
-      "imports": [
-        "import board",
-        "import adafruit_hcsr04"
-      ],
-      "defs": [
-        {
-          "key": "init_sonar",
-          "val": "_sonar = adafruit_hcsr04.HCSR04(trigger_pin=board.${TRIG}, echo_pin=board.${ECHO})"
-        }
-      ],
-      "code": "if _sonar.distance ${OP} ${VALUE}:\n${DO}"
-    },
     "hardware": {
-      "commonName": "HC-SR04",
+      "commonName": "Grove Ultrasonic Ranger",
       "verbrauch3j": 13,
       "kitStandard": true
     },
-    "legacyGenerator": false,
+    "legacyGenerator": true,
     "_file": "sensors/event_ultrasonic.md"
   },
   {
@@ -738,10 +721,10 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "💡 LED  Pin:",
+        "label": "💡 LED  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       },
       {
         "name": "STATE",
@@ -780,10 +763,10 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "💡 LED  Pin:",
+        "label": "💡 LED  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       }
     ],
     "valueInputs": [
@@ -808,48 +791,6 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/led_blink.md"
-  },
-  {
-    "id": "actuator_rgb_led",
-    "blockCategory": "Aktoren",
-    "subCategory": "LED",
-    "label": "🌈 RGB-LED",
-    "colour": "#E65100",
-    "tooltip": "Setzt eine RGB-LED auf eine Farbe über drei digitale Ausgänge (KY-009, KY-016)",
-    "blockType": "statement",
-    "inputs": [
-      {
-        "label": "🌈 RGB-LED  R-Pin:",
-        "name": "PIN_R",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
-      },
-      {
-        "label": "G-Pin:",
-        "name": "PIN_G",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
-      },
-      {
-        "label": "B-Pin:",
-        "name": "PIN_B",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
-      },
-      {
-        "label": "Farbe:",
-        "name": "COLOR",
-        "fieldType": "rgb_color_dropdown"
-      }
-    ],
-    "hardware": {
-      "kyNumber": "KY-009",
-      "commonName": "RGB-LED",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/rgb_led.md"
   },
   {
     "id": "actuator_buzzer",
@@ -951,10 +892,10 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "💧 Wasserpumpe  Pin:",
+        "label": "💧 Wasserpumpe  Port:",
         "name": "PIN",
-        "fieldType": "pin_dropdown",
-        "pinSource": "externalPins"
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
       },
       {
         "name": "STATE",
@@ -981,6 +922,49 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": false,
     "_file": "actuators/wasserpumpe.md"
+  },
+  {
+    "id": "actuator_lcd",
+    "blockCategory": "Anzeige",
+    "subCategory": "",
+    "label": "📟 LCD anzeigen",
+    "colour": "#00838F",
+    "tooltip": "Zeigt Text auf dem Grove-LCD RGB Backlight an und setzt die Hintergrundfarbe",
+    "blockType": "statement",
+    "inline": false,
+    "inputs": [
+      {
+        "label": "📟 LCD anzeigen  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "i2c"
+      },
+      {
+        "label": "Version:",
+        "name": "VERSION",
+        "fieldType": "lcd_version_dropdown"
+      },
+      {
+        "label": "Farbe:",
+        "name": "COLOR",
+        "fieldType": "colour_picker",
+        "default": "#ffffff"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "TEXT",
+        "label": "Text",
+        "check": "String"
+      }
+    ],
+    "hardware": {
+      "commonName": "Grove-LCD RGB Backlight",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/lcd.md"
   },
   {
     "id": "actuator_motor_backward",
