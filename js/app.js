@@ -175,13 +175,33 @@ async function sendLine() {
 
 // ── Serieller Monitor ────────────────────────────────────────────────────────
 
+// Eingehende Serial-Daten werden gepuffert und nur einmal pro Frame ins DOM
+// geschrieben (statt bei jedem Chunk). Der Puffer ist begrenzt – so bleibt die
+// Seite auch bei einer Datenflut (z.B. Boot-/Reset-Schleife des Boards) flüssig.
+const _SERIAL_MAX = 100000;  // max. Zeichen im Monitor
+let _serialBuf = '';
+let _serialPending = false;
+
 function appendSerialOutput(text) {
+  _serialBuf += text;
+  if (_serialPending) return;
+  _serialPending = true;
+  requestAnimationFrame(_flushSerialOutput);
+}
+
+function _flushSerialOutput() {
+  _serialPending = false;
   const el = document.getElementById('serial-output');
-  el.textContent += text;
+  if (!el) return;
+  let next = el.textContent + _serialBuf;
+  _serialBuf = '';
+  if (next.length > _SERIAL_MAX) next = next.slice(next.length - _SERIAL_MAX);
+  el.textContent = next;
   el.scrollTop = el.scrollHeight;
 }
 
 function clearSerial() {
+  _serialBuf = '';
   document.getElementById('serial-output').textContent = '';
 }
 
