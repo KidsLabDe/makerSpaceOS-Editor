@@ -28,9 +28,12 @@ print("Erwartet: 0x3e (Text) und 0x62 (V4) bzw. 0x30 (V5)")
 if 0x3e not in addrs:
     print("FEHLER: Text-Controller 0x3e nicht gefunden -> Verkabelung/Port prüfen!")
 
-# 2) Backlight-Version automatisch wählen
-rgb_addr = 0x30 if 0x30 in addrs else 0x62
-print("Verwende Backlight-Adresse:", hex(rgb_addr))
+# 2) Backlight-Version wählen:
+#    Der V4-Treiber (PCA9633 @ 0x62) MELDET sich beim Scan, der V5-Treiber
+#    (SGM31323 @ 0x30) meldet sich oft NICHT. Daher: 0x62 gefunden -> V4, sonst V5.
+rgb_addr = 0x62 if 0x62 in addrs else 0x30
+print("Verwende Backlight-Adresse:", hex(rgb_addr),
+      "(V4)" if rgb_addr == 0x62 else "(V5)")
 
 # 3) Display ansteuern
 lcd = GroveRgbLcd(i2c, rgb_addr=rgb_addr)
