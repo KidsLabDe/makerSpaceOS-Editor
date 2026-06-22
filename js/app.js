@@ -38,13 +38,29 @@ function initBlockly() {
     grid: { spacing: 20, length: 3, colour: '#d8dde8', snap: true },
   });
 
-  // Pflicht-Startblöcke: SETUP + FÜR IMMER (nicht löschbar, aber einzeln verschiebbar)
-  // Nebeneinander platziert, damit sie sich nicht überlappen.
-  _createFixedBlock('control_setup',   40, 40);
-  _createFixedBlock('control_forever', 360, 40);
+  // Zuletzt bearbeiteten Stand wiederherstellen, sonst Pflichtblöcke neu anlegen.
+  const saved = loadCurrent();
+  if (saved && saved.state) {
+    try {
+      Blockly.serialization.workspaces.load(saved.state, workspace);
+    } catch (e) {
+      console.warn('Wiederherstellen fehlgeschlagen:', e);
+    }
+  } else {
+    // Pflicht-Startblöcke: SETUP + FÜR IMMER, nebeneinander.
+    _createFixedBlock('control_setup',   40, 40);
+    _createFixedBlock('control_forever', 360, 40);
+  }
+  // Pflichtblöcke garantieren (existieren + nicht löschbar) – auch nach Restore.
+  ensureFixedBlocks();
 
-  // Live Code-Generierung bei jeder Änderung
-  workspace.addChangeListener(updateCode);
+  // Live Code-Generierung + Auto-Speichern bei jeder Änderung
+  workspace.addChangeListener(onWorkspaceChange);
+}
+
+function onWorkspaceChange(_e) {
+  updateCode();
+  saveCurrentDebounced();
 }
 
 function _createFixedBlock(type, x, y) {
@@ -99,6 +115,8 @@ function initButtons() {
   document.getElementById('btn-toggle-edit').addEventListener('click', toggleEdit);
   document.getElementById('btn-clear-serial').addEventListener('click', clearSerial);
   document.getElementById('btn-send').addEventListener('click', sendLine);
+  document.getElementById('btn-save-board').addEventListener('click', saveToBoardClick);
+  document.getElementById('btn-history').addEventListener('click', toggleHistory);
 
   document.getElementById('serial-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') sendLine();
@@ -128,10 +146,81 @@ async function runCode() {
   const code = generateCode();
   try {
     await serial.uploadAndRun(code);
+    // Bei jedem Ausführen einen Versionsstand sichern
+    pushVersion();
+    saveCurrent();
     showToast('Code wird ausgeführt…', 'ok');
   } catch (e) {
     showToast('Fehler: ' + e.message, 'error');
   }
+}
+
+// ── Speichern auf RP2040 + Verlauf ────────────────────────────────────────────
+
+async function saveToBoardClick() {
+  const code = generateCode();
+  try {
+    const res = await saveToBoard(code);
+    showToast(res === 'saved' ? 'main.py auf dem RP2040 gespeichert!'
+                              : 'main.py heruntergeladen', 'ok');
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;  // Dialog abgebrochen
+    showToast('Speichern fehlgeschlagen: ' + e.message, 'error');
+  }
+}
+
+function toggleHistory() {
+  const drawer  = document.getElementById('history-drawer');
+  const overlay = document.getElementById('history-overlay');
+  const open    = drawer.classList.toggle('open');
+  overlay.classList.toggle('show', open);
+  if (open) renderHistory();
+}
+
+function closeHistory() {
+  document.getElementById('history-drawer').classList.remove('open');
+  document.getElementById('history-overlay').classList.remove('show');
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const versions = getVersions();
+  list.innerHTML = '';
+  if (!versions.length) {
+    list.innerHTML = '<p class="history-empty">Noch keine gespeicherten Stände. '
+      + 'Führe ein Programm aus, um eine Version anzulegen.</p>';
+    return;
+  }
+  versions.forEach((v, i) => {
+    const item = document.createElement('div');
+    item.className = 'history-item';
+
+    const head = document.createElement('div');
+    head.className = 'history-head';
+    const ts = document.createElement('span');
+    ts.className = 'history-ts';
+    ts.textContent = '🕘 ' + new Date(v.ts).toLocaleString('de-DE');
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-ghost btn-sm';
+    btn.textContent = 'Wiederherstellen';
+    btn.addEventListener('click', () => {
+      restoreVersion(i);
+      closeHistory();
+      showToast('Version wiederhergestellt', 'ok');
+    });
+    head.appendChild(ts);
+    head.appendChild(btn);
+
+    const pre = document.createElement('pre');
+    pre.className = 'history-preview';
+    pre.textContent = (v.code || '').split('\n')
+      .filter(l => l.trim() && !l.startsWith('#'))
+      .slice(0, 3).join('\n') || '(leer)';
+
+    item.appendChild(head);
+    item.appendChild(pre);
+    list.appendChild(item);
+  });
 }
 
 async function stopCode() {

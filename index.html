@@ -37,6 +37,8 @@
       <button id="btn-connect" class="btn btn-primary">Verbinden</button>
       <button id="btn-run"  class="btn btn-warning" disabled>▶ Ausführen</button>
       <button id="btn-stop" class="btn btn-danger"  disabled>⏹ Stopp</button>
+      <button id="btn-save-board" class="btn btn-ghost" title="Programm als main.py auf den RP2040 speichern">💾 Auf RP2040</button>
+      <button id="btn-history" class="btn btn-ghost" title="Gespeicherte Versionen anzeigen">🕘 Verlauf</button>
       <button onclick="aiOpen()" class="btn btn-ghost" title="KI-Block Generator öffnen">🤖 KI-Block</button>
     </div>
   </header>
@@ -124,6 +126,16 @@
 
   <div id="ai-overlay" onclick="aiClose()"></div>
 
+  <!-- Verlauf-Drawer -->
+  <div id="history-drawer">
+    <div class="panel-header">
+      <span>🕘 Verlauf</span>
+      <button onclick="closeHistory()" class="btn-icon" title="Schließen">✕</button>
+    </div>
+    <div id="history-list"></div>
+  </div>
+  <div id="history-overlay" onclick="closeHistory()"></div>
+
   <!-- App-Skripte -->
   <script src="js/boards.js"></script>
   <script src="js/blocks/control.js"></script>
@@ -133,6 +145,7 @@
   <script src="js/toolbox.js"></script>
   <script src="js/generator.js"></script>
   <script src="js/serial.js"></script>
+  <script src="js/storage.js"></script>
   <script src="js/ai_chat.js"></script>
   <script src="js/app.js"></script>
 
