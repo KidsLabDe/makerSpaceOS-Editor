@@ -65,6 +65,7 @@ Firefox und Safari werden **nicht** unterstützt.
 - **Visueller Editor** mit Blockly (Drag & Drop)
 - **Live-Codegenerierung** – CircuitPython-Code wird in Echtzeit angezeigt
 - **Direkt ausführen** – Code wird per Web Serial Raw REPL auf das Board geladen und gestartet
+- **Parallele Aktionen (Ereignis-Blöcke)** – mehrere Stapel laufen gleichzeitig (z. B. eine Dauer-Animation *und* eine Sensor-Reaktion), ähnlich wie bei Lego Spike. Umgesetzt über kooperatives Multitasking mit `asyncio`.
 - **Serieller Monitor** – `print()`-Ausgaben des Boards live im Browser sehen
 - **REPL-Eingabe** – manuelle Befehle direkt ins Board schicken
 - **Keine Installation** – `index.html` im Browser öffnen, fertig
@@ -74,10 +75,13 @@ Firefox und Safari werden **nicht** unterstützt.
 ## Schnellstart
 
 1. Board per USB-C anschließen (CircuitPython muss installiert sein)
-2. `index.html` in Chrome oder Edge öffnen
-3. Blöcke zusammenstecken
-4. **▶ Ausführen** klicken → Browser fragt nach Zugriff auf den seriellen Port → Board auswählen
-5. Programm läuft auf dem Board; Ausgaben erscheinen im Seriellen Monitor
+2. Benötigte Bibliotheken nach `CIRCUITPY/lib/` kopieren (aus dem Adafruit CircuitPython Bundle):
+   - **`asyncio`** und **`adafruit_ticks`** – Pflicht, da der generierte Code immer mit kooperativem Multitasking läuft
+   - je nach genutzten Blöcken zusätzlich `adafruit_dht`, `neopixel`, `adafruit_hcsr04`, `adafruit_motor`, `adafruit_bmp280`
+3. `index.html` in Chrome oder Edge öffnen
+4. Blöcke zusammenstecken
+5. **▶ Ausführen** klicken → Browser fragt nach Zugriff auf den seriellen Port → Board auswählen
+6. Programm läuft auf dem Board; Ausgaben erscheinen im Seriellen Monitor
 
 ---
 
@@ -91,9 +95,10 @@ js/
   toolbox.js         – Block-Kategorien & Toolbox-Definition
   blocks/
     control.js       – SETUP- und FÜR-IMMER-Blöcke
+    events.js        – Ereignis-Hut-Blöcke (parallele Aktionen)
     sensors.js       – Sensor-Block-Definitionen
     actuators.js     – Aktor-Block-Definitionen
-  generator.js       – Blockly → CircuitPython Transpiler
+  generator.js       – Blockly → CircuitPython Transpiler (asyncio-Multitask)
   app.js             – Workspace-Init & UI-Events
   serial.js          – Web Serial API (Raw REPL)
 ```

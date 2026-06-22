@@ -20,6 +20,32 @@ const TOOLBOX_STATIC_CONTENTS = [
   { kind: 'sep' },
   {
     kind: 'category',
+    name: '🎬 Ereignisse',
+    colour: '#0D47A1',
+    contents: [
+      { kind: 'block', type: 'loop_parallel' },
+      { kind: 'sep' },
+      { kind: 'block', type: 'when_button' },
+      { kind: 'block', type: 'when_obstacle' },
+      { kind: 'block', type: 'when_line' },
+      { kind: 'block', type: 'when_tilt' },
+      { kind: 'block', type: 'when_magnetic' },
+      { kind: 'block', type: 'when_flame' },
+      { kind: 'block', type: 'when_sound' },
+      { kind: 'block', type: 'when_touch' },
+      { kind: 'block', type: 'when_vibration' },
+      { kind: 'sep' },
+      { kind: 'block', type: 'when_distance',
+        inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 20 } } } } },
+      { kind: 'block', type: 'when_light',
+        inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 50 } } } } },
+      { kind: 'block', type: 'when_temperature',
+        inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 25 } } } } },
+    ]
+  },
+  { kind: 'sep' },
+  {
+    kind: 'category',
     name: '📐 Mathematik',
     colour: '#1565C0',
     contents: [

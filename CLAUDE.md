@@ -18,9 +18,10 @@ js/
   toolbox.js         – Blockly-Toolbox-Definition (TOOLBOX global)
   blocks/
     control.js       – SETUP- und FÜR-IMMER-Pflichtblöcke
+    events.js        – Ereignis-Hut-Blöcke (when_*, loop_parallel) → parallele async-Aufgaben
     sensors.js       – Sensor-Block-Definitionen (Blockly.Blocks[...])
     actuators.js     – Aktor-Block-Definitionen
-  generator.js       – Blockly → CircuitPython Transpiler
+  generator.js       – Blockly → CircuitPython Transpiler (asyncio-Multitask-Modell)
   app.js             – Workspace-Init, UI-Events
   serial.js          – Web Serial API (Raw REPL)
 RaspberryPico_allCodes_en/  – MicroPython-Referenzdateien (nicht geladen, nur Doku)
@@ -62,7 +63,18 @@ Alle drei Schritte sind Pflicht – fehlt einer, erscheint der Block nicht oder 
 - **Reihenfolge-Gotcha bei I2C**: Wenn ein Objekt auf ein anderes referenziert (z.B. `_bmp280` auf `_i2c_bmp`), beide in einem einzigen `_defs`-Eintrag zusammenfassen, da Keys alphabetisch sortiert werden.
 - **Hilfsfunktionen** `_digitalInDef(pin, varPrefix, pull)` und `_digitalOutDef(pin, varPrefix)` für digitale Ein-/Ausgänge nutzen (Boilerplate vermeiden).
 - Wert-Blöcke geben `[ausdruck, Blockly.Python.ORDER_...]` zurück; Statement-Blöcke geben einen Code-String zurück.
-- Schwebende Blöcke (nicht in SETUP oder FÜR IMMER) werden ignoriert.
+- Schwebende Blöcke (kein SETUP, FÜR IMMER, `loop_parallel` oder `when_*`) werden ignoriert.
+- **Kein `time.sleep()` mehr** – Wartezeiten als `await asyncio.sleep(...)` generieren (siehe Ausführungsmodell), sonst blockiert ein Block alle parallelen Aufgaben.
+
+## Ausführungsmodell (asyncio-Multitask)
+
+Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein kooperatives Multitasking-Programm (`generator.js`, `workspaceToCode`/`finish`):
+
+- Jeder **Top-Level-Stapel** wird zu einer eigenen `async def _taskN()`: `control_forever` und `loop_parallel` → Endlosschleife; jeder `when_*`-Hut-Block → kantengetriggerte Polling-Aufgabe (`_whenTask`, feuert einmal beim Wahr-Werden).
+- Alle Aufgaben starten parallel via `asyncio.gather()` in `async def _main()`, gestartet mit `asyncio.run(_main())`.
+- `control_setup` läuft einmal als Prolog in `_main()` (darf daher auch `await` enthalten).
+- Helfer: `_indent(code, levels)`, `_wrapLoop(body)`, `_whenTask(expr, body, poll)`. Jeder Hut-Generator gibt den **fertigen Aufgaben-Body** zurück; `workspaceToCode` sammelt sie in `_tasks` und `finish()` baut die `async def`-Hüllen.
+- Ein neuer Ereignis-Hut-Block braucht: Definition in `js/blocks/events.js`, Generator in `generator.js` (gibt `_whenTask(...)` zurück), Eintrag im `_HAT_TYPES`-Array **und** in der Toolbox-Kategorie „🎬 Ereignisse".
 
 ## Block-Design-Prinzipien
 
@@ -79,7 +91,8 @@ Alle drei Schritte sind Pflicht – fehlt einer, erscheint der Block nicht oder 
 - **Web Serial API** funktioniert nur in Chrome/Edge. Firefox und Safari schlagen stumm fehl.
 - **Kein Persistenz-Layer** – Projekte werden nicht gespeichert (kommt in Phase 3).
 - **Board ist hardcodiert** – `boards.js` enthält nur `MAKER-PI-RP2040`. Board-Auswahl kommt in Phase 3.
-- **adafruit_bmp280** ist die einzige Drittanbieter-Library, die *neu* hinzugekommen ist und manuell auf `CIRCUITPY/lib/` kopiert werden muss. Alle anderen (`adafruit_dht`, `neopixel`, `adafruit_hcsr04`, `adafruit_motor`) sind Standard im Adafruit CircuitPython Bundle.
+- **adafruit_bmp280** muss manuell auf `CIRCUITPY/lib/` kopiert werden. Alle anderen (`adafruit_dht`, `neopixel`, `adafruit_hcsr04`, `adafruit_motor`) sind Standard im Adafruit CircuitPython Bundle.
+- **asyncio + adafruit_ticks** werden vom generierten Code immer benötigt (Multitask-Modell) und müssen in `CIRCUITPY/lib/` liegen. Beide sind im Standard-Adafruit-Bundle; `asyncio` hängt von `adafruit_ticks` ab.
 - `RaspberryPico_allCodes_en/` enthält **MicroPython**-Referenzcode (nicht CircuitPython). Bei neuen Blöcken den Code in CircuitPython übersetzen (`digitalio`/`analogio` statt `machine`).
 
 ## Commit-Stil
