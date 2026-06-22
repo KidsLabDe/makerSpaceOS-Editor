@@ -131,6 +131,10 @@ async function toggleConnect() {
     try {
       await serial.connect();
       serial.onData = appendSerialOutput;
+      serial.onDisconnect = () => {
+        setConnected(false);
+        showToast('Board getrennt', 'warn');
+      };
       setConnected(true);
     } catch (e) {
       showToast('Verbindung fehlgeschlagen: ' + e.message, 'error');

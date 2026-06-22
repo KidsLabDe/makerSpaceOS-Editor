@@ -22,6 +22,9 @@ class CircuitPythonSerial {
     this.writer   = null;
     this._reading = false;
     this.onData   = null;  // callback(string)
+    this.onDisconnect = null;        // callback() bei unerwartetem Verbindungsverlust
+    this._intentionalClose = false;  // true = vom Nutzer ausgelöstes Trennen
+    this._disconnectBound  = false;
   }
 
   get isConnected() {
@@ -34,10 +37,23 @@ class CircuitPythonSerial {
     }
     this.port = await navigator.serial.requestPort();
     await this.port.open({ baudRate: 115200 });
+    this._intentionalClose = false;
+    this._bindDisconnectEvent();
     this._startReading();
   }
 
+  // OS-Ereignis: Gerät physisch abgesteckt → Lese-Schleife beenden lassen
+  _bindDisconnectEvent() {
+    if (this._disconnectBound) return;
+    this._disconnectBound = true;
+    navigator.serial.addEventListener('disconnect', (e) => {
+      const p = e.port || e.target;
+      if (p && p === this.port) this._reading = false;
+    });
+  }
+
   async disconnect() {
+    this._intentionalClose = true;
     this._reading = false;
     try { if (this.reader) { await this.reader.cancel(); this.reader = null; } } catch(_) {}
     try { if (this.writer) { this.writer.releaseLock(); this.writer = null; } } catch(_) {}
@@ -48,27 +64,45 @@ class CircuitPythonSerial {
     this._reading = true;
     const self = this;
     (async () => {
-      while (self.port && self._reading) {
-        try {
+      try {
+        // Solange lesbar: Reader holen und lesen. KEIN tight-retry – bei done/Fehler
+        // endet die Schleife sauber (verhindert den Microtask-Busy-Loop = Freeze).
+        while (self._reading && self.port && self.port.readable) {
           self.reader = self.port.readable.getReader();
-          while (true) {
-            const { value, done } = await self.reader.read();
-            if (done) break;
-            if (value && self.onData) {
-              self.onData(new TextDecoder().decode(value));
+          try {
+            while (true) {
+              const { value, done } = await self.reader.read();
+              if (done) { self._reading = false; break; }   // Stream zu = getrennt
+              if (value && self.onData) self.onData(new TextDecoder().decode(value));
             }
+          } finally {
+            try { self.reader.releaseLock(); } catch(_) {}
+            self.reader = null;
           }
-        } catch(e) {
-          if (self._reading) console.warn('Serial read error:', e);
-        } finally {
-          try { self.reader.releaseLock(); } catch(_) {}
         }
+      } catch (e) {
+        // Lesefehler (abgesteckt / USB-Reset) – beenden, NICHT endlos weiterlaufen
+        if (self._reading) console.warn('Serial read error:', e);
       }
+      // Schleife beendet → aufräumen; bei unerwartetem Verlust das UI benachrichtigen
+      const intentional = self._intentionalClose;
+      self._intentionalClose = false;
+      self._reading = false;
+      if (!intentional) self._handleUnexpectedDisconnect();
     })();
   }
 
+  _handleUnexpectedDisconnect() {
+    try { if (this.writer) this.writer.releaseLock(); } catch(_) {}
+    this.writer = null;
+    try { if (this.port) this.port.close().catch(() => {}); } catch(_) {}
+    this.port   = null;
+    this.reader = null;
+    if (this.onDisconnect) { try { this.onDisconnect(); } catch(_) {} }
+  }
+
   async _write(data) {
-    if (!this.port) return;
+    if (!this.port || !this.port.writable) return;
     const writer = this.port.writable.getWriter();
     try {
       if (typeof data === 'string') {
