@@ -26,13 +26,21 @@ class GroveRgbLcd:
         self._i2c = i2c
         self._rgb_addr = rgb_addr
 
-        # --- Text-Display initialisieren ---
-        time.sleep(0.05)
+        # --- Text-Display initialisieren (robuste HD44780-Sequenz) ---
+        # Function set MUSS nach dem Einschalten mehrfach mit Wartezeiten kommen,
+        # sonst bleibt die Anzeige leer (Beleuchtung geht trotzdem).
+        time.sleep(0.05)       # >40 ms nach Power-on
         self._cmd(0x28)        # Function set: 2 Zeilen, 5x8 Punkte
+        time.sleep(0.005)      # >4.1 ms
+        self._cmd(0x28)
+        time.sleep(0.0002)     # >100 µs
+        self._cmd(0x28)
+        self._cmd(0x28)        # endgültiges Function set
         self._cmd(0x0C)        # Display an, kein Cursor, kein Blinken
         self._cmd(0x01)        # Display löschen
-        time.sleep(0.002)
+        time.sleep(0.002)      # Clear braucht ~1.5 ms
         self._cmd(0x06)        # Entry mode: Adresse hochzählen
+        time.sleep(0.002)
 
         # --- Hintergrundbeleuchtung initialisieren (versionsabhängig) ---
         if rgb_addr == 0x30:           # V5.0 – SGM31323

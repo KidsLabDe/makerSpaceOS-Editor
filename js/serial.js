@@ -1,5 +1,20 @@
 // serial.js – Web Serial API + CircuitPython Raw REPL
 
+// Aufräum-Prolog: gibt alle Pins/Objekte des vorherigen REPL-Laufs frei
+// (deinit/exit), bevor das neue Skript startet. So vermeidet man „GPx in use"
+// OHNE Soft-Reboot – dadurch läuft code.py/main.py des Boards NICHT mit an.
+const PIN_RESET_PRELUDE =
+`for _cb_n in list(globals()):
+    _cb_o = globals().get(_cb_n)
+    try:
+        _cb_o.deinit()
+    except Exception:
+        try:
+            _cb_o.exit()
+        except Exception:
+            pass
+`;
+
 class CircuitPythonSerial {
   constructor() {
     this.port     = null;
@@ -80,28 +95,16 @@ class CircuitPythonSerial {
     await this._write('\x03');
     await this._delay(150);
 
-    // 2. Soft-Reboot (Ctrl+D im normalen REPL): setzt die VM zurück und gibt ALLE
-    //    Pins des vorherigen Laufs frei – verhindert „GPx in use" beim erneuten Start.
-    await this._write('\x02');   // sicher im normalen REPL (Ctrl+B)
-    await this._delay(150);
-    await this._write('\x04');   // Soft-Reboot
-    await this._delay(800);
-
-    // 3. Automatischen Start von code.py sofort wieder unterbrechen
-    await this._write('\x03');
-    await this._delay(150);
-    await this._write('\x03');
-    await this._delay(150);
-
-    // 4. Raw REPL aktivieren (Ctrl+A)
+    // 2. Raw REPL aktivieren (Ctrl+A)
     await this._write('\x01');
     await this._delay(300);
 
-    // 5. Code senden
-    await this._write(code);
+    // 3. Aufräum-Prolog (gibt Pins des vorherigen Laufs frei) + eigentlichen Code senden.
+    //    Kein Soft-Reboot → code.py/main.py des Boards wird NICHT gestartet.
+    await this._write(PIN_RESET_PRELUDE + '\n' + code);
     await this._delay(100);
 
-    // 6. Ausführen (Ctrl+D)
+    // 4. Ausführen (Ctrl+D)
     await this._write('\x04');
   }
 
