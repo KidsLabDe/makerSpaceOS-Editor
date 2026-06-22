@@ -76,19 +76,32 @@ class CircuitPythonSerial {
 
     // 1. Laufenden Code unterbrechen (Ctrl+C)
     await this._write('\x03');
-    await this._delay(200);
+    await this._delay(150);
     await this._write('\x03');
-    await this._delay(200);
+    await this._delay(150);
 
-    // 2. Raw REPL aktivieren (Ctrl+A)
+    // 2. Soft-Reboot (Ctrl+D im normalen REPL): setzt die VM zurück und gibt ALLE
+    //    Pins des vorherigen Laufs frei – verhindert „GPx in use" beim erneuten Start.
+    await this._write('\x02');   // sicher im normalen REPL (Ctrl+B)
+    await this._delay(150);
+    await this._write('\x04');   // Soft-Reboot
+    await this._delay(800);
+
+    // 3. Automatischen Start von code.py sofort wieder unterbrechen
+    await this._write('\x03');
+    await this._delay(150);
+    await this._write('\x03');
+    await this._delay(150);
+
+    // 4. Raw REPL aktivieren (Ctrl+A)
     await this._write('\x01');
     await this._delay(300);
 
-    // 3. Code senden
+    // 5. Code senden
     await this._write(code);
     await this._delay(100);
 
-    // 4. Ausführen (Ctrl+D)
+    // 6. Ausführen (Ctrl+D)
     await this._write('\x04');
   }
 
