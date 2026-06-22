@@ -675,14 +675,21 @@ function _groveLcdDef(portId, rgbAddr) {
     `_lcd = GroveRgbLcd(_i2c_lcd, rgb_addr=${rgbAddr})`;
 }
 
+// Benannte Farben (rgb_color_dropdown) → RGB-Werte für die LCD-Beleuchtung
+const _LCD_RGB = {
+  red:    '255, 0, 0',   green: '0, 255, 0',   blue:   '0, 0, 255',
+  yellow: '255, 255, 0', cyan:  '0, 255, 255', pink:   '255, 0, 255',
+  white:  '255, 255, 255', off:  '0, 0, 0',
+};
+
 Blockly.Python['actuator_lcd'] = function(block) {
   const portId  = block.getFieldValue('PORT');
   const rgbAddr = block.getFieldValue('VERSION');
-  const colour  = block.getFieldValue('COLOR') || '#ffffff';
+  const colour  = block.getFieldValue('COLOR') || 'white';
   const text    = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_NONE) || '""';
   _groveLcdDef(portId, rgbAddr);
-  const rgb = hexToRgbTuple(colour);  // "(r, g, b)"
-  return `_lcd.set_rgb${rgb}\n_lcd.set_text(${text})\n`;
+  const rgb = _LCD_RGB[colour] || '255, 255, 255';
+  return `_lcd.set_rgb(${rgb})\n_lcd.set_text(${text})\n`;
 };
 
 // ── Ereignis-Hut-Blöcke (je eine parallele async-Aufgabe) ─────────────────────

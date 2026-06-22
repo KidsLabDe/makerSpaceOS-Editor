@@ -228,9 +228,10 @@
       entry.inputs = {};
       for (const vi of def.valueInputs) {
         if (vi.defaultValue !== undefined) {
-          entry.inputs[vi.name] = {
-            shadow: { type: 'math_number', fields: { NUM: vi.defaultValue } }
-          };
+          // String-Eingänge bekommen einen editierbaren Text-Schatten, sonst eine Zahl
+          entry.inputs[vi.name] = (vi.check === 'String')
+            ? { shadow: { type: 'text', fields: { TEXT: vi.defaultValue } } }
+            : { shadow: { type: 'math_number', fields: { NUM: vi.defaultValue } } };
         }
       }
     }

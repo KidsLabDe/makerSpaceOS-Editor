@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-22T11:06:58.708Z
+// Generiert: 2026-06-22T12:01:46.176Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -947,15 +947,15 @@ const BLOCKS_DB = [
       {
         "label": "Farbe:",
         "name": "COLOR",
-        "fieldType": "colour_picker",
-        "default": "#ffffff"
+        "fieldType": "rgb_color_dropdown"
       }
     ],
     "valueInputs": [
       {
         "name": "TEXT",
         "label": "Text",
-        "check": "String"
+        "check": "String",
+        "defaultValue": "Hallo"
       }
     ],
     "hardware": {

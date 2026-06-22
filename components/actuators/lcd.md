@@ -17,12 +17,12 @@ inputs:
     fieldType: lcd_version_dropdown
   - label: "Farbe:"
     name: COLOR
-    fieldType: colour_picker
-    default: "#ffffff"
+    fieldType: rgb_color_dropdown
 valueInputs:
   - name: TEXT
     label: "Text"
     check: String
+    defaultValue: "Hallo"
 hardware:
   commonName: "Grove-LCD RGB Backlight"
   verbrauch3j: 0
