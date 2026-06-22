@@ -20,6 +20,14 @@
         return Object.entries(BOARD.servos).map(([k, v]) => [`${k} (${v})`, k]);
       case 'button_dropdown':
         return Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]);
+      case 'state_dropdown':
+        return [['gedrückt', 'pressed'], ['losgelassen', 'released']];
+      case 'rgb_color_dropdown':
+        return [
+          ['🔴 Rot', 'red'], ['🟢 Grün', 'green'], ['🔵 Blau', 'blue'],
+          ['🟡 Gelb', 'yellow'], ['🩵 Türkis', 'cyan'], ['🟣 Pink', 'pink'],
+          ['⬜ Weiß', 'white'], ['⬛ Aus', 'off'],
+        ];
       default:
         return (inp.options || []);
     }
@@ -62,8 +70,18 @@
         block.setOutput(true, def.output || 'Number');
 
       } else if (def.blockType === 'statement') {
-        const dummyInput = block.appendDummyInput();
-        addFields(dummyInput, def.inputs);
+        if (def.inputs && def.inputs.length) {
+          addFields(block.appendDummyInput(), def.inputs);
+        }
+        // Wert-Eingänge (z.B. blinken-Anzahl, Servo-Winkel, Motor-Tempo)
+        for (const vi of (def.valueInputs || [])) {
+          const v = block.appendValueInput(vi.name).setCheck(vi.check || 'Number');
+          if (vi.label)  v.appendField(vi.label);
+          if (vi.suffix) block.appendDummyInput().appendField(vi.suffix);
+        }
+        if (def.valueInputs && def.valueInputs.length) {
+          block.setInputsInline(def.inline !== false);
+        }
         block.setPreviousStatement(true, null);
         block.setNextStatement(true, null);
 

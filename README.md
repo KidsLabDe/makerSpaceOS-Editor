@@ -96,8 +96,8 @@ js/
   blocks/
     control.js       – SETUP- und FÜR-IMMER-Blöcke
     events.js        – Ereignis-Hut-Blöcke (parallele Aktionen)
-    sensors.js       – Sensor-Block-Definitionen
-    actuators.js     – Aktor-Block-Definitionen
+  blocks_db.js       – generiert aus components/*.md (Sensor-/Aktor-Blöcke)
+  block_builder.js   – registriert Blöcke aus blocks_db.js
   generator.js       – Blockly → CircuitPython Transpiler (asyncio-Multitask)
   app.js             – Workspace-Init & UI-Events
   serial.js          – Web Serial API (Raw REPL)

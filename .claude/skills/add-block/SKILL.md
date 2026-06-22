@@ -1,87 +1,74 @@
 ---
 name: add-block
-description: Fügt einen neuen Blockly-Block zu CircuitBlox hinzu (Block-Definition + Generator + Toolbox-Eintrag). Nutze diesen Skill wenn der Nutzer einen neuen Sensor oder Aktor als Block implementieren möchte.
+description: Fügt einen neuen Blockly-Block zu CircuitBlox hinzu (markdown-getrieben über components/*.md). Nutze diesen Skill wenn der Nutzer einen neuen Sensor oder Aktor als Block implementieren möchte.
 ---
 
-Wenn der Nutzer einen neuen Blockly-Block für CircuitBlox implementieren möchte, geh exakt diese drei Schritte durch. Überspringe keinen.
+Sensor-/Aktor-Blöcke sind in CircuitBlox **markdown-getrieben**: Eine Datei in `components/sensors/` bzw. `components/actuators/` beschreibt Block-Definition, Generator und Toolbox-Eintrag in einem. `node scripts/build_blocks.js` kompiliert daraus `js/blocks_db.js`; `js/block_builder.js` registriert beim Laden Block, Generator und Toolbox-Eintrag automatisch.
 
-## Schritt 1: Block-Definition (`js/blocks/sensors.js` oder `js/blocks/actuators.js`)
+## Schritt 1: Vorlage ansehen
 
-Lese zuerst die relevante Datei, um das bestehende Pattern zu verstehen (EXT_PINS, Farben, Struktur).
+Lies eine bestehende, vollständige Komponente als Muster:
+- **Wert-Block** (gibt Zahl/Boolean zurück): `components/sensors/ldr.md`
+- **Statement-Block** (Aktor): `components/actuators/led.md`
+- **Statement mit Wert-Eingängen** (Tempo/Winkel/Anzahl): `components/actuators/servo.md`, `components/actuators/led_blink.md`
+- **Ereignis-Block**: `components/sensors/event_ldr.md` (mit Vergleich) oder `components/sensors/event_sound.md` (einfach)
 
-Füge am Ende der richtigen Datei hinzu:
+Kategorien/Unterkategorien stehen in `components/catalog.json`.
 
-```js
-Blockly.Blocks['<block_id>'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField('<EMOJI> <Beschreibung>  Pin:')
-        .appendField(new Blockly.FieldDropdown(EXT_PINS), 'PIN');
-    this.setOutput(true, 'Number');  // oder 'Boolean' oder null für Statement-Blöcke
-    this.setColour('<FARBE>');       // #1565C0 Sensor-Wert, #0D47A1 Sensor-Ereignis, #E65100 Aktor
-    this.setTooltip('<Beschreibung für Kinder, auf Deutsch, mit KY-Nummer>');
-  }
-};
+## Schritt 2: Neue `.md`-Datei anlegen
+
+Lege `components/<sensors|actuators>/<id>.md` an. Das YAML-Frontmatter ist die Block-Definition:
+
+```yaml
+---
+id: mein_block
+blockCategory: Aktoren          # muss in components/catalog.json existieren
+subCategory: LED
+label: "💡 Mein Block"
+colour: "#E65100"               # #1565C0 Sensor-Wert, #0D47A1 Ereignis, #E65100 Aktor
+tooltip: "Beschreibung für Kinder, auf Deutsch, ggf. mit KY-Nummer"
+blockType: statement            # value | statement | event | event_simple
+# output: Boolean               # nur bei blockType: value (Number/Boolean)
+inputs:                         # gerenderte Felder (Reihenfolge = Anzeige)
+  - label: "💡 Mein Block  Pin:"
+    name: PIN
+    fieldType: pin_dropdown
+    pinSource: externalPins
+valueInputs:                    # optional, für statement/event
+  - name: SPEED
+    label: "Tempo"
+    defaultValue: 75
+    suffix: "%"                 # optionales Label hinter dem Eingang
+generator:
+  imports: ["import board", "import digitalio"]
+  defs:
+    - key: "init_${PIN}"
+      val: "_x_${PIN} = digitalio.DigitalInOut(board.${PIN})\n_x_${PIN}.direction = digitalio.Direction.OUTPUT"
+  code: "_x_${PIN}.value = ${SPEED}\n"   # statement: code | value: expression + order
+legacyGenerator: false
+---
+
+# Mein Block
+
+Kurze Beschreibung (wird im Bauteil-Katalog angezeigt).
 ```
 
-**Regeln:**
-- Für Statement-Blöcke (Aktoren, Ereignisse): `setPreviousStatement(true, null)` + `setNextStatement(true, null)` statt `setOutput`.
-- Für Ereignis-Blöcke: `appendStatementInput('DO')` mit `appendField('→ dann')`.
-- Labels: Emoji + Deutsch + minimale Konfiguration.
-- Nutze `EXT_PIN_OPTS` in `actuators.js`, `EXT_PINS` in `sensors.js`.
+**Feldtypen (`fieldType`)** werden von `block_builder.js` aufgelöst: `pin_dropdown`, `on_off_dropdown`, `op_dropdown`, `motor_dropdown`, `servo_dropdown`, `button_dropdown`, `state_dropdown`, `rgb_color_dropdown`, `number_field` (mit `default`/`min`/`max`/`precision`), `colour_picker` (mit `default`), `fixed_label` (nur Text). Braucht ein Feld andere Optionen, ergänze einen Fall in `getFieldOptions()` in `block_builder.js` (keine rohen `options`-Arrays im YAML – der einfache Parser kann sie nicht).
 
-## Schritt 2: Generator (`js/generator.js`)
+**`${FELD}`-Interpolation:** In `defs`/`code`/`expression` werden Feld- und Wert-Eingangs-Namen ersetzt. Bei `blockType: value` statt `code` ein `expression` + `order` (NONE/MEMBER/FUNCTION_CALL/ATOMIC) angeben.
 
-Lese `generator.js` kurz (letzte 50 Zeilen), um das Muster zu sehen. Füge den Generator am Ende der Datei hinzu.
+**`legacyGenerator: true`** nur, wenn der Generator JS-Logik braucht (Zugriff auf `BOARD.buttons`/`BOARD.servos`, Farb-Mappings o.ä.). Dann liefert die `.md` nur die `inputs` (zum Rendern) und der Generator bleibt handgeschrieben in `js/generator.js`. Achtung: `generator.js` lädt nach `block_builder.js` und überschreibt dort registrierte Generatoren – bei `legacyGenerator: false` darf es **keinen** gleichnamigen Generator in `generator.js` geben.
 
-**Hilfsfunktionen nutzen (nicht duplizieren):**
-- `_digitalInDef(pin, varPrefix, pull)` – für digitale Eingänge
-- `_digitalOutDef(pin, varPrefix)` – für digitale Ausgänge
+## Schritt 3: Bauen
 
-**Wert-Block (gibt Ausdruck zurück):**
-```js
-Blockly.Python['<block_id>'] = function(block) {
-  const pin = block.getFieldValue('PIN');
-  _defs['import_board']     = 'import board';
-  _defs['import_digitalio'] = 'import digitalio';  // oder analogio, etc.
-  _defs[`init_<prefix>_${pin}`] = `<init-code>`;
-  return [`<ausdruck>`, Blockly.Python.ORDER_NONE];
-};
+```
+node scripts/build_blocks.js
 ```
 
-**Statement-Block (gibt Code-String zurück):**
-```js
-Blockly.Python['<block_id>'] = function(block) {
-  const pin   = block.getFieldValue('PIN');
-  const state = block.getFieldValue('STATE');
-  _digitalOutDef(pin, '<prefix>');
-  return `_<prefix>_${pin}.value = ${state}\n`;
-};
-```
-
-**Wichtig:**
-- `_defs`-Keys müssen eindeutig sein: `'import_board'`, `'import_analogio'`, `'init_<prefix>_<pin>'`.
-- Gleicher Key = automatisch dedupliziert (kein doppelter Import).
-- Wenn ein Init-Eintrag auf einen anderen referenziert (z.B. BMP280 auf I2C), beide in EINEM `_defs`-Eintrag zusammenfassen – die Keys werden alphabetisch sortiert und Reihenfolge könnte sonst falsch sein.
-
-## Schritt 3: Toolbox-Eintrag (`js/toolbox.js`)
-
-Lese `toolbox.js`, finde die passende Kategorie (`🔵 Sensoren` oder `🟠 Aktoren`) und das richtige Label-Segment, und füge den Eintrag ein:
-
-```js
-{ kind: 'block', type: '<block_id>' }
-```
-
-Für Blöcke mit numerischen Inputs: Shadow-Block mitgeben:
-```js
-{ kind: 'block', type: '<block_id>',
-  inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 25 } } } } }
-```
+Erzeugt `js/blocks_db.js` neu. Der Toolbox-Eintrag entsteht automatisch (für `valueInputs` mit `defaultValue` wird ein Shadow-Zahlenblock ergänzt).
 
 ## Abschluss-Check
 
-Nachdem alle drei Schritte erledigt sind:
-
-1. Prüfe, ob `node --check js/blocks/sensors.js` (oder actuators.js) und `node --check js/generator.js` fehlerfrei sind.
-2. Erinnere den Nutzer: Im Chrome/Edge `index.html` öffnen → Toolbox prüfen → Block in den Workspace ziehen → Code-Vorschau prüfen → auf dem MAKER-PI-RP2040 testen.
-3. Falls die neue Library `adafruit_bmp280` oder eine andere *nicht* im Standard-Bundle ist: explizit darauf hinweisen, dass sie auf `CIRCUITPY/lib/` kopiert werden muss.
+1. `node -c js/blocks_db.js` und `node -c js/block_builder.js` müssen fehlerfrei sein.
+2. In Chrome/Edge `index.html` öffnen → Toolbox-Kategorie prüfen → Block in den Workspace ziehen → Code-Vorschau prüfen → auf dem MAKER-PI-RP2040 testen.
+3. Wenn der Block eine Bibliothek nutzt, die *nicht* im Standard-Adafruit-Bundle ist (z.B. `adafruit_bmp280`): darauf hinweisen, dass sie nach `CIRCUITPY/lib/` kopiert werden muss. (`asyncio` + `adafruit_ticks` werden ohnehin immer gebraucht.)

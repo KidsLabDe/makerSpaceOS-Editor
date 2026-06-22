@@ -623,10 +623,11 @@ Blockly.Python['actuator_rgb_led'] = function(block) {
   _digitalOutDef(pinG, 'rgbg');
   _digitalOutDef(pinB, 'rgbb');
   const [r, g, b] = _RGB_COLORS[color];
+  const py = v => v ? 'True' : 'False';
   return (
-    `_rgbr_${pinR}.value = ${r}\n` +
-    `_rgbg_${pinG}.value = ${g}\n` +
-    `_rgbb_${pinB}.value = ${b}\n`
+    `_rgbr_${pinR}.value = ${py(r)}\n` +
+    `_rgbg_${pinG}.value = ${py(g)}\n` +
+    `_rgbb_${pinB}.value = ${py(b)}\n`
   );
 };
 
@@ -644,9 +645,10 @@ Blockly.Python['actuator_2color_led'] = function(block) {
   _digitalOutDef(pinR, 'tc_r');
   _digitalOutDef(pinG, 'tc_g');
   const [r, g] = _2C_COLORS[color];
+  const py = v => v ? 'True' : 'False';
   return (
-    `_tc_r_${pinR}.value = ${r}\n` +
-    `_tc_g_${pinG}.value = ${g}\n`
+    `_tc_r_${pinR}.value = ${py(r)}\n` +
+    `_tc_g_${pinG}.value = ${py(g)}\n`
   );
 };
 

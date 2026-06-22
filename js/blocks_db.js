@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-06T21:02:46.794Z
+// Generiert: 2026-06-22T08:03:15.504Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -257,6 +257,17 @@ const BLOCKS_DB = [
     "tooltip": "Gibt Wahr zurück, wenn der Board-Taster gedrückt wird",
     "blockType": "value",
     "output": "Boolean",
+    "inputs": [
+      {
+        "label": "🔘 Taster",
+        "name": "BTN",
+        "fieldType": "button_dropdown"
+      },
+      {
+        "label": "gedrückt?",
+        "fieldType": "fixed_label"
+      }
+    ],
     "hardware": {
       "commonName": "Board-Taster B1/B2",
       "verbrauch3j": 28,
@@ -477,7 +488,22 @@ const BLOCKS_DB = [
     "label": "🔘 Wenn Taster",
     "colour": "#0D47A1",
     "tooltip": "Führt Code aus, wenn der Taster gedrückt oder losgelassen wird",
-    "blockType": "statement",
+    "blockType": "event_simple",
+    "inputs": [
+      {
+        "label": "🔘 Wenn Taster",
+        "name": "BTN",
+        "fieldType": "button_dropdown"
+      },
+      {
+        "name": "STATE",
+        "fieldType": "state_dropdown"
+      }
+    ],
+    "statementInput": {
+      "name": "DO",
+      "label": "→ dann"
+    },
     "hardware": {
       "commonName": "Board-Taster B1/B2",
       "verbrauch3j": 28,
@@ -751,6 +777,30 @@ const BLOCKS_DB = [
     "colour": "#E65100",
     "tooltip": "Lässt eine LED mehrmals blinken",
     "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "💡 LED  Pin:",
+        "name": "PIN",
+        "fieldType": "pin_dropdown",
+        "pinSource": "externalPins"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "TIMES",
+        "label": "blinken",
+        "check": "Number",
+        "defaultValue": 3
+      },
+      {
+        "name": "PAUSE",
+        "label": "mal, Pause",
+        "check": "Number",
+        "defaultValue": 0.5,
+        "suffix": "Sek"
+      }
+    ],
     "hardware": {
       "commonName": "LED (blinkend)",
       "verbrauch3j": 0,
@@ -767,6 +817,31 @@ const BLOCKS_DB = [
     "colour": "#E65100",
     "tooltip": "Setzt eine RGB-LED auf eine Farbe über drei digitale Ausgänge (KY-009, KY-016)",
     "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🌈 RGB-LED  R-Pin:",
+        "name": "PIN_R",
+        "fieldType": "pin_dropdown",
+        "pinSource": "externalPins"
+      },
+      {
+        "label": "G-Pin:",
+        "name": "PIN_G",
+        "fieldType": "pin_dropdown",
+        "pinSource": "externalPins"
+      },
+      {
+        "label": "B-Pin:",
+        "name": "PIN_B",
+        "fieldType": "pin_dropdown",
+        "pinSource": "externalPins"
+      },
+      {
+        "label": "Farbe:",
+        "name": "COLOR",
+        "fieldType": "rgb_color_dropdown"
+      }
+    ],
     "hardware": {
       "kyNumber": "KY-009",
       "commonName": "RGB-LED",
@@ -784,6 +859,22 @@ const BLOCKS_DB = [
     "colour": "#E65100",
     "tooltip": "Spielt einen Ton mit der angegebenen Frequenz (z.B. 440 = Kammerton A)",
     "blockType": "statement",
+    "inline": true,
+    "valueInputs": [
+      {
+        "name": "FREQ",
+        "label": "🔔 Buzzer  Ton:",
+        "check": "Number",
+        "defaultValue": 440
+      },
+      {
+        "name": "DURATION",
+        "label": "Hz  für",
+        "check": "Number",
+        "defaultValue": 0.5,
+        "suffix": "Sekunden"
+      }
+    ],
     "hardware": {
       "commonName": "Passiver Buzzer (Board-Pin GP22)",
       "verbrauch3j": 14,
@@ -800,6 +891,12 @@ const BLOCKS_DB = [
     "colour": "#E65100",
     "tooltip": "Schaltet den Buzzer aus",
     "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🔔 Buzzer  aus",
+        "fieldType": "fixed_label"
+      }
+    ],
     "hardware": {
       "commonName": "Buzzer aus",
       "verbrauch3j": 0,
@@ -816,6 +913,26 @@ const BLOCKS_DB = [
     "colour": "#E65100",
     "tooltip": "Dreht einen Servo-Motor auf einen bestimmten Winkel (0 bis 180 Grad)",
     "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "⚙️ Servo",
+        "name": "SERVO",
+        "fieldType": "servo_dropdown"
+      },
+      {
+        "label": "auf",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "ANGLE",
+        "check": "Number",
+        "defaultValue": 90,
+        "suffix": "Grad  (0–180)"
+      }
+    ],
     "hardware": {
       "commonName": "Servo SG90",
       "verbrauch3j": 0,
@@ -873,6 +990,26 @@ const BLOCKS_DB = [
     "colour": "#6A1B9A",
     "tooltip": "Fährt einen DC-Motor rückwärts (0–100 % Geschwindigkeit)",
     "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "🚗 Motor",
+        "name": "MOTOR",
+        "fieldType": "motor_dropdown"
+      },
+      {
+        "label": "rückwärts",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "SPEED",
+        "check": "Number",
+        "defaultValue": 75,
+        "suffix": "% Geschwindigkeit"
+      }
+    ],
     "hardware": {
       "commonName": "DC-Motor / TT-Getriebemotor",
       "verbrauch3j": 50,
@@ -889,6 +1026,26 @@ const BLOCKS_DB = [
     "colour": "#6A1B9A",
     "tooltip": "Fährt einen DC-Motor vorwärts (0–100 % Geschwindigkeit)",
     "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "🚗 Motor",
+        "name": "MOTOR",
+        "fieldType": "motor_dropdown"
+      },
+      {
+        "label": "vorwärts",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "SPEED",
+        "check": "Number",
+        "defaultValue": 75,
+        "suffix": "% Geschwindigkeit"
+      }
+    ],
     "hardware": {
       "commonName": "DC-Motor / TT-Getriebemotor",
       "verbrauch3j": 50,
@@ -905,6 +1062,17 @@ const BLOCKS_DB = [
     "colour": "#6A1B9A",
     "tooltip": "Stoppt einen DC-Motor",
     "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🛑 Motor",
+        "name": "MOTOR",
+        "fieldType": "motor_dropdown"
+      },
+      {
+        "label": "stopp",
+        "fieldType": "fixed_label"
+      }
+    ],
     "hardware": {
       "commonName": "DC-Motor / TT-Getriebemotor",
       "verbrauch3j": 50,
@@ -921,6 +1089,14 @@ const BLOCKS_DB = [
     "colour": "#006064",
     "tooltip": "Setzt alle NeoPixel-LEDs auf die gleiche Farbe",
     "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🌈 NeoPixel  alle  Farbe:",
+        "name": "COLOR",
+        "fieldType": "colour_picker",
+        "default": "#ff0000"
+      }
+    ],
     "hardware": {
       "commonName": "NeoPixel / WS2812B",
       "verbrauch3j": 0,
@@ -937,6 +1113,12 @@ const BLOCKS_DB = [
     "colour": "#006064",
     "tooltip": "Schaltet alle NeoPixel-LEDs aus",
     "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🌈 NeoPixel  alle aus",
+        "fieldType": "fixed_label"
+      }
+    ],
     "hardware": {
       "commonName": "NeoPixel / WS2812B",
       "verbrauch3j": 0,
@@ -953,6 +1135,23 @@ const BLOCKS_DB = [
     "colour": "#006064",
     "tooltip": "Setzt eine einzelne NeoPixel-LED auf eine bestimmte Farbe (1–13)",
     "blockType": "statement",
+    "inputs": [
+      {
+        "label": "🌈 NeoPixel  LED Nr.",
+        "name": "INDEX",
+        "fieldType": "number_field",
+        "default": 1,
+        "min": 1,
+        "max": 13,
+        "precision": 1
+      },
+      {
+        "label": "Farbe:",
+        "name": "COLOR",
+        "fieldType": "colour_picker",
+        "default": "#ff0000"
+      }
+    ],
     "hardware": {
       "commonName": "NeoPixel / WS2812B",
       "verbrauch3j": 0,

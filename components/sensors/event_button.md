@@ -5,7 +5,16 @@ subCategory: Ereignisse
 label: "🔘 Wenn Taster"
 colour: "#0D47A1"
 tooltip: "Führt Code aus, wenn der Taster gedrückt oder losgelassen wird"
-blockType: statement
+blockType: event_simple
+inputs:
+  - label: "🔘 Wenn Taster"
+    name: BTN
+    fieldType: button_dropdown
+  - name: STATE
+    fieldType: state_dropdown
+statementInput:
+  name: DO
+  label: "→ dann"
 hardware:
   commonName: "Board-Taster B1/B2"
   verbrauch3j: 28

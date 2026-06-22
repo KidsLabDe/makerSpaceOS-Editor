@@ -15,46 +15,60 @@ index.html           – Einstiegspunkt, lädt alle Skripte
 css/style.css        – Dunkles Theme, CSS-Variablen
 js/
   boards.js          – Board-Profile + Pin-Konstanten (BOARD global)
-  toolbox.js         – Blockly-Toolbox-Definition (TOOLBOX global)
+  toolbox.js         – Statische Toolbox-Kategorien (Steuerung, Ereignisse, Mathe …)
   blocks/
-    control.js       – SETUP- und FÜR-IMMER-Pflichtblöcke
+    control.js       – SETUP- und FÜR-IMMER-Pflichtblöcke (handgeschrieben)
     events.js        – Ereignis-Hut-Blöcke (when_*, loop_parallel) → parallele async-Aufgaben
-    sensors.js       – Sensor-Block-Definitionen (Blockly.Blocks[...])
-    actuators.js     – Aktor-Block-Definitionen
+  blocks_db.js       – GENERIERT aus components/*.md (nicht manuell bearbeiten!)
+  block_builder.js   – registriert Sensor-/Aktor-Blöcke + Generatoren aus blocks_db.js
   generator.js       – Blockly → CircuitPython Transpiler (asyncio-Multitask-Modell)
   app.js             – Workspace-Init, UI-Events
   serial.js          – Web Serial API (Raw REPL)
+components/**/*.md   – Markdown-Quelle der Sensor-/Aktor-Blöcke (Frontmatter = Block-Definition)
+scripts/build_blocks.js – baut components/*.md → js/blocks_db.js (node scripts/build_blocks.js)
 RaspberryPico_allCodes_en/  – MicroPython-Referenzdateien (nicht geladen, nur Doku)
 ```
 
-Die JS-Dateien werden direkt im Browser geladen – es gibt keinen Build-Schritt. Ein Syntaxfehler bricht die App stumm.
+Die JS-Dateien werden direkt im Browser geladen – es gibt keinen Build-Schritt für die App. Hardware-Blöcke (Sensoren/Aktoren) sind aber **markdown-getrieben**: Sie werden in `components/**/*.md` definiert und per `node scripts/build_blocks.js` nach `js/blocks_db.js` kompiliert. Ein Syntaxfehler in den geladenen JS-Dateien bricht die App stumm.
 
-## Neuen Block hinzufügen – das 3-Datei-Pattern
+## Neuen Sensor-/Aktor-Block hinzufügen – markdown-getrieben
 
-Jeder neue Block braucht Einträge in exakt drei Dateien:
+Hardware-Blöcke werden **nicht** mehr in JS-Dateien definiert, sondern als Markdown in `components/sensors/` bzw. `components/actuators/`. Eine `.md`-Datei beschreibt im YAML-Frontmatter Block-Definition, Generator und Toolbox-Eintrag in einem:
 
-1. **`js/blocks/sensors.js`** oder **`js/blocks/actuators.js`** – Block-Definition:
-   ```js
-   Blockly.Blocks['mein_block'] = {
-     init: function() { ... }
-   };
-   ```
+```yaml
+---
+id: mein_block
+blockCategory: Aktoren        # Kategorie (siehe components/catalog.json)
+subCategory: LED
+label: "💡 Mein Block"
+colour: "#E65100"
+blockType: statement          # value | statement | event | event_simple
+inputs:                       # gerenderte Felder (Reihenfolge = Anzeige)
+  - label: "💡 Mein Block  Pin:"
+    name: PIN
+    fieldType: pin_dropdown    # pin_dropdown | on_off_dropdown | op_dropdown |
+                               # motor_dropdown | servo_dropdown | button_dropdown |
+                               # state_dropdown | rgb_color_dropdown | number_field | colour_picker
+    pinSource: externalPins
+valueInputs:                  # optionale Wert-Eingänge (für statement/event)
+  - name: SPEED
+    label: "Tempo"
+    defaultValue: 75
+    suffix: "%"                # optionales Label hinter dem Slot
+generator:
+  imports: ["import board", "import digitalio"]
+  defs:
+    - key: "init_${PIN}"
+      val: "_x_${PIN} = digitalio.DigitalInOut(board.${PIN})"
+  code: "_x_${PIN}.value = ${SPEED}\n"   # oder: expression + order (für value-Blöcke)
+legacyGenerator: false        # true ⇒ Generator bleibt handgeschrieben in generator.js
+---
+```
 
-2. **`js/generator.js`** – CircuitPython-Generator (an das Ende anhängen):
-   ```js
-   Blockly.Python['mein_block'] = function(block) {
-     _defs['import_board'] = 'import board';
-     // weitere _defs-Einträge ...
-     return 'generierter_code\n';  // oder [ausdruck, ORDER_...]
-   };
-   ```
+Danach **`node scripts/build_blocks.js`** ausführen → `js/blocks_db.js` wird neu erzeugt; `block_builder.js` registriert Block, Generator und Toolbox-Eintrag automatisch.
 
-3. **`js/toolbox.js`** – Eintrag im passenden `contents`-Array:
-   ```js
-   { kind: 'block', type: 'mein_block' }
-   ```
-
-Alle drei Schritte sind Pflicht – fehlt einer, erscheint der Block nicht oder generiert keinen Code.
+- **`legacyGenerator: true`** ist der Ausweg für Generatoren, die JS-Logik brauchen (z.B. Zugriff auf `BOARD.buttons`/`BOARD.servos`, Farb-Mappings). Dann liefert die `.md` nur die `inputs` (zum Rendern), und der Generator bleibt handgeschrieben in `js/generator.js`. **Wichtig:** `generator.js` lädt nach `block_builder.js` und überschreibt dort registrierte Generatoren – bei `legacyGenerator: false` darf es daher keinen gleichnamigen Generator in `generator.js` geben.
+- **Kern-Blöcke** (SETUP, FÜR IMMER, Ereignis-Hüte) sind handgeschrieben in `js/blocks/control.js` / `events.js` + `generator.js` + Toolbox-Eintrag in `js/toolbox.js`.
 
 ## Generator-Regeln (`generator.js`)
 

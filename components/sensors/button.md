@@ -7,6 +7,12 @@ colour: "#1565C0"
 tooltip: "Gibt Wahr zurück, wenn der Board-Taster gedrückt wird"
 blockType: value
 output: Boolean
+inputs:
+  - label: "🔘 Taster"
+    name: BTN
+    fieldType: button_dropdown
+  - label: "gedrückt?"
+    fieldType: fixed_label
 hardware:
   commonName: "Board-Taster B1/B2"
   verbrauch3j: 28
