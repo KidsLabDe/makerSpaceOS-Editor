@@ -38,9 +38,10 @@ function initBlockly() {
     grid: { spacing: 20, length: 3, colour: '#d8dde8', snap: true },
   });
 
-  // Feste Pflicht-Blöcke: SETUP + FÜR IMMER (nicht löschbar, nicht verschiebbar)
-  _createFixedBlock('control_setup',  30, 30);
-  _createFixedBlock('control_forever', 30, 200);
+  // Pflicht-Startblöcke: SETUP + FÜR IMMER (nicht löschbar, aber einzeln verschiebbar)
+  // Nebeneinander platziert, damit sie sich nicht überlappen.
+  _createFixedBlock('control_setup',   40, 40);
+  _createFixedBlock('control_forever', 360, 40);
 
   // Live Code-Generierung bei jeder Änderung
   workspace.addChangeListener(updateCode);
@@ -51,8 +52,8 @@ function _createFixedBlock(type, x, y) {
   block.initSvg();
   block.render();
   block.moveBy(x, y);
-  block.setDeletable(false);
-  block.setMovable(false);
+  block.setDeletable(false);   // dürfen nicht gelöscht werden …
+  block.setMovable(true);      // … aber einzeln frei verschiebbar
 }
 
 function initCodeEditor() {
