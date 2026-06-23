@@ -582,3 +582,6 @@ html, body {
 
 /* Workspace-Hintergrund */
 .blocklyMainBackground { fill: var(--bg) !important; }
+
+/* Pin-Dropdown: Höhe begrenzen → Grove-Anschlüsse zuerst sichtbar, Einzel-Pins per Scroll */
+.blocklyDropDownContent { max-height: 300px; overflow-y: auto; }

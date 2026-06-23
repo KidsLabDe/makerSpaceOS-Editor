@@ -1,5 +1,8 @@
 // boards.js – Board-Profile und Pin-Konstanten
 
+// Trenner-Eintrag im Pin-Dropdown (Wert wird im Validator in block_builder.js abgefangen)
+const GROVE_SEP = ['────────────', '__SEP__'];
+
 const BOARD_PROFILES = {
   maker_pi_rp2040: {
     name: 'Cytron MAKER-PI-RP2040',
@@ -29,19 +32,34 @@ const BOARD_PROFILES = {
     // Roh-Pins (Fallback für pin_dropdown; nach Grove-Migration kaum noch genutzt)
     externalPins: ['GP1','GP3','GP5','GP17','GP26','GP27','GP28'],
 
+    // Alle über die Grove-Stecker herausgeführten GPIO (13 eindeutige; GP26 ist
+    // Signal von Grove 5 UND pin1 von Grove 6 → nur einmal gelistet).
+    allGrovePins: ['GP0','GP1','GP2','GP3','GP4','GP5','GP6','GP7','GP16','GP17','GP26','GP27','GP28'],
+    // ADC-fähige Pins (Grove 5/6/7-Signale)
+    analogPins:   ['GP26','GP27','GP28'],
+
     // Dropdown-Optionen [Anzeige, Wert] je nach Rolle.
     // digital/analog → Wert = Signal-Pin (GPxx); i2c/2pin → Wert = Port-ID (String).
+    // digital/analog bieten zusätzlich (per Trenner abgesetzt) einzelne GPIO-Pins an.
     groveOptions(role) {
       switch (role) {
         case 'analog':
-          return this.grovePorts.filter(p => p.analog).map(p => [p.label, p.signal]);
+          return [
+            ...this.grovePorts.filter(p => p.analog).map(p => [p.label, p.signal]),
+            GROVE_SEP,
+            ...this.analogPins.map(p => [p, p]),
+          ];
         case 'i2c':
           return this.grovePorts.filter(p => p.i2c).map(p => [p.label, String(p.id)]);
         case '2pin':
           return this.grovePorts.map(p => [p.label, String(p.id)]);
         case 'digital':
         default:
-          return this.grovePorts.map(p => [p.label, p.signal]);
+          return [
+            ...this.grovePorts.map(p => [p.label, p.signal]),
+            GROVE_SEP,
+            ...this.allGrovePins.map(p => [p, p]),
+          ];
       }
     },
 

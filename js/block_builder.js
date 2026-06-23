@@ -57,7 +57,12 @@
       } else if (inp.fieldType === 'colour_picker') {
         input.appendField(new Blockly.FieldColour(inp.default || '#ff0000'), inp.name);
       } else {
-        input.appendField(new Blockly.FieldDropdown(getFieldOptions(inp)), inp.name);
+        // Validator verwirft den Trenner-Eintrag (__SEP__) → nicht auswählbar
+        const dd = new Blockly.FieldDropdown(
+          getFieldOptions(inp),
+          v => v === '__SEP__' ? null : undefined
+        );
+        input.appendField(dd, inp.name);
       }
     }
   }
