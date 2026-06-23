@@ -1,9 +1,9 @@
 ---
 name: add-block
-description: Fügt einen neuen Blockly-Block zu CircuitBlox hinzu (markdown-getrieben über components/*.md). Nutze diesen Skill wenn der Nutzer einen neuen Sensor oder Aktor als Block implementieren möchte.
+description: Fügt einen neuen Blockly-Block zu makerSpaceOS hinzu (markdown-getrieben über components/*.md). Nutze diesen Skill wenn der Nutzer einen neuen Sensor oder Aktor als Block implementieren möchte.
 ---
 
-Sensor-/Aktor-Blöcke sind in CircuitBlox **markdown-getrieben**: Eine Datei in `components/sensors/` bzw. `components/actuators/` beschreibt Block-Definition, Generator und Toolbox-Eintrag in einem. `node scripts/build_blocks.js` kompiliert daraus `js/blocks_db.js`; `js/block_builder.js` registriert beim Laden Block, Generator und Toolbox-Eintrag automatisch.
+Sensor-/Aktor-Blöcke sind in makerSpaceOS **markdown-getrieben**: Eine Datei in `components/sensors/` bzw. `components/actuators/` beschreibt Block-Definition, Generator und Toolbox-Eintrag in einem. `node scripts/build_blocks.js` kompiliert daraus `js/blocks_db.js`; `js/block_builder.js` registriert beim Laden Block, Generator und Toolbox-Eintrag automatisch.
 
 ## Schritt 1: Vorlage ansehen
 

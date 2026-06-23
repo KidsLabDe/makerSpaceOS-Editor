@@ -1,5 +1,5 @@
 {
-  "name": "circuitblox-build",
+  "name": "makerspaceos-build",
   "private": true,
   "scripts": {
     "build": "node scripts/build_blocks.js"

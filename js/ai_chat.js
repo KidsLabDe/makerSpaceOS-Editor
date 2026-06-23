@@ -1,9 +1,9 @@
 // ai_chat.js – KI-Block-Generator (OpenRouter / Gemma)
 
-const AI_KEY_STORE    = 'circuitblox_ai_key';
-const AI_MODEL_STORE  = 'circuitblox_ai_model';
-const AI_BLOCKS_STORE = 'circuitblox_ai_blocks';
-const AI_CHAT_STORE   = 'circuitblox_ai_chat';
+const AI_KEY_STORE    = 'makerspaceos_ai_key';
+const AI_MODEL_STORE  = 'makerspaceos_ai_model';
+const AI_BLOCKS_STORE = 'makerspaceos_ai_blocks';
+const AI_CHAT_STORE   = 'makerspaceos_ai_chat';
 const AI_DEFAULT_MODEL = 'google/gemma-3-27b-it';
 
 const AI_SYSTEM_PROMPT = `Du bist ein CircuitPython-Experte für den Cytron MAKER-PI-RP2040 (RP2040, CircuitPython 8+).
@@ -122,7 +122,7 @@ async function _callOpenRouter(userMessage) {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type':  'application/json',
       'HTTP-Referer':  window.location.origin,
-      'X-Title':       'CircuitBlox',
+      'X-Title':       'makerSpaceOS',
     },
     body: JSON.stringify({ model, messages }),
   });

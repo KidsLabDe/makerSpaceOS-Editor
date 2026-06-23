@@ -1,4 +1,4 @@
-# CircuitBlox – TODO & Ideen
+# makerSpaceOS – TODO & Ideen
 
 ## ✅ Phase 2 – Serial-Verbindung (erledigt)
 - [x] Web Serial API implementiert (serial.js)

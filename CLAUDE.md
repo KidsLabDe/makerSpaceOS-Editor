@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projekt-Überblick
 
-CircuitBlox ist eine **browser-basierte Blockly-IDE**, die visuelle Blöcke in **CircuitPython**-Code für den **Cytron MAKER-PI-RP2040** (RP2040, CircuitPython) übersetzt. Kein Build-Schritt, kein npm – reine statische HTML/JS/CSS-App.
+makerSpaceOS ist eine **browser-basierte Blockly-IDE**, die visuelle Blöcke in **CircuitPython**-Code für den **Cytron MAKER-PI-RP2040** (RP2040, CircuitPython) übersetzt. Kein Build-Schritt, kein npm – reine statische HTML/JS/CSS-App.
 
 Zielgruppe: **Kinder und Einsteiger**. Alle UI-Strings und Code-Kommentare sind auf **Deutsch**.
 
@@ -80,15 +80,15 @@ Danach **`node scripts/build_blocks.js`** ausführen → `js/blocks_db.js` wird 
 - Schwebende Blöcke (kein SETUP, FÜR IMMER, `loop_parallel` oder `when_*`) werden ignoriert.
 - **Kein `time.sleep()` mehr** – Wartezeiten als `await asyncio.sleep(...)` generieren (siehe Ausführungsmodell), sonst blockiert ein Block alle parallelen Aufgaben.
 
-## Ausführungsmodell (asyncio-Multitask)
+## Ausführungsmodell (asyncio-Multitask, makerspaceos-Laufzeit)
 
-Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein kooperatives Multitasking-Programm (`generator.js`, `workspaceToCode`/`finish`):
+Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein kooperatives Multitasking-Programm. Die asyncio-Mechanik (parallele Aufgaben, Flankenerkennung beim Polling) steckt **nicht** im generierten Code, sondern in der Laufzeit-Bibliothek `lib/makerspaceos.py` (`immer` / `wenn` / `start`). Der generierte Code (`generator.js`, `workspaceToCode`/`finish`) besteht daher nur noch aus **benannten Handler-Funktionen + kurzen Registrierungszeilen** (Stil wie MakeCode):
 
-- Jeder **Top-Level-Stapel** wird zu einer eigenen `async def _taskN()`: `control_forever` und `loop_parallel` → Endlosschleife; jeder `when_*`-Hut-Block → kantengetriggerte Polling-Aufgabe (`_whenTask`, feuert einmal beim Wahr-Werden).
-- Alle Aufgaben starten parallel via `asyncio.gather()` in `async def _main()`, gestartet mit `asyncio.run(_main())`.
-- `control_setup` läuft einmal als Prolog in `_main()` (darf daher auch `await` enthalten).
-- Helfer: `_indent(code, levels)`, `_wrapLoop(body)`, `_whenTask(expr, body, poll)`. Jeder Hut-Generator gibt den **fertigen Aufgaben-Body** zurück; `workspaceToCode` sammelt sie in `_tasks` und `finish()` baut die `async def`-Hüllen.
-- Ein neuer Ereignis-Hut-Block braucht: Definition in `js/blocks/events.js`, Generator in `generator.js` (gibt `_whenTask(...)` zurück), Eintrag im `_HAT_TYPES`-Array **und** in der Toolbox-Kategorie „🎬 Ereignisse".
+- Jeder **Top-Level-Stapel** wird zu einem benannten `async def <name>()`: `control_forever` → `fuer_immer`, `loop_parallel` → `parallel[_N]`, jeder `when_*`-Hut-Block → `wenn_<typ>` (z.B. `wenn_taster_a`, `wenn_abstand`). `control_setup` → `beim_start`.
+- Registriert wird am Dateiende: `immer(fuer_immer)` (Endlosschleife), `wenn(lambda: <bedingung>, wenn_taster_a[, poll])` (kantengetriggert, feuert einmal beim Wahr-Werden), `start(beim_start)` (führt Setup einmal aus, dann laufen alle Aufgaben parallel).
+- `import asyncio`/`gather`/`run` tauchen im generierten Code **nicht mehr** auf – nur `from makerspaceos import immer, wenn, start`. `lib/makerspaceos.py` muss nach `CIRCUITPY/lib/` kopiert werden.
+- Helfer in `generator.js`: `_indent(code, levels)`, `_whenTask(name, expr, body, poll)` (liefert einen Deskriptor `{kind:'event', name, expr, body, poll}`, **kein** fertiger Code mehr). `workspaceToCode` sammelt Deskriptoren in `_tasks`; `finish()` baut daraus die `async def`-Handler + Registrierungszeilen und vergibt eindeutige Namen (Kollision → Suffix `_2`).
+- Ein neuer Ereignis-Hut-Block braucht: Definition in `js/blocks/events.js`, Generator in `generator.js` (gibt `_whenTask(name, ...)` zurück), Eintrag im `_HAT_TYPES`-Array **und** in der Toolbox-Kategorie „🎬 Ereignisse".
 
 ## Block-Design-Prinzipien
 
@@ -111,6 +111,7 @@ Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein koopera
 - **Grove-Ports liefern 3,3 V** (Schaltplan Sheet 3, VCC = +3V3), nicht 5 V. Folge: Der **Grove-LCD V4 ist 5-V-only** – an 3,3 V meldet sich I2C (0x3e) und die Beleuchtung (0x62) funktioniert, aber der Zeichen-LCD bleibt **blank** (zu wenig Kontrastspannung). **V5** (3,3 V/5 V) läuft direkt; V4 braucht 5 V an VCC. Die V5-Beleuchtung (SGM31323 @ 0x30) **antwortet nicht auf `i2c.scan()`** – zum Erkennen: 0x62 vorhanden ⇒ V4, sonst V5.
 - **adafruit_bmp280** muss manuell auf `CIRCUITPY/lib/` kopiert werden. Alle anderen (`adafruit_dht`, `neopixel`, `adafruit_motor`) sind Standard im Adafruit CircuitPython Bundle. Der Grove-Ultraschall-Block nutzt keinen Treiber mehr (Single-Pin-Messung in `generator.js`).
 - **asyncio + adafruit_ticks** werden vom generierten Code immer benötigt (Multitask-Modell) und müssen in `CIRCUITPY/lib/` liegen. Beide sind im Standard-Adafruit-Bundle; `asyncio` hängt von `adafruit_ticks` ab.
+- **`makerspaceos.py`** (Laufzeit mit `immer`/`wenn`/`start`) liegt unter `lib/` im Repo und muss nach `CIRCUITPY/lib/` kopiert werden – ohne sie scheitert jedes generierte Programm mit `ImportError`. Siehe Ausführungsmodell.
 - `RaspberryPico_allCodes_en/` enthält **MicroPython**-Referenzcode (nicht CircuitPython). Bei neuen Blöcken den Code in CircuitPython übersetzen (`digitalio`/`analogio` statt `machine`).
 
 ## Commit-Stil

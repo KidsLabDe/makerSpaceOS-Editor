@@ -2,7 +2,7 @@
 
 ## Kontext
 
-CircuitBlox erzeugte ursprünglich **eine einzige `while True:`-Schleife** (`workspaceToCode` nahm nur den *ersten* `control_forever`-Block). Die alten `event_*`-Blöcke waren nur `if`-Abfragen *innerhalb* dieser Schleife. Folge: Sobald irgendwo `time.sleep()` lief (Warte-Block, LED-blinken, Buzzer), **fror das ganze Programm ein** – eine Dauer-Animation und eine gleichzeitige Sensor-Reaktion waren unmöglich.
+makerSpaceOS erzeugte ursprünglich **eine einzige `while True:`-Schleife** (`workspaceToCode` nahm nur den *ersten* `control_forever`-Block). Die alten `event_*`-Blöcke waren nur `if`-Abfragen *innerhalb* dieser Schleife. Folge: Sobald irgendwo `time.sleep()` lief (Warte-Block, LED-blinken, Buzzer), **fror das ganze Programm ein** – eine Dauer-Animation und eine gleichzeitige Sensor-Reaktion waren unmöglich.
 
 Ziel (wie bei Lego Spike): mehrere **unabhängige „Hut"-Stapel**, die **echt nebenläufig** laufen – z. B. eine NeoPixel-Animation in einer Endlosschleife *und* parallel eine Reaktion auf einen Taster/Sensor.
 
@@ -11,7 +11,7 @@ Lösung: **kooperatives Multitasking mit `asyncio`**. Jeder Top-Level-Stapel wir
 ## Zielbild des generierten Codes
 
 ```python
-# === CircuitBlox – Generierter Code ===
+# === makerSpaceOS – Generierter Code ===
 import asyncio
 import board
 import digitalio

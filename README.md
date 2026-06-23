@@ -1,14 +1,14 @@
-# CircuitBlox
+# makerSpaceOS
 
 **Browserbasierte Blockly-IDE für CircuitPython auf dem Cytron MAKER-PI-RP2040**
 
-CircuitBlox ermöglicht es Kindern und Einsteigern, physische Elektronikprojekte zu programmieren – ohne eine einzige Zeile Code zu tippen. Per Drag & Drop werden bunte Blöcke zu einem Programm zusammengesteckt, das CircuitBlox direkt in lauffähigen CircuitPython-Code übersetzt und über eine serielle Verbindung auf den Mikrocontroller überträgt.
+makerSpaceOS ermöglicht es Kindern und Einsteigern, physische Elektronikprojekte zu programmieren – ohne eine einzige Zeile Code zu tippen. Per Drag & Drop werden bunte Blöcke zu einem Programm zusammengesteckt, das makerSpaceOS direkt in lauffähigen CircuitPython-Code übersetzt und über eine serielle Verbindung auf den Mikrocontroller überträgt.
 
 ---
 
 ## Intention
 
-Der Einstieg in Mikrocontroller-Programmierung scheitert oft an zwei Hürden: der Entwicklungsumgebung und der Syntax. CircuitBlox beseitigt beides.
+Der Einstieg in Mikrocontroller-Programmierung scheitert oft an zwei Hürden: der Entwicklungsumgebung und der Syntax. makerSpaceOS beseitigt beides.
 
 - **Kein Setup**: Die App läuft direkt im Browser – kein npm, kein Build-Schritt, keine Installation.
 - **Kein Tippen**: Blöcke statt Syntax. Kinder im Grundschul- und Mittelschulalter können sofort loslegen.
@@ -23,7 +23,7 @@ Das Projekt entstand mit dem Ziel, ein Werkzeug zu schaffen, das in AGs, Schulst
 
 ### Mikrocontroller: Cytron MAKER-PI-RP2040
 
-CircuitBlox ist auf dieses Board zugeschnitten:
+makerSpaceOS ist auf dieses Board zugeschnitten:
 
 - **RP2040**-Chip (Dual-Core ARM Cortex-M0+, 264 KB RAM)
 - **Onboard**: 2× Grove-kompatible I2C-Ports, 7× Grove-Ports (GPIO/ADC), 4× Motor-Treiber (DC + Servo), 2× RGB-NeoPixel, Piezo-Buzzer, programmierbare LEDs, USB-C
@@ -34,7 +34,7 @@ CircuitBlox ist auf dieses Board zugeschnitten:
 
 ### Sensoren & Aktoren (KY-Sensor-Set)
 
-CircuitBlox hat fertige Blöcke für folgende Komponenten:
+makerSpaceOS hat fertige Blöcke für folgende Komponenten:
 
 | Kategorie | Komponenten |
 |---|---|

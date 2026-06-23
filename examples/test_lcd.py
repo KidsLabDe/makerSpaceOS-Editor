@@ -3,7 +3,7 @@
 # So testen:
 #   1. lib/grove_rgb_lcd.py nach CIRCUITPY/lib/ kopieren
 #   2. Diese Datei als code.py auf das CIRCUITPY-Laufwerk kopieren
-#   3. Seriellen Monitor öffnen (z.B. in CircuitBlox) und Ausgabe lesen
+#   3. Seriellen Monitor öffnen (z.B. in makerSpaceOS) und Ausgabe lesen
 #
 # Bei anderem Grove-Port die Pins unten anpassen (SCL = Pin 2, SDA = Pin 1):
 #   Grove 1: GP1/GP0   Grove 2: GP3/GP2   Grove 3: GP5/GP4
@@ -38,5 +38,5 @@ print("Verwende Backlight-Adresse:", hex(rgb_addr),
 # 3) Display ansteuern
 lcd = GroveRgbLcd(i2c, rgb_addr=rgb_addr)
 lcd.set_rgb(0, 128, 64)          # türkise Beleuchtung
-lcd.set_text("Hallo\nCircuitBlox")
+lcd.set_text("Hallo\nmakerSpaceOS")
 print("Text gesendet – steht jetzt etwas auf dem Display?")

@@ -3,9 +3,32 @@
 // Greift zur Laufzeit auf globale app.js-Funktionen zu (workspace, generateCode,
 // updateCode, _createFixedBlock) – diese existieren beim Aufruf bereits.
 
-const STORAGE_CURRENT  = 'circuitblox.current';
-const STORAGE_VERSIONS = 'circuitblox.versions';
+const STORAGE_CURRENT  = 'makerspaceos.current';
+const STORAGE_VERSIONS = 'makerspaceos.versions';
 const VERSIONS_MAX     = 15;
+
+// Einmalige, nicht-destruktive Migration: alte "circuitblox.*"/"circuitblox_*"-Keys
+// auf die neuen "makerspaceos.*" kopieren. Die alten Einträge bleiben als Backup
+// erhalten, damit keine gespeicherten Programme verloren gehen.
+(function migrateLegacyStorageKeys() {
+  const map = {
+    'circuitblox.current':   'makerspaceos.current',
+    'circuitblox.versions':  'makerspaceos.versions',
+    'circuitblox_ai_key':    'makerspaceos_ai_key',
+    'circuitblox_ai_model':  'makerspaceos_ai_model',
+    'circuitblox_ai_blocks': 'makerspaceos_ai_blocks',
+    'circuitblox_ai_chat':   'makerspaceos_ai_chat',
+  };
+  try {
+    for (const oldKey in map) {
+      const newKey = map[oldKey];
+      if (localStorage.getItem(newKey) === null) {
+        const val = localStorage.getItem(oldKey);
+        if (val !== null) localStorage.setItem(newKey, val);
+      }
+    }
+  } catch (e) { /* localStorage evtl. nicht verfügbar – ignorieren */ }
+})();
 
 let _saveTimer = null;
 

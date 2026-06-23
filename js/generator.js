@@ -4,8 +4,8 @@ Blockly.Python.INDENT = '    ';
 
 // Modul-globale Sammel-Variablen (reset vor jeder Generierung)
 var _defs      = Object.create(null);  // imports + initialisierungen (var = global für block_builder.js)
-var _setupCode = '';                   // Code aus dem SETUP-Block (Prolog in _main)
-var _tasks     = [];                   // Task-Bodys – je einer wird zu einer async-Aufgabe
+var _setupCode = '';                   // Code aus dem SETUP-Block (Prolog in beim_start)
+var _tasks     = [];                   // Task-Deskriptoren {kind, name, body, expr?, poll?} → je ein Handler
 
 // Top-Level-Ereignis-Blöcke (Hut-Stapel) → je eine kantengetriggerte async-Aufgabe
 var _HAT_TYPES = [
@@ -26,13 +26,16 @@ Blockly.Python.workspaceToCode = function(workspace) {
   const setupBlock = workspace.getBlocksByType('control_setup', false)[0];
   if (setupBlock) Blockly.Python['control_setup'].call(Blockly.Python, setupBlock);
 
-  // Jeder Schleifen-Stapel (FÜR IMMER + zusätzliche parallele Schleifen) → eine Aufgabe
-  const loops = workspace.getBlocksByType('control_forever', false)
-    .concat(workspace.getBlocksByType('loop_parallel', false));
-  for (const b of loops) {
+  // Jeder Schleifen-Stapel → ein Handler, der per immer(...) endlos läuft.
+  for (const b of workspace.getBlocksByType('control_forever', false)) {
     const body = Blockly.Python.statementToCode(b, 'DO') || '    pass\n';
-    _tasks.push(_wrapLoop(body));
+    _tasks.push({ kind: 'loop', name: 'fuer_immer', body });
   }
+  const parallel = workspace.getBlocksByType('loop_parallel', false);
+  parallel.forEach((b, i) => {
+    const body = Blockly.Python.statementToCode(b, 'DO') || '    pass\n';
+    _tasks.push({ kind: 'loop', name: parallel.length > 1 ? `parallel_${i + 1}` : 'parallel', body });
+  });
 
   // Jeder Ereignis-Hut-Block → eine kantengetriggerte Aufgabe
   for (const t of _HAT_TYPES)
@@ -59,30 +62,17 @@ function _dedent(code) {
   return code.split('\n').map(l => l.startsWith(pad) ? l.slice(pad.length) : l).join('\n');
 }
 
-// Schleifen-Body in eine Endlosschleife packen; abschließendes Yield verhindert,
-// dass eine Aufgabe ohne eigenes await die anderen aushungert.
-function _wrapLoop(body) {
-  return 'while True:\n' + body + '    await asyncio.sleep(0)\n';
-}
-
-// Kantengetriggerte Polling-Aufgabe: Body läuft einmal beim Wahr-Werden der Bedingung.
-function _whenTask(activeExpr, body, poll) {
-  return (
-    '_prev = False\n' +
-    'while True:\n' +
-    '    _now = ' + activeExpr + '\n' +
-    '    if _now and not _prev:\n' +
-    _indent(body, 1) +
-    '    _prev = _now\n' +
-    '    await asyncio.sleep(' + poll + ')\n'
-  );
+// Ereignis-Deskriptor: Bedingung (für wenn(lambda: ...)) + Handler-Body + Poll-Abstand.
+// Die Polling-/Flankenlogik selbst liegt in der makerspaceos-Laufzeit (wenn()).
+function _whenTask(name, activeExpr, body, poll) {
+  return { kind: 'event', name, expr: activeExpr, body, poll };
 }
 
 // finish(): erzeugt den finalen formatierten Code
 Blockly.Python.finish = function() {
-  // async-Hülle, sobald es Aufgaben gibt oder der Setup-Code selbst await nutzt
+  // makerspaceos-Laufzeit, sobald es Aufgaben gibt oder der Setup-Code selbst await nutzt
+  const hasSetup = !!_setupCode.trim();
   const hasAsync = _tasks.length > 0 || /\bawait\b/.test(_setupCode);
-  if (hasAsync) _defs['import_asyncio'] = 'import asyncio';
 
   const imports = [];
   const inits   = [];
@@ -92,27 +82,43 @@ Blockly.Python.finish = function() {
     else inits.push(val);
   }
 
-  let result = '# === CircuitBlox – Generierter Code ===\n';
+  let result = '# === makerSpaceOS – Generierter Code ===\n';
+  if (hasAsync) result += 'from makerspaceos import immer, wenn, start\n';
   if (imports.length) result += imports.join('\n') + '\n';
   if (inits.length)   result += '\n# --- Initialisierungen ---\n' + inits.join('\n') + '\n';
 
   if (hasAsync) {
-    if (_tasks.length) {
-      result += '\n# --- Aufgaben (laufen parallel) ---\n';
-      _tasks.forEach((body, i) => {
-        result += `async def _task${i}():\n` + _indent(body, 1) + '\n';
-      });
-    }
-    result += '# --- Start ---\nasync def _main():\n';
-    if (_setupCode.trim()) result += _setupCode;          // bereits 1 Ebene eingerückt
-    if (_tasks.length) {
-      const names = _tasks.map((_, i) => `_task${i}()`).join(', ');
-      result += `    await asyncio.gather(${names})\n`;
-    } else if (!_setupCode.trim()) {
-      result += '    pass\n';
-    }
-    result += '\nasyncio.run(_main())\n';
-  } else if (_setupCode.trim()) {
+    // Eindeutige Handler-Namen vergeben (gleiche Block-Typen → Suffix _2, _3 …)
+    const used = Object.create(null);
+    const unique = (base) => {
+      let n = base, i = 2;
+      while (used[n]) n = `${base}_${i++}`;
+      used[n] = true;
+      return n;
+    };
+    if (hasSetup) used['beim_start'] = true;
+    _tasks.forEach(t => { t.fn = unique(t.name); });
+
+    // --- Handler-Funktionen (das eigentliche Programm) ---
+    result += '\n# --- Dein Programm ---\n';
+    if (hasSetup) result += 'async def beim_start():\n' + _setupCode + '\n';  // bereits 1 Ebene eingerückt
+    _tasks.forEach(t => {
+      // body kommt aus statementToCode → bereits 1 Ebene eingerückt
+      result += `async def ${t.fn}():\n${t.body}\n`;
+    });
+
+    // --- Registrierung + Start ---
+    result += '# --- Start ---\n';
+    _tasks.forEach(t => {
+      if (t.kind === 'loop') {
+        result += `immer(${t.fn})\n`;
+      } else {
+        const poll = (t.poll && String(t.poll) !== '0.02') ? `, ${t.poll}` : '';
+        result += `wenn(lambda: ${t.expr}, ${t.fn}${poll})\n`;
+      }
+    });
+    result += `start(${hasSetup ? 'beim_start' : ''})\n`;
+  } else if (hasSetup) {
     // Keine Aufgaben, kein await: Setup einmalig auf Modulebene ausführen
     result += '\n# --- Setup (einmalig) ---\n' + _dedent(_setupCode);
   }
@@ -720,9 +726,16 @@ Blockly.Python['actuator_lcd'] = function(block) {
   return `_lcd.set_rgb(${rgb})\n_lcd.set_text(${text})\n`;
 };
 
-// ── Ereignis-Hut-Blöcke (je eine parallele async-Aufgabe) ─────────────────────
-// Diese Generatoren geben einen fertigen Aufgaben-Body zurück; workspaceToCode
-// packt jeden in eine eigene `async def _taskN()` (siehe oben).
+// ── Ereignis-Hut-Blöcke (je ein benannter Handler) ───────────────────────────
+// Diese Generatoren geben einen Deskriptor {name, expr, body, poll} zurück;
+// finish() baut daraus `async def <name>():` + `wenn(lambda: <expr>, <name>)`.
+
+// Lesbare deutsche Handler-Namen je Sensor-Typ (Basis; wird bei Bedarf nummeriert)
+const _WHEN_NAMES = {
+  obstacle: 'wenn_hindernis', line: 'wenn_linie',     tilt:  'wenn_neigung',
+  mag:      'wenn_magnet',    flame: 'wenn_flamme',    sound: 'wenn_geraeusch',
+  touch:    'wenn_beruehrung', vib:  'wenn_vibration',
+};
 
 // Gemeinsamer Helfer für digitale Trigger-Sensoren
 function _whenDigital(block, prefix, pull, activeLow) {
@@ -730,7 +743,7 @@ function _whenDigital(block, prefix, pull, activeLow) {
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _digitalInDef(pin, prefix, pull);
   const expr = activeLow ? `(not _${prefix}_${pin}.value)` : `_${prefix}_${pin}.value`;
-  return _whenTask(expr, body, '0.02');
+  return _whenTask(_WHEN_NAMES[prefix] || `wenn_${prefix}`, expr, body, '0.02');
 }
 
 Blockly.Python['when_button'] = function(block) {
@@ -744,7 +757,7 @@ Blockly.Python['when_button'] = function(block) {
     `_btn_${btn} = digitalio.DigitalInOut(board.${pin})\n` +
     `_btn_${btn}.switch_to_input(pull=digitalio.Pull.UP)`;
   const expr = state === 'pressed' ? `(not _btn_${btn}.value)` : `_btn_${btn}.value`;
-  return _whenTask(expr, body, '0.02');
+  return _whenTask(`wenn_taster_${String(btn).toLowerCase()}`, expr, body, '0.02');
 };
 
 Blockly.Python['when_obstacle']  = function(b) { return _whenDigital(b, 'obstacle', 'DOWN', true);  };
@@ -762,7 +775,7 @@ Blockly.Python['when_distance'] = function(block) {
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _groveSonarDef();
-  return _whenTask(`(_grove_sonar(board.${sig}) ${op} ${val})`, body, '0.05');
+  return _whenTask('wenn_abstand', `(_grove_sonar(board.${sig}) ${op} ${val})`, body, '0.05');
 };
 
 Blockly.Python['when_light'] = function(block) {
@@ -773,7 +786,7 @@ Blockly.Python['when_light'] = function(block) {
   _defs['import_board']    = 'import board';
   _defs['import_analogio'] = 'import analogio';
   _defs[`init_ldr_${pin}`] = `_ldr_${pin} = analogio.AnalogIn(board.${pin})`;
-  return _whenTask(`(round(_ldr_${pin}.value / 65535 * 100) ${op} ${val})`, body, '0.05');
+  return _whenTask('wenn_licht', `(round(_ldr_${pin}.value / 65535 * 100) ${op} ${val})`, body, '0.05');
 };
 
 Blockly.Python['when_temperature'] = function(block) {
@@ -784,5 +797,5 @@ Blockly.Python['when_temperature'] = function(block) {
   _defs['import_board'] = 'import board';
   _defs['import_dht']   = 'import adafruit_dht';
   _defs[`init_dht_${pin}`] = `_dht_${pin} = adafruit_dht.DHT22(board.${pin})`;
-  return _whenTask(`(_dht_${pin}.temperature ${op} ${val})`, body, '1');
+  return _whenTask('wenn_temperatur', `(_dht_${pin}.temperature ${op} ${val})`, body, '1');
 };

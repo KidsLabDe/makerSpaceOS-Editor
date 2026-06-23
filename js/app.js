@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initBlockly() {
-  const cbTheme = Blockly.Theme.defineTheme('circuitblox', {
+  const cbTheme = Blockly.Theme.defineTheme('makerspaceos', {
     base: Blockly.Themes.Classic,
     fontStyle: { family: "'Segoe UI', system-ui, sans-serif", weight: '600', size: 13 },
     componentStyles: {

@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-22T12:54:33.011Z
+// Generiert: 2026-06-23T08:01:28.122Z
 
 const BLOCKS_CATALOG = {
   "categories": [
