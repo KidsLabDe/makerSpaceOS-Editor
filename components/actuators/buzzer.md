@@ -3,7 +3,7 @@ id: actuator_buzzer
 blockCategory: Aktoren
 subCategory: Ton
 label: "🔔 Buzzer Ton"
-colour: "#E65100"
+colour: "#E98685"
 tooltip: "Spielt einen Ton mit der angegebenen Frequenz (z.B. 440 = Kammerton A)"
 blockType: statement
 inline: true

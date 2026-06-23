@@ -3,7 +3,7 @@ id: neopixel_set
 blockCategory: NeoPixel
 subCategory: ""
 label: "🌈 NeoPixel LED Nr."
-colour: "#006064"
+colour: "#E24D3D"
 tooltip: "Setzt eine einzelne NeoPixel-LED auf eine bestimmte Farbe (1–13)"
 blockType: statement
 inputs:

@@ -3,7 +3,7 @@ id: event_ultrasonic
 blockCategory: Sensoren
 subCategory: Ereignisse
 label: "📡 Wenn Abstand"
-colour: "#0D47A1"
+colour: "#F39A1B"
 tooltip: "Führt Code aus, wenn der Abstand einen Wert überschreitet/unterschreitet"
 blockType: event
 inline: true

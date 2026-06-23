@@ -3,7 +3,7 @@ id: sensor_ultrasonic
 blockCategory: Sensoren
 subCategory: Abstand & Licht
 label: "📡 Abstand (cm)"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Misst den Abstand in cm mit dem Grove-Ultraschall-Ranger (ein Signal-Pin)"
 blockType: value
 output: Number

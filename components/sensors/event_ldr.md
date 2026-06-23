@@ -3,7 +3,7 @@ id: event_ldr
 blockCategory: Sensoren
 subCategory: Ereignisse
 label: "☀️ Wenn Helligkeit"
-colour: "#0D47A1"
+colour: "#F39A1B"
 tooltip: "Führt Code aus, wenn die Helligkeit einen Wert überschreitet/unterschreitet"
 blockType: event
 inline: true

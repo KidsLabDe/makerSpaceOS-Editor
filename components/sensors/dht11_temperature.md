@@ -3,7 +3,7 @@ id: sensor_dht11_temperature
 blockCategory: Sensoren
 subCategory: Temperatur & Feuchte
 label: "🌡️ DHT11 Temperatur (°C)"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Liest die Temperatur in Grad Celsius vom DHT11 Sensor (KY-015)"
 blockType: value
 output: Number

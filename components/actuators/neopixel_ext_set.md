@@ -3,7 +3,7 @@ id: neopixel_ext_set
 blockCategory: NeoPixel
 subCategory: ""
 label: "🌈 Streifen LED setzen"
-colour: "#006064"
+colour: "#E24D3D"
 tooltip: "Setzt eine einzelne LED eines externen NeoPixel-Streifens am Grove-Port"
 blockType: statement
 inputs:

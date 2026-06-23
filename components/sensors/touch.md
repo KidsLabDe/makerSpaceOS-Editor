@@ -3,7 +3,7 @@ id: sensor_touch
 blockCategory: Sensoren
 subCategory: Digital-Sensoren
 label: "👆 Berührt?"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Gibt Wahr zurück, wenn der Berührungssensor berührt wird (KY-036)"
 blockType: value
 output: Boolean

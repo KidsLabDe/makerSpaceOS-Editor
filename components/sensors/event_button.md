@@ -3,7 +3,7 @@ id: event_button
 blockCategory: Sensoren
 subCategory: Ereignisse
 label: "🔘 Wenn Taster"
-colour: "#0D47A1"
+colour: "#F39A1B"
 tooltip: "Führt Code aus, wenn der Taster gedrückt oder losgelassen wird"
 blockType: event_simple
 inputs:

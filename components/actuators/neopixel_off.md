@@ -3,7 +3,7 @@ id: neopixel_off
 blockCategory: NeoPixel
 subCategory: ""
 label: "🌈 NeoPixel alle aus"
-colour: "#006064"
+colour: "#E24D3D"
 tooltip: "Schaltet alle NeoPixel-LEDs aus"
 blockType: statement
 inputs:

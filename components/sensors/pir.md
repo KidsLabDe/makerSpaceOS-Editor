@@ -3,7 +3,7 @@ id: sensor_pir
 blockCategory: Sensoren
 subCategory: Digital-Sensoren
 label: "🚶 Bewegung erkannt?"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Gibt Wahr zurück, wenn der PIR-Sensor eine Bewegung erkennt (HC-SR501)"
 blockType: value
 output: Boolean

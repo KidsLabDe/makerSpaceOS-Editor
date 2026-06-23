@@ -3,7 +3,7 @@ id: neopixel_ext_off
 blockCategory: NeoPixel
 subCategory: ""
 label: "🌈 Streifen aus"
-colour: "#006064"
+colour: "#E24D3D"
 tooltip: "Schaltet alle LEDs eines externen NeoPixel-Streifens am Grove-Port aus"
 blockType: statement
 inputs:

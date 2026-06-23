@@ -3,7 +3,7 @@ id: event_sound
 blockCategory: Sensoren
 subCategory: Ereignisse
 label: "🔊 Wenn Geräusch erkannt"
-colour: "#0D47A1"
+colour: "#F39A1B"
 tooltip: "Führt Code aus, wenn der Mikrofon-Sensor ein Geräusch über dem Schwellwert erkennt"
 blockType: event_simple
 inputs:

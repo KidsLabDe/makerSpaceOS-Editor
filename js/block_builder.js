@@ -110,7 +110,7 @@
         block.setNextStatement(true, null);
       }
 
-      block.setColour(def.colour || '#1565C0');
+      block.setColour(def.colour || '#2563EB');
       if (def.tooltip) block.setTooltip(def.tooltip);
       if (def.inline) block.setInputsInline(true);
     };

@@ -3,7 +3,7 @@ id: actuator_led
 blockCategory: Aktoren
 subCategory: LED
 label: "💡 LED"
-colour: "#E65100"
+colour: "#E98685"
 tooltip: "Schaltet eine LED ein oder aus"
 blockType: statement
 inputs:

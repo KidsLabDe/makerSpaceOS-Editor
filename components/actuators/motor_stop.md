@@ -3,7 +3,7 @@ id: actuator_motor_stop
 blockCategory: Motor
 subCategory: ""
 label: "🛑 Motor stopp"
-colour: "#6A1B9A"
+colour: "#E24D3D"
 tooltip: "Stoppt einen DC-Motor"
 blockType: statement
 inputs:

@@ -13,7 +13,7 @@ Antworte NUR mit einem JSON-Objekt in diesem exakten Format – kein Text davor 
 {
   "label": "🌈 Regenbogen-Animation",
   "tooltip": "Spielt eine Regenbogen-Animation auf den NeoPixel-LEDs",
-  "colour": "#006064",
+  "colour": "#E24D3D",
   "functionName": "regenbogen_animation",
   "imports": ["import board", "import neopixel", "import time"],
   "inits": {
@@ -69,7 +69,7 @@ function _registerAIBlock(def) {
       this.appendDummyInput().appendField(def.label || def.functionName);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(def.colour || '#7c6af7');
+      this.setColour(def.colour || '#A57BC3');
       this.setTooltip(def.tooltip || '');
     }
   };
@@ -90,8 +90,8 @@ function _refreshAIToolboxVar() {
   window.AI_BLOCKS_TOOLBOX = _aiBlocks.length
     ? [{
         kind:     'category',
-        name:     '🤖 KI-Blöcke',
-        colour:   '#7c6af7',
+        name:     'KI-Blöcke',
+        colour:   '#A57BC3',
         contents: _aiBlocks.map(d => ({ kind: 'block', type: 'ai_' + d.functionName })),
       }]
     : [];

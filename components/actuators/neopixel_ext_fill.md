@@ -3,7 +3,7 @@ id: neopixel_ext_fill
 blockCategory: NeoPixel
 subCategory: ""
 label: "🌈 Streifen ganz füllen"
-colour: "#006064"
+colour: "#E24D3D"
 tooltip: "Setzt alle LEDs eines externen NeoPixel-Streifens am Grove-Port auf eine Farbe"
 blockType: statement
 inputs:

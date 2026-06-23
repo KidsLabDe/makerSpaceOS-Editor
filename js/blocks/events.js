@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const EVENT_COLOUR = '#0D47A1';   // Ereignis-Blau (siehe CLAUDE.md)
+  const EVENT_COLOUR = '#F39A1B';   // Ereignis-Blau (siehe CLAUDE.md)
 
   // ── Feld-Helfer (jeweils frische Field-Instanzen pro Block) ─────────────────
 

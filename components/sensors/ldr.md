@@ -3,7 +3,7 @@ id: sensor_ldr
 blockCategory: Sensoren
 subCategory: Abstand & Licht
 label: "☀️ Helligkeit (0–100%)"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Liest die Helligkeit in Prozent (0 = dunkel, 100 = hell)"
 blockType: value
 output: Number

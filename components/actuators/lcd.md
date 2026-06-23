@@ -3,7 +3,7 @@ id: actuator_lcd
 blockCategory: Anzeige
 subCategory: ""
 label: "📟 LCD anzeigen"
-colour: "#00838F"
+colour: "#E24D3D"
 tooltip: "Zeigt Text auf dem Grove-LCD RGB Backlight an und setzt die Hintergrundfarbe"
 blockType: statement
 inline: false

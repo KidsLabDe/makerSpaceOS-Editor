@@ -3,7 +3,7 @@ id: sensor_dht11_humidity
 blockCategory: Sensoren
 subCategory: Temperatur & Feuchte
 label: "💧 DHT11 Luftfeuchte (%)"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Liest die Luftfeuchtigkeit in % vom DHT11 Sensor (KY-015)"
 blockType: value
 output: Number

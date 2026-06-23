@@ -3,7 +3,7 @@ id: sensor_button
 blockCategory: Sensoren
 subCategory: Digital-Sensoren
 label: "🔘 Board-Taster"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Gibt Wahr zurück, wenn der Board-Taster gedrückt wird"
 blockType: value
 output: Boolean

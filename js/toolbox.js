@@ -4,8 +4,8 @@
 const TOOLBOX_STATIC_CONTENTS = [
   {
     kind: 'category',
-    name: '🔁 Steuerung',
-    colour: '#546E7A',
+    name: 'Steuerung',
+    colour: '#A57BC3',
     contents: [
       { kind: 'block', type: 'control_wait',
         inputs: { SECONDS: { shadow: { type: 'math_number', fields: { NUM: 1 } } } } },
@@ -20,8 +20,8 @@ const TOOLBOX_STATIC_CONTENTS = [
   { kind: 'sep' },
   {
     kind: 'category',
-    name: '🎬 Ereignisse',
-    colour: '#0D47A1',
+    name: 'Ereignisse',
+    colour: '#F39A1B',
     contents: [
       { kind: 'block', type: 'loop_parallel' },
       { kind: 'sep' },
@@ -46,8 +46,8 @@ const TOOLBOX_STATIC_CONTENTS = [
   { kind: 'sep' },
   {
     kind: 'category',
-    name: '📐 Mathematik',
-    colour: '#1565C0',
+    name: 'Mathematik',
+    colour: '#2563EB',
     contents: [
       { kind: 'block', type: 'math_number' },
       { kind: 'block', type: 'math_arithmetic' },
@@ -68,8 +68,8 @@ const TOOLBOX_STATIC_CONTENTS = [
   },
   {
     kind: 'category',
-    name: '🔤 Text',
-    colour: '#00695C',
+    name: 'Text',
+    colour: '#4AB8A6',
     contents: [
       { kind: 'block', type: 'text' },
       { kind: 'block', type: 'text_join' },
@@ -78,8 +78,8 @@ const TOOLBOX_STATIC_CONTENTS = [
   },
   {
     kind: 'category',
-    name: '⚡ Logik',
-    colour: '#4E342E',
+    name: 'Logik',
+    colour: '#4FBFE8',
     contents: [
       { kind: 'block', type: 'logic_compare' },
       { kind: 'block', type: 'logic_operation' },
@@ -89,8 +89,8 @@ const TOOLBOX_STATIC_CONTENTS = [
   },
   {
     kind: 'category',
-    name: '📦 Variablen',
-    colour: '#880E4F',
+    name: 'Variablen',
+    colour: '#E8C534',
     custom: 'VARIABLE',
   },
 ];

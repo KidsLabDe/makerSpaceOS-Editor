@@ -2,8 +2,8 @@
   "categories": [
     {
       "id": "Sensoren",
-      "label": "🔵 Sensoren",
-      "colour": "#1565C0",
+      "label": "Sensoren",
+      "colour": "#2563EB",
       "subCategories": [
         "Temperatur & Feuchte",
         "Druck & I2C",
@@ -16,26 +16,26 @@
     },
     {
       "id": "Aktoren",
-      "label": "🟠 Aktoren",
-      "colour": "#E65100",
+      "label": "Aktoren",
+      "colour": "#E98685",
       "subCategories": ["LED", "Ton", "Weitere"]
     },
     {
       "id": "Anzeige",
-      "label": "📟 Anzeige",
-      "colour": "#00838F",
+      "label": "Anzeige",
+      "colour": "#E24D3D",
       "subCategories": []
     },
     {
       "id": "Motor",
-      "label": "🟣 Motor",
-      "colour": "#6A1B9A",
+      "label": "Motor",
+      "colour": "#E24D3D",
       "subCategories": []
     },
     {
       "id": "NeoPixel",
-      "label": "🌈 NeoPixel",
-      "colour": "#006064",
+      "label": "NeoPixel",
+      "colour": "#E24D3D",
       "subCategories": []
     }
   ]

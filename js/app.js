@@ -15,16 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
 function initBlockly() {
   const cbTheme = Blockly.Theme.defineTheme('makerspaceos', {
     base: Blockly.Themes.Classic,
-    fontStyle: { family: "'Segoe UI', system-ui, sans-serif", weight: '600', size: 13 },
+    fontStyle: { family: "'Inter', system-ui, sans-serif", weight: '600', size: 13 },
     componentStyles: {
-      workspaceBackgroundColour: '#f4f6fb',
-      toolboxBackgroundColour:   '#1e1e2e',
-      toolboxForegroundColour:   '#e0e0e0',
-      flyoutBackgroundColour:    '#252538',
-      flyoutForegroundColour:    '#d0d0d0',
+      workspaceBackgroundColour: '#FBF8F3',
+      toolboxBackgroundColour:   '#ffffff',
+      toolboxForegroundColour:   '#1e293b',
+      flyoutBackgroundColour:    '#F3EDE1',
+      flyoutForegroundColour:    '#1e293b',
       flyoutOpacity:             1,
-      scrollbarColour:           '#444466',
-      scrollbarOpacity:          0.6,
+      scrollbarColour:           '#cfc7b5',
+      scrollbarOpacity:          0.7,
     },
   });
 
@@ -35,7 +35,7 @@ function initBlockly() {
     scrollbars: true,
     trashcan: true,
     zoom: { controls: true, wheel: true, startScale: 1.0 },
-    grid: { spacing: 20, length: 3, colour: '#d8dde8', snap: true },
+    grid: { spacing: 22, length: 3, colour: '#E3DCCB', snap: true },
   });
 
   // Zuletzt bearbeiteten Stand wiederherstellen, sonst Pflichtblöcke neu anlegen.

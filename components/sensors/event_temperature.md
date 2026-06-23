@@ -3,7 +3,7 @@ id: event_temperature
 blockCategory: Sensoren
 subCategory: Ereignisse
 label: "🌡️ Wenn Temperatur"
-colour: "#0D47A1"
+colour: "#F39A1B"
 tooltip: "Führt Code aus, wenn die Temperatur einen Wert überschreitet/unterschreitet"
 blockType: event
 inline: true

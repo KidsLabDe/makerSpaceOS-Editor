@@ -3,7 +3,7 @@ id: sensor_sound
 blockCategory: Sensoren
 subCategory: Digital-Sensoren
 label: "🔊 Geräusch erkannt?"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Gibt Wahr zurück, wenn der Mikrofon-Sensor ein Geräusch über dem Schwellwert erkennt (KY-037, KY-038)"
 blockType: value
 output: Boolean

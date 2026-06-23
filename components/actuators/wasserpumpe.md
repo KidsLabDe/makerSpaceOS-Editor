@@ -3,7 +3,7 @@ id: actuator_wasserpumpe
 blockCategory: Aktoren
 subCategory: Weitere
 label: "💧 Wasserpumpe"
-colour: "#E65100"
+colour: "#E98685"
 tooltip: "Schaltet eine Mini-Tauchpumpe ein oder aus (über Relais oder Motorkanal)"
 blockType: statement
 inputs:

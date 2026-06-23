@@ -3,7 +3,7 @@ id: sensor_taster
 blockCategory: Sensoren
 subCategory: Digital-Sensoren
 label: "🔘 Taster gedrückt?"
-colour: "#1565C0"
+colour: "#2563EB"
 tooltip: "Gibt Wahr zurück, wenn der externe Taster an einem beliebigen Pin gedrückt wird (KY-004)"
 blockType: value
 output: Boolean

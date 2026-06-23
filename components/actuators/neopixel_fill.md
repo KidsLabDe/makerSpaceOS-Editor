@@ -3,7 +3,7 @@ id: neopixel_fill
 blockCategory: NeoPixel
 subCategory: ""
 label: "🌈 NeoPixel alle"
-colour: "#006064"
+colour: "#E24D3D"
 tooltip: "Setzt alle NeoPixel-LEDs auf die gleiche Farbe"
 blockType: statement
 inputs:
