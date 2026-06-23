@@ -23,7 +23,7 @@
 
   Blockly.Blocks['loop_parallel'] = {
     init: function () {
-      this.appendDummyInput().appendField('🔁  Schleife (läuft parallel)');
+      this.appendDummyInput().appendField('Schleife (läuft parallel)');
       this.appendStatementInput('DO');
       this.setColour(EVENT_COLOUR);
       this.setTooltip('Wiederholt sich endlos – läuft gleichzeitig zu anderen Stapeln');
@@ -47,21 +47,21 @@
     };
   }
 
-  digitalHat('when_obstacle',  '🚧 Wenn Hindernis erkannt',   'Startet, sobald ein Hindernis erkannt wird');
-  digitalHat('when_line',      '⊡ Wenn Linie erkannt',        'Startet, sobald eine Linie erkannt wird');
-  digitalHat('when_tilt',      '📐 Wenn geneigt',             'Startet, sobald der Sensor geneigt wird');
-  digitalHat('when_magnetic',  '🧲 Wenn Magnetfeld erkannt',  'Startet, sobald ein Magnetfeld erkannt wird');
-  digitalHat('when_flame',     '🔥 Wenn Flamme erkannt',      'Startet, sobald eine Flamme erkannt wird');
-  digitalHat('when_sound',     '🔊 Wenn Geräusch erkannt',    'Startet, sobald ein Geräusch erkannt wird');
-  digitalHat('when_touch',     '👆 Wenn berührt',             'Startet, sobald der Sensor berührt wird');
-  digitalHat('when_vibration', '💥 Wenn Erschütterung',       'Startet bei einer Erschütterung');
+  digitalHat('when_obstacle',  'Wenn Hindernis erkannt',   'Startet, sobald ein Hindernis erkannt wird');
+  digitalHat('when_line',      'Wenn Linie erkannt',        'Startet, sobald eine Linie erkannt wird');
+  digitalHat('when_tilt',      'Wenn geneigt',             'Startet, sobald der Sensor geneigt wird');
+  digitalHat('when_magnetic',  'Wenn Magnetfeld erkannt',  'Startet, sobald ein Magnetfeld erkannt wird');
+  digitalHat('when_flame',     'Wenn Flamme erkannt',      'Startet, sobald eine Flamme erkannt wird');
+  digitalHat('when_sound',     'Wenn Geräusch erkannt',    'Startet, sobald ein Geräusch erkannt wird');
+  digitalHat('when_touch',     'Wenn berührt',             'Startet, sobald der Sensor berührt wird');
+  digitalHat('when_vibration', 'Wenn Erschütterung',       'Startet bei einer Erschütterung');
 
   // ── Taster-Hut (mit gedrückt/losgelassen) ───────────────────────────────────
 
   Blockly.Blocks['when_button'] = {
     init: function () {
       this.appendStatementInput('DO')
-          .appendField('🔘 Wenn Taster')
+          .appendField('Wenn Taster')
           .appendField(buttonField(), 'BTN')
           .appendField(stateField(), 'STATE')
           .appendField('→ dann');
@@ -76,7 +76,7 @@
     init: function () {
       this.appendValueInput('VALUE')
           .setCheck('Number')
-          .appendField('📡 Wenn Abstand  Port:')
+          .appendField('Wenn Abstand  Port:')
           .appendField(groveField('digital'), 'SIG')
           .appendField(opField(), 'OP');
       this.appendStatementInput('DO').appendField('cm → dann');
@@ -90,7 +90,7 @@
     init: function () {
       this.appendValueInput('VALUE')
           .setCheck('Number')
-          .appendField('☀️ Wenn Helligkeit  Port:')
+          .appendField('Wenn Helligkeit  Port:')
           .appendField(groveField('analog'), 'PIN')
           .appendField(opField(), 'OP');
       this.appendStatementInput('DO').appendField('% → dann');
@@ -104,7 +104,7 @@
     init: function () {
       this.appendValueInput('VALUE')
           .setCheck('Number')
-          .appendField('🌡️ Wenn Temperatur  Port:')
+          .appendField('Wenn Temperatur  Port:')
           .appendField(groveField('digital'), 'PIN')
           .appendField(opField(), 'OP');
       this.appendStatementInput('DO').appendField('°C → dann');

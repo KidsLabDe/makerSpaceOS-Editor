@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-23T08:24:03.880Z
+// Generiert: 2026-06-23T10:25:43.072Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -54,14 +54,14 @@ const BLOCKS_DB = [
     "id": "sensor_dht11_humidity",
     "blockCategory": "Sensoren",
     "subCategory": "Temperatur & Feuchte",
-    "label": "💧 DHT11 Luftfeuchte (%)",
+    "label": "DHT11 Luftfeuchte (%)",
     "colour": "#2563EB",
     "tooltip": "Liest die Luftfeuchtigkeit in % vom DHT11 Sensor (KY-015)",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "💧 DHT11 Luftfeuchte (%)  Port:",
+        "label": "DHT11 Luftfeuchte (%)  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -94,14 +94,14 @@ const BLOCKS_DB = [
     "id": "sensor_dht11_temperature",
     "blockCategory": "Sensoren",
     "subCategory": "Temperatur & Feuchte",
-    "label": "🌡️ DHT11 Temperatur (°C)",
+    "label": "DHT11 Temperatur (°C)",
     "colour": "#2563EB",
     "tooltip": "Liest die Temperatur in Grad Celsius vom DHT11 Sensor (KY-015)",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "🌡️ DHT11 Temperatur (°C)  Port:",
+        "label": "DHT11 Temperatur (°C)  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -134,14 +134,14 @@ const BLOCKS_DB = [
     "id": "sensor_ldr",
     "blockCategory": "Sensoren",
     "subCategory": "Abstand & Licht",
-    "label": "☀️ Helligkeit (0–100%)",
+    "label": "Helligkeit (0–100%)",
     "colour": "#2563EB",
     "tooltip": "Liest die Helligkeit in Prozent (0 = dunkel, 100 = hell)",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "☀️ Helligkeit (0–100%)  Port:",
+        "label": "Helligkeit (0–100%)  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "analog"
@@ -174,14 +174,14 @@ const BLOCKS_DB = [
     "id": "sensor_ultrasonic",
     "blockCategory": "Sensoren",
     "subCategory": "Abstand & Licht",
-    "label": "📡 Abstand (cm)",
+    "label": "Abstand (cm)",
     "colour": "#2563EB",
     "tooltip": "Misst den Abstand in cm mit dem Grove-Ultraschall-Ranger (ein Signal-Pin)",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "📡 Abstand (cm)  Port:",
+        "label": "Abstand (cm)  Port:",
         "name": "SIG",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -199,14 +199,14 @@ const BLOCKS_DB = [
     "id": "sensor_battery",
     "blockCategory": "Sensoren",
     "subCategory": "Analog",
-    "label": "🔋 Batteriespannung (V)",
+    "label": "Batteriespannung (V)",
     "colour": "#2563EB",
     "tooltip": "Misst die Versorgungsspannung (VBAT) in Volt über GP29",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "🔋 Batteriespannung (V)",
+        "label": "Batteriespannung (V)",
         "fieldType": "fixed_label"
       }
     ],
@@ -236,14 +236,14 @@ const BLOCKS_DB = [
     "id": "sensor_bodenfeuchte",
     "blockCategory": "Sensoren",
     "subCategory": "Analog",
-    "label": "🌱 Bodenfeuchte (0–100%)",
+    "label": "Bodenfeuchte (0–100%)",
     "colour": "#2563EB",
     "tooltip": "Liest die Bodenfeuchte in Prozent aus (0 = trocken, 100 = nass). Kapazitiver Sensor.",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "🌱 Bodenfeuchte (0–100%)  Port:",
+        "label": "Bodenfeuchte (0–100%)  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "analog"
@@ -275,14 +275,14 @@ const BLOCKS_DB = [
     "id": "sensor_button",
     "blockCategory": "Sensoren",
     "subCategory": "Digital-Sensoren",
-    "label": "🔘 Board-Taster",
+    "label": "Board-Taster",
     "colour": "#2563EB",
     "tooltip": "Gibt Wahr zurück, wenn der Board-Taster gedrückt wird",
     "blockType": "value",
     "output": "Boolean",
     "inputs": [
       {
-        "label": "🔘 Taster",
+        "label": "Taster",
         "name": "BTN",
         "fieldType": "button_dropdown"
       },
@@ -303,14 +303,14 @@ const BLOCKS_DB = [
     "id": "sensor_pir",
     "blockCategory": "Sensoren",
     "subCategory": "Digital-Sensoren",
-    "label": "🚶 Bewegung erkannt?",
+    "label": "Bewegung erkannt?",
     "colour": "#2563EB",
     "tooltip": "Gibt Wahr zurück, wenn der PIR-Sensor eine Bewegung erkennt (HC-SR501)",
     "blockType": "value",
     "output": "Boolean",
     "inputs": [
       {
-        "label": "🚶 Bewegung erkannt?  Port:",
+        "label": "Bewegung erkannt?  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -342,14 +342,14 @@ const BLOCKS_DB = [
     "id": "sensor_sound",
     "blockCategory": "Sensoren",
     "subCategory": "Digital-Sensoren",
-    "label": "🔊 Geräusch erkannt?",
+    "label": "Geräusch erkannt?",
     "colour": "#2563EB",
     "tooltip": "Gibt Wahr zurück, wenn der Mikrofon-Sensor ein Geräusch über dem Schwellwert erkennt (KY-037, KY-038)",
     "blockType": "value",
     "output": "Boolean",
     "inputs": [
       {
-        "label": "🔊 Geräusch erkannt?  Port:",
+        "label": "Geräusch erkannt?  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -382,14 +382,14 @@ const BLOCKS_DB = [
     "id": "sensor_taster",
     "blockCategory": "Sensoren",
     "subCategory": "Digital-Sensoren",
-    "label": "🔘 Taster gedrückt?",
+    "label": "Taster gedrückt?",
     "colour": "#2563EB",
     "tooltip": "Gibt Wahr zurück, wenn der externe Taster an einem beliebigen Pin gedrückt wird (KY-004)",
     "blockType": "value",
     "output": "Boolean",
     "inputs": [
       {
-        "label": "🔘 Taster gedrückt?  Port:",
+        "label": "Taster gedrückt?  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -422,14 +422,14 @@ const BLOCKS_DB = [
     "id": "sensor_touch",
     "blockCategory": "Sensoren",
     "subCategory": "Digital-Sensoren",
-    "label": "👆 Berührt?",
+    "label": "Berührt?",
     "colour": "#2563EB",
     "tooltip": "Gibt Wahr zurück, wenn der Berührungssensor berührt wird (KY-036)",
     "blockType": "value",
     "output": "Boolean",
     "inputs": [
       {
-        "label": "👆 Berührt?  Port:",
+        "label": "Berührt?  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -462,14 +462,14 @@ const BLOCKS_DB = [
     "id": "sensor_encoder",
     "blockCategory": "Sensoren",
     "subCategory": "Joystick & Encoder",
-    "label": "🔄 Drehgeber Position",
+    "label": "Drehgeber Position",
     "colour": "#2563EB",
     "tooltip": "Liest die Position des Drehgebers (positiv = rechts, negativ = links)",
     "blockType": "value",
     "output": "Number",
     "inputs": [
       {
-        "label": "🔄 Drehgeber Position  Port:",
+        "label": "Drehgeber Position  Port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "2pin"
@@ -487,13 +487,13 @@ const BLOCKS_DB = [
     "id": "event_button",
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
-    "label": "🔘 Wenn Taster",
+    "label": "Wenn Taster",
     "colour": "#F39A1B",
     "tooltip": "Führt Code aus, wenn der Taster gedrückt oder losgelassen wird",
     "blockType": "event_simple",
     "inputs": [
       {
-        "label": "🔘 Wenn Taster",
+        "label": "Wenn Taster",
         "name": "BTN",
         "fieldType": "button_dropdown"
       },
@@ -518,14 +518,14 @@ const BLOCKS_DB = [
     "id": "event_ldr",
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
-    "label": "☀️ Wenn Helligkeit",
+    "label": "Wenn Helligkeit",
     "colour": "#F39A1B",
     "tooltip": "Führt Code aus, wenn die Helligkeit einen Wert überschreitet/unterschreitet",
     "blockType": "event",
     "inline": true,
     "inputs": [
       {
-        "label": "☀️ Wenn Helligkeit  Port:",
+        "label": "Wenn Helligkeit  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "analog"
@@ -576,13 +576,13 @@ const BLOCKS_DB = [
     "id": "event_sound",
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
-    "label": "🔊 Wenn Geräusch erkannt",
+    "label": "Wenn Geräusch erkannt",
     "colour": "#F39A1B",
     "tooltip": "Führt Code aus, wenn der Mikrofon-Sensor ein Geräusch über dem Schwellwert erkennt",
     "blockType": "event_simple",
     "inputs": [
       {
-        "label": "🔊 Wenn Geräusch erkannt  Port:",
+        "label": "Wenn Geräusch erkannt  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -618,14 +618,14 @@ const BLOCKS_DB = [
     "id": "event_temperature",
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
-    "label": "🌡️ Wenn Temperatur",
+    "label": "Wenn Temperatur",
     "colour": "#F39A1B",
     "tooltip": "Führt Code aus, wenn die Temperatur einen Wert überschreitet/unterschreitet",
     "blockType": "event",
     "inline": true,
     "inputs": [
       {
-        "label": "🌡️ Wenn Temperatur  Port:",
+        "label": "Wenn Temperatur  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -671,14 +671,14 @@ const BLOCKS_DB = [
     "id": "event_ultrasonic",
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
-    "label": "📡 Wenn Abstand",
+    "label": "Wenn Abstand",
     "colour": "#F39A1B",
     "tooltip": "Führt Code aus, wenn der Abstand einen Wert überschreitet/unterschreitet",
     "blockType": "event",
     "inline": true,
     "inputs": [
       {
-        "label": "📡 Wenn Abstand  Port:",
+        "label": "Wenn Abstand  Port:",
         "name": "SIG",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -715,13 +715,13 @@ const BLOCKS_DB = [
     "id": "actuator_led",
     "blockCategory": "Aktoren",
     "subCategory": "LED",
-    "label": "💡 LED",
+    "label": "LED",
     "colour": "#E98685",
     "tooltip": "Schaltet eine LED ein oder aus",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "💡 LED  Port:",
+        "label": "LED  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -756,14 +756,14 @@ const BLOCKS_DB = [
     "id": "actuator_led_blink",
     "blockCategory": "Aktoren",
     "subCategory": "LED",
-    "label": "💡 LED blinken",
+    "label": "LED blinken",
     "colour": "#E98685",
     "tooltip": "Lässt eine LED mehrmals blinken",
     "blockType": "statement",
     "inline": true,
     "inputs": [
       {
-        "label": "💡 LED  Port:",
+        "label": "LED  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -796,7 +796,7 @@ const BLOCKS_DB = [
     "id": "actuator_buzzer",
     "blockCategory": "Aktoren",
     "subCategory": "Ton",
-    "label": "🔔 Buzzer Ton",
+    "label": "Buzzer Ton",
     "colour": "#E98685",
     "tooltip": "Spielt einen Ton mit der angegebenen Frequenz (z.B. 440 = Kammerton A)",
     "blockType": "statement",
@@ -804,7 +804,7 @@ const BLOCKS_DB = [
     "valueInputs": [
       {
         "name": "FREQ",
-        "label": "🔔 Buzzer  Ton:",
+        "label": "Buzzer  Ton:",
         "check": "Number",
         "defaultValue": 440
       },
@@ -828,13 +828,13 @@ const BLOCKS_DB = [
     "id": "actuator_buzzer_off",
     "blockCategory": "Aktoren",
     "subCategory": "Ton",
-    "label": "🔔 Buzzer aus",
+    "label": "Buzzer aus",
     "colour": "#E98685",
     "tooltip": "Schaltet den Buzzer aus",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "🔔 Buzzer  aus",
+        "label": "Buzzer  aus",
         "fieldType": "fixed_label"
       }
     ],
@@ -850,14 +850,14 @@ const BLOCKS_DB = [
     "id": "actuator_servo",
     "blockCategory": "Aktoren",
     "subCategory": "Weitere",
-    "label": "⚙️ Servo",
+    "label": "Servo",
     "colour": "#E98685",
     "tooltip": "Dreht einen Servo-Motor auf einen bestimmten Winkel (0 bis 180 Grad)",
     "blockType": "statement",
     "inline": true,
     "inputs": [
       {
-        "label": "⚙️ Servo",
+        "label": "Servo",
         "name": "SERVO",
         "fieldType": "servo_dropdown"
       },
@@ -886,13 +886,13 @@ const BLOCKS_DB = [
     "id": "actuator_wasserpumpe",
     "blockCategory": "Aktoren",
     "subCategory": "Weitere",
-    "label": "💧 Wasserpumpe",
+    "label": "Wasserpumpe",
     "colour": "#E98685",
     "tooltip": "Schaltet eine Mini-Tauchpumpe ein oder aus (über Relais oder Motorkanal)",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "💧 Wasserpumpe  Port:",
+        "label": "Wasserpumpe  Port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -927,14 +927,14 @@ const BLOCKS_DB = [
     "id": "actuator_lcd",
     "blockCategory": "Anzeige",
     "subCategory": "",
-    "label": "📟 LCD anzeigen",
+    "label": "LCD anzeigen",
     "colour": "#E24D3D",
     "tooltip": "Zeigt Text auf dem Grove-LCD RGB Backlight an und setzt die Hintergrundfarbe",
     "blockType": "statement",
     "inline": false,
     "inputs": [
       {
-        "label": "📟 LCD anzeigen  Port:",
+        "label": "LCD anzeigen  Port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "i2c"
@@ -970,14 +970,14 @@ const BLOCKS_DB = [
     "id": "actuator_motor_backward",
     "blockCategory": "Motor",
     "subCategory": "",
-    "label": "🚗 Motor rückwärts",
+    "label": "Motor rückwärts",
     "colour": "#E24D3D",
     "tooltip": "Fährt einen DC-Motor rückwärts (0–100 % Geschwindigkeit)",
     "blockType": "statement",
     "inline": true,
     "inputs": [
       {
-        "label": "🚗 Motor",
+        "label": "Motor",
         "name": "MOTOR",
         "fieldType": "motor_dropdown"
       },
@@ -1006,14 +1006,14 @@ const BLOCKS_DB = [
     "id": "actuator_motor_forward",
     "blockCategory": "Motor",
     "subCategory": "",
-    "label": "🚗 Motor vorwärts",
+    "label": "Motor vorwärts",
     "colour": "#E24D3D",
     "tooltip": "Fährt einen DC-Motor vorwärts (0–100 % Geschwindigkeit)",
     "blockType": "statement",
     "inline": true,
     "inputs": [
       {
-        "label": "🚗 Motor",
+        "label": "Motor",
         "name": "MOTOR",
         "fieldType": "motor_dropdown"
       },
@@ -1042,13 +1042,13 @@ const BLOCKS_DB = [
     "id": "actuator_motor_stop",
     "blockCategory": "Motor",
     "subCategory": "",
-    "label": "🛑 Motor stopp",
+    "label": "Motor stopp",
     "colour": "#E24D3D",
     "tooltip": "Stoppt einen DC-Motor",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "🛑 Motor",
+        "label": "Motor",
         "name": "MOTOR",
         "fieldType": "motor_dropdown"
       },
@@ -1069,13 +1069,13 @@ const BLOCKS_DB = [
     "id": "neopixel_ext_fill",
     "blockCategory": "NeoPixel",
     "subCategory": "",
-    "label": "🌈 Streifen ganz füllen",
+    "label": "Streifen ganz füllen",
     "colour": "#E24D3D",
     "tooltip": "Setzt alle LEDs eines externen NeoPixel-Streifens am Grove-Port auf eine Farbe",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "🌈 Streifen füllen (Grove)  Port:",
+        "label": "Streifen füllen (Grove)  Port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -1108,13 +1108,13 @@ const BLOCKS_DB = [
     "id": "neopixel_ext_off",
     "blockCategory": "NeoPixel",
     "subCategory": "",
-    "label": "🌈 Streifen aus",
+    "label": "Streifen aus",
     "colour": "#E24D3D",
     "tooltip": "Schaltet alle LEDs eines externen NeoPixel-Streifens am Grove-Port aus",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "🌈 Streifen aus (Grove)  Port:",
+        "label": "Streifen aus (Grove)  Port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -1141,13 +1141,13 @@ const BLOCKS_DB = [
     "id": "neopixel_ext_set",
     "blockCategory": "NeoPixel",
     "subCategory": "",
-    "label": "🌈 Streifen LED setzen",
+    "label": "Streifen LED setzen",
     "colour": "#E24D3D",
     "tooltip": "Setzt eine einzelne LED eines externen NeoPixel-Streifens am Grove-Port",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "🌈 Streifen (Grove)  Port:",
+        "label": "Streifen (Grove)  Port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -1189,13 +1189,13 @@ const BLOCKS_DB = [
     "id": "neopixel_fill",
     "blockCategory": "NeoPixel",
     "subCategory": "",
-    "label": "🌈 NeoPixel alle",
+    "label": "NeoPixel alle",
     "colour": "#E24D3D",
     "tooltip": "Setzt alle NeoPixel-LEDs auf die gleiche Farbe",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "🌈 NeoPixel  alle  Farbe:",
+        "label": "NeoPixel  alle  Farbe:",
         "name": "COLOR",
         "fieldType": "colour_picker",
         "default": "#ff0000"
@@ -1213,13 +1213,13 @@ const BLOCKS_DB = [
     "id": "neopixel_off",
     "blockCategory": "NeoPixel",
     "subCategory": "",
-    "label": "🌈 NeoPixel alle aus",
+    "label": "NeoPixel alle aus",
     "colour": "#E24D3D",
     "tooltip": "Schaltet alle NeoPixel-LEDs aus",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "🌈 NeoPixel  alle aus",
+        "label": "NeoPixel  alle aus",
         "fieldType": "fixed_label"
       }
     ],
@@ -1235,13 +1235,13 @@ const BLOCKS_DB = [
     "id": "neopixel_set",
     "blockCategory": "NeoPixel",
     "subCategory": "",
-    "label": "🌈 NeoPixel LED Nr.",
+    "label": "NeoPixel LED Nr.",
     "colour": "#E24D3D",
     "tooltip": "Setzt eine einzelne NeoPixel-LED auf eine bestimmte Farbe (1–13)",
     "blockType": "statement",
     "inputs": [
       {
-        "label": "🌈 NeoPixel  LED Nr.",
+        "label": "NeoPixel  LED Nr.",
         "name": "INDEX",
         "fieldType": "number_field",
         "default": 1,

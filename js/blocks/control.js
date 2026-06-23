@@ -5,7 +5,7 @@
 Blockly.Blocks['control_setup'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('⚡  SETUP');
+        .appendField('SETUP');
     this.appendDummyInput()
         .appendField('läuft einmal beim Start');
     this.appendStatementInput('DO');
@@ -17,7 +17,7 @@ Blockly.Blocks['control_setup'] = {
 Blockly.Blocks['control_forever'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('🔁  FÜR IMMER');
+        .appendField('FÜR IMMER');
     this.appendStatementInput('DO');
     this.setColour('#A57BC3');
     this.setTooltip('Code hier wird immer wieder wiederholt');
@@ -30,7 +30,7 @@ Blockly.Blocks['control_wait'] = {
   init: function() {
     this.appendValueInput('SECONDS')
         .setCheck('Number')
-        .appendField('⏱️ Warte');
+        .appendField('Warte');
     this.appendDummyInput()
         .appendField('Sekunden');
     this.setInputsInline(true);
@@ -44,7 +44,7 @@ Blockly.Blocks['control_wait'] = {
 Blockly.Blocks['control_print'] = {
   init: function() {
     this.appendValueInput('VALUE')
-        .appendField('📺 Ausgabe:');
+        .appendField('Ausgabe:');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

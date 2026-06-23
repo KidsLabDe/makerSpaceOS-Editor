@@ -562,10 +562,37 @@ html, body {
 .blocklyToolboxDiv {
   background: var(--surface) !important;
   border-right: 1.5px solid var(--line) !important;
+  padding: 10px 8px !important;
 }
-.blocklyTreeRow:hover, .blocklyTreeRow.blocklyTreeSelected {
-  background-color: rgba(74,184,166,.14) !important;
+.blocklyToolboxDiv::before {
+  content: 'Bausteine';
+  display: block;
+  padding: 4px 8px 10px;
+  font: 700 10.5px/1 var(--font-body);
+  letter-spacing: .6px; text-transform: uppercase; color: #94a3b8;
+}
+.blocklyTreeRow {
+  display: flex !important; align-items: center;
+  padding: 8px 10px !important; margin-bottom: 2px;
   border-radius: 8px !important;
+  border: 1.5px solid transparent !important;
+  transition: transform .1s cubic-bezier(.2,.7,.2,1);
+}
+.blocklyTreeRow:hover {
+  transform: translateX(2px);
+  background-color: rgba(74,184,166,.10) !important;
+}
+.blocklyTreeRow.blocklyTreeSelected {
+  background-color: rgba(74,184,166,.16) !important;
+  border-color: rgba(74,184,166,.4) !important;
+}
+.cb-cat-square {
+  display: inline-block;
+  width: 13px; height: 13px; flex-shrink: 0;
+  margin-right: 10px;
+  vertical-align: middle;
+  border-radius: 4px;
+  border: 1.5px solid rgba(0,0,0,.22);
 }
 .blocklyTreeLabel { color: #1e293b !important; font-size: 13.5px !important; font-weight: 600 !important; }
 

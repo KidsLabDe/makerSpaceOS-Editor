@@ -13,6 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initBlockly() {
+  // KidsLab: Kategorie-Zeile mit Farbquadrat statt farbigem Rand.
+  class KidsLabToolboxCategory extends Blockly.ToolboxCategory {
+    addColourBorder_() { /* kein farbiger Rand – wir nutzen ein Quadrat */ }
+    createIconDom_() {
+      const sq = document.createElement('span');
+      sq.className = 'cb-cat-square';
+      sq.style.backgroundColor = this.colour_;
+      return sq;
+    }
+  }
+  Blockly.registry.register(
+    Blockly.registry.Type.TOOLBOX_ITEM,
+    Blockly.ToolboxCategory.registrationName,
+    KidsLabToolboxCategory,
+    true   // Default-Kategorie überschreiben
+  );
+
   const cbTheme = Blockly.Theme.defineTheme('makerspaceos', {
     base: Blockly.Themes.Classic,
     fontStyle: { family: "'Inter', system-ui, sans-serif", weight: '600', size: 13 },

@@ -270,6 +270,22 @@ if (errors.length) {
   errors.forEach(e => console.warn('   ' + e));
 }
 
+// Emoji aus allen label-Feldern strippen (KidsLab: keine Emoji auf Blöcken).
+// Pfeil → (U+2192) und ° bleiben erhalten.
+function stripEmoji(s) {
+  return typeof s === 'string'
+    ? s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{22A1}]/gu, '').replace(/^\s+/, '')
+    : s;
+}
+function cleanLabelsDeep(node) {
+  if (Array.isArray(node)) return node.forEach(cleanLabelsDeep);
+  if (node && typeof node === 'object')
+    for (const k of Object.keys(node))
+      (k === 'label') ? (node[k] = stripEmoji(node[k])) : cleanLabelsDeep(node[k]);
+}
+cleanLabelsDeep(blocks);
+cleanLabelsDeep(catalog);
+
 const output = `// js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
 // Generiert: ${new Date().toISOString()}
