@@ -54,10 +54,32 @@ def wenn(bedingung, fn, poll=0.02):
 
 def start(setup=None):
     """Startet das Programm: führt einmal `setup` aus (BEIM START),
-    danach laufen alle registrierten Aufgaben parallel."""
+    danach laufen alle registrierten Aufgaben parallel.
+
+    Robust gegen mehrfaches Ausführen ohne Soft-Reboot: Der Editor lädt den
+    Code per Raw REPL nach, ohne den Speicher zurückzusetzen. Daher
+    (a) die Aufgaben dieses Laufs übernehmen und die globale Liste leeren,
+        damit sich beim nächsten Lauf nichts aufsummiert, und
+    (b) einen frischen Event-Loop holen, damit keine Aufgaben des vorigen
+        Laufs (mit bereits freigegebenen Pins) zurückbleiben.
+    """
+    tasks = list(_tasks)
+    _tasks.clear()
+
+    # Frischer Event-Loop → keine Zombie-Aufgaben vom letzten Lauf
+    try:
+        asyncio.new_event_loop()
+    except Exception:
+        pass
+
     async def _main():
         if setup is not None:
             await setup()
-        if _tasks:
-            await asyncio.gather(*_tasks)
-    asyncio.run(_main())
+        if tasks:
+            await asyncio.gather(*tasks)
+
+    # Stopp / erneutes Ausführen schickt Ctrl-C → sauber beenden statt Traceback
+    try:
+        asyncio.run(_main())
+    except KeyboardInterrupt:
+        pass

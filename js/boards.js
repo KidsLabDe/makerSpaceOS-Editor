@@ -32,9 +32,10 @@ const BOARD_PROFILES = {
     // Roh-Pins (Fallback für pin_dropdown; nach Grove-Migration kaum noch genutzt)
     externalPins: ['GP1','GP3','GP5','GP17','GP26','GP27','GP28'],
 
-    // Alle über die Grove-Stecker herausgeführten GPIO (13 eindeutige; GP26 ist
-    // Signal von Grove 5 UND pin1 von Grove 6 → nur einmal gelistet).
-    allGrovePins: ['GP0','GP1','GP2','GP3','GP4','GP5','GP6','GP7','GP16','GP17','GP26','GP27','GP28'],
+    // Alle einzeln wählbaren GPIO: die über die Grove-Stecker herausgeführten
+    // (13 eindeutige; GP26 ist Signal von Grove 5 UND pin1 von Grove 6 → nur
+    // einmal gelistet) plus die 4 Servo-Pins (S1=GP12 … S4=GP15).
+    allGrovePins: ['GP0','GP1','GP2','GP3','GP4','GP5','GP6','GP7','GP12','GP13','GP14','GP15','GP16','GP17','GP26','GP27','GP28'],
     // ADC-fähige Pins (Grove 5/6/7-Signale)
     analogPins:   ['GP26','GP27','GP28'],
 
