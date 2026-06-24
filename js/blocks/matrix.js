@@ -280,9 +280,11 @@
     renderCells_() {
       if (!this.prevCells_) return;
       const mask = this.value_ || DEFAULT_MASK;
+      const colorField = this.sourceBlock_ && this.sourceBlock_.getField('COLOR');
+      const onColor = colorField ? colorField.getValue() : '#FFFFFF';
       for (let i = 0; i < 64; i++) {
         if (this.prevCells_[i]) {
-          this.prevCells_[i].setAttribute('fill', mask[i] === '1' ? '#FFFFFF' : '#005566');
+          this.prevCells_[i].setAttribute('fill', mask[i] === '1' ? onColor : '#1a3a4a');
         }
       }
     }
@@ -389,6 +391,7 @@
       btnDone.style.cssText = btnStyle + 'background:#7B2D8B;';
       btnDone.onclick = () => {
         this.setValue(currentMask.join(''));
+        this.renderCells_();
         document.body.removeChild(overlay);
       };
 
@@ -403,6 +406,7 @@
       overlay.addEventListener('mousedown', (e) => {
         if (e.target === overlay) {
           this.setValue(currentMask.join(''));
+          this.renderCells_();
           document.body.removeChild(overlay);
         }
       });
