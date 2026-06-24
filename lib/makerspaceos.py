@@ -29,7 +29,7 @@ def immer(fn):
     async def _t():
         while True:
             await fn()
-            await asyncio.sleep(0)   # Yield-Punkt: lässt die anderen Aufgaben dran
+            await asyncio.sleep(0.01)  # Timed-Sleep statt sleep(0): verhindert Starvation der wenn()-Poller
     _tasks.append(_t())
 
 
