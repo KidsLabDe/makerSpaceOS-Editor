@@ -102,6 +102,7 @@ function buildFinalToolbox() {
     contents: [
       ...(window.AI_BLOCKS_TOOLBOX  || []),
       ...(window.BLOCKS_DB_TOOLBOX  || []),
+      ...(window.MATRIX_TOOLBOX     || []),
       ...TOOLBOX_STATIC_CONTENTS,
     ]
   };

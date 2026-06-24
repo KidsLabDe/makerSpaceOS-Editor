@@ -809,3 +809,72 @@ Blockly.Python['when_temperature'] = function(block) {
   _defs[`init_dht_${pin}`] = `_dht_${pin} = adafruit_dht.DHT22(board.${pin})`;
   return _whenTask('wenn_temperatur', `(_dht_${pin}.temperature ${op} ${val})`, body, '1');
 };
+
+// ── 8x8 NeoPixel-Matrix (Servo-Ports S1–S4 = GP12–GP15) ──────────────────────
+
+function _matrixDefs(pin) {
+  _defs['import_board']    = 'import board';
+  _defs['import_neopixel'] = 'import neopixel';
+  _defs[`init_matrix_${pin}`] =
+    `_matrix_${pin} = neopixel.NeoPixel(board.${pin}, 64, brightness=0.2, auto_write=False)`;
+}
+
+function _matrixPin(block) {
+  return BOARD.servos[block.getFieldValue('SERVO')];
+}
+
+// Berechnet NeoPixel-Indizes aus einer 64-Zeichen-Maske.
+// Verwendet Schlangenverdrahtung (Zeile 0 links→rechts, Zeile 1 rechts→links …).
+function _maskToPixelLines(mask, rgbTuple, varName) {
+  const lines = [];
+  for (let i = 0; i < 64; i++) {
+    if (mask[i] !== '1') continue;
+    const row = Math.floor(i / 8);
+    const col = i % 8;
+    const pixIdx = row * 8 + (row % 2 === 0 ? col : 7 - col);
+    lines.push(`${varName}[${pixIdx}] = ${rgbTuple}`);
+  }
+  return lines.join('\n');
+}
+
+Blockly.Python['matrix_on'] = function(block) {
+  const pin = _matrixPin(block);
+  _matrixDefs(pin);
+  const rgb = hexToRgbTuple(block.getFieldValue('COLOR'));
+  return `_matrix_${pin}.fill(${rgb})\n_matrix_${pin}.show()\n`;
+};
+
+Blockly.Python['matrix_off'] = function(block) {
+  const pin = _matrixPin(block);
+  _matrixDefs(pin);
+  return `_matrix_${pin}.fill((0, 0, 0))\n_matrix_${pin}.show()\n`;
+};
+
+Blockly.Python['matrix_brightness'] = function(block) {
+  const pin = _matrixPin(block);
+  _matrixDefs(pin);
+  const bri = parseFloat(block.getFieldValue('BRIGHTNESS')).toFixed(1);
+  return `_matrix_${pin}.brightness = ${bri}\n_matrix_${pin}.show()\n`;
+};
+
+Blockly.Python['matrix_symbol'] = function(block) {
+  const pin    = _matrixPin(block);
+  _matrixDefs(pin);
+  const key    = block.getFieldValue('SYMBOL');
+  const masks  = window.MATRIX_SYMBOL_MASKS || {};
+  const mask   = masks[key] || '0'.repeat(64);
+  const rgb    = hexToRgbTuple(block.getFieldValue('COLOR'));
+  const varN   = `_matrix_${pin}`;
+  const pixels = _maskToPixelLines(mask, rgb, varN);
+  return `${varN}.fill((0, 0, 0))\n${pixels ? pixels + '\n' : ''}${varN}.show()\n`;
+};
+
+Blockly.Python['matrix_draw'] = function(block) {
+  const pin  = _matrixPin(block);
+  _matrixDefs(pin);
+  const mask = block.getFieldValue('PIXELS') || '0'.repeat(64);
+  const rgb  = hexToRgbTuple(block.getFieldValue('COLOR'));
+  const varN = `_matrix_${pin}`;
+  const pixels = _maskToPixelLines(mask, rgb, varN);
+  return `${varN}.fill((0, 0, 0))\n${pixels ? pixels + '\n' : ''}${varN}.show()\n`;
+};
