@@ -636,7 +636,7 @@
   // ── Toolbox ───────────────────────────────────────────────────────────────
   window.MATRIX_TOOLBOX = [{
     kind: 'category',
-    name: '🟣 Matrix',
+    name: 'Matrix',
     colour: MATRIX_COLOR,
     contents: [
       { kind: 'block', type: 'matrix_on' },
