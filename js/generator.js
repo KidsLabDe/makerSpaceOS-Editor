@@ -73,6 +73,10 @@ Blockly.Python.finish = function() {
   // makerspaceos-Laufzeit, sobald es Aufgaben gibt oder der Setup-Code selbst await nutzt
   const hasSetup = !!_setupCode.trim();
   const hasAsync = _tasks.length > 0 || /\bawait\b/.test(_setupCode);
+  // Die Handler-Bodies nutzen await asyncio.sleep(...) (Warte/Buzzer/Blink) →
+  // asyncio muss im generierten Code importiert sein (makerspaceos importiert es
+  // nur für sich selbst, nicht in den Namespace des Programms).
+  if (hasAsync) _defs['import_asyncio'] = 'import asyncio';
 
   const imports = [];
   const inits   = [];
