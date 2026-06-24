@@ -29,6 +29,9 @@
 - [ ] Töne nach Notenname (C4, D4, ... statt Hz-Eingabe)
 - [ ] Lernmodus: Schritt-für-Schritt Anleitungen zu Beispielprojekten
 
+## Design
+- [ ] Farben der Blöcke überarbeiten
+
 ## Offen / Ideen
 - [ ] GitHub Pages: README mit Screenshot und Kurzanleitung ergänzen
 - [ ] Mobile-freundliches Layout (Tablets im Unterricht)
