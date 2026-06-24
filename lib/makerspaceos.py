@@ -66,9 +66,12 @@ def start(setup=None):
     tasks = list(_tasks)
     _tasks.clear()
 
-    # Frischer Event-Loop → keine Zombie-Aufgaben vom letzten Lauf
+    # asyncio.new_event_loop() setzt cur_task = None und wird in CP 10.x
+    # von asyncio.run() nicht korrekt wiederhergestellt → AssertionError in sleep().
+    # Stattdessen: _task_queue direkt leeren, falls vorhanden (entfernt Zombie-Tasks
+    # ohne cur_task zu zerstören).
     try:
-        asyncio.new_event_loop()
+        asyncio._task_queue.__init__()
     except Exception:
         pass
 
