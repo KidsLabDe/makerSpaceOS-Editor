@@ -31,9 +31,11 @@
 ## Offen / Ideen
 - [ ] GitHub Pages: README mit Screenshot und Kurzanleitung ergänzen
 
-- [ ] Generische Digital AN / AUS und Analog LESEN / SETZEN blöcke - Brauchen wir da einen PULLUP / PULLDOWN init? oder ein INPUT oder OUTPUT init?
+- [ ] fasse alle featiures und kompontenten mal zusammen
 
-- [ ] helligkeit - ist verkehrtherum 99% ist sehr dunkel und 5% ist hell....
+- [x] Generische Digital AN / AUS und Analog LESEN / SETZEN blöcke - Brauchen wir da einen PULLUP / PULLDOWN init? oder ein INPUT oder OUTPUT init?
+
+- [x] helligkeit - ist verkehrtherum 99% ist sehr dunkel und 5% ist hell....
 
 - [ ] Motor Testen
 
@@ -41,8 +43,12 @@
 
 - [ ] Schrittmotor testen 
 
-- [ ] fasse alle featiures und kompontenten mal zusammen
+- [ ] aktualisiere die komponten in ../makerSpaceOS_Module
 
-- [ ] aktualisiere die komponten in ../kom
+- [ ] KI Block - wie ist die integration? wie ist der system prompt? der muss ja die blöcke auch kennen und die möglichen elemente und wie die angesprochen werden
+
+- [ ] "Auf RP2040" - umbennen in "Auf ... " - was ist ein guter name? da soll auch ne anleitung zuerst angezeigt werden... "Wähle CIRCUITPY" links in der leist...
+
+- [ ] 
 
   
