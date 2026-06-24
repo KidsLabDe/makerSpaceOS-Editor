@@ -212,8 +212,22 @@
 
   const DEFAULT_MASK   = '0'.repeat(64);
   const DEFAULT_SYMBOL = 'herz';
-  const DEFAULT_COLOR  = '#ff0000';
-  const MATRIX_COLOR   = '#7B2D8B';
+  const DEFAULT_COLOR  = '#FF0000';
+  const MATRIX_COLOR   = '#EC4899';
+
+  // Dieselbe Liste wie in block_builder.js (_COLOR_OPTS) – für matrix.js lokal kopiert
+  const COLOR_OPTS = [
+    ['🔴 Rot',    '#FF0000'],
+    ['🟠 Orange', '#FF6600'],
+    ['🟡 Gelb',   '#FFFF00'],
+    ['🟢 Grün',   '#00FF00'],
+    ['🩵 Cyan',   '#00FFFF'],
+    ['🔵 Blau',   '#0000FF'],
+    ['🟣 Lila',   '#8000FF'],
+    ['🩷 Pink',   '#FF00FF'],
+    ['⚪ Weiß',   '#FFFFFF'],
+    ['⚫ Aus',    '#000000'],
+  ];
 
   // ── Vorschaugröße im Block (klein) ────────────────────────────────────────
   const PV = 5;   // px pro Zelle (Vorschau)
@@ -388,7 +402,7 @@
 
       const btnDone = document.createElement('button');
       btnDone.textContent = '✓ Fertig';
-      btnDone.style.cssText = btnStyle + 'background:#7B2D8B;';
+      btnDone.style.cssText = btnStyle + 'background:#EC4899;';
       btnDone.onclick = () => {
         this.setValue(currentMask.join(''));
         this.renderCells_();
@@ -549,7 +563,7 @@
 
   // ── Servo-Dropdown-Optionen ───────────────────────────────────────────────
   function matrixServoOptions() {
-    return Object.entries(BOARD.servos).map(([k, v]) => [`${k} (${v})`, k]);
+    return [['– bitte auswählen –', '__NONE__'], ...Object.entries(BOARD.servos).map(([k, v]) => [`${k} (${v})`, k])];
   }
 
   // ── Block-Definitionen ────────────────────────────────────────────────────
@@ -560,7 +574,7 @@
           .appendField('💡 Matrix anschalten  Port:')
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField('  Farbe:')
-          .appendField(new Blockly.FieldColour(DEFAULT_COLOR), 'COLOR');
+          .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -607,7 +621,7 @@
           .appendField('  ')
           .appendField(new FieldSymbolPicker(DEFAULT_SYMBOL), 'SYMBOL')
           .appendField('  Farbe:')
-          .appendField(new Blockly.FieldColour(DEFAULT_COLOR), 'COLOR');
+          .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
@@ -622,7 +636,7 @@
           .appendField('🖊️ zeige LEDs  Port:')
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField('  Farbe:')
-          .appendField(new Blockly.FieldColour(DEFAULT_COLOR), 'COLOR');
+          .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
       this.appendDummyInput()
           .appendField(new FieldMatrix8x8(DEFAULT_MASK), 'PIXELS');
       this.setInputsInline(false);
@@ -634,18 +648,15 @@
   };
 
   // ── Toolbox ───────────────────────────────────────────────────────────────
-  window.MATRIX_TOOLBOX = [{
-    kind: 'category',
-    name: 'Matrix',
-    colour: MATRIX_COLOR,
-    contents: [
-      { kind: 'block', type: 'matrix_on' },
-      { kind: 'block', type: 'matrix_off' },
-      { kind: 'block', type: 'matrix_brightness' },
-      { kind: 'sep' },
-      { kind: 'block', type: 'matrix_symbol' },
-      { kind: 'block', type: 'matrix_draw' },
-    ],
-  }];
+  // Nur Block-Einträge (kein category-Wrapper) – werden in buildFinalToolbox()
+  // an die "Lichter"-Kategorie angehängt.
+  window.MATRIX_TOOLBOX_CONTENTS = [
+    { kind: 'block', type: 'matrix_on' },
+    { kind: 'block', type: 'matrix_off' },
+    { kind: 'block', type: 'matrix_brightness' },
+    { kind: 'sep' },
+    { kind: 'block', type: 'matrix_symbol' },
+    { kind: 'block', type: 'matrix_draw' },
+  ];
 
 })();

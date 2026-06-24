@@ -1,9 +1,9 @@
 ---
 id: actuator_isd1820_record
-blockCategory: Aktoren
-subCategory: Audio
+blockCategory: Aktionen
+subCategory: Ton
 label: "⏺ Aufnehmen"
-colour: "#E24D3D"
+colour: "#DC2626"
 tooltip: "Nimmt für die angegebene Dauer auf (REC-Pin HIGH halten). Max. 10 Sekunden."
 blockType: statement
 inputs:

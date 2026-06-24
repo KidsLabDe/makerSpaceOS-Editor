@@ -6,32 +6,52 @@
 
   // ── Feld-Optionen aus BOARD ────────────────────────────────────────────────
 
+  const _NONE_OPT = ['– bitte auswählen –', '__NONE__'];
+
+  // Einheitliches Farb-Dropdown für alle Blöcke (colour_picker + rgb_color_dropdown)
+  const _COLOR_OPTS = [
+    ['🔴 Rot',    '#FF0000'],
+    ['🟠 Orange', '#FF6600'],
+    ['🟡 Gelb',   '#FFFF00'],
+    ['🟢 Grün',   '#00FF00'],
+    ['🩵 Cyan',   '#00FFFF'],
+    ['🔵 Blau',   '#0000FF'],
+    ['🟣 Lila',   '#8000FF'],
+    ['🩷 Pink',   '#FF00FF'],
+    ['⚪ Weiß',   '#FFFFFF'],
+    ['⚫ Aus',    '#000000'],
+  ];
+
   function getFieldOptions(inp) {
     switch (inp.fieldType) {
       case 'pin_dropdown':
-        return BOARD[inp.pinSource || 'externalPins'].map(p => [p, p]);
+        return [_NONE_OPT, ...BOARD[inp.pinSource || 'externalPins'].map(p => [p, p])];
       case 'grove_dropdown':
-        return BOARD.groveOptions(inp.groveRole || 'digital');
+        return [_NONE_OPT, ...BOARD.groveOptions(inp.groveRole || 'digital')];
+      case 'motor_dropdown':
+        return [_NONE_OPT, ...Object.keys(BOARD.motors).map(k => [k, k])];
+      case 'servo_dropdown':
+        return [_NONE_OPT, ...Object.entries(BOARD.servos).map(([k, v]) => [`${k} (${v})`, k])];
+      case 'taster_dropdown':
+        return [
+          _NONE_OPT,
+          ['B1 (GP20)', 'B1'],
+          ['B2 (GP21)', 'B2'],
+          GROVE_SEP,
+          ...BOARD.grovePorts.map(p => [p.label, p.signal]),
+        ];
       case 'lcd_version_dropdown':
         return [['Version 4', '0x62'], ['Version 5', '0x30']];
       case 'on_off_dropdown':
         return [['einschalten', 'True'], ['ausschalten', 'False']];
       case 'op_dropdown':
         return [['<', '<'], ['>', '>'], ['=', '==']];
-      case 'motor_dropdown':
-        return Object.keys(BOARD.motors).map(k => [k, k]);
-      case 'servo_dropdown':
-        return Object.entries(BOARD.servos).map(([k, v]) => [`${k} (${v})`, k]);
       case 'button_dropdown':
         return Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]);
       case 'state_dropdown':
         return [['gedrückt', 'pressed'], ['losgelassen', 'released']];
       case 'rgb_color_dropdown':
-        return [
-          ['🔴 Rot', 'red'], ['🟢 Grün', 'green'], ['🔵 Blau', 'blue'],
-          ['🟡 Gelb', 'yellow'], ['🩵 Türkis', 'cyan'], ['🟣 Pink', 'pink'],
-          ['⬜ Weiß', 'white'], ['⬛ Aus', 'off'],
-        ];
+        return _COLOR_OPTS;
       default:
         return (inp.options || []);
     }
@@ -55,7 +75,7 @@
           inp.name
         );
       } else if (inp.fieldType === 'colour_picker') {
-        input.appendField(new Blockly.FieldColour(inp.default || '#ff0000'), inp.name);
+        input.appendField(new Blockly.FieldDropdown(_COLOR_OPTS), inp.name);
       } else {
         // Validator verwirft den Trenner-Eintrag (__SEP__) → nicht auswählbar
         const dd = new Blockly.FieldDropdown(
@@ -141,16 +161,26 @@
 
   // ── Generator-Funktion aus Definition bauen ───────────────────────────────
 
+  const _HW_FIELDS = new Set(['grove_dropdown', 'servo_dropdown', 'motor_dropdown', 'pin_dropdown', 'taster_dropdown']);
+
   function buildGenerator(def) {
     const gen = def.generator;
     return function (block) {
       // 1. Feldwerte sammeln
       const ctx = {};
+      let hasUnset = false;
       for (const inp of (def.inputs || [])) {
         if (inp.name && inp.fieldType && inp.fieldType !== 'fixed_label') {
           ctx[inp.name] = block.getFieldValue(inp.name) || '';
+          if (_HW_FIELDS.has(inp.fieldType) && ctx[inp.name] === '__NONE__') hasUnset = true;
         }
       }
+      if (hasUnset) {
+        block.setWarningText('⚠ Bitte Port / Pin auswählen!');
+        if (block.outputConnection) return ['None', Blockly.Python.ORDER_NONE];
+        return '# ⚠ Kein Port ausgewählt\n';
+      }
+      block.setWarningText(null);
 
       // 2. ValueInputs auswerten
       for (const vi of (def.valueInputs || [])) {

@@ -9,9 +9,9 @@ var _tasks     = [];                   // Task-Deskriptoren {kind, name, body, e
 
 // Top-Level-Ereignis-Blöcke (Hut-Stapel) → je eine kantengetriggerte async-Aufgabe
 var _HAT_TYPES = [
-  'when_button', 'when_distance', 'when_light', 'when_temperature',
-  'when_obstacle', 'when_line', 'when_tilt', 'when_magnetic',
-  'when_flame', 'when_sound', 'when_touch', 'when_vibration'
+  'when_button', 'when_encoder',
+  'when_distance', 'when_light', 'when_temperature', 'when_humidity',
+  'when_sound', 'when_touch',
 ];
 
 Blockly.Python.workspaceToCode = function(workspace) {
@@ -39,8 +39,10 @@ Blockly.Python.workspaceToCode = function(workspace) {
 
   // Jeder Ereignis-Hut-Block → eine kantengetriggerte Aufgabe
   for (const t of _HAT_TYPES)
-    for (const b of workspace.getBlocksByType(t, false))
-      _tasks.push(Blockly.Python[t].call(Blockly.Python, b));
+    for (const b of workspace.getBlocksByType(t, false)) {
+      const task = Blockly.Python[t].call(Blockly.Python, b);
+      if (task) _tasks.push(task);
+    }
 
   return Blockly.Python.finish();
 };
@@ -218,18 +220,25 @@ Blockly.Python['sensor_ldr'] = function(block) {
   _defs['import_analogio'] = 'import analogio';
   _defs[`init_ldr_${pin}`] = `_ldr_${pin} = analogio.AnalogIn(board.${pin})`;
   // Normiert auf 0–100 %
-  return [`round(_ldr_${pin}.value / 65535 * 100)`, Blockly.Python.ORDER_FUNCTION_CALL];
+  return [`round((1 - _ldr_${pin}.value / 65535) * 100)`, Blockly.Python.ORDER_FUNCTION_CALL];
 };
 
-Blockly.Python['sensor_button'] = function(block) {
-  const btn = block.getFieldValue('BTN');
-  const pin = BOARD.buttons[btn];
+// Gemeinsamer Helfer: B1/B2 (Onboard) oder externer Grove-Pin
+function _tasterDef(val) {
+  const pin     = (val === 'B1' || val === 'B2') ? BOARD.buttons[val] : val;
+  const varName = `_taster_${val}`;
   _defs['import_board']     = 'import board';
   _defs['import_digitalio'] = 'import digitalio';
-  _defs[`init_btn_${btn}`]  =
-    `_btn_${btn} = digitalio.DigitalInOut(board.${pin})\n` +
-    `_btn_${btn}.switch_to_input(pull=digitalio.Pull.UP)`;
-  return [`(not _btn_${btn}.value)`, Blockly.Python.ORDER_NONE];
+  _defs[`init_taster_${val}`] =
+    `${varName} = digitalio.DigitalInOut(board.${pin})\n` +
+    `${varName}.switch_to_input(pull=digitalio.Pull.UP)`;
+  return varName;
+}
+
+Blockly.Python['sensor_taster'] = function(block) {
+  const val     = block.getFieldValue('BTN');
+  const varName = _tasterDef(val);
+  return [`(not ${varName}.value)`, Blockly.Python.ORDER_NONE];
 };
 
 // ── Ereignis-Blöcke ───────────────────────────────────────────────────────────
@@ -266,18 +275,11 @@ Blockly.Python['event_ldr'] = function(block) {
 };
 
 Blockly.Python['event_button'] = function(block) {
-  const btn   = block.getFieldValue('BTN');
-  const state = block.getFieldValue('STATE');
-  const pin   = BOARD.buttons[btn];
-  const body  = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _defs['import_board']     = 'import board';
-  _defs['import_digitalio'] = 'import digitalio';
-  _defs[`init_btn_${btn}`]  =
-    `_btn_${btn} = digitalio.DigitalInOut(board.${pin})\n` +
-    `_btn_${btn}.switch_to_input(pull=digitalio.Pull.UP)`;
-  const condition = state === 'pressed'
-    ? `not _btn_${btn}.value`
-    : `_btn_${btn}.value`;
+  const val     = block.getFieldValue('BTN');
+  const state   = block.getFieldValue('STATE');
+  const varName = _tasterDef(val);
+  const body    = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  const condition = state === 'pressed' ? `not ${varName}.value` : `${varName}.value`;
   return `if ${condition}:\n${body}`;
 };
 
@@ -453,6 +455,29 @@ function _digitalOutDef(pin, varPrefix) {
     `_${varPrefix}_${pin}.direction = digitalio.Direction.OUTPUT`;
 }
 
+// ── Generische Pin-Blöcke ─────────────────────────────────────────────────────
+
+Blockly.Python['digital_read'] = function(block) {
+  const pin = block.getFieldValue('PIN');
+  _digitalInDef(pin, 'din', 'UP');
+  return [`_din_${pin}.value`, Blockly.Python.ORDER_MEMBER];
+};
+
+Blockly.Python['digital_write'] = function(block) {
+  const pin   = block.getFieldValue('PIN');
+  const state = block.getFieldValue('STATE');
+  _digitalOutDef(pin, 'dout');
+  return `_dout_${pin}.value = ${state}\n`;
+};
+
+Blockly.Python['analog_read'] = function(block) {
+  const pin = block.getFieldValue('PIN');
+  _defs['import_board']    = 'import board';
+  _defs['import_analogio'] = 'import analogio';
+  _defs[`init_ain_${pin}`] = `_ain_${pin} = analogio.AnalogIn(board.${pin})`;
+  return [`round(_ain_${pin}.value / 65535 * 100)`, Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
 // ── Digital-Sensor-Generatoren ────────────────────────────────────────────────
 
 Blockly.Python['sensor_obstacle'] = function(block) {
@@ -483,18 +508,6 @@ Blockly.Python['sensor_flame'] = function(block) {
   const pin = block.getFieldValue('PIN');
   _digitalInDef(pin, 'flame', 'DOWN');
   return [`(not _flame_${pin}.value)`, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Python['sensor_sound'] = function(block) {
-  const pin = block.getFieldValue('PIN');
-  _digitalInDef(pin, 'sound', 'DOWN');
-  return [`(not _sound_${pin}.value)`, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Python['sensor_touch'] = function(block) {
-  const pin = block.getFieldValue('PIN');
-  _digitalInDef(pin, 'touch', 'DOWN');
-  return [`(not _touch_${pin}.value)`, Blockly.Python.ORDER_NONE];
 };
 
 Blockly.Python['sensor_vibration'] = function(block) {
@@ -621,51 +634,7 @@ Blockly.Python['sensor_encoder'] = function(block) {
   return [`_enc_${pinA}_${pinB}.position`, Blockly.Python.ORDER_MEMBER];
 };
 
-// ── Neue Ereignis-Generatoren ─────────────────────────────────────────────────
-
-Blockly.Python['event_obstacle'] = function(block) {
-  const pin  = block.getFieldValue('PIN');
-  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _digitalInDef(pin, 'obstacle', 'DOWN');
-  return `if not _obstacle_${pin}.value:\n${body}`;
-};
-
-Blockly.Python['event_flame'] = function(block) {
-  const pin  = block.getFieldValue('PIN');
-  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _digitalInDef(pin, 'flame', 'DOWN');
-  return `if not _flame_${pin}.value:\n${body}`;
-};
-
-Blockly.Python['event_sound'] = function(block) {
-  const pin  = block.getFieldValue('PIN');
-  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _digitalInDef(pin, 'sound', 'DOWN');
-  return `if not _sound_${pin}.value:\n${body}`;
-};
-
-Blockly.Python['event_tilt'] = function(block) {
-  const pin  = block.getFieldValue('PIN');
-  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _digitalInDef(pin, 'tilt', 'DOWN');
-  return `if not _tilt_${pin}.value:\n${body}`;
-};
-
-Blockly.Python['event_magnetic'] = function(block) {
-  const pin  = block.getFieldValue('PIN');
-  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _digitalInDef(pin, 'mag', 'DOWN');
-  return `if not _mag_${pin}.value:\n${body}`;
-};
-
-Blockly.Python['event_line'] = function(block) {
-  const pin  = block.getFieldValue('PIN');
-  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _digitalInDef(pin, 'line', 'DOWN');
-  return `if _line_${pin}.value:\n${body}`;
-};
-
-// ── Neue Aktor-Generatoren ────────────────────────────────────────────────────
+// ── Aktor-Generatoren ────────────────────────────────────────────────────────
 
 const _2C_COLORS = {
   red:    [true,  false],
@@ -715,20 +684,13 @@ function _groveLcdDef(portId, rgbAddr) {
     `_lcd = GroveRgbLcd(_i2c_lcd, rgb_addr=${rgbAddr})`;
 }
 
-// Benannte Farben (rgb_color_dropdown) → RGB-Werte für die LCD-Beleuchtung
-const _LCD_RGB = {
-  red:    '255, 0, 0',   green: '0, 255, 0',   blue:   '0, 0, 255',
-  yellow: '255, 255, 0', cyan:  '0, 255, 255', pink:   '255, 0, 255',
-  white:  '255, 255, 255', off:  '0, 0, 0',
-};
-
 Blockly.Python['actuator_lcd'] = function(block) {
   const portId = block.getFieldValue('PORT');
-  const colour = block.getFieldValue('COLOR') || 'white';
+  const colour = block.getFieldValue('COLOR') || '#FFFFFF';
   const line1  = Blockly.Python.valueToCode(block, 'LINE1', Blockly.Python.ORDER_NONE) || '""';
   const line2  = Blockly.Python.valueToCode(block, 'LINE2', Blockly.Python.ORDER_NONE) || '""';
   _groveLcdDef(portId, '0x30');
-  const rgb = _LCD_RGB[colour] || '255, 255, 255';
+  const rgb = hexToRgbTuple(colour).slice(1, -1); // "(r, g, b)" → "r, g, b"
   return `_lcd.set_rgb(${rgb})\n_lcd.set_text((${line1})[:16] + "\\n" + (${line2})[:16])\n`;
 };
 
@@ -792,46 +754,68 @@ Blockly.Python['actuator_isd1820_record'] = function(block) {
 // finish() baut daraus `async def <name>():` + `wenn(lambda: <expr>, <name>)`.
 
 // Lesbare deutsche Handler-Namen je Sensor-Typ (Basis; wird bei Bedarf nummeriert)
-const _WHEN_NAMES = {
-  obstacle: 'wenn_hindernis', line: 'wenn_linie',     tilt:  'wenn_neigung',
-  mag:      'wenn_magnet',    flame: 'wenn_flamme',    sound: 'wenn_geraeusch',
-  touch:    'wenn_beruehrung', vib:  'wenn_vibration',
-};
-
-// Gemeinsamer Helfer für digitale Trigger-Sensoren
+// Gemeinsamer Helfer für digitale Trigger-Sensoren (Geräusch, Berührt)
 function _whenDigital(block, prefix, pull, activeLow) {
-  const pin  = block.getFieldValue('PIN');
+  const pin = block.getFieldValue('PIN');
+  if (!pin || pin === '__NONE__') {
+    block.setWarningText('⚠ Bitte Port auswählen!');
+    return null;
+  }
+  block.setWarningText(null);
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _digitalInDef(pin, prefix, pull);
   const expr = activeLow ? `(not _${prefix}_${pin}.value)` : `_${prefix}_${pin}.value`;
-  return _whenTask(_WHEN_NAMES[prefix] || `wenn_${prefix}`, expr, body, '0.02');
+  return _whenTask(`wenn_${prefix}`, expr, body, '0.02');
 }
 
 Blockly.Python['when_button'] = function(block) {
-  const btn   = block.getFieldValue('BTN');
-  const state = block.getFieldValue('STATE');
-  const pin   = BOARD.buttons[btn];
-  const body  = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _defs['import_board']     = 'import board';
-  _defs['import_digitalio'] = 'import digitalio';
-  _defs[`init_btn_${btn}`]  =
-    `_btn_${btn} = digitalio.DigitalInOut(board.${pin})\n` +
-    `_btn_${btn}.switch_to_input(pull=digitalio.Pull.UP)`;
-  const expr = state === 'pressed' ? `(not _btn_${btn}.value)` : `_btn_${btn}.value`;
-  return _whenTask(`wenn_taster_${String(btn).toLowerCase()}`, expr, body, '0.02');
+  const val   = block.getFieldValue('BTN');
+  if (!val || val === '__NONE__') { block.setWarningText('⚠ Bitte Taster auswählen!'); return null; }
+  block.setWarningText(null);
+  const state   = block.getFieldValue('STATE');
+  const body    = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  const varName = _tasterDef(val);
+  const expr    = state === 'pressed' ? `(not ${varName}.value)` : `${varName}.value`;
+  return _whenTask(`wenn_taster_${String(val).toLowerCase().replace(/\./g, '_')}`, expr, body, '0.02');
 };
 
-Blockly.Python['when_obstacle']  = function(b) { return _whenDigital(b, 'obstacle', 'DOWN', true);  };
-Blockly.Python['when_line']      = function(b) { return _whenDigital(b, 'line',     'DOWN', false); };
-Blockly.Python['when_tilt']      = function(b) { return _whenDigital(b, 'tilt',     'DOWN', true);  };
-Blockly.Python['when_magnetic']  = function(b) { return _whenDigital(b, 'mag',      'DOWN', true);  };
-Blockly.Python['when_flame']     = function(b) { return _whenDigital(b, 'flame',    'DOWN', true);  };
-Blockly.Python['when_sound']     = function(b) { return _whenDigital(b, 'sound',    'DOWN', true);  };
-Blockly.Python['when_touch']     = function(b) { return _whenDigital(b, 'touch',    'DOWN', true);  };
-Blockly.Python['when_vibration'] = function(b) { return _whenDigital(b, 'vib',      'DOWN', true);  };
+Blockly.Python['when_sound'] = function(b) { return _whenDigital(b, 'sound', 'DOWN', true); };
+Blockly.Python['when_touch'] = function(b) { return _whenDigital(b, 'touch', 'DOWN', true); };
+
+// ── Drehgeber-Ereignis (Richtungserkennung) ───────────────────────────────────
+
+Blockly.Python['when_encoder'] = function(block) {
+  const portId = block.getFieldValue('PORT');
+  if (!portId || portId === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  block.setWarningText(null);
+  const port   = BOARD.grovePortById(portId);
+  const pinA   = port.pin1;
+  const pinB   = port.signal;
+  const dir    = block.getFieldValue('DIR');
+  const body   = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  const encVar  = `_enc_${pinA}_${pinB}`;
+  const prevVar = `_enc_${pinA}_${pinB}_prev`;
+  const fnHoch  = `_enc_${pinA}_${pinB}_hoch`;
+  const fnRunter= `_enc_${pinA}_${pinB}_runter`;
+  _defs['import_board']    = 'import board';
+  _defs['import_rotaryio'] = 'import rotaryio';
+  // Encoder-Init + Hilfsfunktionen in einem Eintrag (Reihenfolge garantiert)
+  _defs[`init_enc_${pinA}_${pinB}`] =
+    `${encVar} = rotaryio.IncrementalEncoder(board.${pinA}, board.${pinB})\n` +
+    `${prevVar} = [${encVar}.position]\n` +
+    `def ${fnHoch}():\n` +
+    `    _p = ${encVar}.position; _d = _p - ${prevVar}[0]; ${prevVar}[0] = _p; return _d > 0\n` +
+    `def ${fnRunter}():\n` +
+    `    _p = ${encVar}.position; _d = _p - ${prevVar}[0]; ${prevVar}[0] = _p; return _d < 0`;
+  const fn       = dir === 'up' ? fnHoch : fnRunter;
+  const taskName = dir === 'up' ? `wenn_drehgeber_hoch` : `wenn_drehgeber_runter`;
+  return _whenTask(taskName, `${fn}()`, body, '0.02');
+};
 
 Blockly.Python['when_distance'] = function(block) {
-  const sig  = block.getFieldValue('SIG');
+  const sig = block.getFieldValue('SIG');
+  if (!sig || sig === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  block.setWarningText(null);
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
@@ -840,25 +824,42 @@ Blockly.Python['when_distance'] = function(block) {
 };
 
 Blockly.Python['when_light'] = function(block) {
-  const pin  = block.getFieldValue('PIN');
+  const pin = block.getFieldValue('PIN');
+  if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  block.setWarningText(null);
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '50';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _defs['import_board']    = 'import board';
   _defs['import_analogio'] = 'import analogio';
   _defs[`init_ldr_${pin}`] = `_ldr_${pin} = analogio.AnalogIn(board.${pin})`;
-  return _whenTask('wenn_licht', `(round(_ldr_${pin}.value / 65535 * 100) ${op} ${val})`, body, '0.05');
+  return _whenTask('wenn_licht', `(round((1 - _ldr_${pin}.value / 65535) * 100) ${op} ${val})`, body, '0.05');
 };
 
 Blockly.Python['when_temperature'] = function(block) {
-  const pin  = block.getFieldValue('PIN');
+  const pin = block.getFieldValue('PIN');
+  if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  block.setWarningText(null);
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '25';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _defs['import_board'] = 'import board';
-  _defs['import_dht']   = 'import adafruit_dht';
-  _defs[`init_dht_${pin}`] = `_dht_${pin} = adafruit_dht.DHT22(board.${pin})`;
-  return _whenTask('wenn_temperatur', `(_dht_${pin}.temperature ${op} ${val})`, body, '1');
+  _defs['import_board']  = 'import board';
+  _defs['import_dht']    = 'import adafruit_dht';
+  _defs[`init_dht11_${pin}`] = `_dht11_${pin} = adafruit_dht.DHT11(board.${pin})`;
+  return _whenTask('wenn_temperatur', `(_dht11_${pin}.temperature ${op} ${val})`, body, '1');
+};
+
+Blockly.Python['when_humidity'] = function(block) {
+  const pin = block.getFieldValue('PIN');
+  if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  block.setWarningText(null);
+  const op   = block.getFieldValue('OP');
+  const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '60';
+  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  _defs['import_board']  = 'import board';
+  _defs['import_dht']    = 'import adafruit_dht';
+  _defs[`init_dht11_${pin}`] = `_dht11_${pin} = adafruit_dht.DHT11(board.${pin})`;
+  return _whenTask('wenn_feuchte', `(_dht11_${pin}.humidity ${op} ${val})`, body, '1');
 };
 
 // ── 8x8 NeoPixel-Matrix (Servo-Ports S1–S4 = GP12–GP15) ──────────────────────
@@ -927,3 +928,31 @@ Blockly.Python['matrix_draw'] = function(block) {
   const pixels = _maskToPixelLines(mask, rgb, varN);
   return `${varN}.fill((0, 0, 0))\n${pixels ? pixels + '\n' : ''}${varN}.show()\n`;
 };
+
+// ── "Bitte auswählen"-Schutz: blockToCode-Wrapper ────────────────────────────
+// Fängt alle verschachtelten Blöcke (Statement + Value) ab, bevor der
+// eigentliche Generator aufgerufen wird. HAT-Blöcke werden direkt in
+// workspaceToCode behandelt.
+(function () {
+  const _orig = Blockly.Python.blockToCode.bind(Blockly.Python);
+  Blockly.Python.blockToCode = function (block, opt_thisOnly) {
+    if (block) {
+      let hasNone = false;
+      outer: for (const input of block.inputList) {
+        for (const field of input.fieldRow) {
+          if (typeof field.getValue === 'function' && field.getValue() === '__NONE__') {
+            hasNone = true;
+            break outer;
+          }
+        }
+      }
+      if (hasNone) {
+        block.setWarningText('⚠ Bitte Port / Pin auswählen!');
+        if (block.outputConnection) return ['None', Blockly.Python.ORDER_NONE];
+        return '# ⚠ Kein Port ausgewählt\n';
+      }
+      block.setWarningText(null);
+    }
+    return _orig(block, opt_thisOnly);
+  };
+})();

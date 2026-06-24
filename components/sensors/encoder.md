@@ -1,7 +1,7 @@
 ---
 id: sensor_encoder
 blockCategory: Sensoren
-subCategory: Joystick & Encoder
+subCategory: "Weitere"
 label: "🔄 Drehgeber Position"
 colour: "#2563EB"
 tooltip: "Liest die Position des Drehgebers (positiv = rechts, negativ = links)"

@@ -1,9 +1,9 @@
 ---
 id: neopixel_set
-blockCategory: NeoPixel
-subCategory: ""
+blockCategory: Lichter
+subCategory: "Onboard"
 label: "🌈 NeoPixel LED Nr."
-colour: "#E24D3D"
+colour: "#EC4899"
 tooltip: "Setzt eine einzelne NeoPixel-LED auf eine bestimmte Farbe (1–13)"
 blockType: statement
 inputs:

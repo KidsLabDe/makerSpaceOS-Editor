@@ -4,38 +4,30 @@
       "id": "Sensoren",
       "label": "Sensoren",
       "colour": "#2563EB",
-      "subCategories": [
-        "Temperatur & Feuchte",
-        "Druck & I2C",
-        "Abstand & Licht",
-        "Analog",
-        "Digital-Sensoren",
-        "Joystick & Encoder",
-        "Ereignisse"
-      ]
+      "subCategories": ["Temperatur & Feuchte", "Abstand & Licht", "Weitere", "Ereignisse"]
     },
     {
-      "id": "Aktoren",
-      "label": "Aktoren",
-      "colour": "#E98685",
-      "subCategories": ["LED", "Ton", "Weitere"]
+      "id": "Aktionen",
+      "label": "Aktionen",
+      "colour": "#DC2626",
+      "subCategories": ["LED", "Ton", "Servo & Pumpe", "Motor"]
     },
     {
-      "id": "Anzeige",
-      "label": "Anzeige",
-      "colour": "#E24D3D",
+      "id": "Lichter",
+      "label": "Lichter",
+      "colour": "#EC4899",
+      "subCategories": ["Onboard", "Streifen"]
+    },
+    {
+      "id": "Anzeigen",
+      "label": "Anzeigen",
+      "colour": "#0D9488",
       "subCategories": []
     },
     {
-      "id": "Motor",
-      "label": "Motor",
-      "colour": "#E24D3D",
-      "subCategories": []
-    },
-    {
-      "id": "NeoPixel",
-      "label": "NeoPixel",
-      "colour": "#E24D3D",
+      "id": "Pins",
+      "label": "Pins",
+      "colour": "#64748B",
       "subCategories": []
     }
   ]

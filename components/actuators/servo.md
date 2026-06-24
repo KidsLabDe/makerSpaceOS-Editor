@@ -1,9 +1,9 @@
 ---
 id: actuator_servo
-blockCategory: Aktoren
-subCategory: Weitere
+blockCategory: Aktionen
+subCategory: "Servo & Pumpe"
 label: "⚙️ Servo"
-colour: "#E98685"
+colour: "#DC2626"
 tooltip: "Dreht einen Servo-Motor auf einen bestimmten Winkel (0 bis 180 Grad)"
 blockType: statement
 inline: true

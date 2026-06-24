@@ -1,9 +1,9 @@
 ---
 id: neopixel_fill
-blockCategory: NeoPixel
-subCategory: ""
+blockCategory: Lichter
+subCategory: "Onboard"
 label: "🌈 NeoPixel alle"
-colour: "#E24D3D"
+colour: "#EC4899"
 tooltip: "Setzt alle NeoPixel-LEDs auf die gleiche Farbe"
 blockType: statement
 inputs:

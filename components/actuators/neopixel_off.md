@@ -1,9 +1,9 @@
 ---
 id: neopixel_off
-blockCategory: NeoPixel
-subCategory: ""
+blockCategory: Lichter
+subCategory: "Onboard"
 label: "🌈 NeoPixel alle aus"
-colour: "#E24D3D"
+colour: "#EC4899"
 tooltip: "Schaltet alle NeoPixel-LEDs aus"
 blockType: statement
 inputs:

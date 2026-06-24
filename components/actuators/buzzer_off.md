@@ -1,9 +1,9 @@
 ---
 id: actuator_buzzer_off
-blockCategory: Aktoren
+blockCategory: Aktionen
 subCategory: Ton
 label: "🔔 Buzzer aus"
-colour: "#E98685"
+colour: "#DC2626"
 tooltip: "Schaltet den Buzzer aus"
 blockType: statement
 inputs:

@@ -1,9 +1,9 @@
 ---
 id: actuator_led_blink
-blockCategory: Aktoren
+blockCategory: Aktionen
 subCategory: LED
 label: "💡 LED blinken"
-colour: "#E98685"
+colour: "#DC2626"
 tooltip: "Lässt eine LED mehrmals blinken"
 blockType: statement
 inline: true

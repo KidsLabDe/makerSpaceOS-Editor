@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-24T15:10:12.903Z
+// Generiert: 2026-06-24T17:05:43.372Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -10,40 +10,41 @@ const BLOCKS_CATALOG = {
       "colour": "#2563EB",
       "subCategories": [
         "Temperatur & Feuchte",
-        "Druck & I2C",
         "Abstand & Licht",
-        "Analog",
-        "Digital-Sensoren",
-        "Joystick & Encoder",
+        "Weitere",
         "Ereignisse"
       ]
     },
     {
-      "id": "Aktoren",
-      "label": "Aktoren",
-      "colour": "#E98685",
+      "id": "Aktionen",
+      "label": "Aktionen",
+      "colour": "#DC2626",
       "subCategories": [
         "LED",
         "Ton",
-        "Weitere"
+        "Servo & Pumpe",
+        "Motor"
       ]
     },
     {
-      "id": "Anzeige",
-      "label": "Anzeige",
-      "colour": "#E24D3D",
+      "id": "Lichter",
+      "label": "Lichter",
+      "colour": "#EC4899",
+      "subCategories": [
+        "Onboard",
+        "Streifen"
+      ]
+    },
+    {
+      "id": "Anzeigen",
+      "label": "Anzeigen",
+      "colour": "#0D9488",
       "subCategories": []
     },
     {
-      "id": "Motor",
-      "label": "Motor",
-      "colour": "#E24D3D",
-      "subCategories": []
-    },
-    {
-      "id": "NeoPixel",
-      "label": "NeoPixel",
-      "colour": "#E24D3D",
+      "id": "Pins",
+      "label": "Pins",
+      "colour": "#64748B",
       "subCategories": []
     }
   ]
@@ -198,7 +199,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_battery",
     "blockCategory": "Sensoren",
-    "subCategory": "Analog",
+    "subCategory": "Weitere",
     "label": "Batteriespannung (V)",
     "colour": "#2563EB",
     "tooltip": "Misst die Versorgungsspannung (VBAT) in Volt über GP29",
@@ -235,7 +236,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_bodenfeuchte",
     "blockCategory": "Sensoren",
-    "subCategory": "Analog",
+    "subCategory": "Weitere",
     "label": "Bodenfeuchte (0–100%)",
     "colour": "#2563EB",
     "tooltip": "Liest die Bodenfeuchte in Prozent aus (0 = trocken, 100 = nass). Kapazitiver Sensor.",
@@ -272,196 +273,9 @@ const BLOCKS_DB = [
     "_file": "sensors/bodenfeuchte.md"
   },
   {
-    "id": "sensor_button",
-    "blockCategory": "Sensoren",
-    "subCategory": "Digital-Sensoren",
-    "label": "Board-Taster",
-    "colour": "#2563EB",
-    "tooltip": "Gibt Wahr zurück, wenn der Board-Taster gedrückt wird",
-    "blockType": "value",
-    "output": "Boolean",
-    "inputs": [
-      {
-        "label": "Taster",
-        "name": "BTN",
-        "fieldType": "button_dropdown"
-      },
-      {
-        "label": "gedrückt?",
-        "fieldType": "fixed_label"
-      }
-    ],
-    "hardware": {
-      "commonName": "Board-Taster B1/B2",
-      "verbrauch3j": 28,
-      "kitStandard": true
-    },
-    "legacyGenerator": true,
-    "_file": "sensors/button.md"
-  },
-  {
-    "id": "sensor_pir",
-    "blockCategory": "Sensoren",
-    "subCategory": "Digital-Sensoren",
-    "label": "Bewegung erkannt?",
-    "colour": "#2563EB",
-    "tooltip": "Gibt Wahr zurück, wenn der PIR-Sensor eine Bewegung erkennt (HC-SR501)",
-    "blockType": "value",
-    "output": "Boolean",
-    "inputs": [
-      {
-        "label": "Bewegung erkannt?  Port:",
-        "name": "PIN",
-        "fieldType": "grove_dropdown",
-        "groveRole": "digital"
-      }
-    ],
-    "generator": {
-      "imports": [
-        "import board",
-        "import digitalio"
-      ],
-      "defs": [
-        {
-          "key": "init_pir_${PIN}",
-          "val": "_pir_${PIN} = digitalio.DigitalInOut(board.${PIN})\n_pir_${PIN}.switch_to_input(pull=digitalio.Pull.DOWN)"
-        }
-      ],
-      "expression": "_pir_${PIN}.value",
-      "order": "MEMBER"
-    },
-    "hardware": {
-      "commonName": "PIR-Sensor HC-SR501",
-      "verbrauch3j": 6,
-      "kitStandard": true
-    },
-    "legacyGenerator": false,
-    "_file": "sensors/pir.md"
-  },
-  {
-    "id": "sensor_sound",
-    "blockCategory": "Sensoren",
-    "subCategory": "Digital-Sensoren",
-    "label": "Geräusch erkannt?",
-    "colour": "#2563EB",
-    "tooltip": "Gibt Wahr zurück, wenn der Mikrofon-Sensor ein Geräusch über dem Schwellwert erkennt (KY-037, KY-038)",
-    "blockType": "value",
-    "output": "Boolean",
-    "inputs": [
-      {
-        "label": "Geräusch erkannt?  Port:",
-        "name": "PIN",
-        "fieldType": "grove_dropdown",
-        "groveRole": "digital"
-      }
-    ],
-    "generator": {
-      "imports": [
-        "import board",
-        "import digitalio"
-      ],
-      "defs": [
-        {
-          "key": "init_sound_${PIN}",
-          "val": "_sound_${PIN} = digitalio.DigitalInOut(board.${PIN})\n_sound_${PIN}.switch_to_input(pull=digitalio.Pull.DOWN)"
-        }
-      ],
-      "expression": "(not _sound_${PIN}.value)",
-      "order": "NONE"
-    },
-    "hardware": {
-      "kyNumber": "KY-038",
-      "commonName": "Mikrofon-Schallsensor",
-      "verbrauch3j": 7,
-      "kitStandard": true
-    },
-    "legacyGenerator": false,
-    "_file": "sensors/sound.md"
-  },
-  {
-    "id": "sensor_taster",
-    "blockCategory": "Sensoren",
-    "subCategory": "Digital-Sensoren",
-    "label": "Taster gedrückt?",
-    "colour": "#2563EB",
-    "tooltip": "Gibt Wahr zurück, wenn der externe Taster an einem beliebigen Pin gedrückt wird (KY-004)",
-    "blockType": "value",
-    "output": "Boolean",
-    "inputs": [
-      {
-        "label": "Taster gedrückt?  Port:",
-        "name": "PIN",
-        "fieldType": "grove_dropdown",
-        "groveRole": "digital"
-      }
-    ],
-    "generator": {
-      "imports": [
-        "import board",
-        "import digitalio"
-      ],
-      "defs": [
-        {
-          "key": "init_taster_${PIN}",
-          "val": "_taster_${PIN} = digitalio.DigitalInOut(board.${PIN})\n_taster_${PIN}.switch_to_input(pull=digitalio.Pull.UP)"
-        }
-      ],
-      "expression": "(not _taster_${PIN}.value)",
-      "order": "NONE"
-    },
-    "hardware": {
-      "kyNumber": "KY-004",
-      "commonName": "Taster / Drucktaster",
-      "verbrauch3j": 28,
-      "kitStandard": true
-    },
-    "legacyGenerator": false,
-    "_file": "sensors/taster.md"
-  },
-  {
-    "id": "sensor_touch",
-    "blockCategory": "Sensoren",
-    "subCategory": "Digital-Sensoren",
-    "label": "Berührt?",
-    "colour": "#2563EB",
-    "tooltip": "Gibt Wahr zurück, wenn der Berührungssensor berührt wird (KY-036)",
-    "blockType": "value",
-    "output": "Boolean",
-    "inputs": [
-      {
-        "label": "Berührt?  Port:",
-        "name": "PIN",
-        "fieldType": "grove_dropdown",
-        "groveRole": "digital"
-      }
-    ],
-    "generator": {
-      "imports": [
-        "import board",
-        "import digitalio"
-      ],
-      "defs": [
-        {
-          "key": "init_touch_${PIN}",
-          "val": "_touch_${PIN} = digitalio.DigitalInOut(board.${PIN})\n_touch_${PIN}.switch_to_input(pull=digitalio.Pull.DOWN)"
-        }
-      ],
-      "expression": "(not _touch_${PIN}.value)",
-      "order": "NONE"
-    },
-    "hardware": {
-      "kyNumber": "KY-036",
-      "commonName": "Touch-Sensor",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": false,
-    "_file": "sensors/touch.md"
-  },
-  {
     "id": "sensor_encoder",
     "blockCategory": "Sensoren",
-    "subCategory": "Joystick & Encoder",
+    "subCategory": "Weitere",
     "label": "Drehgeber Position",
     "colour": "#2563EB",
     "tooltip": "Liest die Position des Drehgebers (positiv = rechts, negativ = links)",
@@ -484,18 +298,46 @@ const BLOCKS_DB = [
     "_file": "sensors/encoder.md"
   },
   {
+    "id": "sensor_taster",
+    "blockCategory": "Sensoren",
+    "subCategory": "Weitere",
+    "label": "Taster gedrückt?",
+    "colour": "#2563EB",
+    "tooltip": "Gibt Wahr zurück, wenn der Taster gedrückt ist (Board-Taster B1/B2 oder externer Taster)",
+    "blockType": "value",
+    "output": "Boolean",
+    "inputs": [
+      {
+        "label": "Taster",
+        "name": "BTN",
+        "fieldType": "taster_dropdown"
+      },
+      {
+        "label": "gedrückt?",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "hardware": {
+      "commonName": "Taster / Drucktaster",
+      "verbrauch3j": 28,
+      "kitStandard": true
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/taster.md"
+  },
+  {
     "id": "event_button",
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
     "label": "Wenn Taster",
-    "colour": "#F39A1B",
+    "colour": "#D97706",
     "tooltip": "Führt Code aus, wenn der Taster gedrückt oder losgelassen wird",
     "blockType": "event_simple",
     "inputs": [
       {
         "label": "Wenn Taster",
         "name": "BTN",
-        "fieldType": "button_dropdown"
+        "fieldType": "taster_dropdown"
       },
       {
         "name": "STATE",
@@ -507,7 +349,7 @@ const BLOCKS_DB = [
       "label": "→ dann"
     },
     "hardware": {
-      "commonName": "Board-Taster B1/B2",
+      "commonName": "Taster / Board-Taster",
       "verbrauch3j": 28,
       "kitStandard": true
     },
@@ -519,7 +361,7 @@ const BLOCKS_DB = [
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
     "label": "Wenn Helligkeit",
-    "colour": "#F39A1B",
+    "colour": "#D97706",
     "tooltip": "Führt Code aus, wenn die Helligkeit einen Wert überschreitet/unterschreitet",
     "blockType": "event",
     "inline": true,
@@ -573,53 +415,11 @@ const BLOCKS_DB = [
     "_file": "sensors/event_ldr.md"
   },
   {
-    "id": "event_sound",
-    "blockCategory": "Sensoren",
-    "subCategory": "Ereignisse",
-    "label": "Wenn Geräusch erkannt",
-    "colour": "#F39A1B",
-    "tooltip": "Führt Code aus, wenn der Mikrofon-Sensor ein Geräusch über dem Schwellwert erkennt",
-    "blockType": "event_simple",
-    "inputs": [
-      {
-        "label": "Wenn Geräusch erkannt  Port:",
-        "name": "PIN",
-        "fieldType": "grove_dropdown",
-        "groveRole": "digital"
-      }
-    ],
-    "statementInput": {
-      "name": "DO",
-      "label": "→ dann"
-    },
-    "generator": {
-      "imports": [
-        "import board",
-        "import digitalio"
-      ],
-      "defs": [
-        {
-          "key": "init_sound_${PIN}",
-          "val": "_sound_${PIN} = digitalio.DigitalInOut(board.${PIN})\n_sound_${PIN}.switch_to_input(pull=digitalio.Pull.DOWN)"
-        }
-      ],
-      "code": "if not _sound_${PIN}.value:\n${DO}"
-    },
-    "hardware": {
-      "kyNumber": "KY-038",
-      "commonName": "Schallsensor",
-      "verbrauch3j": 7,
-      "kitStandard": true
-    },
-    "legacyGenerator": false,
-    "_file": "sensors/event_sound.md"
-  },
-  {
     "id": "event_temperature",
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
     "label": "Wenn Temperatur",
-    "colour": "#F39A1B",
+    "colour": "#D97706",
     "tooltip": "Führt Code aus, wenn die Temperatur einen Wert überschreitet/unterschreitet",
     "blockType": "event",
     "inline": true,
@@ -672,7 +472,7 @@ const BLOCKS_DB = [
     "blockCategory": "Sensoren",
     "subCategory": "Ereignisse",
     "label": "Wenn Abstand",
-    "colour": "#F39A1B",
+    "colour": "#D97706",
     "tooltip": "Führt Code aus, wenn der Abstand einen Wert überschreitet/unterschreitet",
     "blockType": "event",
     "inline": true,
@@ -713,10 +513,10 @@ const BLOCKS_DB = [
   },
   {
     "id": "actuator_led",
-    "blockCategory": "Aktoren",
+    "blockCategory": "Aktionen",
     "subCategory": "LED",
     "label": "LED",
-    "colour": "#E98685",
+    "colour": "#DC2626",
     "tooltip": "Schaltet eine LED ein oder aus",
     "blockType": "statement",
     "inputs": [
@@ -754,10 +554,10 @@ const BLOCKS_DB = [
   },
   {
     "id": "actuator_led_blink",
-    "blockCategory": "Aktoren",
+    "blockCategory": "Aktionen",
     "subCategory": "LED",
     "label": "LED blinken",
-    "colour": "#E98685",
+    "colour": "#DC2626",
     "tooltip": "Lässt eine LED mehrmals blinken",
     "blockType": "statement",
     "inline": true,
@@ -794,10 +594,10 @@ const BLOCKS_DB = [
   },
   {
     "id": "actuator_buzzer",
-    "blockCategory": "Aktoren",
+    "blockCategory": "Aktionen",
     "subCategory": "Ton",
     "label": "Buzzer Ton",
-    "colour": "#E98685",
+    "colour": "#DC2626",
     "tooltip": "Spielt einen Ton mit der angegebenen Frequenz (z.B. 440 = Kammerton A)",
     "blockType": "statement",
     "inline": true,
@@ -826,10 +626,10 @@ const BLOCKS_DB = [
   },
   {
     "id": "actuator_buzzer_off",
-    "blockCategory": "Aktoren",
+    "blockCategory": "Aktionen",
     "subCategory": "Ton",
     "label": "Buzzer aus",
-    "colour": "#E98685",
+    "colour": "#DC2626",
     "tooltip": "Schaltet den Buzzer aus",
     "blockType": "statement",
     "inputs": [
@@ -847,11 +647,67 @@ const BLOCKS_DB = [
     "_file": "actuators/buzzer_off.md"
   },
   {
+    "id": "actuator_isd1820",
+    "blockCategory": "Aktionen",
+    "subCategory": "Ton",
+    "label": "Ton abspielen",
+    "colour": "#DC2626",
+    "tooltip": "Spielt die Aufnahme des ISD1820-Sprachmoduls ab. ⚠ Benötigt das ISD1820-Zusatzmodul – nicht der eingebaute Lautsprecher!",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Ton abspielen  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin"
+      }
+    ],
+    "hardware": {
+      "commonName": "ISD1820 Sprachmodul",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/isd1820.md"
+  },
+  {
+    "id": "actuator_isd1820_record",
+    "blockCategory": "Aktionen",
+    "subCategory": "Ton",
+    "label": "Aufnehmen",
+    "colour": "#DC2626",
+    "tooltip": "Nimmt für die angegebene Dauer auf (REC-Pin HIGH halten). Max. 10 Sekunden.",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Aufnehmen  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "DAUER",
+        "label": "Sekunden",
+        "defaultValue": 3,
+        "suffix": "s"
+      }
+    ],
+    "hardware": {
+      "commonName": "ISD1820 Sprachmodul",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/isd1820_record.md"
+  },
+  {
     "id": "actuator_servo",
-    "blockCategory": "Aktoren",
-    "subCategory": "Weitere",
+    "blockCategory": "Aktionen",
+    "subCategory": "Servo & Pumpe",
     "label": "Servo",
-    "colour": "#E98685",
+    "colour": "#DC2626",
     "tooltip": "Dreht einen Servo-Motor auf einen bestimmten Winkel (0 bis 180 Grad)",
     "blockType": "statement",
     "inline": true,
@@ -883,210 +739,11 @@ const BLOCKS_DB = [
     "_file": "actuators/servo.md"
   },
   {
-    "id": "actuator_wasserpumpe",
-    "blockCategory": "Aktoren",
-    "subCategory": "Weitere",
-    "label": "Wasserpumpe",
-    "colour": "#E98685",
-    "tooltip": "Schaltet eine Mini-Tauchpumpe ein oder aus (über Relais oder Motorkanal)",
-    "blockType": "statement",
-    "inputs": [
-      {
-        "label": "Wasserpumpe  Port:",
-        "name": "PIN",
-        "fieldType": "grove_dropdown",
-        "groveRole": "digital"
-      },
-      {
-        "name": "STATE",
-        "fieldType": "on_off_dropdown"
-      }
-    ],
-    "generator": {
-      "imports": [
-        "import board",
-        "import digitalio"
-      ],
-      "defs": [
-        {
-          "key": "init_pumpe_${PIN}",
-          "val": "_pumpe_${PIN} = digitalio.DigitalInOut(board.${PIN})\n_pumpe_${PIN}.direction = digitalio.Direction.OUTPUT"
-        }
-      ],
-      "code": "_pumpe_${PIN}.value = ${STATE}\n"
-    },
-    "hardware": {
-      "commonName": "Mini-Tauchpumpe 3–6V",
-      "verbrauch3j": 0,
-      "kitStandard": true
-    },
-    "legacyGenerator": false,
-    "_file": "actuators/wasserpumpe.md"
-  },
-  {
-    "id": "actuator_isd1820",
-    "blockCategory": "Aktoren",
-    "subCategory": "Audio",
-    "label": "Ton abspielen",
-    "colour": "#E24D3D",
-    "tooltip": "Spielt die Aufnahme des ISD1820 einmal ab (P-E-Pin kurz HIGH). Aufnahme über den REC-Knopf auf dem Modul.",
-    "blockType": "statement",
-    "inputs": [
-      {
-        "label": "Ton abspielen  Port:",
-        "name": "PORT",
-        "fieldType": "grove_dropdown",
-        "groveRole": "2pin"
-      }
-    ],
-    "hardware": {
-      "commonName": "ISD1820 Sprachmodul",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/isd1820.md"
-  },
-  {
-    "id": "actuator_isd1820_record",
-    "blockCategory": "Aktoren",
-    "subCategory": "Audio",
-    "label": "Aufnehmen",
-    "colour": "#E24D3D",
-    "tooltip": "Nimmt für die angegebene Dauer auf (REC-Pin HIGH halten). Max. 10 Sekunden.",
-    "blockType": "statement",
-    "inputs": [
-      {
-        "label": "Aufnehmen  Port:",
-        "name": "PORT",
-        "fieldType": "grove_dropdown",
-        "groveRole": "2pin"
-      }
-    ],
-    "valueInputs": [
-      {
-        "name": "DAUER",
-        "label": "Sekunden",
-        "defaultValue": 3,
-        "suffix": "s"
-      }
-    ],
-    "hardware": {
-      "commonName": "ISD1820 Sprachmodul",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/isd1820_record.md"
-  },
-  {
-    "id": "actuator_lcd",
-    "blockCategory": "Anzeige",
-    "subCategory": "",
-    "label": "LCD anzeigen",
-    "colour": "#E24D3D",
-    "tooltip": "Zeigt Text auf dem Grove-LCD RGB Backlight an und setzt die Hintergrundfarbe",
-    "blockType": "statement",
-    "inline": false,
-    "inputs": [
-      {
-        "label": "LCD anzeigen  Port:",
-        "name": "PORT",
-        "fieldType": "grove_dropdown",
-        "groveRole": "i2c"
-      },
-      {
-        "label": "Farbe:",
-        "name": "COLOR",
-        "fieldType": "rgb_color_dropdown"
-      }
-    ],
-    "valueInputs": [
-      {
-        "name": "LINE1",
-        "label": "Zeile 1",
-        "check": "String",
-        "defaultValue": "Hallo"
-      },
-      {
-        "name": "LINE2",
-        "label": "Zeile 2",
-        "check": "String",
-        "defaultValue": "Welt"
-      }
-    ],
-    "hardware": {
-      "commonName": "Grove-LCD RGB Backlight",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/lcd.md"
-  },
-  {
-    "id": "tm1637_number",
-    "blockCategory": "Anzeige",
-    "subCategory": "",
-    "label": "7-Seg Zahl anzeigen",
-    "colour": "#1B6CA8",
-    "tooltip": "Zeigt eine Zahl (ganze Zahl, −999 bis 9999) auf dem 4-stelligen 7-Segment-Display an",
-    "blockType": "statement",
-    "inline": true,
-    "inputs": [
-      {
-        "label": "7-Seg  Port:",
-        "name": "PORT",
-        "fieldType": "grove_dropdown",
-        "groveRole": "2pin"
-      }
-    ],
-    "valueInputs": [
-      {
-        "name": "VALUE",
-        "check": "Number",
-        "label": "Zahl",
-        "defaultValue": 1234
-      }
-    ],
-    "hardware": {
-      "commonName": "7-Segment Display TM1637 (4-stellig)",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/tm1637_number.md"
-  },
-  {
-    "id": "tm1637_off",
-    "blockCategory": "Anzeige",
-    "subCategory": "",
-    "label": "7-Seg ausschalten",
-    "colour": "#1B6CA8",
-    "tooltip": "Löscht alle Ziffern auf dem 7-Segment-Display (Anzeige bleibt dunkel)",
-    "blockType": "statement",
-    "inline": true,
-    "inputs": [
-      {
-        "label": "7-Seg ausschalten  Port:",
-        "name": "PORT",
-        "fieldType": "grove_dropdown",
-        "groveRole": "2pin"
-      }
-    ],
-    "hardware": {
-      "commonName": "7-Segment Display TM1637 (4-stellig)",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/tm1637_off.md"
-  },
-  {
     "id": "actuator_motor_backward",
-    "blockCategory": "Motor",
-    "subCategory": "",
+    "blockCategory": "Aktionen",
+    "subCategory": "Motor",
     "label": "Motor rückwärts",
-    "colour": "#E24D3D",
+    "colour": "#DC2626",
     "tooltip": "Fährt einen DC-Motor rückwärts (0–100 % Geschwindigkeit)",
     "blockType": "statement",
     "inline": true,
@@ -1119,10 +776,10 @@ const BLOCKS_DB = [
   },
   {
     "id": "actuator_motor_forward",
-    "blockCategory": "Motor",
-    "subCategory": "",
+    "blockCategory": "Aktionen",
+    "subCategory": "Motor",
     "label": "Motor vorwärts",
-    "colour": "#E24D3D",
+    "colour": "#DC2626",
     "tooltip": "Fährt einen DC-Motor vorwärts (0–100 % Geschwindigkeit)",
     "blockType": "statement",
     "inline": true,
@@ -1155,10 +812,10 @@ const BLOCKS_DB = [
   },
   {
     "id": "actuator_motor_stop",
-    "blockCategory": "Motor",
-    "subCategory": "",
+    "blockCategory": "Aktionen",
+    "subCategory": "Motor",
     "label": "Motor stopp",
-    "colour": "#E24D3D",
+    "colour": "#DC2626",
     "tooltip": "Stoppt einen DC-Motor",
     "blockType": "statement",
     "inputs": [
@@ -1181,11 +838,90 @@ const BLOCKS_DB = [
     "_file": "actuators/motor_stop.md"
   },
   {
+    "id": "neopixel_fill",
+    "blockCategory": "Lichter",
+    "subCategory": "Onboard",
+    "label": "NeoPixel alle",
+    "colour": "#EC4899",
+    "tooltip": "Setzt alle NeoPixel-LEDs auf die gleiche Farbe",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "NeoPixel  alle  Farbe:",
+        "name": "COLOR",
+        "fieldType": "colour_picker",
+        "default": "#ff0000"
+      }
+    ],
+    "hardware": {
+      "commonName": "NeoPixel / WS2812B",
+      "verbrauch3j": 0,
+      "kitStandard": true
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/neopixel_fill.md"
+  },
+  {
+    "id": "neopixel_off",
+    "blockCategory": "Lichter",
+    "subCategory": "Onboard",
+    "label": "NeoPixel alle aus",
+    "colour": "#EC4899",
+    "tooltip": "Schaltet alle NeoPixel-LEDs aus",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "NeoPixel  alle aus",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "hardware": {
+      "commonName": "NeoPixel / WS2812B",
+      "verbrauch3j": 0,
+      "kitStandard": true
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/neopixel_off.md"
+  },
+  {
+    "id": "neopixel_set",
+    "blockCategory": "Lichter",
+    "subCategory": "Onboard",
+    "label": "NeoPixel LED Nr.",
+    "colour": "#EC4899",
+    "tooltip": "Setzt eine einzelne NeoPixel-LED auf eine bestimmte Farbe (1–13)",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "NeoPixel  LED Nr.",
+        "name": "INDEX",
+        "fieldType": "number_field",
+        "default": 1,
+        "min": 1,
+        "max": 13,
+        "precision": 1
+      },
+      {
+        "label": "Farbe:",
+        "name": "COLOR",
+        "fieldType": "colour_picker",
+        "default": "#ff0000"
+      }
+    ],
+    "hardware": {
+      "commonName": "NeoPixel / WS2812B",
+      "verbrauch3j": 0,
+      "kitStandard": true
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/neopixel_set.md"
+  },
+  {
     "id": "neopixel_ext_fill",
-    "blockCategory": "NeoPixel",
-    "subCategory": "",
+    "blockCategory": "Lichter",
+    "subCategory": "Streifen",
     "label": "Streifen ganz füllen",
-    "colour": "#E24D3D",
+    "colour": "#EC4899",
     "tooltip": "Setzt alle LEDs eines externen NeoPixel-Streifens am Grove-Port auf eine Farbe",
     "blockType": "statement",
     "inputs": [
@@ -1221,10 +957,10 @@ const BLOCKS_DB = [
   },
   {
     "id": "neopixel_ext_off",
-    "blockCategory": "NeoPixel",
-    "subCategory": "",
+    "blockCategory": "Lichter",
+    "subCategory": "Streifen",
     "label": "Streifen aus",
-    "colour": "#E24D3D",
+    "colour": "#EC4899",
     "tooltip": "Schaltet alle LEDs eines externen NeoPixel-Streifens am Grove-Port aus",
     "blockType": "statement",
     "inputs": [
@@ -1254,10 +990,10 @@ const BLOCKS_DB = [
   },
   {
     "id": "neopixel_ext_set",
-    "blockCategory": "NeoPixel",
-    "subCategory": "",
+    "blockCategory": "Lichter",
+    "subCategory": "Streifen",
     "label": "Streifen LED setzen",
-    "colour": "#E24D3D",
+    "colour": "#EC4899",
     "tooltip": "Setzt eine einzelne LED eines externen NeoPixel-Streifens am Grove-Port",
     "blockType": "statement",
     "inputs": [
@@ -1301,82 +1037,168 @@ const BLOCKS_DB = [
     "_file": "actuators/neopixel_ext_set.md"
   },
   {
-    "id": "neopixel_fill",
-    "blockCategory": "NeoPixel",
+    "id": "actuator_lcd",
+    "blockCategory": "Anzeigen",
     "subCategory": "",
-    "label": "NeoPixel alle",
-    "colour": "#E24D3D",
-    "tooltip": "Setzt alle NeoPixel-LEDs auf die gleiche Farbe",
+    "label": "LCD anzeigen",
+    "colour": "#0D9488",
+    "tooltip": "Zeigt Text auf dem Grove-LCD RGB Backlight an und setzt die Hintergrundfarbe",
     "blockType": "statement",
+    "inline": false,
     "inputs": [
       {
-        "label": "NeoPixel  alle  Farbe:",
-        "name": "COLOR",
-        "fieldType": "colour_picker",
-        "default": "#ff0000"
-      }
-    ],
-    "hardware": {
-      "commonName": "NeoPixel / WS2812B",
-      "verbrauch3j": 0,
-      "kitStandard": true
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/neopixel_fill.md"
-  },
-  {
-    "id": "neopixel_off",
-    "blockCategory": "NeoPixel",
-    "subCategory": "",
-    "label": "NeoPixel alle aus",
-    "colour": "#E24D3D",
-    "tooltip": "Schaltet alle NeoPixel-LEDs aus",
-    "blockType": "statement",
-    "inputs": [
-      {
-        "label": "NeoPixel  alle aus",
-        "fieldType": "fixed_label"
-      }
-    ],
-    "hardware": {
-      "commonName": "NeoPixel / WS2812B",
-      "verbrauch3j": 0,
-      "kitStandard": true
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/neopixel_off.md"
-  },
-  {
-    "id": "neopixel_set",
-    "blockCategory": "NeoPixel",
-    "subCategory": "",
-    "label": "NeoPixel LED Nr.",
-    "colour": "#E24D3D",
-    "tooltip": "Setzt eine einzelne NeoPixel-LED auf eine bestimmte Farbe (1–13)",
-    "blockType": "statement",
-    "inputs": [
-      {
-        "label": "NeoPixel  LED Nr.",
-        "name": "INDEX",
-        "fieldType": "number_field",
-        "default": 1,
-        "min": 1,
-        "max": 13,
-        "precision": 1
+        "label": "LCD anzeigen  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "i2c"
       },
       {
         "label": "Farbe:",
         "name": "COLOR",
-        "fieldType": "colour_picker",
-        "default": "#ff0000"
+        "fieldType": "rgb_color_dropdown"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "LINE1",
+        "label": "Zeile 1",
+        "check": "String",
+        "defaultValue": "Hallo"
+      },
+      {
+        "name": "LINE2",
+        "label": "Zeile 2",
+        "check": "String",
+        "defaultValue": "Welt"
       }
     ],
     "hardware": {
-      "commonName": "NeoPixel / WS2812B",
+      "commonName": "Grove-LCD RGB Backlight",
       "verbrauch3j": 0,
-      "kitStandard": true
+      "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_set.md"
+    "_file": "actuators/lcd.md"
+  },
+  {
+    "id": "tm1637_number",
+    "blockCategory": "Anzeigen",
+    "subCategory": "",
+    "label": "7-Seg Zahl anzeigen",
+    "colour": "#0D9488",
+    "tooltip": "Zeigt eine Zahl (ganze Zahl, −999 bis 9999) auf dem 4-stelligen 7-Segment-Display an",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "7-Seg  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "VALUE",
+        "check": "Number",
+        "label": "Zahl",
+        "defaultValue": 1234
+      }
+    ],
+    "hardware": {
+      "commonName": "7-Segment Display TM1637 (4-stellig)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/tm1637_number.md"
+  },
+  {
+    "id": "tm1637_off",
+    "blockCategory": "Anzeigen",
+    "subCategory": "",
+    "label": "7-Seg ausschalten",
+    "colour": "#0D9488",
+    "tooltip": "Löscht alle Ziffern auf dem 7-Segment-Display (Anzeige bleibt dunkel)",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "7-Seg ausschalten  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin"
+      }
+    ],
+    "hardware": {
+      "commonName": "7-Segment Display TM1637 (4-stellig)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/tm1637_off.md"
+  },
+  {
+    "id": "analog_read",
+    "blockCategory": "Pins",
+    "subCategory": "",
+    "label": "Analog lesen",
+    "colour": "#64748B",
+    "tooltip": "Liest den analogen Messwert eines Grove-Ports (0–100 %)",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Analog lesen  Port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "sensors/analog_read.md"
+  },
+  {
+    "id": "digital_read",
+    "blockCategory": "Pins",
+    "subCategory": "",
+    "label": "Digital lesen",
+    "colour": "#64748B",
+    "tooltip": "Liest einen digitalen Grove-Port (Wahr = HIGH / AN, Falsch = LOW / AUS)",
+    "blockType": "value",
+    "output": "Boolean",
+    "inputs": [
+      {
+        "label": "Digital lesen  Port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "sensors/digital_read.md"
+  },
+  {
+    "id": "digital_write",
+    "blockCategory": "Pins",
+    "subCategory": "",
+    "label": "Digital",
+    "colour": "#64748B",
+    "tooltip": "Setzt einen digitalen Grove-Port auf AN oder AUS",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Digital  Port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      },
+      {
+        "name": "STATE",
+        "fieldType": "on_off_dropdown"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "actuators/digital_write.md"
   }
 ];

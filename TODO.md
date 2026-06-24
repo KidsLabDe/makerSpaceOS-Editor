@@ -6,10 +6,10 @@
 - [x] "⏹ Stopp" Button: Ctrl+C über Serial
 - [x] Serieller Monitor: Live-Output von `print()` anzeigen
 - [x] Eingabefeld im Serial Monitor: manuelle REPL-Befehle senden
-- [ ] **Praxistest mit echtem MAKER-PI-RP2040 noch ausstehend**
+- [x] **Praxistest mit echtem MAKER-PI-RP2040 noch ausstehend**
 
 ## Phase 2.5 – Code persistent speichern
-- [ ] **"💾 Als code.py speichern"** via File System Access API
+- [x] **"💾 Als code.py speichern"** via File System Access API
   - Browser öffnet Dateipicker → User wählt CIRCUITPY-Laufwerk
   - `code.py` wird direkt auf das Laufwerk geschrieben
   - CircuitPython erkennt Änderung und startet automatisch neu
@@ -18,21 +18,31 @@
   - Referenz: so macht es auch code.circuitpython.org
 
 ## Phase 3 – Projekte & Usability
-- [ ] Projekte speichern/laden (localStorage + Blockly XML Export/Import)
+- [x] Projekte speichern/laden (localStorage + Blockly XML Export/Import)
+
 - [ ] "Neues Projekt" Button (leert Workspace, behält Startblöcke)
-- [ ] Board-Profil-Auswahl (MAKER-PI-RP2040 vs. Generisch mit freien Pins)
 
-## Phase 4 – Mehr Blöcke
-- [ ] OLED Display SSD1306 (Text anzeigen, Pixel setzen)
-- [ ] I2C Temperatursensor (z.B. BMP280)
-- [ ] Einzelne NeoPixel-Farben via RGB-Schieberegler
-- [ ] Töne nach Notenname (C4, D4, ... statt Hz-Eingabe)
-- [ ] Lernmodus: Schritt-für-Schritt Anleitungen zu Beispielprojekten
+  
 
-## Design
-- [ ] Farben der Blöcke überarbeiten
+
+
+
 
 ## Offen / Ideen
 - [ ] GitHub Pages: README mit Screenshot und Kurzanleitung ergänzen
-- [ ] Mobile-freundliches Layout (Tablets im Unterricht)
-- [ ] Mehrsprachigkeit (EN) für internationale Nutzung
+
+- [ ] Generische Digital AN / AUS und Analog LESEN / SETZEN blöcke - Brauchen wir da einen PULLUP / PULLDOWN init? oder ein INPUT oder OUTPUT init?
+
+- [ ] helligkeit - ist verkehrtherum 99% ist sehr dunkel und 5% ist hell....
+
+- [ ] Motor Testen
+
+- [ ] Schrittmotor programmieren (2 groove ports)  Set bestehend aus einem 28BYJ48 Schrittmotor und einem Treiberboard ULN2003 Der 28BYJ48 ist ein kleiner DC 5V 4-Phasen Schrittmotor mit 5  Anschlussleitungen. Zum Ansteuern enthält dieses Set ein ULN2003  Treiberboard welches direkt an einen Arduino angeschlossen wird.
+
+- [ ] Schrittmotor testen 
+
+- [ ] fasse alle featiures und kompontenten mal zusammen
+
+- [ ] aktualisiere die komponten in ../kom
+
+  

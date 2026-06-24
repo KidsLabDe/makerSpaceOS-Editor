@@ -1,9 +1,9 @@
 ---
 id: actuator_motor_forward
-blockCategory: Motor
-subCategory: ""
+blockCategory: Aktionen
+subCategory: "Motor"
 label: "🚗 Motor vorwärts"
-colour: "#E24D3D"
+colour: "#DC2626"
 tooltip: "Fährt einen DC-Motor vorwärts (0–100 % Geschwindigkeit)"
 blockType: statement
 inline: true

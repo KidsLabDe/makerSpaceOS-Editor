@@ -7,17 +7,31 @@
 (function () {
   'use strict';
 
-  const EVENT_COLOUR = '#F39A1B';   // Ereignis-Blau (siehe CLAUDE.md)
+  const EVENT_COLOUR = '#D97706';
 
   // ── Feld-Helfer (jeweils frische Field-Instanzen pro Block) ─────────────────
 
-  // Grove-Port-Dropdowns (Anzeige „Grove 1…7", Wert = Signal-Pin bzw. Port-ID)
-  const groveField  = (role) => new Blockly.FieldDropdown(BOARD.groveOptions(role || 'digital'));
-  const pinField    = () => groveField('digital');
-  const buttonField = () => new Blockly.FieldDropdown(
-    Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]));
+  const _NONE_OPT = ['– bitte auswählen –', '__NONE__'];
+
+  const groveField  = (role) => new Blockly.FieldDropdown([_NONE_OPT, ...BOARD.groveOptions(role || 'digital')]);
+
+  // Alle Grove-Ports als 2pin (Encoder braucht beide Pins)
+  const encPortField = () => new Blockly.FieldDropdown([
+    _NONE_OPT,
+    ...BOARD.grovePorts.map(p => [p.label, String(p.id)]),
+  ]);
+
+  // Kombiniertes Taster-Dropdown: B1/B2 (Onboard) + alle Grove-Ports
+  const tasterField = () => new Blockly.FieldDropdown([
+    _NONE_OPT,
+    ['B1 (GP20)', 'B1'], ['B2 (GP21)', 'B2'],
+    GROVE_SEP,
+    ...BOARD.grovePorts.map(p => [p.label, p.signal]),
+  ], v => v === '__SEP__' ? null : undefined);
+
   const stateField  = () => new Blockly.FieldDropdown([['gedrückt', 'pressed'], ['losgelassen', 'released']]);
   const opField     = () => new Blockly.FieldDropdown([['<', '<'], ['>', '>'], ['=', '==']]);
+  const dirField    = () => new Blockly.FieldDropdown([['↑ hoch', 'up'], ['↓ runter', 'down']]);
 
   // ── Schleife, die parallel läuft ────────────────────────────────────────────
 
@@ -30,8 +44,7 @@
     }
   };
 
-  // ── Digitale Trigger-Hüte ───────────────────────────────────────────────────
-  // Definitions-Helfer: ein Label + Pin-Dropdown auf dem Statement-Eingang.
+  // ── Digitale Trigger-Hüte (verbleibende) ────────────────────────────────────
 
   function digitalHat(type, label, tooltip) {
     Blockly.Blocks[type] = {
@@ -39,7 +52,7 @@
         this.appendStatementInput('DO')
             .appendField(label)
             .appendField('  Port:')
-            .appendField(pinField(), 'PIN')
+            .appendField(groveField('digital'), 'PIN')
             .appendField('→ dann');
         this.setColour(EVENT_COLOUR);
         this.setTooltip(tooltip);
@@ -47,14 +60,8 @@
     };
   }
 
-  digitalHat('when_obstacle',  'Wenn Hindernis erkannt',   'Startet, sobald ein Hindernis erkannt wird');
-  digitalHat('when_line',      'Wenn Linie erkannt',        'Startet, sobald eine Linie erkannt wird');
-  digitalHat('when_tilt',      'Wenn geneigt',             'Startet, sobald der Sensor geneigt wird');
-  digitalHat('when_magnetic',  'Wenn Magnetfeld erkannt',  'Startet, sobald ein Magnetfeld erkannt wird');
-  digitalHat('when_flame',     'Wenn Flamme erkannt',      'Startet, sobald eine Flamme erkannt wird');
-  digitalHat('when_sound',     'Wenn Geräusch erkannt',    'Startet, sobald ein Geräusch erkannt wird');
-  digitalHat('when_touch',     'Wenn berührt',             'Startet, sobald der Sensor berührt wird');
-  digitalHat('when_vibration', 'Wenn Erschütterung',       'Startet bei einer Erschütterung');
+  digitalHat('when_sound', 'Wenn Geräusch erkannt', 'Startet, sobald ein Geräusch erkannt wird');
+  digitalHat('when_touch', 'Wenn berührt',          'Startet, sobald der Sensor berührt wird');
 
   // ── Taster-Hut (mit gedrückt/losgelassen) ───────────────────────────────────
 
@@ -62,11 +69,25 @@
     init: function () {
       this.appendStatementInput('DO')
           .appendField('Wenn Taster')
-          .appendField(buttonField(), 'BTN')
+          .appendField(tasterField(), 'BTN')
           .appendField(stateField(), 'STATE')
           .appendField('→ dann');
       this.setColour(EVENT_COLOUR);
       this.setTooltip('Startet, sobald der Taster gedrückt bzw. losgelassen wird');
+    }
+  };
+
+  // ── Drehgeber-Hut (Richtungserkennung) ──────────────────────────────────────
+
+  Blockly.Blocks['when_encoder'] = {
+    init: function () {
+      this.appendStatementInput('DO')
+          .appendField('Wenn Drehgeber')
+          .appendField(encPortField(), 'PORT')
+          .appendField(dirField(), 'DIR')
+          .appendField('→ dann');
+      this.setColour(EVENT_COLOUR);
+      this.setTooltip('Startet, sobald der Drehgeber in die gewählte Richtung gedreht wird');
     }
   };
 
@@ -110,7 +131,21 @@
       this.appendStatementInput('DO').appendField('°C → dann');
       this.setInputsInline(true);
       this.setColour(EVENT_COLOUR);
-      this.setTooltip('Startet, sobald die Temperatur die Bedingung erfüllt');
+      this.setTooltip('Startet, sobald die Temperatur (DHT11) die Bedingung erfüllt');
+    }
+  };
+
+  Blockly.Blocks['when_humidity'] = {
+    init: function () {
+      this.appendValueInput('VALUE')
+          .setCheck('Number')
+          .appendField('Wenn Luftfeuchtigkeit  Port:')
+          .appendField(groveField('digital'), 'PIN')
+          .appendField(opField(), 'OP');
+      this.appendStatementInput('DO').appendField('% → dann');
+      this.setInputsInline(true);
+      this.setColour(EVENT_COLOUR);
+      this.setTooltip('Startet, sobald die Luftfeuchtigkeit (DHT11) die Bedingung erfüllt');
     }
   };
 

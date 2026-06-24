@@ -9,7 +9,7 @@ Blockly.Blocks['control_setup'] = {
     this.appendDummyInput()
         .appendField('läuft einmal beim Start');
     this.appendStatementInput('DO');
-    this.setColour('#A57BC3');
+    this.setColour('#7C3AED');
     this.setTooltip('Code hier läuft einmal beim Einschalten / Neustart');
   }
 };
@@ -19,7 +19,7 @@ Blockly.Blocks['control_forever'] = {
     this.appendDummyInput()
         .appendField('FÜR IMMER');
     this.appendStatementInput('DO');
-    this.setColour('#A57BC3');
+    this.setColour('#7C3AED');
     this.setTooltip('Code hier wird immer wieder wiederholt');
   }
 };
@@ -36,7 +36,7 @@ Blockly.Blocks['control_wait'] = {
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour('#A57BC3');
+    this.setColour('#7C3AED');
     this.setTooltip('Wartet die angegebene Anzahl Sekunden');
   }
 };
@@ -48,7 +48,7 @@ Blockly.Blocks['control_print'] = {
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour('#A57BC3');
+    this.setColour('#7C3AED');
     this.setTooltip('Gibt einen Wert im Seriellen Monitor aus');
   }
 };

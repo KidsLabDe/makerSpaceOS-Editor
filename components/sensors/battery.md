@@ -1,7 +1,7 @@
 ---
 id: sensor_battery
 blockCategory: Sensoren
-subCategory: Analog
+subCategory: "Weitere"
 label: "🔋 Batteriespannung (V)"
 colour: "#2563EB"
 tooltip: "Misst die Versorgungsspannung (VBAT) in Volt über GP29"

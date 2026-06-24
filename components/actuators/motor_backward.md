@@ -1,9 +1,9 @@
 ---
 id: actuator_motor_backward
-blockCategory: Motor
-subCategory: ""
+blockCategory: Aktionen
+subCategory: "Motor"
 label: "🚗 Motor rückwärts"
-colour: "#E24D3D"
+colour: "#DC2626"
 tooltip: "Fährt einen DC-Motor rückwärts (0–100 % Geschwindigkeit)"
 blockType: statement
 inline: true

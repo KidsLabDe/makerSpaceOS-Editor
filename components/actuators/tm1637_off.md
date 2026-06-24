@@ -1,9 +1,9 @@
 ---
 id: tm1637_off
-blockCategory: Anzeige
+blockCategory: Anzeigen
 subCategory: ""
 label: "⬛ 7-Seg ausschalten"
-colour: "#1B6CA8"
+colour: "#0D9488"
 tooltip: "Löscht alle Ziffern auf dem 7-Segment-Display (Anzeige bleibt dunkel)"
 blockType: statement
 inline: true

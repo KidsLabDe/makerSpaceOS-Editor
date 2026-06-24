@@ -1,39 +1,28 @@
 ---
 id: sensor_taster
 blockCategory: Sensoren
-subCategory: Digital-Sensoren
+subCategory: "Weitere"
 label: "🔘 Taster gedrückt?"
 colour: "#2563EB"
-tooltip: "Gibt Wahr zurück, wenn der externe Taster an einem beliebigen Pin gedrückt wird (KY-004)"
+tooltip: "Gibt Wahr zurück, wenn der Taster gedrückt ist (Board-Taster B1/B2 oder externer Taster)"
 blockType: value
 output: Boolean
 inputs:
-  - label: "🔘 Taster gedrückt?  Port:"
-    name: PIN
-    fieldType: grove_dropdown
-    groveRole: digital
-generator:
-  imports:
-    - "import board"
-    - "import digitalio"
-  defs:
-    - key: "init_taster_${PIN}"
-      val: "_taster_${PIN} = digitalio.DigitalInOut(board.${PIN})\n_taster_${PIN}.switch_to_input(pull=digitalio.Pull.UP)"
-  expression: "(not _taster_${PIN}.value)"
-  order: NONE
+  - label: "🔘 Taster"
+    name: BTN
+    fieldType: taster_dropdown
+  - label: "gedrückt?"
+    fieldType: fixed_label
 hardware:
-  kyNumber: "KY-004"
   commonName: "Taster / Drucktaster"
   verbrauch3j: 28
   kitStandard: true
-legacyGenerator: false
+legacyGenerator: true
 ---
 
-# Externer Taster (KY-004)
+# Taster gedrückt? (B1/B2 + externer Taster)
 
-Ein einfacher Drucktaster an einem beliebigen externen Pin. Gibt `Wahr` zurück, wenn gedrückt.
+Gibt `Wahr` zurück wenn der ausgewählte Taster gedrückt ist.
 
-## Anschluss
-- Signal → GP-Pin (konfigurierbar)
-- VCC → 3.3V oder 5V
-- GND → GND
+- **B1 (GP20) / B2 (GP21)**: Onboard-Taster des MAKER-PI-RP2040
+- **Grove 1–7**: Externer Taster (KY-004) am Signal-Pin des Grove-Ports

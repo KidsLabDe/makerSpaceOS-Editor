@@ -1,7 +1,7 @@
 ---
 id: sensor_bodenfeuchte
 blockCategory: Sensoren
-subCategory: Analog
+subCategory: "Weitere"
 label: "🌱 Bodenfeuchte (0–100%)"
 colour: "#2563EB"
 tooltip: "Liest die Bodenfeuchte in Prozent aus (0 = trocken, 100 = nass). Kapazitiver Sensor."
