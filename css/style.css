@@ -384,6 +384,11 @@ html, body {
 }
 .btn-sm { padding: 4px 10px; font-size: 12px; }
 
+.diff-add  { color: #86efac; display: block; }
+.diff-rem  { color: #fca5a5; display: block; }
+.diff-eq   { color: var(--text-muted); display: block; font-style: italic; }
+.diff-more { color: var(--text-muted); display: block; font-style: italic; }
+
 /* KI-Einstellungen */
 #ai-settings {
   padding: 10px 14px;

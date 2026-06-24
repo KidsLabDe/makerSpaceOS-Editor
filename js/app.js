@@ -204,6 +204,36 @@ function closeHistory() {
   document.getElementById('history-overlay').classList.remove('show');
 }
 
+// Einfacher Zeilendiff: gibt Array von {type:'=','+'|'-', text} zurück.
+// Nutzt LCS (Longest Common Subsequence) auf gefilterten Zeilen.
+function _diffCode(oldCode, newCode) {
+  const clean = c => (c || '').split('\n')
+    .map(l => l.trim())
+    .filter(l => l && !l.startsWith('#'));
+  const a = clean(oldCode);
+  const b = clean(newCode);
+
+  // LCS-Tabelle
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Int32Array(n + 1));
+  for (let i = m - 1; i >= 0; i--)
+    for (let j = n - 1; j >= 0; j--)
+      dp[i][j] = a[i] === b[j] ? dp[i+1][j+1] + 1 : Math.max(dp[i+1][j], dp[i][j+1]);
+
+  const diff = [];
+  let i = 0, j = 0;
+  while (i < m || j < n) {
+    if (i < m && j < n && a[i] === b[j]) {
+      diff.push({ type: '=', text: a[i++] }); j++;
+    } else if (j < n && (i >= m || dp[i][j+1] >= dp[i+1][j])) {
+      diff.push({ type: '+', text: b[j++] });
+    } else {
+      diff.push({ type: '-', text: a[i++] });
+    }
+  }
+  return diff;
+}
+
 function renderHistory() {
   const list = document.getElementById('history-list');
   const versions = getVersions();
@@ -213,6 +243,7 @@ function renderHistory() {
       + 'Führe ein Programm aus, um eine Version anzulegen.</p>';
     return;
   }
+  const currentCode = generateCode();
   versions.forEach((v, i) => {
     const item = document.createElement('div');
     item.className = 'history-item';
@@ -233,11 +264,21 @@ function renderHistory() {
     head.appendChild(ts);
     head.appendChild(btn);
 
+    // Mini-Diff gegen den aktuellen Stand
+    const diff = _diffCode(v.code, currentCode);
+    const changes = diff.filter(d => d.type !== '=');
     const pre = document.createElement('pre');
     pre.className = 'history-preview';
-    pre.textContent = (v.code || '').split('\n')
-      .filter(l => l.trim() && !l.startsWith('#'))
-      .slice(0, 3).join('\n') || '(leer)';
+    if (!changes.length) {
+      pre.innerHTML = '<span class="diff-eq">≡ identisch mit aktuellem Stand</span>';
+    } else {
+      // Nur geänderte Zeilen anzeigen, max. 6
+      pre.innerHTML = changes.slice(0, 6).map(d => {
+        const cls = d.type === '+' ? 'diff-add' : 'diff-rem';
+        const prefix = d.type === '+' ? '+ ' : '− ';
+        return `<span class="${cls}">${prefix}${d.text.replace(/</g, '&lt;')}</span>`;
+      }).join('\n') + (changes.length > 6 ? `\n<span class="diff-more">… ${changes.length - 6} weitere</span>` : '');
+    }
 
     item.appendChild(head);
     item.appendChild(pre);
