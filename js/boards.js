@@ -55,12 +55,14 @@ const BOARD_PROFILES = {
         case '2pin':
           return this.grovePorts.map(p => [p.label, String(p.id)]);
         case 'digital':
-        default:
+        default: {
+          const usedSignals = new Set(this.grovePorts.map(p => p.signal));
+          const extraPins = this.allGrovePins.filter(p => !usedSignals.has(p));
           return [
             ...this.grovePorts.map(p => [p.label, p.signal]),
-            GROVE_SEP,
-            ...this.allGrovePins.map(p => [p, p]),
+            ...(extraPins.length ? [GROVE_SEP, ...extraPins.map(p => [p, p])] : []),
           ];
+        }
       }
     },
 
