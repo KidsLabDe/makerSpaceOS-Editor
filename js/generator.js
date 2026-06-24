@@ -713,9 +713,9 @@ Blockly.Python['actuator_lcd'] = function(block) {
 function _tm1637Defs(portId) {
   const port = BOARD.grovePortById(portId);
   _defs['import_board']    = 'import board';
-  _defs['import_tm1637']   = 'import adafruit_tm1637';
+  _defs['import_tm1637']   = 'from tm1637_display import TM1637Display';
   _defs[`init_tm_${portId}`] =
-    `_tm_${portId} = adafruit_tm1637.TM1637(board.${port.pin1}, board.${port.signal})`;
+    `_tm_${portId} = TM1637Display(board.${port.pin1}, board.${port.signal})`;
 }
 
 Blockly.Python['tm1637_number'] = function(block) {
@@ -728,7 +728,7 @@ Blockly.Python['tm1637_number'] = function(block) {
 Blockly.Python['tm1637_off'] = function(block) {
   const portId = block.getFieldValue('PORT');
   _tm1637Defs(portId);
-  return `_tm_${portId}.fill(0)\n`;
+  return `_tm_${portId}.clear()\n`;
 };
 
 // ── ISD1820 Sprachmodul ───────────────────────────────────────────────────────
