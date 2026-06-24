@@ -708,15 +708,27 @@ Blockly.Python['actuator_lcd'] = function(block) {
 
 // ── ISD1820 Sprachmodul ───────────────────────────────────────────────────────
 // P-E ist flankengesteuert: kurzer HIGH-Puls → spielt Aufnahme einmal ab.
-Blockly.Python['actuator_isd1820'] = function(block) {
-  const sig = block.getFieldValue('SIG');
-  _defs['import_board']      = 'import board';
-  _defs['import_digitalio']  = 'import digitalio';
-  _defs[`init_isd_${sig}`]   =
+// REC: HIGH halten solange aufgenommen werden soll (max. 10 s).
+function _isd1820Init(sig) {
+  _defs['import_board']     = 'import board';
+  _defs['import_digitalio'] = 'import digitalio';
+  _defs[`init_isd_${sig}`]  =
     `_isd_${sig} = digitalio.DigitalInOut(board.${sig})\n` +
     `_isd_${sig}.direction = digitalio.Direction.OUTPUT\n` +
     `_isd_${sig}.value = False`;
+}
+
+Blockly.Python['actuator_isd1820'] = function(block) {
+  const sig = block.getFieldValue('SIG');
+  _isd1820Init(sig);
   return `_isd_${sig}.value = True\nawait asyncio.sleep(0.1)\n_isd_${sig}.value = False\n`;
+};
+
+Blockly.Python['actuator_isd1820_record'] = function(block) {
+  const sig   = block.getFieldValue('SIG');
+  const dauer = Blockly.Python.valueToCode(block, 'DAUER', Blockly.Python.ORDER_NONE) || '3';
+  _isd1820Init(sig);
+  return `_isd_${sig}.value = True\nawait asyncio.sleep(min(${dauer}, 10))\n_isd_${sig}.value = False\n`;
 };
 
 // ── Ereignis-Hut-Blöcke (je ein benannter Handler) ───────────────────────────

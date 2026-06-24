@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-24T13:21:42.389Z
+// Generiert: 2026-06-24T13:23:07.996Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -946,6 +946,38 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/isd1820.md"
+  },
+  {
+    "id": "actuator_isd1820_record",
+    "blockCategory": "Aktoren",
+    "subCategory": "Audio",
+    "label": "Aufnehmen",
+    "colour": "#E24D3D",
+    "tooltip": "Nimmt für die angegebene Dauer auf (REC-Pin HIGH halten). Max. 10 Sekunden.",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Aufnehmen  Port:",
+        "name": "SIG",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "DAUER",
+        "label": "Sekunden",
+        "defaultValue": 3,
+        "suffix": "s"
+      }
+    ],
+    "hardware": {
+      "commonName": "ISD1820 Sprachmodul",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/isd1820_record.md"
   },
   {
     "id": "actuator_lcd",
