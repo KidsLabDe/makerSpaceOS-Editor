@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-23T10:25:43.072Z
+// Generiert: 2026-06-24T10:23:43.683Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -938,11 +938,6 @@ const BLOCKS_DB = [
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "i2c"
-      },
-      {
-        "label": "Version:",
-        "name": "VERSION",
-        "fieldType": "lcd_version_dropdown"
       },
       {
         "label": "Farbe:",

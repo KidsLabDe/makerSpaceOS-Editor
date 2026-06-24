@@ -700,8 +700,7 @@ Blockly.Python['actuator_active_buzzer'] = function(block) {
 };
 
 // ── Grove-LCD RGB Backlight (I2C) ─────────────────────────────────────────────
-// Nutzt lib/grove_rgb_lcd.py (eigene CircuitPython-Lib, V4+V5). rgb_addr wählt die
-// Version: 0x62 (V4 / PCA9633) bzw. 0x30 (V5 / SGM31323). Text-Adresse fest 0x3E.
+// Nutzt lib/grove_rgb_lcd.py. Hardcodiert auf V5 (SGM31323 @ 0x30, 3,3 V).
 function _groveLcdDef(portId, rgbAddr) {
   const port = BOARD.grovePortById(portId);
   _defs['import_board'] = 'import board';
@@ -722,10 +721,9 @@ const _LCD_RGB = {
 
 Blockly.Python['actuator_lcd'] = function(block) {
   const portId  = block.getFieldValue('PORT');
-  const rgbAddr = block.getFieldValue('VERSION');
   const colour  = block.getFieldValue('COLOR') || 'white';
   const text    = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_NONE) || '""';
-  _groveLcdDef(portId, rgbAddr);
+  _groveLcdDef(portId, '0x30');
   const rgb = _LCD_RGB[colour] || '255, 255, 255';
   return `_lcd.set_rgb(${rgb})\n_lcd.set_text(${text})\n`;
 };
