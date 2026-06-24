@@ -173,40 +173,17 @@ Blockly.Python['sensor_dht_humidity'] = function(block) {
   return [`_dht_${pin}.humidity`, Blockly.Python.ORDER_MEMBER];
 };
 
-// Grove-Ultraschall-Ranger: ein einziger Signal-Pin (Trigger + Echo).
-// Helfer-Funktion misst die Distanz in cm (-1 bei Timeout).
-function _groveSonarDef() {
-  _defs['import_board']     = 'import board';
-  _defs['import_digitalio'] = 'import digitalio';
-  _defs['import_time']      = 'import time';
-  _defs['fn_grove_sonar'] =
-    'def _grove_sonar(pin):\n' +
-    '    _io = digitalio.DigitalInOut(pin)\n' +
-    '    _io.direction = digitalio.Direction.OUTPUT\n' +
-    '    _io.value = False\n' +
-    '    time.sleep(0.000002)\n' +
-    '    _io.value = True\n' +
-    '    time.sleep(0.00001)\n' +
-    '    _io.value = False\n' +
-    '    _io.switch_to_input()\n' +
-    '    _t0 = time.monotonic_ns()\n' +
-    '    while not _io.value:\n' +
-    '        if time.monotonic_ns() - _t0 > 30000000:\n' +
-    '            _io.deinit()\n' +
-    '            return -1\n' +
-    '    _start = time.monotonic_ns()\n' +
-    '    while _io.value:\n' +
-    '        if time.monotonic_ns() - _start > 30000000:\n' +
-    '            break\n' +
-    '    _dur = time.monotonic_ns() - _start\n' +
-    '    _io.deinit()\n' +
-    '    return (_dur / 1000) / 58';
+// Grove-Ultraschall-Ranger: nutzt lib/grove_ultrasonic.py (nach CIRCUITPY/lib/ kopieren).
+function _groveSonarDef(sig) {
+  _defs['import_board']             = 'import board';
+  _defs['from_grove_ultrasonic']    = 'from grove_ultrasonic import GroveUltrasonic';
+  _defs[`init_sonar_${sig}`]        = `_sonar_${sig} = GroveUltrasonic(board.${sig})`;
 }
 
 Blockly.Python['sensor_ultrasonic'] = function(block) {
   const sig = block.getFieldValue('SIG');
-  _groveSonarDef();
-  return [`round(_grove_sonar(board.${sig}), 1)`, Blockly.Python.ORDER_FUNCTION_CALL];
+  _groveSonarDef(sig);
+  return [`_sonar_${sig}.distance`, Blockly.Python.ORDER_MEMBER];
 };
 
 Blockly.Python['sensor_ldr'] = function(block) {
@@ -247,8 +224,8 @@ Blockly.Python['event_ultrasonic'] = function(block) {
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _groveSonarDef();
-  return `if _grove_sonar(board.${sig}) ${op} ${val}:\n${body}`;
+  _groveSonarDef(sig);
+  return `if _sonar_${sig}.distance ${op} ${val}:\n${body}`;
 };
 
 Blockly.Python['event_ldr'] = function(block) {
@@ -777,8 +754,8 @@ Blockly.Python['when_distance'] = function(block) {
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _groveSonarDef();
-  return _whenTask('wenn_abstand', `(_grove_sonar(board.${sig}) ${op} ${val})`, body, '0.05');
+  _groveSonarDef(sig);
+  return _whenTask('wenn_abstand', `(_sonar_${sig}.distance ${op} ${val})`, body, '0.05');
 };
 
 Blockly.Python['when_light'] = function(block) {
