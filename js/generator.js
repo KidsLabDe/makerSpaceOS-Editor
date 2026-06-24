@@ -70,12 +70,8 @@ function _whenTask(name, activeExpr, body, poll) {
 
 // finish(): erzeugt den finalen formatierten Code
 Blockly.Python.finish = function() {
-  // makerspaceos-Laufzeit, sobald es Aufgaben gibt oder der Setup-Code selbst await nutzt
   const hasSetup = !!_setupCode.trim();
   const hasAsync = _tasks.length > 0 || /\bawait\b/.test(_setupCode);
-  // Die Handler-Bodies nutzen await asyncio.sleep(...) (Warte/Buzzer/Blink) →
-  // asyncio muss im generierten Code importiert sein (makerspaceos importiert es
-  // nur für sich selbst, nicht in den Namespace des Programms).
   if (hasAsync) _defs['import_asyncio'] = 'import asyncio';
 
   const imports = [];
@@ -86,13 +82,33 @@ Blockly.Python.finish = function() {
     else inits.push(val);
   }
 
+  // Alle Blockly-Variablen aus dem Workspace sammeln
+  const ws = Blockly.getMainWorkspace();
+  const allVarNames = ws ? ws.getAllVariables().map(v => v.name) : [];
+
+  // Fügt 'global var1, var2' an den Anfang eines Funktionskörpers ein,
+  // für alle Variablen die im Body vorkommen.
+  // Nötig weil Python sonst eine neue lokale Variable anlegt statt die
+  // Modul-Variable zu nutzen – was in anderen async-Funktionen zu NameError führt.
+  function withGlobals(body) {
+    if (!allVarNames.length) return body;
+    const used = allVarNames.filter(v => new RegExp(`\\b${v}\\b`).test(body));
+    if (!used.length) return body;
+    return `    global ${used.join(', ')}\n` + body;
+  }
+
   let result = '# === makerSpaceOS – Generierter Code ===\n';
   if (hasAsync) result += 'from makerspaceos import immer, wenn, start\n';
   if (imports.length) result += imports.join('\n') + '\n';
   if (inits.length)   result += '\n# --- Initialisierungen ---\n' + inits.join('\n') + '\n';
 
+  // Variablen auf Modulebene vordeklarieren (None als Platzhalter),
+  // damit sie in allen async-Funktionen per 'global' erreichbar sind.
+  if (hasAsync && allVarNames.length) {
+    result += '\n# --- Variablen ---\n' + allVarNames.map(v => `${v} = None`).join('\n') + '\n';
+  }
+
   if (hasAsync) {
-    // Eindeutige Handler-Namen vergeben (gleiche Block-Typen → Suffix _2, _3 …)
     const used = Object.create(null);
     const unique = (base) => {
       let n = base, i = 2;
@@ -103,15 +119,12 @@ Blockly.Python.finish = function() {
     if (hasSetup) used['beim_start'] = true;
     _tasks.forEach(t => { t.fn = unique(t.name); });
 
-    // --- Handler-Funktionen (das eigentliche Programm) ---
     result += '\n# --- Dein Programm ---\n';
-    if (hasSetup) result += 'async def beim_start():\n' + _setupCode + '\n';  // bereits 1 Ebene eingerückt
+    if (hasSetup) result += 'async def beim_start():\n' + withGlobals(_setupCode) + '\n';
     _tasks.forEach(t => {
-      // body kommt aus statementToCode → bereits 1 Ebene eingerückt
-      result += `async def ${t.fn}():\n${t.body}\n`;
+      result += `async def ${t.fn}():\n${withGlobals(t.body)}\n`;
     });
 
-    // --- Registrierung + Start ---
     result += '# --- Start ---\n';
     _tasks.forEach(t => {
       if (t.kind === 'loop') {
@@ -123,10 +136,23 @@ Blockly.Python.finish = function() {
     });
     result += `start(${hasSetup ? 'beim_start' : ''})\n`;
   } else if (hasSetup) {
-    // Keine Aufgaben, kein await: Setup einmalig auf Modulebene ausführen
     result += '\n# --- Setup (einmalig) ---\n' + _dedent(_setupCode);
   }
   return result;
+};
+
+// Blockly's Python-Generator nutzt 'Number' (JavaScript-Typ) statt (int, float).
+// Wird für den "Ändere X um Y"-Block benötigt.
+Blockly.Python['math_change'] = function(block) {
+  let varName;
+  try {
+    varName = Blockly.Python.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.Names.NameType.VARIABLE);
+  } catch(_) {
+    varName = block.getFieldValue('VAR');
+  }
+  const delta = Blockly.Python.valueToCode(block, 'DELTA', Blockly.Python.ORDER_ADDITIVE) || '0';
+  return `${varName} = (${varName} if isinstance(${varName}, (int, float)) else 0) + ${delta}\n`;
 };
 
 // ── Pflicht-Startblöcke ───────────────────────────────────────────────────────
