@@ -706,6 +706,31 @@ Blockly.Python['actuator_lcd'] = function(block) {
   return `_lcd.set_rgb(${rgb})\n_lcd.set_text((${line1})[:16] + "\\n" + (${line2})[:16])\n`;
 };
 
+// ── TM1637 4-stelliges 7-Segment-Display ─────────────────────────────────────
+// CLK = Grove pin1, DIO = Grove signal
+// Lib: adafruit_tm1637 (Adafruit CircuitPython Bundle)
+
+function _tm1637Defs(portId) {
+  const port = BOARD.grovePortById(portId);
+  _defs['import_board']    = 'import board';
+  _defs['import_tm1637']   = 'import adafruit_tm1637';
+  _defs[`init_tm_${portId}`] =
+    `_tm_${portId} = adafruit_tm1637.TM1637(board.${port.pin1}, board.${port.signal})`;
+}
+
+Blockly.Python['tm1637_number'] = function(block) {
+  const portId = block.getFieldValue('PORT');
+  _tm1637Defs(portId);
+  const val = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '0';
+  return `_tm_${portId}.print(int(${val}))\n`;
+};
+
+Blockly.Python['tm1637_off'] = function(block) {
+  const portId = block.getFieldValue('PORT');
+  _tm1637Defs(portId);
+  return `_tm_${portId}.fill(0)\n`;
+};
+
 // ── ISD1820 Sprachmodul ───────────────────────────────────────────────────────
 // P-E ist flankengesteuert: kurzer HIGH-Puls → spielt Aufnahme einmal ab.
 // REC: HIGH halten solange aufgenommen werden soll (max. 10 s).
