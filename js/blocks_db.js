@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-24T15:02:48.056Z
+// Generiert: 2026-06-24T15:10:12.903Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -980,64 +980,6 @@ const BLOCKS_DB = [
     "_file": "actuators/isd1820_record.md"
   },
   {
-    "id": "tm1637_number",
-    "blockCategory": "Aktoren",
-    "subCategory": "Anzeige",
-    "label": "7-Seg Zahl anzeigen",
-    "colour": "#1B6CA8",
-    "tooltip": "Zeigt eine Zahl (ganze Zahl, −999 bis 9999) auf dem 4-stelligen 7-Segment-Display an",
-    "blockType": "statement",
-    "inline": true,
-    "inputs": [
-      {
-        "label": "7-Seg  Port:",
-        "name": "PORT",
-        "fieldType": "grove_dropdown",
-        "groveRole": "2pin"
-      }
-    ],
-    "valueInputs": [
-      {
-        "name": "VALUE",
-        "check": "Number",
-        "label": "Zahl",
-        "defaultValue": 1234
-      }
-    ],
-    "hardware": {
-      "commonName": "7-Segment Display TM1637 (4-stellig)",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/tm1637_number.md"
-  },
-  {
-    "id": "tm1637_off",
-    "blockCategory": "Aktoren",
-    "subCategory": "Anzeige",
-    "label": "7-Seg ausschalten",
-    "colour": "#1B6CA8",
-    "tooltip": "Löscht alle Ziffern auf dem 7-Segment-Display (Anzeige bleibt dunkel)",
-    "blockType": "statement",
-    "inline": true,
-    "inputs": [
-      {
-        "label": "7-Seg ausschalten  Port:",
-        "name": "PORT",
-        "fieldType": "grove_dropdown",
-        "groveRole": "2pin"
-      }
-    ],
-    "hardware": {
-      "commonName": "7-Segment Display TM1637 (4-stellig)",
-      "verbrauch3j": 0,
-      "kitStandard": false
-    },
-    "legacyGenerator": true,
-    "_file": "actuators/tm1637_off.md"
-  },
-  {
     "id": "actuator_lcd",
     "blockCategory": "Anzeige",
     "subCategory": "",
@@ -1080,6 +1022,64 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/lcd.md"
+  },
+  {
+    "id": "tm1637_number",
+    "blockCategory": "Anzeige",
+    "subCategory": "",
+    "label": "7-Seg Zahl anzeigen",
+    "colour": "#1B6CA8",
+    "tooltip": "Zeigt eine Zahl (ganze Zahl, −999 bis 9999) auf dem 4-stelligen 7-Segment-Display an",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "7-Seg  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "VALUE",
+        "check": "Number",
+        "label": "Zahl",
+        "defaultValue": 1234
+      }
+    ],
+    "hardware": {
+      "commonName": "7-Segment Display TM1637 (4-stellig)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/tm1637_number.md"
+  },
+  {
+    "id": "tm1637_off",
+    "blockCategory": "Anzeige",
+    "subCategory": "",
+    "label": "7-Seg ausschalten",
+    "colour": "#1B6CA8",
+    "tooltip": "Löscht alle Ziffern auf dem 7-Segment-Display (Anzeige bleibt dunkel)",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "7-Seg ausschalten  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin"
+      }
+    ],
+    "hardware": {
+      "commonName": "7-Segment Display TM1637 (4-stellig)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/tm1637_off.md"
   },
   {
     "id": "actuator_motor_backward",

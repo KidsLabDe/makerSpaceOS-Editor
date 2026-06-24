@@ -1,7 +1,7 @@
 ---
 id: tm1637_number
-blockCategory: Aktoren
-subCategory: Anzeige
+blockCategory: Anzeige
+subCategory: ""
 label: "🔢 7-Seg Zahl anzeigen"
 colour: "#1B6CA8"
 tooltip: "Zeigt eine Zahl (ganze Zahl, −999 bis 9999) auf dem 4-stelligen 7-Segment-Display an"
