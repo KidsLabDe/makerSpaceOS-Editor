@@ -726,7 +726,7 @@ Blockly.Python['actuator_lcd'] = function(block) {
   const line2  = Blockly.Python.valueToCode(block, 'LINE2', Blockly.Python.ORDER_NONE) || '""';
   _groveLcdDef(portId, '0x30');
   const rgb = _LCD_RGB[colour] || '255, 255, 255';
-  return `_lcd.set_rgb(${rgb})\n_lcd.set_text(${line1} + "\\n" + ${line2})\n`;
+  return `_lcd.set_rgb(${rgb})\n_lcd.set_text((${line1})[:16] + "\\n" + (${line2})[:16])\n`;
 };
 
 // ── Ereignis-Hut-Blöcke (je ein benannter Handler) ───────────────────────────
