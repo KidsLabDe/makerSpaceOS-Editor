@@ -16,10 +16,14 @@ inputs:
     name: COLOR
     fieldType: rgb_color_dropdown
 valueInputs:
-  - name: TEXT
-    label: "Text"
+  - name: LINE1
+    label: "Zeile 1"
     check: String
     defaultValue: "Hallo"
+  - name: LINE2
+    label: "Zeile 2"
+    check: String
+    defaultValue: "Welt"
 hardware:
   commonName: "Grove-LCD RGB Backlight"
   verbrauch3j: 0

@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-24T10:23:43.683Z
+// Generiert: 2026-06-24T10:24:22.388Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -947,10 +947,16 @@ const BLOCKS_DB = [
     ],
     "valueInputs": [
       {
-        "name": "TEXT",
-        "label": "Text",
+        "name": "LINE1",
+        "label": "Zeile 1",
         "check": "String",
         "defaultValue": "Hallo"
+      },
+      {
+        "name": "LINE2",
+        "label": "Zeile 2",
+        "check": "String",
+        "defaultValue": "Welt"
       }
     ],
     "hardware": {

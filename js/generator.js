@@ -720,12 +720,13 @@ const _LCD_RGB = {
 };
 
 Blockly.Python['actuator_lcd'] = function(block) {
-  const portId  = block.getFieldValue('PORT');
-  const colour  = block.getFieldValue('COLOR') || 'white';
-  const text    = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_NONE) || '""';
+  const portId = block.getFieldValue('PORT');
+  const colour = block.getFieldValue('COLOR') || 'white';
+  const line1  = Blockly.Python.valueToCode(block, 'LINE1', Blockly.Python.ORDER_NONE) || '""';
+  const line2  = Blockly.Python.valueToCode(block, 'LINE2', Blockly.Python.ORDER_NONE) || '""';
   _groveLcdDef(portId, '0x30');
   const rgb = _LCD_RGB[colour] || '255, 255, 255';
-  return `_lcd.set_rgb(${rgb})\n_lcd.set_text(${text})\n`;
+  return `_lcd.set_rgb(${rgb})\n_lcd.set_text(${line1} + "\\n" + ${line2})\n`;
 };
 
 // ── Ereignis-Hut-Blöcke (je ein benannter Handler) ───────────────────────────
