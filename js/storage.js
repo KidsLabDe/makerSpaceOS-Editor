@@ -109,14 +109,22 @@ function ensureFixedBlocks() {
   }
 }
 
+// Letztes gespeichertes File-Handle merken → Dialog öffnet beim nächsten Mal
+// direkt im gleichen Ordner (CIRCUITPY, sobald der Nutzer es einmal navigiert hat).
+let _lastBoardHandle = null;
+
 // Generierten Code als main.py speichern (Datei-Dialog → CIRCUITPY-Laufwerk).
 // CircuitPython lässt sein Laufwerk nicht per Serial beschreiben, daher Dateisystem-API.
 async function saveToBoard(code) {
   if (window.showSaveFilePicker) {
-    const handle = await window.showSaveFilePicker({
+    showToast('📂 Bitte zum CIRCUITPY-Laufwerk navigieren und main.py speichern', 'ok');
+    const opts = {
       suggestedName: 'main.py',
       types: [{ description: 'Python', accept: { 'text/x-python': ['.py'] } }],
-    });
+    };
+    if (_lastBoardHandle) opts.startIn = _lastBoardHandle;
+    const handle = await window.showSaveFilePicker(opts);
+    _lastBoardHandle = handle;
     const writable = await handle.createWritable();
     await writable.write(code);
     await writable.close();
