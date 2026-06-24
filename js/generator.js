@@ -816,23 +816,19 @@ function _matrixDefs(pin) {
   _defs['import_board']    = 'import board';
   _defs['import_neopixel'] = 'import neopixel';
   _defs[`init_matrix_${pin}`] =
-    `_matrix_${pin} = neopixel.NeoPixel(board.${pin}, 64, brightness=0.2, auto_write=False)`;
+    `_matrix_${pin} = neopixel.NeoPixel(board.${pin}, 64, brightness=0.1, auto_write=False)`;
 }
 
 function _matrixPin(block) {
   return BOARD.servos[block.getFieldValue('SERVO')];
 }
 
-// Berechnet NeoPixel-Indizes aus einer 64-Zeichen-Maske.
-// Verwendet Schlangenverdrahtung (Zeile 0 links→rechts, Zeile 1 rechts→links …).
+// Setzt einzelne Pixel aus einer 64-Zeichen-Maske.
+// Sequentielle Verdrahtung: Pixel-Index = Zeile * 8 + Spalte
 function _maskToPixelLines(mask, rgbTuple, varName) {
   const lines = [];
   for (let i = 0; i < 64; i++) {
-    if (mask[i] !== '1') continue;
-    const row = Math.floor(i / 8);
-    const col = i % 8;
-    const pixIdx = row * 8 + (row % 2 === 0 ? col : 7 - col);
-    lines.push(`${varName}[${pixIdx}] = ${rgbTuple}`);
+    if (mask[i] === '1') lines.push(`${varName}[${i}] = ${rgbTuple}`);
   }
   return lines.join('\n');
 }
@@ -853,7 +849,9 @@ Blockly.Python['matrix_off'] = function(block) {
 Blockly.Python['matrix_brightness'] = function(block) {
   const pin = _matrixPin(block);
   _matrixDefs(pin);
-  const bri = parseFloat(block.getFieldValue('BRIGHTNESS')).toFixed(1);
+  const pct = parseFloat(block.getFieldValue('PCT'));
+  // 100 % = 0.3 (sicherer Maximalwert, verhindert Überstrom)
+  const bri = (pct / 100 * 0.3).toFixed(3);
   return `_matrix_${pin}.brightness = ${bri}\n_matrix_${pin}.show()\n`;
 };
 
