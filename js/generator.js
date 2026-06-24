@@ -706,6 +706,19 @@ Blockly.Python['actuator_lcd'] = function(block) {
   return `_lcd.set_rgb(${rgb})\n_lcd.set_text((${line1})[:16] + "\\n" + (${line2})[:16])\n`;
 };
 
+// ── ISD1820 Sprachmodul ───────────────────────────────────────────────────────
+// P-E ist flankengesteuert: kurzer HIGH-Puls → spielt Aufnahme einmal ab.
+Blockly.Python['actuator_isd1820'] = function(block) {
+  const sig = block.getFieldValue('SIG');
+  _defs['import_board']      = 'import board';
+  _defs['import_digitalio']  = 'import digitalio';
+  _defs[`init_isd_${sig}`]   =
+    `_isd_${sig} = digitalio.DigitalInOut(board.${sig})\n` +
+    `_isd_${sig}.direction = digitalio.Direction.OUTPUT\n` +
+    `_isd_${sig}.value = False`;
+  return `_isd_${sig}.value = True\nawait asyncio.sleep(0.1)\n_isd_${sig}.value = False\n`;
+};
+
 // ── Ereignis-Hut-Blöcke (je ein benannter Handler) ───────────────────────────
 // Diese Generatoren geben einen Deskriptor {name, expr, body, poll} zurück;
 // finish() baut daraus `async def <name>():` + `wenn(lambda: <expr>, <name>)`.

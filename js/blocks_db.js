@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-24T10:45:30.037Z
+// Generiert: 2026-06-24T13:21:42.389Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -922,6 +922,30 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": false,
     "_file": "actuators/wasserpumpe.md"
+  },
+  {
+    "id": "actuator_isd1820",
+    "blockCategory": "Aktoren",
+    "subCategory": "Audio",
+    "label": "Ton abspielen",
+    "colour": "#E24D3D",
+    "tooltip": "Spielt die Aufnahme des ISD1820 einmal ab (P-E-Pin kurz HIGH). Aufnahme über den REC-Knopf auf dem Modul.",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Ton abspielen  Port:",
+        "name": "SIG",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      }
+    ],
+    "hardware": {
+      "commonName": "ISD1820 Sprachmodul",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/isd1820.md"
   },
   {
     "id": "actuator_lcd",
