@@ -30,6 +30,58 @@ const VERSIONS_MAX     = 15;
   } catch (e) { /* localStorage evtl. nicht verfügbar – ignorieren */ }
 })();
 
+// Migriert veraltete Block-Zustände auf aktuelle Feldnamen.
+function migrateState(state) {
+  if (!state || !state.blocks || !state.blocks.blocks) return state;
+  function patchBlock(b) {
+    if (b.type === 'actuator_lcd' && b.inputs) {
+      // TEXT → LINE1 (Umbenennung vom einzeiligen auf zweizeiligen LCD-Block)
+      if (b.inputs.TEXT && !b.inputs.LINE1) {
+        b.inputs.LINE1 = b.inputs.TEXT;
+        delete b.inputs.TEXT;
+      }
+      // VERSION-Feld entfernen (nicht mehr vorhanden)
+      if (b.fields && b.fields.VERSION !== undefined) delete b.fields.VERSION;
+    }
+    // Verschachtelte Blöcke rekursiv patchen
+    for (const inp of Object.values(b.inputs || {})) {
+      if (inp.block) patchBlock(inp.block);
+      if (inp.shadow) patchBlock(inp.shadow);
+    }
+    if (b.next && b.next.block) patchBlock(b.next.block);
+  }
+  const patched = JSON.parse(JSON.stringify(state));
+  for (const b of patched.blocks.blocks || []) patchBlock(b);
+  return patched;
+}
+
+// Lädt einen Workspace-Zustand fehlertolerant: Blöcke mit unbekanntem Typ oder
+// fehlenden Verbindungen werden still herausgefiltert; der Rest bleibt erhalten.
+function safeLoadState(state, ws) {
+  const migrated = migrateState(state);
+  try {
+    Blockly.serialization.workspaces.load(migrated, ws);
+    return { ok: true, dropped: 0 };
+  } catch (_) {
+    // Einzelne Blöcke der obersten Ebene herausfiltern bis der Zustand lädt.
+    const blocks = (migrated.blocks && migrated.blocks.blocks) ? [...migrated.blocks.blocks] : [];
+    let dropped = 0;
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      const candidate = { ...migrated, blocks: { ...migrated.blocks, blocks: blocks.filter((_, j) => j !== i) } };
+      try {
+        ws.clear();
+        Blockly.serialization.workspaces.load(candidate, ws);
+        dropped++;
+        blocks.splice(i, 1);  // dauerhaft entfernen und weiter versuchen
+        i = blocks.length;     // nochmal von vorne falls mehrere Fehler
+      } catch (_2) { /* weiter */ }
+    }
+    if (dropped > 0) return { ok: true, dropped };
+    ws.clear();
+    return { ok: false, dropped: 0 };
+  }
+}
+
 let _saveTimer = null;
 
 // Aktuellen Workspace-Stand sichern
@@ -88,7 +140,8 @@ function pushVersion() {
 function restoreVersion(index) {
   const v = getVersions()[index];
   if (!v) return;
-  Blockly.serialization.workspaces.load(v.state, workspace);
+  const result = safeLoadState(v.state, workspace);
+  if (result.dropped) showToast(`${result.dropped} veraltete(r) Block(e) übersprungen`, 'warn');
   ensureFixedBlocks();
   updateCode();
   saveCurrent();

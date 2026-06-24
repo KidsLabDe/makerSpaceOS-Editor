@@ -58,10 +58,11 @@ function initBlockly() {
   // Zuletzt bearbeiteten Stand wiederherstellen, sonst Pflichtblöcke neu anlegen.
   const saved = loadCurrent();
   if (saved && saved.state) {
-    try {
-      Blockly.serialization.workspaces.load(saved.state, workspace);
-    } catch (e) {
-      console.warn('Wiederherstellen fehlgeschlagen:', e);
+    const result = safeLoadState(saved.state, workspace);
+    if (result.dropped) showToast(`${result.dropped} veraltete(r) Block(e) übersprungen`, 'warn');
+    if (!result.ok) {
+      _createFixedBlock('control_setup',   40, 40);
+      _createFixedBlock('control_forever', 360, 40);
     }
   } else {
     // Pflicht-Startblöcke: SETUP + FÜR IMMER, nebeneinander.
