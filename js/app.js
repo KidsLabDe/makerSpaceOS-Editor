@@ -204,6 +204,36 @@ function closeHistory() {
   document.getElementById('history-overlay').classList.remove('show');
 }
 
+function exportProject() {
+  const dom  = Blockly.Xml.workspaceToDom(workspace);
+  const xml  = Blockly.Xml.domToPrettyText(dom);
+  const blob = new Blob([xml], { type: 'application/xml' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'makerSpaceOS-Projekt.xml';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Projekt exportiert', 'ok');
+}
+
+function importProject(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const dom = Blockly.Xml.textToDom(e.target.result);
+      workspace.clear();
+      Blockly.Xml.domToWorkspace(dom, workspace);
+      showToast('Projekt importiert', 'ok');
+    } catch {
+      showToast('Datei konnte nicht gelesen werden', 'error');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
 // Einfacher Zeilendiff: gibt Array von {type:'=','+'|'-', text} zurück.
 // Nutzt LCS (Longest Common Subsequence) auf gefilterten Zeilen.
 function _diffCode(oldCode, newCode) {

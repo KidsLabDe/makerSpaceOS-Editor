@@ -360,6 +360,8 @@ html, body {
 #ai-overlay.show, #history-overlay.show { display: block; }
 
 #history-list { padding: 12px 14px; overflow-y: auto; flex: 1; }
+.history-io-bar { display: flex; gap: 8px; padding: 10px 16px 4px; border-bottom: 1px solid var(--line); }
+.history-io-bar .btn { flex: 1; justify-content: center; }
 .history-empty { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
 .history-item {
   background: var(--bg-alt);
