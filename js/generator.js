@@ -709,26 +709,31 @@ Blockly.Python['actuator_lcd'] = function(block) {
 // ── ISD1820 Sprachmodul ───────────────────────────────────────────────────────
 // P-E ist flankengesteuert: kurzer HIGH-Puls → spielt Aufnahme einmal ab.
 // REC: HIGH halten solange aufgenommen werden soll (max. 10 s).
-function _isd1820Init(sig) {
+function _isd1820Init(portId) {
+  const port = BOARD.grovePortById(portId);
   _defs['import_board']     = 'import board';
   _defs['import_digitalio'] = 'import digitalio';
-  _defs[`init_isd_${sig}`]  =
-    `_isd_${sig} = digitalio.DigitalInOut(board.${sig})\n` +
-    `_isd_${sig}.direction = digitalio.Direction.OUTPUT\n` +
-    `_isd_${sig}.value = False`;
+  // signal → P-E (Abspielen), pin1 → REC (Aufnahme)
+  _defs[`init_isd_${portId}`] =
+    `_isd_pe_${portId} = digitalio.DigitalInOut(board.${port.signal})\n` +
+    `_isd_pe_${portId}.direction = digitalio.Direction.OUTPUT\n` +
+    `_isd_pe_${portId}.value = False\n` +
+    `_isd_rec_${portId} = digitalio.DigitalInOut(board.${port.pin1})\n` +
+    `_isd_rec_${portId}.direction = digitalio.Direction.OUTPUT\n` +
+    `_isd_rec_${portId}.value = False`;
 }
 
 Blockly.Python['actuator_isd1820'] = function(block) {
-  const sig = block.getFieldValue('SIG');
-  _isd1820Init(sig);
-  return `_isd_${sig}.value = True\nawait asyncio.sleep(0.1)\n_isd_${sig}.value = False\n`;
+  const portId = block.getFieldValue('PORT');
+  _isd1820Init(portId);
+  return `_isd_pe_${portId}.value = True\nawait asyncio.sleep(0.1)\n_isd_pe_${portId}.value = False\n`;
 };
 
 Blockly.Python['actuator_isd1820_record'] = function(block) {
-  const sig   = block.getFieldValue('SIG');
-  const dauer = Blockly.Python.valueToCode(block, 'DAUER', Blockly.Python.ORDER_NONE) || '3';
-  _isd1820Init(sig);
-  return `_isd_${sig}.value = True\nawait asyncio.sleep(min(${dauer}, 10))\n_isd_${sig}.value = False\n`;
+  const portId = block.getFieldValue('PORT');
+  const dauer  = Blockly.Python.valueToCode(block, 'DAUER', Blockly.Python.ORDER_NONE) || '3';
+  _isd1820Init(portId);
+  return `_isd_rec_${portId}.value = True\nawait asyncio.sleep(min(${dauer}, 10))\n_isd_rec_${portId}.value = False\n`;
 };
 
 // ── Ereignis-Hut-Blöcke (je ein benannter Handler) ───────────────────────────

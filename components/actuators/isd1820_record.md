@@ -8,9 +8,9 @@ tooltip: "Nimmt für die angegebene Dauer auf (REC-Pin HIGH halten). Max. 10 Sek
 blockType: statement
 inputs:
   - label: "⏺ Aufnehmen  Port:"
-    name: SIG
+    name: PORT
     fieldType: grove_dropdown
-    groveRole: digital
+    groveRole: 2pin
 valueInputs:
   - name: DAUER
     label: "Sekunden"

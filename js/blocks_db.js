@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-24T13:23:07.996Z
+// Generiert: 2026-06-24T13:25:17.870Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -934,9 +934,9 @@ const BLOCKS_DB = [
     "inputs": [
       {
         "label": "Ton abspielen  Port:",
-        "name": "SIG",
+        "name": "PORT",
         "fieldType": "grove_dropdown",
-        "groveRole": "digital"
+        "groveRole": "2pin"
       }
     ],
     "hardware": {
@@ -958,9 +958,9 @@ const BLOCKS_DB = [
     "inputs": [
       {
         "label": "Aufnehmen  Port:",
-        "name": "SIG",
+        "name": "PORT",
         "fieldType": "grove_dropdown",
-        "groveRole": "digital"
+        "groveRole": "2pin"
       }
     ],
     "valueInputs": [
