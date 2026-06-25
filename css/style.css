@@ -340,15 +340,80 @@ html, body {
 .toast.warn  { border-left-color: var(--brand-orange); }
 .toast.error { border-left-color: var(--danger); }
 
-/* ── Scrollbars ──────────────────────────────────────────────────────────── */
+/* ── Responsive Overhaul ────────────────────────────────────────────────── */
 
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cfc7b5; border-radius: 4px; }
-/* Dunkles Panel: dunklere Thumbs */
-#code-panel ::-webkit-scrollbar-thumb,
-.CodeMirror ::-webkit-scrollbar-thumb,
-#serial-output::-webkit-scrollbar-thumb { background: #334155; }
+@media (max-width: 1024px) {
+  :root {
+    --panel-w: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  #header {
+    height: auto;
+    flex-direction: column;
+    padding: 12px;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .logo {
+    justify-content: center;
+  }
+
+  .connection-area {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .header-divider {
+    display: none;
+  }
+
+  #main {
+    flex-direction: column;
+  }
+
+  #divider {
+    display: none; /* Disable resize divider on mobile for simplicity */
+  }
+
+  #code-panel {
+    width: 100% !important;
+    height: 40vh;
+    border-left: none;
+    border-top: 3px solid var(--line-strong);
+  }
+
+  #blockly-panel {
+    height: 60vh;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  #ai-drawer, #history-drawer {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-titles {
+    display: none; /* Hide sub-titles on very small screens to save space */
+  }
+  
+  .logo-img {
+    height: 24px;
+  }
+
+  .status-indicator {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
 
 /* ── Drawer (KI + Verlauf, hell) ─────────────────────────────────────────── */
 
