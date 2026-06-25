@@ -26,6 +26,8 @@ hardware:
   commonName: "DHT11"
   verbrauch3j: 5
   kitStandard: true
+  width_mm: 40
+  height_mm: 20
 legacyGenerator: false
 ---
 

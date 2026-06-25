@@ -183,8 +183,8 @@ async function saveToBoardClick() {
   const code = generateCode();
   try {
     const res = await saveToBoard(code);
-    showToast(res === 'saved' ? 'main.py auf dem RP2040 gespeichert!'
-                              : 'main.py heruntergeladen', 'ok');
+    showToast(res === 'saved' ? 'code.py auf dem RP2040 gespeichert!'
+                              : 'code.py heruntergeladen', 'ok');
   } catch (e) {
     if (e && e.name === 'AbortError') return;  // Dialog abgebrochen
     showToast('Speichern fehlgeschlagen: ' + e.message, 'error');

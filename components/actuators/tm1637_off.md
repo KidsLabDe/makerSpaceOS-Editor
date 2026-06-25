@@ -16,6 +16,8 @@ hardware:
   commonName: "7-Segment Display TM1637 (4-stellig)"
   verbrauch3j: 0
   kitStandard: false
+  width_mm: 42
+  height_mm: 23.5
 legacyGenerator: true
 ---
 

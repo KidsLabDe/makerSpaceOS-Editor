@@ -245,6 +245,9 @@ for (const filePath of mdFiles) {
     continue;
   }
 
+  // Reine Hardware-/Doku-MDs (kein Blockly-Block) still überspringen.
+  if (def.block === false) continue;
+
   if (!def.id || !def.blockCategory || !def.blockType) {
     errors.push(`${filePath}: fehlende Pflichtfelder (id, blockCategory, blockType)`);
     continue;

@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-25T09:40:14.351Z
+// Generiert: 2026-06-25T11:35:03.251Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -86,7 +86,9 @@ const BLOCKS_DB = [
       "kyNumber": "KY-015",
       "commonName": "DHT11",
       "verbrauch3j": 5,
-      "kitStandard": true
+      "kitStandard": true,
+      "width_mm": 40,
+      "height_mm": 20
     },
     "legacyGenerator": false,
     "_file": "sensors/dht11_humidity.md"
@@ -126,7 +128,9 @@ const BLOCKS_DB = [
       "kyNumber": "KY-015",
       "commonName": "DHT11",
       "verbrauch3j": 5,
-      "kitStandard": true
+      "kitStandard": true,
+      "width_mm": 40,
+      "height_mm": 20
     },
     "legacyGenerator": false,
     "_file": "sensors/dht11_temperature.md"
@@ -191,7 +195,9 @@ const BLOCKS_DB = [
     "hardware": {
       "commonName": "Grove Ultrasonic Ranger",
       "verbrauch3j": 13,
-      "kitStandard": true
+      "kitStandard": true,
+      "width_mm": 50,
+      "height_mm": 25
     },
     "legacyGenerator": true,
     "_file": "sensors/ultrasonic.md"
@@ -292,7 +298,9 @@ const BLOCKS_DB = [
     "hardware": {
       "commonName": "Grove Encoder / Drehgeber",
       "verbrauch3j": 0,
-      "kitStandard": true
+      "kitStandard": true,
+      "width_mm": 21.5,
+      "height_mm": 18.5
     },
     "legacyGenerator": true,
     "_file": "sensors/encoder.md"
@@ -506,7 +514,9 @@ const BLOCKS_DB = [
     "hardware": {
       "commonName": "Grove Ultrasonic Ranger",
       "verbrauch3j": 13,
-      "kitStandard": true
+      "kitStandard": true,
+      "width_mm": 50,
+      "height_mm": 25
     },
     "legacyGenerator": true,
     "_file": "sensors/event_ultrasonic.md"
@@ -733,7 +743,9 @@ const BLOCKS_DB = [
     "hardware": {
       "commonName": "Servo SG90",
       "verbrauch3j": 0,
-      "kitStandard": true
+      "kitStandard": true,
+      "width_mm": 12,
+      "height_mm": 23
     },
     "legacyGenerator": true,
     "_file": "actuators/servo.md"
@@ -1107,7 +1119,9 @@ const BLOCKS_DB = [
     "hardware": {
       "commonName": "Grove-LCD RGB Backlight",
       "verbrauch3j": 0,
-      "kitStandard": false
+      "kitStandard": false,
+      "width_mm": 80,
+      "height_mm": 40
     },
     "legacyGenerator": true,
     "_file": "actuators/lcd_color.md"
@@ -1146,7 +1160,9 @@ const BLOCKS_DB = [
     "hardware": {
       "commonName": "Grove-LCD RGB Backlight",
       "verbrauch3j": 0,
-      "kitStandard": false
+      "kitStandard": false,
+      "width_mm": 80,
+      "height_mm": 40
     },
     "legacyGenerator": true,
     "_file": "actuators/lcd_text.md"
@@ -1179,7 +1195,9 @@ const BLOCKS_DB = [
     "hardware": {
       "commonName": "7-Segment Display TM1637 (4-stellig)",
       "verbrauch3j": 0,
-      "kitStandard": false
+      "kitStandard": false,
+      "width_mm": 42,
+      "height_mm": 23.5
     },
     "legacyGenerator": true,
     "_file": "actuators/tm1637_number.md"
@@ -1204,7 +1222,9 @@ const BLOCKS_DB = [
     "hardware": {
       "commonName": "7-Segment Display TM1637 (4-stellig)",
       "verbrauch3j": 0,
-      "kitStandard": false
+      "kitStandard": false,
+      "width_mm": 42,
+      "height_mm": 23.5
     },
     "legacyGenerator": true,
     "_file": "actuators/tm1637_off.md"

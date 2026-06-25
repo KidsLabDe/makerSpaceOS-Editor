@@ -19,6 +19,8 @@ hardware:
   commonName: "Grove-LCD RGB Backlight"
   verbrauch3j: 0
   kitStandard: false
+  width_mm: 80
+  height_mm: 40
 legacyGenerator: true
 ---
 

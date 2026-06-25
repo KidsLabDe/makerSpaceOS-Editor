@@ -1,4 +1,4 @@
-// storage.js – Programme speichern: Auto-Speichern, Versionierung, Export als main.py
+// storage.js – Programme speichern: Auto-Speichern, Versionierung, Export als code.py
 // Nutzt Blockly-Serialisierung (Block-Zustand) + localStorage.
 // Greift zur Laufzeit auf globale app.js-Funktionen zu (workspace, generateCode,
 // updateCode, _createFixedBlock) – diese existieren beim Aufruf bereits.
@@ -183,13 +183,13 @@ function ensureFixedBlocks() {
 // direkt im gleichen Ordner (CIRCUITPY, sobald der Nutzer es einmal navigiert hat).
 let _lastBoardHandle = null;
 
-// Generierten Code als main.py speichern (Datei-Dialog → CIRCUITPY-Laufwerk).
+// Generierten Code als code.py speichern (Datei-Dialog → CIRCUITPY-Laufwerk).
 // CircuitPython lässt sein Laufwerk nicht per Serial beschreiben, daher Dateisystem-API.
 async function saveToBoard(code) {
   if (window.showSaveFilePicker) {
-    showToast('📂 Bitte zum CIRCUITPY-Laufwerk navigieren und main.py speichern', 'ok');
+    showToast('📂 Bitte zum CIRCUITPY-Laufwerk navigieren und code.py speichern', 'ok');
     const opts = {
-      suggestedName: 'main.py',
+      suggestedName: 'code.py',
       types: [{ description: 'Python', accept: { 'text/x-python': ['.py'] } }],
     };
     if (_lastBoardHandle) opts.startIn = _lastBoardHandle;
@@ -205,7 +205,7 @@ async function saveToBoard(code) {
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href = url;
-  a.download = 'main.py';
+  a.download = 'code.py';
   document.body.appendChild(a);
   a.click();
   a.remove();

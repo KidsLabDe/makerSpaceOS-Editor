@@ -22,6 +22,8 @@ hardware:
   commonName: "Servo SG90"
   verbrauch3j: 0
   kitStandard: true
+  width_mm: 12
+  height_mm: 23
 legacyGenerator: true
 ---
 

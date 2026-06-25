@@ -27,6 +27,8 @@ hardware:
   commonName: "Grove Ultrasonic Ranger"
   verbrauch3j: 13
   kitStandard: true
+  width_mm: 50
+  height_mm: 25
 legacyGenerator: true
 ---
 
