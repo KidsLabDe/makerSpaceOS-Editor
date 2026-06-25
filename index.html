@@ -53,6 +53,10 @@
         Stopp
       </button>
       <span class="header-divider"></span>
+      <button id="btn-toggle-panel" class="btn btn-ghost" title="Code- & Serial-Bereich aus-/einblenden">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h12A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6Z"/><path d="M15 3.75v16.5"/></svg>
+        Code-Bereich
+      </button>
       <button id="btn-save-board" class="btn btn-ghost" title="Programm als main.py auf den RP2040 speichern">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/></svg>
         Auf RP2040
@@ -86,6 +90,9 @@
       <div class="panel-header">
         <span>CircuitPython Code</span>
         <div class="panel-actions">
+          <button id="btn-toggle-code" class="btn-icon" title="Code-Editor ausblenden">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 8.25 7.5 7.5 7.5-7.5"/></svg>
+          </button>
           <button id="btn-copy"        class="btn-icon" title="Code kopieren">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"/></svg>
           </button>
@@ -99,6 +106,9 @@
       <div id="code-editor-wrapper">
         <textarea id="code-editor"></textarea>
       </div>
+
+      <!-- Resize-Divider (Editor ↕ Serial) -->
+      <div id="serial-divider"></div>
 
       <!-- Serial Monitor Header -->
       <div class="panel-header">
@@ -187,6 +197,7 @@
   <script src="js/boards.js"></script>
   <script src="js/blocks/control.js"></script>
   <script src="js/blocks/events.js"></script>
+  <script src="js/blocks/text.js"></script>
   <script src="js/blocks_db.js"></script>
   <script src="js/block_builder.js"></script>
   <script src="js/toolbox.js"></script>
@@ -225,7 +236,65 @@
         dragging = false;
         document.body.style.cursor    = '';
         document.body.style.userSelect = '';
-        if (window.workspace) Blockly.svgResize(window.workspace);
+        if (typeof workspace !== 'undefined' && workspace) Blockly.svgResize(workspace);
+      });
+    })();
+
+    // ── Serial-Monitor vertikal größenverstellbar (Editor ↕ Serial) ──────────
+    (function() {
+      const handle = document.getElementById('serial-divider');
+      const serial = document.getElementById('serial-output');
+      let dragging = false, startY, startH;
+
+      handle.addEventListener('mousedown', e => {
+        dragging = true;
+        startY   = e.clientY;
+        startH   = serial.offsetHeight;
+        document.body.style.cursor     = 'row-resize';
+        document.body.style.userSelect = 'none';
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const delta = startY - e.clientY;            // nach oben ziehen → größer
+        const newH  = Math.max(80, Math.min(640, startH + delta));
+        serial.style.flexBasis = newH + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        document.body.style.cursor     = '';
+        document.body.style.userSelect = '';
+      });
+    })();
+
+    // ── Code-Editor ein-/ausblenden ──────────────────────────────────────────
+    (function() {
+      const btn   = document.getElementById('btn-toggle-code');
+      const panel = document.getElementById('code-panel');
+      btn.addEventListener('click', () => {
+        const collapsed = panel.classList.toggle('code-collapsed');
+        btn.classList.toggle('active', collapsed);
+        btn.title = collapsed ? 'Code-Editor einblenden' : 'Code-Editor ausblenden';
+        if (!collapsed && typeof codeEditor !== 'undefined' && codeEditor) codeEditor.refresh();
+      });
+    })();
+
+    // ── Ganzen Code-/Serial-Bereich ein-/ausblenden ──────────────────────────
+    (function() {
+      const btn     = document.getElementById('btn-toggle-panel');
+      const panel   = document.getElementById('code-panel');
+      const divider = document.getElementById('divider');
+      btn.addEventListener('click', () => {
+        const hidden = panel.style.display !== 'none';
+        panel.style.display   = hidden ? 'none' : '';
+        divider.style.display = hidden ? 'none' : '';
+        btn.classList.toggle('active', hidden);
+        if (typeof workspace !== 'undefined' && workspace) {
+          // Workspace füllt jetzt die volle Breite → Zoom-/Papierkorb-Icons neu platzieren
+          Blockly.svgResize(workspace);
+        }
       });
     })();
   </script>

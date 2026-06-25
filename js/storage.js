@@ -42,6 +42,23 @@ function migrateState(state) {
       }
       // VERSION-Feld entfernen (nicht mehr vorhanden)
       if (b.fields && b.fields.VERSION !== undefined) delete b.fields.VERSION;
+      // Aufspaltung in zwei Blöcke: alter Kombi-Block → reiner Text-Block.
+      // Die Farbe (COLOR) entfällt; dafür gibt es jetzt den Block "LCD Farbe".
+      if (b.fields && b.fields.COLOR !== undefined) delete b.fields.COLOR;
+      b.type = 'actuator_lcd_text';
+    }
+    // Schwellwert-Ereignisse: VALUE wurde vom Wert-Eingang zum Zahlenfeld.
+    // Gespeicherte Zahl aus dem Shadow-Block in das neue Feld übernehmen.
+    if (['when_distance', 'when_light', 'when_temperature', 'when_humidity'].includes(b.type)
+        && b.inputs && b.inputs.VALUE) {
+      const vi  = b.inputs.VALUE;
+      const num = (vi.shadow && vi.shadow.fields && vi.shadow.fields.NUM)
+               ?? (vi.block  && vi.block.fields  && vi.block.fields.NUM);
+      if (num !== undefined) {
+        b.fields = b.fields || {};
+        if (b.fields.VALUE === undefined) b.fields.VALUE = num;
+      }
+      delete b.inputs.VALUE;
     }
     // Verschachtelte Blöcke rekursiv patchen
     for (const inp of Object.values(b.inputs || {})) {

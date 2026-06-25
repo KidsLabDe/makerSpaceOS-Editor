@@ -44,6 +44,8 @@
         return [['Version 4', '0x62'], ['Version 5', '0x30']];
       case 'on_off_dropdown':
         return [['einschalten', 'True'], ['ausschalten', 'False']];
+      case 'direction_dropdown':
+        return [['rechts ↻', 'cw'], ['links ↺', 'ccw']];
       case 'op_dropdown':
         return [['<', '<'], ['>', '>'], ['=', '==']];
       case 'button_dropdown':
@@ -100,7 +102,13 @@
 
       } else if (def.blockType === 'statement') {
         if (def.inputs && def.inputs.length) {
-          addFields(block.appendDummyInput(), def.inputs);
+          // Standard: alle Felder in einer Zeile. Ein Input mit newRow:true
+          // beginnt eine neue Dummy-Zeile (mehrzeilige Blöcke).
+          let row = null;
+          for (const inp of def.inputs) {
+            if (!row || inp.newRow) row = block.appendDummyInput();
+            addFields(row, [inp]);
+          }
         }
         // Wert-Eingänge (z.B. blinken-Anzahl, Servo-Winkel, Motor-Tempo)
         for (const vi of (def.valueInputs || [])) {

@@ -385,6 +385,46 @@ Blockly.Python['actuator_motor_stop'] = function(block) {
   return `_motor_${m}.throttle = 0\n`;
 };
 
+// ── Schrittmotor (28BYJ-48 + ULN2003) ─────────────────────────────────────────
+
+Blockly.Python['actuator_stepper'] = function(block) {
+  const idA = block.getFieldValue('PORTA');
+  const idB = block.getFieldValue('PORTB');
+  if (!idA || idA === '__NONE__' || !idB || idB === '__NONE__') {
+    block.setWarningText('⚠ Bitte beide Anschlüsse auswählen!');
+    return '';
+  }
+  block.setWarningText(null);
+
+  const portA = BOARD.grovePortById(idA);
+  const portB = BOARD.grovePortById(idB);
+  const dir   = block.getFieldValue('DIR');   // 'cw' | 'ccw'
+  const grad  = block.getFieldValue('GRAD') || '90';
+
+  // Anschluss 1 → IN1/IN2, Anschluss 2 → IN3/IN4
+  const pins = [portA.pin1, portA.signal, portB.pin1, portB.signal];
+  pins.forEach(p => _digitalOutDef(p, 'step'));
+
+  _defs['def_schrittmotor'] =
+    '_STEP_SEQ = (\n' +
+    '    (1, 0, 0, 0), (1, 1, 0, 0), (0, 1, 0, 0), (0, 1, 1, 0),\n' +
+    '    (0, 0, 1, 0), (0, 0, 1, 1), (0, 0, 0, 1), (1, 0, 0, 1),\n' +
+    ')\n' +
+    'async def _schrittmotor(pins, grad, rechts):\n' +
+    '    schritte = round(grad / 360 * 4096)\n' +
+    '    for i in range(schritte):\n' +
+    '        idx = (i % 8) if rechts else (7 - (i % 8))\n' +
+    '        for pin, wert in zip(pins, _STEP_SEQ[idx]):\n' +
+    '            pin.value = bool(wert)\n' +
+    '        await asyncio.sleep(0.001)\n' +
+    '    for pin in pins:\n' +
+    '        pin.value = False';
+
+  const rechts = dir === 'cw' ? 'True' : 'False';
+  const list   = pins.map(p => `_step_${p}`).join(', ');
+  return `await _schrittmotor([${list}], ${grad}, ${rechts})\n`;
+};
+
 // ── NeoPixel ──────────────────────────────────────────────────────────────────
 
 function _neopixelDefs() {
@@ -671,6 +711,14 @@ Blockly.Python['actuator_active_buzzer'] = function(block) {
   return `_abuzz_${pin}.value = ${state}\n`;
 };
 
+// ── Text verbinden ────────────────────────────────────────────────────────────
+
+Blockly.Python['text_verbinden'] = function(block) {
+  const a = Blockly.Python.valueToCode(block, 'A', Blockly.Python.ORDER_NONE) || "''";
+  const b = Blockly.Python.valueToCode(block, 'B', Blockly.Python.ORDER_NONE) || "''";
+  return [`str(${a}) + str(${b})`, Blockly.Python.ORDER_ADDITIVE];
+};
+
 // ── Grove-LCD RGB Backlight (I2C) ─────────────────────────────────────────────
 // Nutzt lib/grove_rgb_lcd.py. Hardcodiert auf V5 (SGM31323 @ 0x30, 3,3 V).
 function _groveLcdDef(portId, rgbAddr) {
@@ -684,14 +732,26 @@ function _groveLcdDef(portId, rgbAddr) {
     `_lcd = GroveRgbLcd(_i2c_lcd, rgb_addr=${rgbAddr})`;
 }
 
-Blockly.Python['actuator_lcd'] = function(block) {
+// Text und Farbe sind getrennte Blöcke (gemeinsames _lcd-Objekt via _defs),
+// damit man die Farbe ändern kann, ohne den Text zu überschreiben – und umgekehrt.
+Blockly.Python['actuator_lcd_text'] = function(block) {
   const portId = block.getFieldValue('PORT');
+  if (!portId || portId === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return ''; }
+  block.setWarningText(null);
+  const line1 = Blockly.Python.valueToCode(block, 'LINE1', Blockly.Python.ORDER_NONE) || '""';
+  const line2 = Blockly.Python.valueToCode(block, 'LINE2', Blockly.Python.ORDER_NONE) || '""';
+  _groveLcdDef(portId, '0x30');
+  return `_lcd.set_text((${line1})[:16] + "\\n" + (${line2})[:16])\n`;
+};
+
+Blockly.Python['actuator_lcd_color'] = function(block) {
+  const portId = block.getFieldValue('PORT');
+  if (!portId || portId === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return ''; }
+  block.setWarningText(null);
   const colour = block.getFieldValue('COLOR') || '#FFFFFF';
-  const line1  = Blockly.Python.valueToCode(block, 'LINE1', Blockly.Python.ORDER_NONE) || '""';
-  const line2  = Blockly.Python.valueToCode(block, 'LINE2', Blockly.Python.ORDER_NONE) || '""';
   _groveLcdDef(portId, '0x30');
   const rgb = hexToRgbTuple(colour).slice(1, -1); // "(r, g, b)" → "r, g, b"
-  return `_lcd.set_rgb(${rgb})\n_lcd.set_text((${line1})[:16] + "\\n" + (${line2})[:16])\n`;
+  return `_lcd.set_rgb(${rgb})\n`;
 };
 
 // ── TM1637 4-stelliges 7-Segment-Display ─────────────────────────────────────
@@ -817,7 +877,7 @@ Blockly.Python['when_distance'] = function(block) {
   if (!sig || sig === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
   block.setWarningText(null);
   const op   = block.getFieldValue('OP');
-  const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
+  const val  = block.getFieldValue('VALUE') || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _groveSonarDef(sig);
   return _whenTask('wenn_abstand', `(_sonar_${sig}.distance ${op} ${val})`, body, '0.05');
@@ -828,7 +888,7 @@ Blockly.Python['when_light'] = function(block) {
   if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
   block.setWarningText(null);
   const op   = block.getFieldValue('OP');
-  const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '50';
+  const val  = block.getFieldValue('VALUE') || '50';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _defs['import_board']    = 'import board';
   _defs['import_analogio'] = 'import analogio';
@@ -841,7 +901,7 @@ Blockly.Python['when_temperature'] = function(block) {
   if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
   block.setWarningText(null);
   const op   = block.getFieldValue('OP');
-  const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '25';
+  const val  = block.getFieldValue('VALUE') || '25';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _defs['import_board']  = 'import board';
   _defs['import_dht']    = 'import adafruit_dht';
@@ -854,7 +914,7 @@ Blockly.Python['when_humidity'] = function(block) {
   if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
   block.setWarningText(null);
   const op   = block.getFieldValue('OP');
-  const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '60';
+  const val  = block.getFieldValue('VALUE') || '60';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _defs['import_board']  = 'import board';
   _defs['import_dht']    = 'import adafruit_dht';

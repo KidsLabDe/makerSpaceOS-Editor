@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-24T17:05:43.372Z
+// Generiert: 2026-06-25T09:40:14.351Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -838,6 +838,52 @@ const BLOCKS_DB = [
     "_file": "actuators/motor_stop.md"
   },
   {
+    "id": "actuator_stepper",
+    "blockCategory": "Aktionen",
+    "subCategory": "Motor",
+    "label": "Schrittmotor",
+    "colour": "#DC2626",
+    "tooltip": "Dreht einen 28BYJ-48 Schrittmotor um einen Winkel nach rechts oder links",
+    "blockType": "statement",
+    "inline": false,
+    "inputs": [
+      {
+        "label": "Schrittmotor  Anschluss 1:",
+        "name": "PORTA",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin"
+      },
+      {
+        "label": "Anschluss 2:",
+        "name": "PORTB",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin",
+        "newRow": true
+      },
+      {
+        "label": "Drehe",
+        "name": "GRAD",
+        "fieldType": "number_field",
+        "default": 90,
+        "min": 0,
+        "max": 360,
+        "newRow": true
+      },
+      {
+        "label": "Grad",
+        "name": "DIR",
+        "fieldType": "direction_dropdown"
+      }
+    ],
+    "hardware": {
+      "commonName": "28BYJ-48 + ULN2003",
+      "verbrauch3j": 120,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/stepper.md"
+  },
+  {
     "id": "neopixel_fill",
     "blockCategory": "Lichter",
     "subCategory": "Onboard",
@@ -1037,17 +1083,17 @@ const BLOCKS_DB = [
     "_file": "actuators/neopixel_ext_set.md"
   },
   {
-    "id": "actuator_lcd",
+    "id": "actuator_lcd_color",
     "blockCategory": "Anzeigen",
     "subCategory": "",
-    "label": "LCD anzeigen",
+    "label": "LCD Farbe",
     "colour": "#0D9488",
-    "tooltip": "Zeigt Text auf dem Grove-LCD RGB Backlight an und setzt die Hintergrundfarbe",
+    "tooltip": "Setzt die Hintergrundfarbe des Grove-LCD – ohne den Text zu ändern",
     "blockType": "statement",
     "inline": false,
     "inputs": [
       {
-        "label": "LCD anzeigen  Port:",
+        "label": "LCD Farbe  Port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "i2c"
@@ -1056,6 +1102,31 @@ const BLOCKS_DB = [
         "label": "Farbe:",
         "name": "COLOR",
         "fieldType": "rgb_color_dropdown"
+      }
+    ],
+    "hardware": {
+      "commonName": "Grove-LCD RGB Backlight",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/lcd_color.md"
+  },
+  {
+    "id": "actuator_lcd_text",
+    "blockCategory": "Anzeigen",
+    "subCategory": "",
+    "label": "LCD Text",
+    "colour": "#0D9488",
+    "tooltip": "Zeigt zwei Zeilen Text auf dem Grove-LCD an – ohne die Farbe zu ändern",
+    "blockType": "statement",
+    "inline": false,
+    "inputs": [
+      {
+        "label": "LCD Text  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "i2c"
       }
     ],
     "valueInputs": [
@@ -1078,7 +1149,7 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/lcd.md"
+    "_file": "actuators/lcd_text.md"
   },
   {
     "id": "tm1637_number",

@@ -29,14 +29,10 @@ const TOOLBOX_STATIC_CONTENTS = [
       { kind: 'block', type: 'when_sound' },
       { kind: 'block', type: 'when_touch' },
       { kind: 'sep' },
-      { kind: 'block', type: 'when_distance',
-        inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 20 } } } } },
-      { kind: 'block', type: 'when_light',
-        inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 50 } } } } },
-      { kind: 'block', type: 'when_temperature',
-        inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 25 } } } } },
-      { kind: 'block', type: 'when_humidity',
-        inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 60 } } } } },
+      { kind: 'block', type: 'when_distance' },
+      { kind: 'block', type: 'when_light' },
+      { kind: 'block', type: 'when_temperature' },
+      { kind: 'block', type: 'when_humidity' },
     ]
   },
   { kind: 'sep' },
@@ -90,7 +86,7 @@ const TOOLBOX_STATIC_CONTENTS = [
     colour: '#0891B2',
     contents: [
       { kind: 'block', type: 'text' },
-      { kind: 'block', type: 'text_join' },
+      { kind: 'block', type: 'text_verbinden' },
       { kind: 'block', type: 'text_length' },
     ]
   },

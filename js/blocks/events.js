@@ -49,11 +49,11 @@
   function digitalHat(type, label, tooltip) {
     Blockly.Blocks[type] = {
       init: function () {
-        this.appendStatementInput('DO')
+        this.appendDummyInput()
             .appendField(label)
             .appendField('  Port:')
-            .appendField(groveField('digital'), 'PIN')
-            .appendField('→ dann');
+            .appendField(groveField('digital'), 'PIN');
+        this.appendStatementInput('DO').appendField('→ dann');
         this.setColour(EVENT_COLOUR);
         this.setTooltip(tooltip);
       }
@@ -67,11 +67,11 @@
 
   Blockly.Blocks['when_button'] = {
     init: function () {
-      this.appendStatementInput('DO')
+      this.appendDummyInput()
           .appendField('Wenn Taster')
           .appendField(tasterField(), 'BTN')
-          .appendField(stateField(), 'STATE')
-          .appendField('→ dann');
+          .appendField(stateField(), 'STATE');
+      this.appendStatementInput('DO').appendField('→ dann');
       this.setColour(EVENT_COLOUR);
       this.setTooltip('Startet, sobald der Taster gedrückt bzw. losgelassen wird');
     }
@@ -81,11 +81,11 @@
 
   Blockly.Blocks['when_encoder'] = {
     init: function () {
-      this.appendStatementInput('DO')
+      this.appendDummyInput()
           .appendField('Wenn Drehgeber')
           .appendField(encPortField(), 'PORT')
-          .appendField(dirField(), 'DIR')
-          .appendField('→ dann');
+          .appendField(dirField(), 'DIR');
+      this.appendStatementInput('DO').appendField('→ dann');
       this.setColour(EVENT_COLOUR);
       this.setTooltip('Startet, sobald der Drehgeber in die gewählte Richtung gedreht wird');
     }
@@ -95,13 +95,13 @@
 
   Blockly.Blocks['when_distance'] = {
     init: function () {
-      this.appendValueInput('VALUE')
-          .setCheck('Number')
+      this.appendDummyInput()
           .appendField('Wenn Abstand  Port:')
           .appendField(groveField('digital'), 'SIG')
-          .appendField(opField(), 'OP');
-      this.appendStatementInput('DO').appendField('cm → dann');
-      this.setInputsInline(true);
+          .appendField(opField(), 'OP')
+          .appendField(new Blockly.FieldNumber(20, 0, 400, 0), 'VALUE')
+          .appendField('cm');
+      this.appendStatementInput('DO').appendField('→ dann');
       this.setColour(EVENT_COLOUR);
       this.setTooltip('Startet, sobald der gemessene Abstand die Bedingung erfüllt');
     }
@@ -109,13 +109,13 @@
 
   Blockly.Blocks['when_light'] = {
     init: function () {
-      this.appendValueInput('VALUE')
-          .setCheck('Number')
+      this.appendDummyInput()
           .appendField('Wenn Helligkeit  Port:')
           .appendField(groveField('analog'), 'PIN')
-          .appendField(opField(), 'OP');
-      this.appendStatementInput('DO').appendField('% → dann');
-      this.setInputsInline(true);
+          .appendField(opField(), 'OP')
+          .appendField(new Blockly.FieldNumber(50, 0, 100, 0), 'VALUE')
+          .appendField('%');
+      this.appendStatementInput('DO').appendField('→ dann');
       this.setColour(EVENT_COLOUR);
       this.setTooltip('Startet, sobald die Helligkeit (0–100 %) die Bedingung erfüllt');
     }
@@ -123,13 +123,13 @@
 
   Blockly.Blocks['when_temperature'] = {
     init: function () {
-      this.appendValueInput('VALUE')
-          .setCheck('Number')
+      this.appendDummyInput()
           .appendField('Wenn Temperatur  Port:')
           .appendField(groveField('digital'), 'PIN')
-          .appendField(opField(), 'OP');
-      this.appendStatementInput('DO').appendField('°C → dann');
-      this.setInputsInline(true);
+          .appendField(opField(), 'OP')
+          .appendField(new Blockly.FieldNumber(25, -40, 80, 0), 'VALUE')
+          .appendField('°C');
+      this.appendStatementInput('DO').appendField('→ dann');
       this.setColour(EVENT_COLOUR);
       this.setTooltip('Startet, sobald die Temperatur (DHT11) die Bedingung erfüllt');
     }
@@ -137,13 +137,13 @@
 
   Blockly.Blocks['when_humidity'] = {
     init: function () {
-      this.appendValueInput('VALUE')
-          .setCheck('Number')
+      this.appendDummyInput()
           .appendField('Wenn Luftfeuchtigkeit  Port:')
           .appendField(groveField('digital'), 'PIN')
-          .appendField(opField(), 'OP');
-      this.appendStatementInput('DO').appendField('% → dann');
-      this.setInputsInline(true);
+          .appendField(opField(), 'OP')
+          .appendField(new Blockly.FieldNumber(60, 0, 100, 0), 'VALUE')
+          .appendField('%');
+      this.appendStatementInput('DO').appendField('→ dann');
       this.setColour(EVENT_COLOUR);
       this.setTooltip('Startet, sobald die Luftfeuchtigkeit (DHT11) die Bedingung erfüllt');
     }
