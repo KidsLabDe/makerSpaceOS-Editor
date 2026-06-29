@@ -25,6 +25,8 @@ class CircuitPythonSerial {
     this.onDisconnect = null;        // callback() bei unerwartetem Verbindungsverlust
     this._intentionalClose = false;  // true = vom Nutzer ausgelöstes Trennen
     this._disconnectBound  = false;
+    this._capturing = false;         // true = eingehende Bytes zusätzlich mitschneiden
+    this._rxBuffer  = '';            // Mitschnitt-Puffer für den Upload-Handshake
   }
 
   get isConnected() {
@@ -73,7 +75,11 @@ class CircuitPythonSerial {
             while (true) {
               const { value, done } = await self.reader.read();
               if (done) { self._reading = false; break; }   // Stream zu = getrennt
-              if (value && self.onData) self.onData(new TextDecoder().decode(value));
+              if (value) {
+                const text = new TextDecoder().decode(value);
+                if (self._capturing) self._rxBuffer += text;
+                if (self.onData) self.onData(text);
+              }
             }
           } finally {
             try { self.reader.releaseLock(); } catch(_) {}
@@ -119,27 +125,61 @@ class CircuitPythonSerial {
     return new Promise(r => setTimeout(r, ms));
   }
 
-  // Code per Raw REPL auf das Board laden und ausführen
+  // Wartet (per Polling des Mitschnitt-Puffers), bis einer der Marker-Strings
+  // empfangen wurde. Voraussetzung: _capturing ist aktiv. Liefert true bei Treffer,
+  // false bei Timeout.
+  async _waitFor(markers, timeoutMs) {
+    const list = Array.isArray(markers) ? markers : [markers];
+    const start = performance.now();
+    while (performance.now() - start < timeoutMs) {
+      if (list.some(m => this._rxBuffer.includes(m))) return true;
+      await this._delay(20);
+    }
+    return false;
+  }
+
+  // Code per Raw REPL auf das Board laden und ausführen.
+  // Prompt-bewusst: wartet aktiv auf die Raw-REPL-Antworten, statt blinde Delays
+  // zu nutzen. So funktioniert erneutes „Play" auch ohne vorheriges Stop –
+  // der noch laufende Code wird sicher unterbrochen, bevor der neue gesendet wird.
   async uploadAndRun(code) {
     if (!this.port) throw new Error('Nicht verbunden');
 
-    // 1. Laufenden Code unterbrechen (Ctrl+C)
-    await this._write('\x03');
-    await this._delay(150);
-    await this._write('\x03');
-    await this._delay(150);
+    this._rxBuffer = '';
+    this._capturing = true;
+    try {
+      // 1. Laufenden Code unterbrechen (Ctrl+C) und auf den normalen Prompt warten.
+      await this._write('\x03');
+      await this._delay(80);
+      await this._write('\x03');
+      await this._waitFor('>>>', 1500);
 
-    // 2. Raw REPL aktivieren (Ctrl+A)
-    await this._write('\x01');
-    await this._delay(300);
+      // 2. Raw REPL aktivieren (Ctrl+A) und auf dessen Banner warten.
+      this._rxBuffer = '';
+      await this._write('\x01');
+      if (!await this._waitFor('raw REPL', 1500)) {
+        // Zweiter Versuch: nochmal unterbrechen und Raw REPL anfordern.
+        await this._write('\x03');
+        await this._delay(120);
+        this._rxBuffer = '';
+        await this._write('\x01');
+        if (!await this._waitFor('raw REPL', 1500)) {
+          throw new Error('Board reagiert nicht (Raw REPL). Bitte erneut versuchen.');
+        }
+      }
 
-    // 3. Aufräum-Prolog (gibt Pins des vorherigen Laufs frei) + eigentlichen Code senden.
-    //    Kein Soft-Reboot → code.py/main.py des Boards wird NICHT gestartet.
-    await this._write(PIN_RESET_PRELUDE + '\n' + code);
-    await this._delay(100);
+      // 3. Aufräum-Prolog (gibt Pins des vorherigen Laufs frei) + eigentlichen Code senden.
+      //    Kein Soft-Reboot → code.py/main.py des Boards wird NICHT gestartet.
+      this._rxBuffer = '';
+      await this._write(PIN_RESET_PRELUDE + '\n' + code);
 
-    // 4. Ausführen (Ctrl+D)
-    await this._write('\x04');
+      // 4. Ausführen (Ctrl+D) und auf Kompilier-Bestätigung ('OK') warten.
+      await this._write('\x04');
+      await this._waitFor('OK', 1500);
+    } finally {
+      this._capturing = false;
+      this._rxBuffer = '';
+    }
   }
 
   // Code stoppen (Ctrl+C)

@@ -630,6 +630,25 @@
     },
   };
 
+  // Einzelnen Pixel über Spalte (X) und Zeile (Y) setzen – X/Y als Wert-Eingänge,
+  // damit Zahl-Blöcke oder Variablen eingesteckt werden können (0–7).
+  Blockly.Blocks['matrix_set_pixel'] = {
+    init() {
+      this.appendDummyInput()
+          .appendField('🟦 Pixel setzen  Port:')
+          .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
+          .appendField('  Farbe:')
+          .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
+      this.appendValueInput('X').setCheck('Number').appendField('  Spalte X');
+      this.appendValueInput('Y').setCheck('Number').appendField('Zeile Y');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(MATRIX_COLOR);
+      this.setTooltip('Setzt einen einzelnen Pixel (Spalte X, Zeile Y – jeweils 0–7) auf eine Farbe');
+    },
+  };
+
   Blockly.Blocks['matrix_draw'] = {
     init() {
       this.appendDummyInput()
@@ -657,6 +676,12 @@
     { kind: 'sep' },
     { kind: 'block', type: 'matrix_symbol' },
     { kind: 'block', type: 'matrix_draw' },
+    { kind: 'block', type: 'matrix_set_pixel',
+      inputs: {
+        X: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+        Y: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+      }
+    },
   ];
 
 })();

@@ -44,6 +44,8 @@ const TOOLBOX_STATIC_CONTENTS = [
       { kind: 'label', text: '── Bedingungen ──' },
       { kind: 'block', type: 'controls_if' },
       { kind: 'block', type: 'controls_if', extraState: { hasElse: true } },
+      { kind: 'block', type: 'control_wait_until' },
+      { kind: 'block', type: 'control_while' },
       { kind: 'label', text: '── Vergleichen ──' },
       { kind: 'block', type: 'logic_compare' },
       { kind: 'label', text: '── Logik ──' },
@@ -72,6 +74,7 @@ const TOOLBOX_STATIC_CONTENTS = [
           TO:   { shadow: { type: 'math_number', fields: { NUM: 10 } } }
         }
       },
+      { kind: 'block', type: 'logic_boolean' },
     ]
   },
   {

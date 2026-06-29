@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-25T11:35:03.251Z
+// Generiert: 2026-06-29T13:47:49.051Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -896,6 +896,37 @@ const BLOCKS_DB = [
     "_file": "actuators/stepper.md"
   },
   {
+    "id": "neopixel_brightness",
+    "blockCategory": "Lichter",
+    "subCategory": "Onboard",
+    "label": "NeoPixel Helligkeit",
+    "colour": "#EC4899",
+    "tooltip": "Setzt die Helligkeit der Onboard-NeoPixel (0–100 %)",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "NeoPixel  Helligkeit",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "PERCENT",
+        "check": "Number",
+        "defaultValue": 50,
+        "suffix": "%"
+      }
+    ],
+    "hardware": {
+      "commonName": "NeoPixel / WS2812B",
+      "verbrauch3j": 0,
+      "kitStandard": true
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/neopixel_brightness.md"
+  },
+  {
     "id": "neopixel_fill",
     "blockCategory": "Lichter",
     "subCategory": "Onboard",
@@ -949,21 +980,21 @@ const BLOCKS_DB = [
     "colour": "#EC4899",
     "tooltip": "Setzt eine einzelne NeoPixel-LED auf eine bestimmte Farbe (1–13)",
     "blockType": "statement",
+    "inline": true,
     "inputs": [
       {
-        "label": "NeoPixel  LED Nr.",
-        "name": "INDEX",
-        "fieldType": "number_field",
-        "default": 1,
-        "min": 1,
-        "max": 13,
-        "precision": 1
-      },
-      {
-        "label": "Farbe:",
+        "label": "NeoPixel  Farbe:",
         "name": "COLOR",
         "fieldType": "colour_picker",
         "default": "#ff0000"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "INDEX",
+        "label": "LED Nr.",
+        "check": "Number",
+        "defaultValue": 1
       }
     ],
     "hardware": {
@@ -975,6 +1006,46 @@ const BLOCKS_DB = [
     "_file": "actuators/neopixel_set.md"
   },
   {
+    "id": "neopixel_ext_brightness",
+    "blockCategory": "Lichter",
+    "subCategory": "Streifen",
+    "label": "Streifen Helligkeit",
+    "colour": "#EC4899",
+    "tooltip": "Setzt die Helligkeit eines externen NeoPixel-Streifens am Grove-Port (0–100 %)",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Streifen Helligkeit (Grove)  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "COUNT",
+        "label": "LEDs gesamt",
+        "check": "Number",
+        "defaultValue": 8
+      },
+      {
+        "name": "PERCENT",
+        "label": "Helligkeit",
+        "check": "Number",
+        "defaultValue": 50,
+        "suffix": "%"
+      }
+    ],
+    "hardware": {
+      "commonName": "NeoPixel-Streifen (extern) / WS2812B",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/neopixel_ext_brightness.md"
+  },
+  {
     "id": "neopixel_ext_fill",
     "blockCategory": "Lichter",
     "subCategory": "Streifen",
@@ -982,6 +1053,7 @@ const BLOCKS_DB = [
     "colour": "#EC4899",
     "tooltip": "Setzt alle LEDs eines externen NeoPixel-Streifens am Grove-Port auf eine Farbe",
     "blockType": "statement",
+    "inline": true,
     "inputs": [
       {
         "label": "Streifen füllen (Grove)  Port:",
@@ -990,19 +1062,18 @@ const BLOCKS_DB = [
         "groveRole": "digital"
       },
       {
-        "label": "LEDs:",
-        "name": "COUNT",
-        "fieldType": "number_field",
-        "default": 8,
-        "min": 1,
-        "max": 300,
-        "precision": 1
-      },
-      {
         "label": "Farbe:",
         "name": "COLOR",
         "fieldType": "colour_picker",
         "default": "#ff0000"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "COUNT",
+        "label": "LEDs gesamt",
+        "check": "Number",
+        "defaultValue": 8
       }
     ],
     "hardware": {
@@ -1021,21 +1092,21 @@ const BLOCKS_DB = [
     "colour": "#EC4899",
     "tooltip": "Schaltet alle LEDs eines externen NeoPixel-Streifens am Grove-Port aus",
     "blockType": "statement",
+    "inline": true,
     "inputs": [
       {
         "label": "Streifen aus (Grove)  Port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
-      },
+      }
+    ],
+    "valueInputs": [
       {
-        "label": "LEDs:",
         "name": "COUNT",
-        "fieldType": "number_field",
-        "default": 8,
-        "min": 1,
-        "max": 300,
-        "precision": 1
+        "label": "LEDs gesamt",
+        "check": "Number",
+        "defaultValue": 8
       }
     ],
     "hardware": {
@@ -1054,6 +1125,7 @@ const BLOCKS_DB = [
     "colour": "#EC4899",
     "tooltip": "Setzt eine einzelne LED eines externen NeoPixel-Streifens am Grove-Port",
     "blockType": "statement",
+    "inline": true,
     "inputs": [
       {
         "label": "Streifen (Grove)  Port:",
@@ -1062,28 +1134,24 @@ const BLOCKS_DB = [
         "groveRole": "digital"
       },
       {
-        "label": "LEDs:",
-        "name": "COUNT",
-        "fieldType": "number_field",
-        "default": 8,
-        "min": 1,
-        "max": 300,
-        "precision": 1
-      },
-      {
-        "label": "LED Nr.",
-        "name": "INDEX",
-        "fieldType": "number_field",
-        "default": 1,
-        "min": 1,
-        "max": 300,
-        "precision": 1
-      },
-      {
         "label": "Farbe:",
         "name": "COLOR",
         "fieldType": "colour_picker",
         "default": "#ff0000"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "COUNT",
+        "label": "LEDs gesamt",
+        "check": "Number",
+        "defaultValue": 8
+      },
+      {
+        "name": "INDEX",
+        "label": "LED Nr.",
+        "check": "Number",
+        "defaultValue": 1
       }
     ],
     "hardware": {

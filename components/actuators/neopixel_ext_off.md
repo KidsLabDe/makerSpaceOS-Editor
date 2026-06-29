@@ -6,18 +6,17 @@ label: "🌈 Streifen aus"
 colour: "#EC4899"
 tooltip: "Schaltet alle LEDs eines externen NeoPixel-Streifens am Grove-Port aus"
 blockType: statement
+inline: true
 inputs:
   - label: "🌈 Streifen aus (Grove)  Port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: digital
-  - label: "LEDs:"
-    name: COUNT
-    fieldType: number_field
-    default: 8
-    min: 1
-    max: 300
-    precision: 1
+valueInputs:
+  - name: COUNT
+    label: "LEDs gesamt"
+    check: Number
+    defaultValue: 8
 hardware:
   commonName: "NeoPixel-Streifen (extern) / WS2812B"
   verbrauch3j: 0

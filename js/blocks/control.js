@@ -41,6 +41,38 @@ Blockly.Blocks['control_wait'] = {
   }
 };
 
+// ── Bedingungs-Schleifen (Logik-Kategorie) ───────────────────────────────────
+// Kooperativ: der Generator fügt ein await-Yield ein, damit parallele Aufgaben
+// (Ereignisse, weitere Schleifen) nicht blockiert werden.
+
+Blockly.Blocks['control_wait_until'] = {
+  init: function() {
+    this.appendValueInput('COND')
+        .setCheck('Boolean')
+        .appendField('⏳ warte bis');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour('#4FBFE8');
+    this.setTooltip('Hält an dieser Stelle an, bis die Bedingung erfüllt ist');
+  }
+};
+
+Blockly.Blocks['control_while'] = {
+  init: function() {
+    this.appendValueInput('COND')
+        .setCheck('Boolean')
+        .appendField('🔁 solange');
+    this.appendStatementInput('DO')
+        .appendField('mache');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour('#4FBFE8');
+    this.setTooltip('Wiederholt die Blöcke, solange die Bedingung erfüllt ist');
+  }
+};
+
 Blockly.Blocks['control_print'] = {
   init: function() {
     this.appendValueInput('VALUE')

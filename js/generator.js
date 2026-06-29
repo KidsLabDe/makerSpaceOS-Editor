@@ -76,6 +76,15 @@ Blockly.Python.finish = function() {
   const hasAsync = _tasks.length > 0 || /\bawait\b/.test(_setupCode);
   if (hasAsync) _defs['import_asyncio'] = 'import asyncio';
 
+  // Import-Einträge aus Standard-Blockly-Blöcken übernehmen (z.B. math_random_int →
+  // 'import random', math_single → 'import math'). Diese landen in
+  // Blockly.Python.definitions_ statt in _defs und würden sonst fehlen.
+  for (const [k, v] of Object.entries(Blockly.Python.definitions_ || {})) {
+    if (typeof v === 'string' && (v.startsWith('import ') || v.startsWith('from '))) {
+      _defs[k] = v;
+    }
+  }
+
   const imports = [];
   const inits   = [];
   for (const key of Object.keys(_defs).sort()) {
@@ -176,6 +185,21 @@ Blockly.Python['control_forever'] = function(block) {
 Blockly.Python['control_wait'] = function(block) {
   const secs = Blockly.Python.valueToCode(block, 'SECONDS', Blockly.Python.ORDER_NONE) || '1';
   return `await asyncio.sleep(${secs})\n`;
+};
+
+// Wartet (nicht blockierend) bis die Bedingung wahr ist – pollt mit kleinem
+// await-sleep, damit parallele Aufgaben weiterlaufen.
+Blockly.Python['control_wait_until'] = function(block) {
+  const cond = Blockly.Python.valueToCode(block, 'COND', Blockly.Python.ORDER_NONE) || 'False';
+  return `while not (${cond}):\n    await asyncio.sleep(0.02)\n`;
+};
+
+// Solange-Schleife – mit await-Yield am Ende jedes Durchlaufs, damit auch eine
+// rein synchrone Schleife andere Aufgaben nicht blockiert.
+Blockly.Python['control_while'] = function(block) {
+  const cond = Blockly.Python.valueToCode(block, 'COND', Blockly.Python.ORDER_NONE) || 'False';
+  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  return `while ${cond}:\n${body}    await asyncio.sleep(0)\n`;
 };
 
 Blockly.Python['control_print'] = function(block) {
@@ -436,7 +460,8 @@ function _neopixelDefs() {
 
 Blockly.Python['neopixel_set'] = function(block) {
   _neopixelDefs();
-  return `_pixels[${parseInt(block.getFieldValue('INDEX'),10) - 1}] = ${hexToRgbTuple(block.getFieldValue('COLOR'))}\n_pixels.show()\n`;
+  const idx = Blockly.Python.valueToCode(block, 'INDEX', Blockly.Python.ORDER_NONE) || '1';
+  return `_pixels[(${idx}) - 1] = ${hexToRgbTuple(block.getFieldValue('COLOR'))}\n_pixels.show()\n`;
 };
 
 Blockly.Python['neopixel_fill'] = function(block) {
@@ -460,21 +485,38 @@ function _neopixelExtDefs(pin, count) {
 
 Blockly.Python['neopixel_ext_set'] = function(block) {
   const pin = block.getFieldValue('PORT');
-  _neopixelExtDefs(pin, block.getFieldValue('COUNT'));
-  const idx = parseInt(block.getFieldValue('INDEX'), 10) - 1;
-  return `_npx_${pin}[${idx}] = ${hexToRgbTuple(block.getFieldValue('COLOR'))}\n_npx_${pin}.show()\n`;
+  const count = Blockly.Python.valueToCode(block, 'COUNT', Blockly.Python.ORDER_NONE) || '8';
+  _neopixelExtDefs(pin, count);
+  const idx = Blockly.Python.valueToCode(block, 'INDEX', Blockly.Python.ORDER_NONE) || '1';
+  return `_npx_${pin}[(${idx}) - 1] = ${hexToRgbTuple(block.getFieldValue('COLOR'))}\n_npx_${pin}.show()\n`;
 };
 
 Blockly.Python['neopixel_ext_fill'] = function(block) {
   const pin = block.getFieldValue('PORT');
-  _neopixelExtDefs(pin, block.getFieldValue('COUNT'));
+  const count = Blockly.Python.valueToCode(block, 'COUNT', Blockly.Python.ORDER_NONE) || '8';
+  _neopixelExtDefs(pin, count);
   return `_npx_${pin}.fill(${hexToRgbTuple(block.getFieldValue('COLOR'))})\n_npx_${pin}.show()\n`;
 };
 
 Blockly.Python['neopixel_ext_off'] = function(block) {
   const pin = block.getFieldValue('PORT');
-  _neopixelExtDefs(pin, block.getFieldValue('COUNT'));
+  const count = Blockly.Python.valueToCode(block, 'COUNT', Blockly.Python.ORDER_NONE) || '8';
+  _neopixelExtDefs(pin, count);
   return `_npx_${pin}.fill((0, 0, 0))\n_npx_${pin}.show()\n`;
+};
+
+Blockly.Python['neopixel_brightness'] = function(block) {
+  _neopixelDefs();
+  const pct = Blockly.Python.valueToCode(block, 'PERCENT', Blockly.Python.ORDER_NONE) || '50';
+  return `_pixels.brightness = (${pct}) / 100\n_pixels.show()\n`;
+};
+
+Blockly.Python['neopixel_ext_brightness'] = function(block) {
+  const pin = block.getFieldValue('PORT');
+  const count = Blockly.Python.valueToCode(block, 'COUNT', Blockly.Python.ORDER_NONE) || '8';
+  _neopixelExtDefs(pin, count);
+  const pct = Blockly.Python.valueToCode(block, 'PERCENT', Blockly.Python.ORDER_NONE) || '50';
+  return `_npx_${pin}.brightness = (${pct}) / 100\n_npx_${pin}.show()\n`;
 };
 
 // ── Hilfsfunktionen für neue Blöcke ──────────────────────────────────────────
@@ -977,6 +1019,16 @@ Blockly.Python['matrix_symbol'] = function(block) {
   const varN   = `_matrix_${pin}`;
   const pixels = _maskToPixelLines(mask, rgb, varN);
   return `${varN}.fill((0, 0, 0))\n${pixels ? pixels + '\n' : ''}${varN}.show()\n`;
+};
+
+Blockly.Python['matrix_set_pixel'] = function(block) {
+  const pin = _matrixPin(block);
+  _matrixDefs(pin);
+  const rgb = hexToRgbTuple(block.getFieldValue('COLOR'));
+  const x = Blockly.Python.valueToCode(block, 'X', Blockly.Python.ORDER_NONE) || '0';
+  const y = Blockly.Python.valueToCode(block, 'Y', Blockly.Python.ORDER_NONE) || '0';
+  // Sequentielle Verdrahtung: Index = Zeile * 8 + Spalte
+  return `_matrix_${pin}[(${y}) * 8 + (${x})] = ${rgb}\n_matrix_${pin}.show()\n`;
 };
 
 Blockly.Python['matrix_draw'] = function(block) {
