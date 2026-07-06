@@ -21,10 +21,10 @@
     ...BOARD.grovePorts.map(p => [p.label, String(p.id)]),
   ]);
 
-  // Kombiniertes Taster-Dropdown: B1/B2 (Onboard) + alle Grove-Ports
+  // Kombiniertes Taster-Dropdown: Onboard-Taster (aus BOARD.buttons) + alle Grove-Ports
   const tasterField = () => new Blockly.FieldDropdown([
     _NONE_OPT,
-    ['B1 (GP20)', 'B1'], ['B2 (GP21)', 'B2'],
+    ...Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]),
     GROVE_SEP,
     ...BOARD.grovePorts.map(p => [p.label, p.signal]),
   ], v => v === '__SEP__' ? null : undefined);

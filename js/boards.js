@@ -3,6 +3,46 @@
 // Trenner-Eintrag im Pin-Dropdown (Wert wird im Validator in block_builder.js abgefangen)
 const GROVE_SEP = ['────────────', '__SEP__'];
 
+// ── Geteilte Helfer (nehmen das Profil als 1. Argument) ─────────────────────
+// Dropdown-Optionen [Anzeige, Wert] je nach Rolle.
+// digital/analog → Wert = Signal-Pin (GPxx/IOxx); i2c/2pin → Wert = Port-ID (String).
+// digital/analog bieten zusätzlich (per Trenner abgesetzt) einzelne GPIO-Pins an.
+function _groveOptions(profile, role) {
+  switch (role) {
+    case 'analog':
+      return [
+        ...profile.grovePorts.filter(p => p.analog).map(p => [p.label, p.signal]),
+        GROVE_SEP,
+        ...profile.analogPins.map(p => [p, p]),
+      ];
+    case 'i2c':
+      return profile.grovePorts.filter(p => p.i2c).map(p => [p.label, String(p.id)]);
+    case '2pin':
+      return profile.grovePorts.map(p => [p.label, String(p.id)]);
+    case 'digital':
+    default: {
+      const usedSignals = new Set(profile.grovePorts.map(p => p.signal));
+      const extraPins = profile.allGrovePins.filter(p => !usedSignals.has(p));
+      return [
+        ...profile.grovePorts.map(p => [p.label, p.signal]),
+        ...(extraPins.length ? [GROVE_SEP, ...extraPins.map(p => [p, p])] : []),
+      ];
+    }
+  }
+}
+
+function _grovePortById(profile, id) {
+  return profile.grovePorts.find(p => p.id === Number(id));
+}
+
+// Hängt die (board-unabhängigen) Methoden an jedes Profil, damit Aufrufer
+// weiterhin BOARD.groveOptions(role) / BOARD.grovePortById(id) nutzen können.
+function _attachGroveMethods(profile) {
+  profile.groveOptions  = function (role) { return _groveOptions(this, role); };
+  profile.grovePortById = function (id)   { return _grovePortById(this, id); };
+  return profile;
+}
+
 const BOARD_PROFILES = {
   maker_pi_rp2040: {
     name: 'Cytron MAKER-PI-RP2040',
@@ -38,38 +78,68 @@ const BOARD_PROFILES = {
     allGrovePins: ['GP0','GP1','GP2','GP3','GP4','GP5','GP6','GP7','GP12','GP13','GP14','GP15','GP16','GP17','GP26','GP27','GP28'],
     // ADC-fähige Pins (Grove 5/6/7-Signale)
     analogPins:   ['GP26','GP27','GP28'],
+  },
 
-    // Dropdown-Optionen [Anzeige, Wert] je nach Rolle.
-    // digital/analog → Wert = Signal-Pin (GPxx); i2c/2pin → Wert = Port-ID (String).
-    // digital/analog bieten zusätzlich (per Trenner abgesetzt) einzelne GPIO-Pins an.
-    groveOptions(role) {
-      switch (role) {
-        case 'analog':
-          return [
-            ...this.grovePorts.filter(p => p.analog).map(p => [p.label, p.signal]),
-            GROVE_SEP,
-            ...this.analogPins.map(p => [p, p]),
-          ];
-        case 'i2c':
-          return this.grovePorts.filter(p => p.i2c).map(p => [p.label, String(p.id)]);
-        case '2pin':
-          return this.grovePorts.map(p => [p.label, String(p.id)]);
-        case 'digital':
-        default: {
-          const usedSignals = new Set(this.grovePorts.map(p => p.signal));
-          const extraPins = this.allGrovePins.filter(p => !usedSignals.has(p));
-          return [
-            ...this.grovePorts.map(p => [p.label, p.signal]),
-            ...(extraPins.length ? [GROVE_SEP, ...extraPins.map(p => [p, p])] : []),
-          ];
-        }
-      }
-    },
+  // Wemos/LOLIN S2 Mini (ESP32-S2). Nacktes Board ohne Grove/Motor/Servo –
+  // nur generische GPIO-/Analog-Blöcke + externer NeoPixel (Rest ausgeblendet).
+  // CircuitPython-Pin-Namen sind IOxx (board.IO2 …). ADC1 (WLAN-sicher): IO1–IO10.
+  // Onboard: board.LED = IO15, board.BUTTON = IO0.
+  lolin_s2_mini: {
+    name: 'Wemos S2 Mini',
+    // Sichere Defaults – nur für (ausgeblendete) board-spezifische Blöcke, damit
+    // generator.js nie undefined dereferenziert. Onboard-LED liegt auf IO15.
+    neopixel:  { pin: 'IO18', count: 1 },
+    buzzer:    'IO16',
+    buttons:   { BOOT: 'IO0' },
+    motors:    {},
+    servos:    {},
+    battery:   null,
+    // Ports als physische Pin-Paare (pin1 = kleinere IO, signal = größere IO).
+    grovePorts: [
+      { id: 1,  label: '2/3',   pin1: 'IO2',  signal: 'IO3',  analog: true,  i2c: false },
+      { id: 2,  label: '4/5',   pin1: 'IO4',  signal: 'IO5',  analog: true,  i2c: false },
+      { id: 3,  label: '6/7',   pin1: 'IO6',  signal: 'IO7',  analog: true,  i2c: false },
+      { id: 4,  label: '8/9',   pin1: 'IO8',  signal: 'IO9',  analog: true,  i2c: false },
+      { id: 5,  label: '16/17', pin1: 'IO16', signal: 'IO17', analog: false, i2c: false },
+      { id: 6,  label: '18/21', pin1: 'IO18', signal: 'IO21', analog: false, i2c: false },
+      { id: 7,  label: '33/34', pin1: 'IO33', signal: 'IO34', analog: false, i2c: false },
+      { id: 8,  label: '35/36', pin1: 'IO35', signal: 'IO36', analog: false, i2c: false },
+      { id: 9,  label: '37/38', pin1: 'IO37', signal: 'IO38', analog: false, i2c: false },
+      { id: 10, label: '39/40', pin1: 'IO39', signal: 'IO40', analog: false, i2c: false },
+    ],
+    externalPins: ['IO1','IO2','IO3','IO4','IO5','IO6','IO7','IO8','IO9','IO10'],
+    // Alle herausgeführten GPIO (ohne IO0 = Button und IO15 = Onboard-LED).
+    allGrovePins: ['IO1','IO2','IO3','IO4','IO5','IO6','IO7','IO8','IO9','IO10',
+                   'IO11','IO12','IO13','IO14','IO16','IO17','IO18','IO21',
+                   'IO33','IO34','IO35','IO36','IO37','IO38','IO39','IO40'],
+    // ADC1-Kanäle (mit WLAN nutzbar): IO1–IO10.
+    analogPins:   ['IO1','IO2','IO3','IO4','IO5','IO6','IO7','IO8','IO9','IO10'],
 
-    grovePortById(id) {
-      return this.grovePorts.find(p => p.id === Number(id));
-    },
-  }
+    // Board-spezifische Blöcke/Kategorien, die für dieses Board ausgeblendet werden.
+    hideCategories:    ['Anzeigen'],                            // Grove-LCD / TM1637
+    hideSubCategories: ['Ton', 'Servo & Pumpe', 'Motor', 'Onboard'],
+    hideBlockIds:      ['sensor_battery',
+                        'matrix_on', 'matrix_off', 'matrix_brightness',
+                        'matrix_symbol', 'matrix_draw', 'matrix_set_pixel'],
+  },
 };
 
-const BOARD = BOARD_PROFILES.maker_pi_rp2040;
+Object.values(BOARD_PROFILES).forEach(_attachGroveMethods);
+
+// ── Board-Auswahl (persistiert in localStorage; Wechsel via Reload) ─────────
+const BOARD_STORAGE = 'makerspaceos.board';
+let BOARD_ID = 'maker_pi_rp2040';
+try {
+  const stored = localStorage.getItem(BOARD_STORAGE);
+  if (stored && BOARD_PROFILES[stored]) BOARD_ID = stored;
+} catch (e) { /* localStorage evtl. nicht verfügbar */ }
+
+let BOARD = BOARD_PROFILES[BOARD_ID];
+
+// Board wechseln: Auswahl merken und Seite neu laden. Ein Reload ist nötig, weil
+// Dropdown-Optionen und Toolbox einmalig zur Registrierung aus BOARD gebaut werden.
+function setBoard(id) {
+  if (!BOARD_PROFILES[id] || id === BOARD_ID) return;
+  try { localStorage.setItem(BOARD_STORAGE, id); } catch (e) { /* ignorieren */ }
+  location.reload();
+}

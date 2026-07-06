@@ -104,11 +104,14 @@ function buildFinalToolbox() {
     return { ...cat, contents: cat.contents ? [...cat.contents] : [] };
   });
 
-  // Matrix-Inhalte an Lichter-Kategorie anhängen
+  // Matrix-Inhalte an Lichter-Kategorie anhängen (board-abhängig ausblendbar)
   const lichter = hwCats.find(c => c.kind === 'category' && c.name === 'Lichter');
-  if (lichter && window.MATRIX_TOOLBOX_CONTENTS && window.MATRIX_TOOLBOX_CONTENTS.length) {
+  const hideIds = new Set(BOARD.hideBlockIds || []);
+  const matrixContents = (window.MATRIX_TOOLBOX_CONTENTS || [])
+    .filter(e => !(e.type && hideIds.has(e.type)));
+  if (lichter && matrixContents.length) {
     lichter.contents.push({ kind: 'label', text: '── 8×8 Matrix ──' });
-    lichter.contents.push(...window.MATRIX_TOOLBOX_CONTENTS);
+    lichter.contents.push(...matrixContents);
   }
 
   return {

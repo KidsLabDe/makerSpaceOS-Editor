@@ -83,6 +83,19 @@ html, body {
 .connection-area { display: flex; align-items: center; gap: 10px; }
 .header-divider { width: 1.5px; height: 26px; background: var(--line); margin: 0 2px; }
 
+.board-select {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.board-select:hover { border-color: var(--line-strong); }
+
 .status-indicator {
   display: inline-flex;
   align-items: center;

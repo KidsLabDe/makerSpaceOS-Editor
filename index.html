@@ -34,11 +34,15 @@
       <span class="logo-divider"></span>
       <span class="logo-titles">
         <span class="logo-text">makerSpaceOS</span>
-        <span class="logo-sub">MakeYourSchool · Maker-Pi RP2040</span>
+        <span class="logo-sub" id="logo-sub">MakeYourSchool · Maker-Pi RP2040</span>
       </span>
     </div>
 
     <div class="connection-area">
+      <select id="board-select" class="board-select" title="Board auswählen">
+        <option value="maker_pi_rp2040">Maker-Pi RP2040</option>
+        <option value="lolin_s2_mini">Wemos S2 Mini</option>
+      </select>
       <div class="status-indicator">
         <span class="status-dot" id="status-dot"></span>
         <span id="status-text">Nicht verbunden</span>

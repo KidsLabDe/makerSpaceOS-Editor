@@ -35,8 +35,7 @@
       case 'taster_dropdown':
         return [
           _NONE_OPT,
-          ['B1 (GP20)', 'B1'],
-          ['B2 (GP21)', 'B2'],
+          ...Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]),
           GROVE_SEP,
           ...BOARD.grovePorts.map(p => [p.label, p.signal]),
         ];
@@ -233,14 +232,22 @@
   function buildToolboxCategories(db) {
     const categories = [];
 
+    // Board-spezifische Ausblendungen (aktives BOARD-Profil, optional).
+    const hideCats  = new Set(BOARD.hideCategories    || []);
+    const hideSubs  = new Set(BOARD.hideSubCategories || []);
+    const hideIds   = new Set(BOARD.hideBlockIds      || []);
+    const visible   = b => !hideIds.has(b.id);
+
     for (const catDef of BLOCKS_CATALOG.categories) {
-      const catBlocks = db.filter(b => b.blockCategory === catDef.id);
+      if (hideCats.has(catDef.id)) continue;
+      const catBlocks = db.filter(b => b.blockCategory === catDef.id && visible(b));
       if (!catBlocks.length) continue;
 
       const contents = [];
 
       if (catDef.subCategories && catDef.subCategories.length) {
         for (const sc of catDef.subCategories) {
+          if (hideSubs.has(sc)) continue;
           const scBlocks = catBlocks.filter(b => b.subCategory === sc);
           if (!scBlocks.length) continue;
           contents.push({ kind: 'label', text: `── ${sc} ──` });
@@ -252,6 +259,8 @@
       } else {
         for (const b of catBlocks) contents.push(toolboxEntry(b));
       }
+
+      if (!contents.length) continue;
 
       categories.push({
         kind:     'category',

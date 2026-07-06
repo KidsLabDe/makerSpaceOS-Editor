@@ -27,6 +27,7 @@ class CircuitPythonSerial {
     this._disconnectBound  = false;
     this._capturing = false;         // true = eingehende Bytes zusätzlich mitschneiden
     this._rxBuffer  = '';            // Mitschnitt-Puffer für den Upload-Handshake
+    this._suppressOnData = false;    // true = Bytes NICHT an den Monitor (onData) weiterreichen
   }
 
   get isConnected() {
@@ -78,7 +79,7 @@ class CircuitPythonSerial {
               if (value) {
                 const text = new TextDecoder().decode(value);
                 if (self._capturing) self._rxBuffer += text;
-                if (self.onData) self.onData(text);
+                if (self.onData && !self._suppressOnData) self.onData(text);
               }
             }
           } finally {
@@ -178,6 +179,37 @@ class CircuitPythonSerial {
       await this._waitFor('OK', 1500);
     } finally {
       this._capturing = false;
+      this._rxBuffer = '';
+    }
+  }
+
+  // Board-Kennung (board.board_id) leise über die REPL abfragen.
+  // Liefert z.B. "lolin_s2_mini" / "cytron_maker_pi_rp2040" oder null (Timeout/Fehler).
+  // Läuft im normalen REPL; der Monitor wird währenddessen unterdrückt.
+  async readBoardId() {
+    if (!this.port) return null;
+    this._rxBuffer = '';
+    this._capturing = true;
+    this._suppressOnData = true;
+    try {
+      // Laufenden Code unterbrechen und auf den normalen Prompt warten.
+      await this._write('\x03');
+      await this._delay(60);
+      await this._write('\x03');
+      if (!await this._waitFor('>>>', 1200)) return null;
+
+      // Abfrage senden. Marker (>> … <<) per Konkatenation gebaut, damit das
+      // REPL-Echo der Befehlszeile nicht fälschlich als Treffer zählt.
+      this._rxBuffer = '';
+      await this._write('import board; print(">"+">"+board.board_id+"<"+"<")\r\n');
+      await this._waitFor('>>' , 1500);
+      const m = this._rxBuffer.match(/>>([a-z0-9_.\-]+)<</i);
+      return m ? m[1] : null;
+    } catch (_) {
+      return null;
+    } finally {
+      this._capturing = false;
+      this._suppressOnData = false;
       this._rxBuffer = '';
     }
   }

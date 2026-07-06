@@ -139,6 +139,15 @@ function initButtons() {
   document.getElementById('serial-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') sendLine();
   });
+
+  // Board-Auswahl: aktuelles Board vorbelegen; Wechsel lädt die Seite neu.
+  const boardSel = document.getElementById('board-select');
+  if (boardSel) {
+    boardSel.value = BOARD_ID;
+    boardSel.addEventListener('change', () => setBoard(boardSel.value));
+  }
+  const logoSub = document.getElementById('logo-sub');
+  if (logoSub) logoSub.textContent = 'MakeYourSchool · ' + BOARD.name;
 }
 
 async function toggleConnect() {
@@ -154,9 +163,29 @@ async function toggleConnect() {
         showToast('Board getrennt', 'warn');
       };
       setConnected(true);
+      detectAndSwitchBoard();   // Board erkennen und ggf. Profil umschalten
     } catch (e) {
       showToast('Verbindung fehlgeschlagen: ' + e.message, 'error');
     }
+  }
+}
+
+// Erkennt das angeschlossene Board über board.board_id und schaltet bei Bedarf
+// automatisch auf das passende Profil um (Reload). Fehlschlag = still ignorieren.
+const _BOARD_ID_MAP = {
+  lolin_s2_mini:          'lolin_s2_mini',
+  cytron_maker_pi_rp2040: 'maker_pi_rp2040',
+};
+async function detectAndSwitchBoard() {
+  let id = null;
+  try { id = await serial.readBoardId(); } catch (_) { return; }
+  const want = _BOARD_ID_MAP[id];
+  if (!want) return;   // unbekanntes/kein Board – aktuelle Auswahl gilt
+  if (want !== BOARD_ID) {
+    showToast('Board erkannt: ' + BOARD_PROFILES[want].name + ' – lade neu…', 'ok');
+    setBoard(want);    // persistiert + location.reload()
+  } else {
+    showToast('Board erkannt: ' + BOARD.name, 'ok');
   }
 }
 
