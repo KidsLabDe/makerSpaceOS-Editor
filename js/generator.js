@@ -166,6 +166,21 @@ Blockly.Python['math_change'] = function(block) {
   return `${varName} = (${varName} if isinstance(${varName}, (int, float)) else 0) + ${delta}\n`;
 };
 
+// "erhöhe"/"verringere VARIABLE um X" (siehe js/blocks/variables.js)
+function _varDelta(block, op) {
+  let varName;
+  try {
+    varName = Blockly.Python.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.Names.NameType.VARIABLE);
+  } catch (_) {
+    varName = block.getFieldValue('VAR');
+  }
+  const delta = Blockly.Python.valueToCode(block, 'DELTA', Blockly.Python.ORDER_NONE) || '0';
+  return `${varName} = (${varName} if isinstance(${varName}, (int, float)) else 0) ${op} (${delta})\n`;
+}
+Blockly.Python['var_increase'] = (block) => _varDelta(block, '+');
+Blockly.Python['var_decrease'] = (block) => _varDelta(block, '-');
+
 // ── Pflicht-Startblöcke ───────────────────────────────────────────────────────
 
 Blockly.Python['control_setup'] = function(block) {

@@ -55,6 +55,11 @@ function initBlockly() {
     grid: { spacing: 22, length: 3, colour: '#E3DCCB', snap: true },
   });
 
+  // Eigener Variablen-Flyout: "erhöhe"/"verringere" statt Standard-"math_change".
+  if (window.variableFlyoutCallback) {
+    workspace.registerToolboxCategoryCallback('VARIABLE', window.variableFlyoutCallback);
+  }
+
   // Zuletzt bearbeiteten Stand wiederherstellen, sonst Pflichtblöcke neu anlegen.
   const saved = loadCurrent();
   if (saved && saved.state) {

@@ -86,26 +86,32 @@ const BOARD_PROFILES = {
   // Onboard: board.LED = IO15, board.BUTTON = IO0.
   lolin_s2_mini: {
     name: 'Wemos S2 Mini',
-    // Sichere Defaults – nur für (ausgeblendete) board-spezifische Blöcke, damit
-    // generator.js nie undefined dereferenziert. Onboard-LED liegt auf IO15.
+    // Onboard-NeoPixel gibt es nicht (nur eine einfache blaue LED an IO15) – die
+    // Onboard-LED-Blöcke sind ausgeblendet; dieser Default wird daher nie benutzt.
     neopixel:  { pin: 'IO18', count: 1 },
+    // Externer Summer (kein Onboard-Piezo) – fester Ausgang auf IO16.
     buzzer:    'IO16',
-    buttons:   { BOOT: 'IO0' },
+    // Keine Onboard-Taster (IO0 = BOOT/Strapping) → Taster nur extern über Ports.
+    buttons:   {},
+    // Kein Onboard-Motortreiber – Motor-Blöcke ausgeblendet.
     motors:    {},
-    servos:    {},
+    // PWM-Ausgänge für externe Servos UND die 8×8-NeoPixel-Matrix (Datenpin).
+    // ESP32-S2 kann PWM/NeoPixel auf beliebigen GPIO – S1…S4 = feste freie Pins.
+    servos:    { S1: 'IO37', S2: 'IO38', S3: 'IO39', S4: 'IO40' },
     battery:   null,
     // Ports als physische Pin-Paare (pin1 = kleinere IO, signal = größere IO).
+    // i2c=true überall: der ESP32-S2 kann I2C (busio) auf beliebigen Pin-Paaren.
     grovePorts: [
-      { id: 1,  label: '2/3',   pin1: 'IO2',  signal: 'IO3',  analog: true,  i2c: false },
-      { id: 2,  label: '4/5',   pin1: 'IO4',  signal: 'IO5',  analog: true,  i2c: false },
-      { id: 3,  label: '6/7',   pin1: 'IO6',  signal: 'IO7',  analog: true,  i2c: false },
-      { id: 4,  label: '8/9',   pin1: 'IO8',  signal: 'IO9',  analog: true,  i2c: false },
-      { id: 5,  label: '16/17', pin1: 'IO16', signal: 'IO17', analog: false, i2c: false },
-      { id: 6,  label: '18/21', pin1: 'IO18', signal: 'IO21', analog: false, i2c: false },
-      { id: 7,  label: '33/34', pin1: 'IO33', signal: 'IO34', analog: false, i2c: false },
-      { id: 8,  label: '35/36', pin1: 'IO35', signal: 'IO36', analog: false, i2c: false },
-      { id: 9,  label: '37/38', pin1: 'IO37', signal: 'IO38', analog: false, i2c: false },
-      { id: 10, label: '39/40', pin1: 'IO39', signal: 'IO40', analog: false, i2c: false },
+      { id: 1,  label: '2/3',   pin1: 'IO2',  signal: 'IO3',  analog: true,  i2c: true },
+      { id: 2,  label: '4/5',   pin1: 'IO4',  signal: 'IO5',  analog: true,  i2c: true },
+      { id: 3,  label: '6/7',   pin1: 'IO6',  signal: 'IO7',  analog: true,  i2c: true },
+      { id: 4,  label: '8/9',   pin1: 'IO8',  signal: 'IO9',  analog: true,  i2c: true },
+      { id: 5,  label: '16/17', pin1: 'IO16', signal: 'IO17', analog: false, i2c: true },
+      { id: 6,  label: '18/21', pin1: 'IO18', signal: 'IO21', analog: false, i2c: true },
+      { id: 7,  label: '33/34', pin1: 'IO33', signal: 'IO34', analog: false, i2c: true },
+      { id: 8,  label: '35/36', pin1: 'IO35', signal: 'IO36', analog: false, i2c: true },
+      { id: 9,  label: '37/38', pin1: 'IO37', signal: 'IO38', analog: false, i2c: true },
+      { id: 10, label: '39/40', pin1: 'IO39', signal: 'IO40', analog: false, i2c: true },
     ],
     externalPins: ['IO1','IO2','IO3','IO4','IO5','IO6','IO7','IO8','IO9','IO10'],
     // Alle herausgeführten GPIO (ohne IO0 = Button und IO15 = Onboard-LED).
@@ -115,12 +121,12 @@ const BOARD_PROFILES = {
     // ADC1-Kanäle (mit WLAN nutzbar): IO1–IO10.
     analogPins:   ['IO1','IO2','IO3','IO4','IO5','IO6','IO7','IO8','IO9','IO10'],
 
-    // Board-spezifische Blöcke/Kategorien, die für dieses Board ausgeblendet werden.
-    hideCategories:    ['Anzeigen'],                            // Grove-LCD / TM1637
-    hideSubCategories: ['Ton', 'Servo & Pumpe', 'Motor', 'Onboard'],
-    hideBlockIds:      ['sensor_battery',
-                        'matrix_on', 'matrix_off', 'matrix_brightness',
-                        'matrix_symbol', 'matrix_draw', 'matrix_set_pixel'],
+    // Nur echte Onboard-Hardware ausblenden (Motortreiber, Onboard-NeoPixel,
+    // Batterie-Teiler). Externes (Matrix, 7-Segment, LCD, Servo, Schrittmotor,
+    // Summer, Sensoren …) bleibt verfügbar. Onboard-Taster: siehe buttons: {}.
+    hideSubCategories: ['Onboard'],                            // Onboard-NeoPixel
+    hideBlockIds:      ['actuator_motor_forward', 'actuator_motor_backward',
+                        'actuator_motor_stop', 'sensor_battery'],
   },
 };
 
