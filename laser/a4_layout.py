@@ -27,7 +27,7 @@ import os
 
 import vector_font
 
-PAGE_W, PAGE_H = 297.0, 210.0   # A4 quer (mm)
+PAGE_W, PAGE_H = 340.0, 240.0   # 34 x 24 cm (mm)
 CUT_TOL  = 0.4                  # mm Uebermass gesamt fuer Schnitt-Oeffnungen
 LABEL_DY = 5.0                  # mm Abstand Beschriftung ueber Bauteil-Oberkante
 FONT_MM  = 5.0                  # Schriftgroesse Bauteil-Labels (mm)
@@ -38,7 +38,7 @@ COMPONENTS = [
     ("8x8 Matrix",      67.0, 65.5,  18.0,  22.0),
     ("Ultraschall",     50.0, 25.0,  22.0, 120.0),
     ("Drehgeber",       21.5, 18.5,  30.0, 165.0),
-    ("LCD",             80.0, 40.0, 205.0,  22.0),
+    ("LCD",             80.0, 40.0, 228.0,  22.0),
     ("7-Segment",       42.0, 23.5, 210.0,  95.0),
     ("DHT11",           40.0, 20.0, 210.0, 150.0),
     ("Servo",           12.0, 23.0, 142.5, 160.0),
