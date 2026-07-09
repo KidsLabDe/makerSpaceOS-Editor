@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-06-29T13:47:49.051Z
+// Generiert: 2026-07-09T09:47:48.452Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -11,6 +11,7 @@ const BLOCKS_CATALOG = {
       "subCategories": [
         "Temperatur & Feuchte",
         "Abstand & Licht",
+        "Bewegung",
         "Weitere",
         "Ereignisse"
       ]
@@ -201,6 +202,65 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/ultrasonic.md"
+  },
+  {
+    "id": "sensor_icm20948_g",
+    "blockCategory": "Sensoren",
+    "subCategory": "Bewegung",
+    "label": "Beschleunigung (g)",
+    "colour": "#2563EB",
+    "tooltip": "Misst, wie stark der Sensor beschleunigt wird – in Ruhe ≈ 1,0 (Erdanziehung)",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Beschleunigung (g)  Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "i2c"
+      }
+    ],
+    "hardware": {
+      "commonName": "Adafruit ICM20948 (9-Achsen-IMU)",
+      "verbrauch3j": 0,
+      "kitStandard": false,
+      "width_mm": 26,
+      "height_mm": 18
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/icm20948_g.md"
+  },
+  {
+    "id": "sensor_icm20948_neigung",
+    "blockCategory": "Sensoren",
+    "subCategory": "Bewegung",
+    "label": "Neigung (°)",
+    "colour": "#2563EB",
+    "tooltip": "Misst, wie weit der Sensor gekippt ist – in Grad (0 = waagerecht)",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Neigung (°)",
+        "name": "DIR",
+        "fieldType": "tilt_dropdown"
+      },
+      {
+        "label": "Port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "i2c"
+      }
+    ],
+    "hardware": {
+      "commonName": "Adafruit ICM20948 (9-Achsen-IMU)",
+      "verbrauch3j": 0,
+      "kitStandard": false,
+      "width_mm": 26,
+      "height_mm": 18
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/icm20948_neigung.md"
   },
   {
     "id": "sensor_battery",

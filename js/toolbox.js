@@ -28,6 +28,7 @@ const TOOLBOX_STATIC_CONTENTS = [
       { kind: 'block', type: 'when_encoder' },
       { kind: 'block', type: 'when_sound' },
       { kind: 'block', type: 'when_touch' },
+      { kind: 'block', type: 'when_motion' },
       { kind: 'sep' },
       { kind: 'block', type: 'when_distance' },
       { kind: 'block', type: 'when_light' },

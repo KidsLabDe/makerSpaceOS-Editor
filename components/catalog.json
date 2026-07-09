@@ -4,7 +4,7 @@
       "id": "Sensoren",
       "label": "Sensoren",
       "colour": "#2563EB",
-      "subCategories": ["Temperatur & Feuchte", "Abstand & Licht", "Weitere", "Ereignisse"]
+      "subCategories": ["Temperatur & Feuchte", "Abstand & Licht", "Bewegung", "Weitere", "Ereignisse"]
     },
     {
       "id": "Aktionen",

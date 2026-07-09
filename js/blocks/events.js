@@ -91,6 +91,25 @@
     }
   };
 
+  // ── Bewegungs-Hut (ICM20948, geschüttelt / 3g / 6g / 9g) ────────────────────
+
+  const motionField = () => new Blockly.FieldDropdown([
+    ['geschüttelt', 'shake'], ['3g', '3'], ['6g', '6'], ['9g', '9'],
+  ]);
+
+  Blockly.Blocks['when_motion'] = {
+    init: function () {
+      this.appendDummyInput()
+          .appendField('Wenn bewegt')
+          .appendField(motionField(), 'MODE')
+          .appendField('  Port:')
+          .appendField(groveField('i2c'), 'PORT');
+      this.appendStatementInput('DO').appendField('→ dann');
+      this.setColour(EVENT_COLOUR);
+      this.setTooltip('Startet, sobald der Bewegungssensor (ICM20948) geschüttelt oder stark beschleunigt wird');
+    }
+  };
+
   // ── Schwellwert-Hüte (Vergleich mit Zahl) ───────────────────────────────────
 
   Blockly.Blocks['when_distance'] = {

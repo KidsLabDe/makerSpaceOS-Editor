@@ -51,6 +51,8 @@
         return Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]);
       case 'state_dropdown':
         return [['gedrückt', 'pressed'], ['losgelassen', 'released']];
+      case 'tilt_dropdown':
+        return [['vor/zurück', 'pitch'], ['links/rechts', 'roll']];
       case 'rgb_color_dropdown':
         return _COLOR_OPTS;
       default:

@@ -11,7 +11,7 @@ var _tasks     = [];                   // Task-Deskriptoren {kind, name, body, e
 var _HAT_TYPES = [
   'when_button', 'when_encoder',
   'when_distance', 'when_light', 'when_temperature', 'when_humidity',
-  'when_sound', 'when_touch',
+  'when_sound', 'when_touch', 'when_motion',
 ];
 
 Blockly.Python.workspaceToCode = function(workspace) {
@@ -718,6 +718,96 @@ Blockly.Python['sensor_bmp280_pressure'] = function(block) {
   return ['round(_bmp280.pressure, 1)', Blockly.Python.ORDER_FUNCTION_CALL];
 };
 
+// ── ICM20948-Generatoren (9-Achsen-IMU, Grove-I2C) ───────────────────────────
+// ±16g-Bereich, damit auch das 9g-Ereignis auslösen kann (Standard wäre ±8g).
+
+function _imuDefs(portId) {
+  const port = BOARD.grovePortById(portId);
+  _defs['import_board']     = 'import board';
+  _defs['import_busio']     = 'import busio';
+  _defs['import_digitalio'] = 'import digitalio';
+  _defs['import_math']      = 'import math';
+  _defs['import_time']      = 'import time';
+  _defs['import_icm20x']    = 'import adafruit_icm20x';
+  // I2C + Sensor + Hilfsfunktionen in einem Eintrag (Reihenfolge garantiert).
+  // Init ist bewusst zäh: (a) Bus-Clear – nach einem Absturz mitten in einer
+  // I2C-Übertragung hält der Sensor SDA auf Low (Auto-Reload macht ihn nicht
+  // stromlos) → busio.I2C meldet sonst „Kein Pull-up gefunden". (b) Retry –
+  // der interne Kompass (AK09916) meldet sich nach dem Einschalten oft erst
+  // beim 2. Versuch. time.sleep ist hier ok – läuft einmalig vor den Tasks.
+  // Lesefehler (z.B. Wackelkontakt am Stecker beim Schütteln) dürfen das
+  // Programm nicht beenden – dann gilt der letzte gültige Messwert weiter.
+  _defs[`init_imu_${portId}`] =
+    `def _i2c_freigeben_${portId}():\n` +
+    `    _scl = digitalio.DigitalInOut(board.${port.signal})\n` +
+    `    _sda = digitalio.DigitalInOut(board.${port.pin1})\n` +
+    `    _scl.switch_to_output(value=True)\n` +
+    `    _sda.switch_to_input(pull=digitalio.Pull.UP)\n` +
+    `    for _ in range(16):\n` +
+    `        _scl.value = False\n` +
+    `        time.sleep(0.001)\n` +
+    `        _scl.value = True\n` +
+    `        time.sleep(0.001)\n` +
+    `    _scl.deinit()\n` +
+    `    _sda.deinit()\n` +
+    `_imu_${portId} = None\n` +
+    `for _imu_versuch in range(5):\n` +
+    `    try:\n` +
+    `        _i2c_freigeben_${portId}()\n` +
+    `        _i2c_imu_${portId} = busio.I2C(board.${port.signal}, board.${port.pin1})\n` +
+    `        _imu_${portId} = adafruit_icm20x.ICM20948(_i2c_imu_${portId})\n` +
+    `        break\n` +
+    `    except (OSError, RuntimeError):\n` +
+    `        try:\n` +
+    `            _i2c_imu_${portId}.deinit()\n` +
+    `        except Exception:\n` +
+    `            pass\n` +
+    `        time.sleep(0.3)  # Sensor braucht nach dem Einschalten einen Moment\n` +
+    `if _imu_${portId} is None:\n` +
+    `    raise RuntimeError("Bewegungssensor nicht gefunden - steckt er fest an ${port.label}?")\n` +
+    `_imu_${portId}.accelerometer_range = adafruit_icm20x.AccelRange.RANGE_16G\n` +
+    `_imu_${portId}_last = [0.0, 0.0, 9.81]\n` +
+    `def _imu_accel_${portId}():\n` +
+    `    try:\n` +
+    `        _imu_${portId}_last[0], _imu_${portId}_last[1], _imu_${portId}_last[2] = _imu_${portId}.acceleration\n` +
+    `    except OSError:\n` +
+    `        pass  # kurzer Kontakt-Aussetzer: letzten Wert behalten\n` +
+    `    return _imu_${portId}_last\n` +
+    `def _imu_g_${portId}():\n` +
+    `    _ax, _ay, _az = _imu_accel_${portId}()\n` +
+    `    return round(math.sqrt(_ax*_ax + _ay*_ay + _az*_az) / 9.81, 2)\n` +
+    `def _imu_neigung_vor_${portId}():\n` +
+    `    _ax, _ay, _az = _imu_accel_${portId}()\n` +
+    `    return round(math.degrees(math.atan2(-_ax, math.sqrt(_ay*_ay + _az*_az))))\n` +
+    `def _imu_neigung_seite_${portId}():\n` +
+    `    _ax, _ay, _az = _imu_accel_${portId}()\n` +
+    `    return round(math.degrees(math.atan2(_ay, _az)))`;
+}
+
+Blockly.Python['sensor_icm20948_g'] = function(block) {
+  const portId = block.getFieldValue('PORT');
+  if (!portId || portId === '__NONE__') {
+    block.setWarningText('⚠ Bitte Port auswählen!');
+    return ['None', Blockly.Python.ORDER_NONE];
+  }
+  block.setWarningText(null);
+  _imuDefs(portId);
+  return [`_imu_g_${portId}()`, Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Python['sensor_icm20948_neigung'] = function(block) {
+  const portId = block.getFieldValue('PORT');
+  if (!portId || portId === '__NONE__') {
+    block.setWarningText('⚠ Bitte Port auswählen!');
+    return ['None', Blockly.Python.ORDER_NONE];
+  }
+  block.setWarningText(null);
+  const dir = block.getFieldValue('DIR');
+  _imuDefs(portId);
+  const fn = dir === 'roll' ? `_imu_neigung_seite_${portId}` : `_imu_neigung_vor_${portId}`;
+  return [`${fn}()`, Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
 // ── Drehgeber-Generator (KY-040) ──────────────────────────────────────────────
 
 Blockly.Python['sensor_encoder'] = function(block) {
@@ -977,6 +1067,21 @@ Blockly.Python['when_humidity'] = function(block) {
   _defs['import_dht']    = 'import adafruit_dht';
   _defs[`init_dht11_${pin}`] = `_dht11_${pin} = adafruit_dht.DHT11(board.${pin})`;
   return _whenTask('wenn_feuchte', `(_dht11_${pin}.humidity ${op} ${val})`, body, '1');
+};
+
+// ── Bewegungs-Ereignis (ICM20948, geschüttelt / 3g / 6g / 9g) ────────────────
+
+Blockly.Python['when_motion'] = function(block) {
+  const portId = block.getFieldValue('PORT');
+  if (!portId || portId === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  block.setWarningText(null);
+  const mode = block.getFieldValue('MODE');
+  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  _imuDefs(portId);
+  // „geschüttelt" = Gesamt-g über 2 (in Ruhe ≈ 1); 3g/6g/9g = feste Schwellen
+  const threshold = mode === 'shake' ? '2' : mode;
+  const taskName  = mode === 'shake' ? 'wenn_geschuettelt' : `wenn_${mode}g`;
+  return _whenTask(taskName, `(_imu_g_${portId}() > ${threshold})`, body, '0.02');
 };
 
 // ── 8x8 NeoPixel-Matrix (Servo-Ports S1–S4 = GP12–GP15) ──────────────────────
