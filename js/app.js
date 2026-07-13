@@ -180,6 +180,8 @@ async function toggleConnect() {
 const _BOARD_ID_MAP = {
   lolin_s2_mini:          'lolin_s2_mini',
   cytron_maker_pi_rp2040: 'maker_pi_rp2040',
+  // Generischer ESP32-WROOM-Build – bei uns auf dem AZ-Delivery ESP32 D1 R32.
+  doit_esp32_devkit_v1:   'esp32_d1_r32',
 };
 async function detectAndSwitchBoard() {
   let id = null;

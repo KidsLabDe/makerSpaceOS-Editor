@@ -9,12 +9,16 @@ const GROVE_SEP = ['────────────', '__SEP__'];
 // digital/analog bieten zusätzlich (per Trenner abgesetzt) einzelne GPIO-Pins an.
 function _groveOptions(profile, role) {
   switch (role) {
-    case 'analog':
+    case 'analog': {
+      // Roh-Pins, die schon Signal eines Analog-Ports sind, nicht doppelt
+      // anbieten – doppelte Werte lassen Blockly das falsche Label anzeigen.
+      const usedAnalog = new Set(profile.grovePorts.filter(p => p.analog).map(p => p.signal));
+      const extraAnalog = profile.analogPins.filter(p => !usedAnalog.has(p));
       return [
         ...profile.grovePorts.filter(p => p.analog).map(p => [p.label, p.signal]),
-        GROVE_SEP,
-        ...profile.analogPins.map(p => [p, p]),
+        ...(extraAnalog.length ? [GROVE_SEP, ...extraAnalog.map(p => [p, p])] : []),
       ];
+    }
     case 'i2c':
       return profile.grovePorts.filter(p => p.i2c).map(p => [p.label, String(p.id)]);
     case '2pin':
@@ -124,6 +128,70 @@ const BOARD_PROFILES = {
     // Nur echte Onboard-Hardware ausblenden (Motortreiber, Onboard-NeoPixel,
     // Batterie-Teiler). Externes (Matrix, 7-Segment, LCD, Servo, Schrittmotor,
     // Summer, Sensoren …) bleibt verfügbar. Onboard-Taster: siehe buttons: {}.
+    hideSubCategories: ['Onboard'],                            // Onboard-NeoPixel
+    hideBlockIds:      ['actuator_motor_forward', 'actuator_motor_backward',
+                        'actuator_motor_stop', 'sensor_battery'],
+  },
+
+  // AZ-Delivery ESP32 D1 R32 (ESP32-WROOM-32 im Arduino-Uno-Formfaktor, CH340)
+  // mit aufgestecktem Grove Base Shield (Seeed-kompatibel, VCC-Schalter!).
+  // Geflasht ist der generische CircuitPython-Build "DOIT ESP32 DevKit V1"
+  // (board_id: doit_esp32_devkit_v1) – Pin-Namen sind daher board.D<gpio>
+  // (GPIO-Nummer!), plus board.VP (IO36) / board.VN (IO39).
+  // ACHTUNG dreifache Namensebene: Shield-Port "D2" = Uno-Pin D2 = GPIO26 =
+  // board.D26. Die Port-Labels unten zeigen den Shield-Aufdruck.
+  // WICHTIG: VCC-Schalter des Shields auf 3V3 – die ESP32-GPIO sind NICHT
+  // 5-V-tolerant!
+  esp32_d1_r32: {
+    name: 'ESP32 D1 R32 (Uno)',
+    // Kein Onboard-NeoPixel (nur einfache LED an GPIO2 = Uno A0) –
+    // Onboard-LED-Blöcke sind ausgeblendet; dieser Default wird nie benutzt.
+    neopixel:  { pin: 'D26', count: 1 },
+    // Externer Summer – fester Ausgang auf Grove-Port D6 (GPIO27).
+    buzzer:    'D27',
+    // Kein Onboard-Taster (nur EN = Reset) → Taster nur extern über Ports.
+    buttons:   {},
+    // Kein Onboard-Motortreiber – Motor-Blöcke ausgeblendet.
+    motors:    {},
+    // PWM geht auf allen Ausgangs-Pins; S1…S4 = Grove-Ports D2/D3/D4/D5
+    // (Signal-Pin des jeweiligen Ports).
+    servos:    { S1: 'D26', S2: 'D25', S3: 'D17', S4: 'D16' },
+    battery:   null,
+    // Ports = Grove-Buchsen des Base Shields, Label = Shield-Aufdruck.
+    // Grove-Konvention: Port Dn führt Uno-Dn (Signal/gelb) + Uno-Dn+1 (weiß)
+    // → benachbarte Ports teilen sich einen Pin (D2 und D3 teilen Uno-D3 usw.),
+    // also nicht zwei nebeneinanderliegende D-Ports gleichzeitig belegen.
+    // signal = Uno-Dn als GPIO, pin1 = Uno-Dn+1 als GPIO.
+    // A2/A3 (GPIO35/34) sind NUR Eingänge (kein LED/Summer/Ultraschall, aber
+    // Taster/PIR/Analog-Sensoren OK). A0-Signal (GPIO2) ist zugleich die
+    // Onboard-LED. I2C nur am fest verdrahteten I2C-Port (GPIO21/22).
+    // Reihenfolge = Shield-Layout: A0–A3, I2C, D2–D8. Der UART-Port des
+    // Shields (GPIO1/3) ist durch die USB-Seriell-Verbindung belegt und wird
+    // deshalb nicht angeboten.
+    grovePorts: [
+      { id: 1,  label: 'A0',  pin1: 'D4',  signal: 'D2',  analog: true,  i2c: false },
+      { id: 2,  label: 'A1',  pin1: 'D35', signal: 'D4',  analog: true,  i2c: false },
+      { id: 3,  label: 'A2',  pin1: 'D34', signal: 'D35', analog: true,  i2c: false },
+      { id: 4,  label: 'A3',  pin1: 'VP',  signal: 'D34', analog: true,  i2c: false },
+      { id: 5,  label: 'I2C', pin1: 'D21', signal: 'D22', analog: false, i2c: true  },
+      { id: 6,  label: 'D2',  pin1: 'D25', signal: 'D26', analog: false, i2c: false },
+      { id: 7,  label: 'D3',  pin1: 'D17', signal: 'D25', analog: false, i2c: false },
+      { id: 8,  label: 'D4',  pin1: 'D16', signal: 'D17', analog: false, i2c: false },
+      { id: 9,  label: 'D5',  pin1: 'D27', signal: 'D16', analog: false, i2c: false },
+      { id: 10, label: 'D6',  pin1: 'D14', signal: 'D27', analog: false, i2c: false },
+      { id: 11, label: 'D7',  pin1: 'D12', signal: 'D14', analog: false, i2c: false },
+      { id: 12, label: 'D8',  pin1: 'D13', signal: 'D12', analog: false, i2c: false },
+    ],
+    externalPins: ['D2','D4','D34','D35','VP','VN'],
+    // Bewusst NUR die Port-Signale (keine zusätzlichen Roh-Pins hinter dem
+    // Trenner): Die CircuitPython-Namen (D5 = GPIO5) kollidieren mit den
+    // Shield-Labels (Port D5 = GPIO16) und stiften nur Verwirrung.
+    allGrovePins: ['D2','D4','D12','D14','D16','D17','D22','D25','D26','D27','D34','D35'],
+    // Analog-Signale (A0=D2, A1=D4 sind ADC2 – ohne WLAN nutzbar); alle schon
+    // als Ports gelistet → keine Extra-Einträge im Analog-Dropdown.
+    analogPins:   ['D2','D4','D34','D35'],
+
+    // Wie beim S2 Mini: nur echte Onboard-Hardware ausblenden.
     hideSubCategories: ['Onboard'],                            // Onboard-NeoPixel
     hideBlockIds:      ['actuator_motor_forward', 'actuator_motor_backward',
                         'actuator_motor_stop', 'sensor_battery'],
