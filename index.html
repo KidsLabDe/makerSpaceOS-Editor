@@ -21,9 +21,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202607140923">
+  <link rel="stylesheet" href="css/fonts.css?v=202607141441">
 
-  <link rel="stylesheet" href="css/style.css?v=202607140923">
+  <link rel="stylesheet" href="css/style.css?v=202607141441">
 </head>
 <body>
 
@@ -69,6 +69,10 @@
       <button id="btn-history" class="btn btn-ghost" title="Gespeicherte Versionen anzeigen">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
         Verlauf
+      </button>
+      <button id="btn-library" class="btn btn-ghost" title="Bauteil-Bibliothek: Erklärungen zu Boards, Sensoren und Aktoren">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
+        Bibliothek
       </button>
       <!-- KI-Block Generator noch nicht fertig – Button vorerst ausgeblendet -->
       <button onclick="aiOpen()" class="btn btn-ai" title="KI-Block Generator öffnen" style="display:none">
@@ -200,20 +204,21 @@
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/boards.js?v=202607140923"></script>
-  <script src="js/blocks/control.js?v=202607140923"></script>
-  <script src="js/blocks/events.js?v=202607140923"></script>
-  <script src="js/blocks/text.js?v=202607140923"></script>
-  <script src="js/blocks/variables.js?v=202607140923"></script>
-  <script src="js/blocks_db.js?v=202607140923"></script>
-  <script src="js/block_builder.js?v=202607140923"></script>
-  <script src="js/toolbox.js?v=202607140923"></script>
-  <script src="js/blocks/matrix.js?v=202607140923"></script>
-  <script src="js/generator.js?v=202607140923"></script>
-  <script src="js/serial.js?v=202607140923"></script>
-  <script src="js/storage.js?v=202607140923"></script>
-  <script src="js/ai_chat.js?v=202607140923"></script>
-  <script src="js/app.js?v=202607140923"></script>
+  <script src="js/boards.js?v=202607141441"></script>
+  <script src="js/blocks/control.js?v=202607141441"></script>
+  <script src="js/blocks/events.js?v=202607141441"></script>
+  <script src="js/blocks/text.js?v=202607141441"></script>
+  <script src="js/blocks/variables.js?v=202607141441"></script>
+  <script src="js/blocks_db.js?v=202607141441"></script>
+  <script src="js/block_builder.js?v=202607141441"></script>
+  <script src="js/toolbox.js?v=202607141441"></script>
+  <script src="js/blocks/matrix.js?v=202607141441"></script>
+  <script src="js/generator.js?v=202607141441"></script>
+  <script src="js/serial.js?v=202607141441"></script>
+  <script src="js/storage.js?v=202607141441"></script>
+  <script src="js/docs.js?v=202607141441"></script>
+  <script src="js/ai_chat.js?v=202607141441"></script>
+  <script src="js/app.js?v=202607141441"></script>
 
   <!-- Resize-Divider Logik -->
   <script>

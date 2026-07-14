@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-07-14T09:23:48.454Z
+// Generiert: 2026-07-14T13:31:06.932Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -92,7 +92,8 @@ const BLOCKS_DB = [
       "height_mm": 20
     },
     "legacyGenerator": false,
-    "_file": "sensors/dht11_humidity.md"
+    "_file": "sensors/dht11_humidity.md",
+    "doc": "# DHT11 Luftfeuchtesensor\n\nMisst die relative Luftfeuchtigkeit in Prozent mit dem DHT11 Sensor."
   },
   {
     "id": "sensor_dht11_temperature",
@@ -134,7 +135,8 @@ const BLOCKS_DB = [
       "height_mm": 20
     },
     "legacyGenerator": false,
-    "_file": "sensors/dht11_temperature.md"
+    "_file": "sensors/dht11_temperature.md",
+    "doc": "# DHT11 Temperatursensor\n\nGünstiger Sensor für Temperatur und Luftfeuchtigkeit. Weniger genau als DHT22, aber gut für Einsteigerprojekte."
   },
   {
     "id": "sensor_ldr",
@@ -174,7 +176,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": false,
-    "_file": "sensors/ldr.md"
+    "_file": "sensors/ldr.md",
+    "doc": "# Lichtsensor (LDR / KY-018)\n\nMisst die Umgebungshelligkeit als Prozentwert. 0 % = sehr dunkel, 100 % = sehr hell."
   },
   {
     "id": "sensor_ultrasonic",
@@ -201,7 +204,8 @@ const BLOCKS_DB = [
       "height_mm": 25
     },
     "legacyGenerator": true,
-    "_file": "sensors/ultrasonic.md"
+    "_file": "sensors/ultrasonic.md",
+    "doc": "# Grove Ultraschall-Abstandssensor\n\nMisst Abstände von ca. 2 cm bis 350 cm. Der Grove-Ranger nutzt **einen einzigen Signal-Pin**\n(Trigger und Echo teilen sich Pin 2 des Grove-Steckers). Generator: siehe `js/generator.js`."
   },
   {
     "id": "sensor_icm20948_g",
@@ -228,7 +232,8 @@ const BLOCKS_DB = [
       "height_mm": 18
     },
     "legacyGenerator": true,
-    "_file": "sensors/icm20948_g.md"
+    "_file": "sensors/icm20948_g.md",
+    "doc": "# ICM20948 – Beschleunigung (g)\n\nLiefert die Gesamt-Beschleunigung als Zahl in g. In Ruhe zeigt der Sensor ≈ 1,0\n(Erdanziehung), beim Schütteln oder Aufprall deutlich mehr. Messbereich: bis ±16 g.\n\n## Beispiel\n\nBeim Schütteln leuchten die NeoPixel kurz rot, parallel wird der g-Wert jede Sekunde ausgegeben:\n\n![Beispielprogramm: Wenn bewegt (geschüttelt) + Beschleunigung ausgeben](../images/icm20948_beispiel.png)\n\n> Benötigt `adafruit_icm20x.mpy` und `adafruit_register/` auf `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Anschluss über Grove-I2C-Adapter, Adresse 0x69."
   },
   {
     "id": "sensor_icm20948_neigung",
@@ -260,7 +265,8 @@ const BLOCKS_DB = [
       "height_mm": 18
     },
     "legacyGenerator": true,
-    "_file": "sensors/icm20948_neigung.md"
+    "_file": "sensors/icm20948_neigung.md",
+    "doc": "# ICM20948 – Neigung (°)\n\nLiefert den Kippwinkel in Grad: „vor/zurück\" (−90…90) oder „links/rechts\" (−180…180).\n0 bedeutet waagerecht. Gut für Wasserwaagen, Balance-Spiele und Lenk-Steuerungen.\n\n> Benötigt `adafruit_icm20x.mpy` und `adafruit_register/` auf `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Anschluss über Grove-I2C-Adapter, Adresse 0x69."
   },
   {
     "id": "sensor_air_quality",
@@ -298,7 +304,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": false,
-    "_file": "sensors/air_quality.md"
+    "_file": "sensors/air_quality.md",
+    "doc": "# Grove Luftqualitätssensor v1.3\n\nMisst die Luftverschmutzung (Kohlenmonoxid, Alkohol, Aceton, Formaldehyd u.a.) als\nProzentwert: **0 % = frische Luft**, höhere Werte = schlechtere Luft. Typisch liegt\nfrische Luft bei ca. 5–10 %, ab ca. 20–30 % ist die Luft merklich verschmutzt.\n\n**Wichtig:** Der Sensor (MP503) braucht nach dem Einschalten ca. **20 Sekunden\nAufwärmzeit**, bevor die Werte stimmen. Anschluss an einen analogen Grove-Port."
   },
   {
     "id": "sensor_battery",
@@ -335,7 +342,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": false,
-    "_file": "sensors/battery.md"
+    "_file": "sensors/battery.md",
+    "doc": "# Batteriespannung (GP29)\n\nMisst die Versorgungsspannung über den internen Spannungsteiler (GP29 = VBAT/2) und gibt\nsie in Volt zurück. Praktisch, um den Akkustand zu überwachen."
   },
   {
     "id": "sensor_bodenfeuchte",
@@ -374,7 +382,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": false,
-    "_file": "sensors/bodenfeuchte.md"
+    "_file": "sensors/bodenfeuchte.md",
+    "doc": "# Bodenfeuchtesensor (kapazitiv)\n\nMisst die Feuchtigkeit in der Erde. Ideal für automatische Pflanzenbewässerung.\n\n**Wichtig:** Kapazitiver Sensor verwenden (nicht resistiv) – resistive Sonden korrodieren bei Dauernutzung.\n\n## Anschluss\n- AOUT → GP-Pin (analogfähig: GP26, GP27, GP28)\n- VCC → 3.3V oder 5V\n- GND → GND"
   },
   {
     "id": "sensor_encoder",
@@ -401,7 +410,8 @@ const BLOCKS_DB = [
       "height_mm": 18.5
     },
     "legacyGenerator": true,
-    "_file": "sensors/encoder.md"
+    "_file": "sensors/encoder.md",
+    "doc": "# Drehgeber / Rotary Encoder (Grove)\n\nZählt Drehbewegungen (unbegrenzt). Positiver Wert = Rechtsdrehung, negativer Wert = Linksdrehung.\nNutzt beide Pins des Grove-Ports (Pin1 = CLK, Pin2 = DT). Generator: siehe `js/generator.js`."
   },
   {
     "id": "sensor_taster",
@@ -429,7 +439,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "sensors/taster.md"
+    "_file": "sensors/taster.md",
+    "doc": "# Taster gedrückt? (B1/B2 + externer Taster)\n\nGibt `Wahr` zurück wenn der ausgewählte Taster gedrückt ist.\n\n- **B1 (GP20) / B2 (GP21)**: Onboard-Taster des MAKER-PI-RP2040\n- **Grove 1–7**: Externer Taster (KY-004) am Signal-Pin des Grove-Ports"
   },
   {
     "id": "event_air_quality",
@@ -485,7 +496,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": false,
-    "_file": "sensors/event_air_quality.md"
+    "_file": "sensors/event_air_quality.md",
+    "doc": "# Ereignis: Wenn Luftqualität\n\nFührt Aktionen aus, wenn die Luftverschmutzung einen Schwellwert über- oder\nunterschreitet (z.B. Lüfter an, wenn > 30 %)."
   },
   {
     "id": "event_button",
@@ -516,7 +528,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "sensors/event_button.md"
+    "_file": "sensors/event_button.md",
+    "doc": "# Ereignis: Wenn Taster (B1/B2 + extern)\n\nReagiert auf Drücken oder Loslassen eines Tasters."
   },
   {
     "id": "event_ldr",
@@ -574,7 +587,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": false,
-    "_file": "sensors/event_ldr.md"
+    "_file": "sensors/event_ldr.md",
+    "doc": "# Ereignis: Wenn Helligkeit (LDR)\n\nFührt Aktionen aus, wenn die Helligkeit einen Schwellwert über- oder unterschreitet."
   },
   {
     "id": "event_temperature",
@@ -627,7 +641,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": false,
-    "_file": "sensors/event_temperature.md"
+    "_file": "sensors/event_temperature.md",
+    "doc": "# Ereignis: Wenn Temperatur (DHT22)\n\nFührt Aktionen aus, wenn die Temperatur einen Schwellwert über- oder unterschreitet."
   },
   {
     "id": "event_ultrasonic",
@@ -673,7 +688,8 @@ const BLOCKS_DB = [
       "height_mm": 25
     },
     "legacyGenerator": true,
-    "_file": "sensors/event_ultrasonic.md"
+    "_file": "sensors/event_ultrasonic.md",
+    "doc": "# Ereignis: Wenn Abstand (Grove Ultrasonic Ranger)\n\nFührt Aktionen aus, wenn der gemessene Abstand einen Schwellwert über- oder unterschreitet.\nSingle-Pin-Messung – Generator: siehe `js/generator.js`."
   },
   {
     "id": "actuator_led",
@@ -714,7 +730,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": false,
-    "_file": "actuators/led.md"
+    "_file": "actuators/led.md",
+    "doc": "# LED-Block\n\nSchaltet eine einfache LED (oder jeden anderen digitalen Ausgang) ein oder aus."
   },
   {
     "id": "actuator_led_blink",
@@ -754,7 +771,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/led_blink.md"
+    "_file": "actuators/led_blink.md",
+    "doc": "# LED blinken\n\nLässt eine LED eine bestimmte Anzahl mal blinken."
   },
   {
     "id": "actuator_buzzer",
@@ -786,7 +804,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/buzzer.md"
+    "_file": "actuators/buzzer.md",
+    "doc": "# Board-Buzzer (passiv, GP22)\n\nSpielt Töne mit einstellbarer Frequenz. Verwendet den eingebauten Buzzer auf GP22."
   },
   {
     "id": "actuator_buzzer_off",
@@ -808,7 +827,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/buzzer_off.md"
+    "_file": "actuators/buzzer_off.md",
+    "doc": "# Buzzer ausschalten"
   },
   {
     "id": "actuator_isd1820",
@@ -832,7 +852,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/isd1820.md"
+    "_file": "actuators/isd1820.md",
+    "doc": "# ISD1820 Sprachmodul (EX-ISD1820)\n\nNimmt Töne/Sprache auf und spielt sie wieder ab.\n\n**Verdrahtung (Grove-Port):**\n- P-E → Grove Signal-Pin\n- Vcc / GND → Grove VCC / GND\n- P-L und REC: offen lassen\n\n**Aufnahme:** REC-Knopf auf dem Modul gedrückt halten (max. 10 Sek.).  \n**Abspielen:** Block ausführen → P-E kurz HIGH → Aufnahme einmal abspielen."
   },
   {
     "id": "actuator_isd1820_record",
@@ -864,7 +885,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/isd1820_record.md"
+    "_file": "actuators/isd1820_record.md",
+    "doc": "# ISD1820 – Aufnahme per REC-Pin\n\nREC-Pin HIGH halten = aufnehmen. Nach Ablauf der Dauer wird der Pin LOW gesetzt.\nMax. 10 Sekunden (Chip-Limit). Wert über 10 wird auf dem Modul automatisch abgeschnitten.\n\n**Verdrahtung:** REC → Grove Signal-Pin dieses Blocks."
   },
   {
     "id": "actuator_servo",
@@ -902,7 +924,8 @@ const BLOCKS_DB = [
       "height_mm": 23
     },
     "legacyGenerator": true,
-    "_file": "actuators/servo.md"
+    "_file": "actuators/servo.md",
+    "doc": "# Servo-Motor\n\nDreht den Servo auf einen Winkel von 0–180 Grad."
   },
   {
     "id": "actuator_motor_backward",
@@ -938,7 +961,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/motor_backward.md"
+    "_file": "actuators/motor_backward.md",
+    "doc": "# Motor rückwärts"
   },
   {
     "id": "actuator_motor_forward",
@@ -974,7 +998,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/motor_forward.md"
+    "_file": "actuators/motor_forward.md",
+    "doc": "# Motor vorwärts"
   },
   {
     "id": "actuator_motor_stop",
@@ -1001,7 +1026,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/motor_stop.md"
+    "_file": "actuators/motor_stop.md",
+    "doc": "# Motor stopp"
   },
   {
     "id": "actuator_stepper",
@@ -1047,7 +1073,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/stepper.md"
+    "_file": "actuators/stepper.md",
+    "doc": "# Schrittmotor (28BYJ-48 + ULN2003)\n\nDreht einen 28BYJ-48 Schrittmotor präzise um einen Winkel. Eine volle Umdrehung\nentspricht 4096 Halbschritten (Motor mit 1:64-Getriebe).\n\n## Verdrahtung\n\nDer ULN2003-Treiber hat vier Eingänge **IN1–IN4**, angesteuert über zwei Grove-Ports:\n\n- **Anschluss 1** → IN1 (Pin 1) und IN2 (Signalpin)\n- **Anschluss 2** → IN3 (Pin 1) und IN4 (Signalpin)\n\n> **5 V Versorgung:** Die Grove-Ports liefern nur ein 3,3-V-Signal. Die\n> Stromversorgung (**5 V + GND**) des ULN2003 wird extern vom **Servo-Header**\n> des Boards abgegriffen. Generator: siehe `js/generator.js`."
   },
   {
     "id": "neopixel_brightness",
@@ -1078,7 +1105,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_brightness.md"
+    "_file": "actuators/neopixel_brightness.md",
+    "doc": "# NeoPixel Helligkeit (Onboard)\n\nSetzt die Helligkeit der eingebauten NeoPixel-LEDs (0 % = aus, 100 % = volle Helligkeit)."
   },
   {
     "id": "neopixel_fill",
@@ -1102,7 +1130,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_fill.md"
+    "_file": "actuators/neopixel_fill.md",
+    "doc": "# NeoPixel alle LEDs setzen"
   },
   {
     "id": "neopixel_off",
@@ -1124,7 +1153,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_off.md"
+    "_file": "actuators/neopixel_off.md",
+    "doc": "# NeoPixel alle LEDs ausschalten"
   },
   {
     "id": "neopixel_set",
@@ -1157,7 +1187,8 @@ const BLOCKS_DB = [
       "kitStandard": true
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_set.md"
+    "_file": "actuators/neopixel_set.md",
+    "doc": "# NeoPixel einzelne LED setzen"
   },
   {
     "id": "neopixel_ext_brightness",
@@ -1197,7 +1228,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_ext_brightness.md"
+    "_file": "actuators/neopixel_ext_brightness.md",
+    "doc": "# Externer NeoPixel-Streifen – Helligkeit\n\nSetzt die Helligkeit eines an einem Grove-Port angeschlossenen WS2812B-Streifens (0 % = aus, 100 % = volle Helligkeit).\n„LEDs gesamt\" muss für alle Streifen-Blöcke am selben Port gleich gewählt werden."
   },
   {
     "id": "neopixel_ext_fill",
@@ -1236,7 +1268,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_ext_fill.md"
+    "_file": "actuators/neopixel_ext_fill.md",
+    "doc": "# Externer NeoPixel-Streifen – ganz füllen\n\nSetzt alle LEDs eines an einem Grove-Port angeschlossenen WS2812B-Streifens auf dieselbe Farbe."
   },
   {
     "id": "neopixel_ext_off",
@@ -1269,7 +1302,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_ext_off.md"
+    "_file": "actuators/neopixel_ext_off.md",
+    "doc": "# Externer NeoPixel-Streifen – ausschalten\n\nSchaltet alle LEDs eines an einem Grove-Port angeschlossenen WS2812B-Streifens aus."
   },
   {
     "id": "neopixel_ext_set",
@@ -1314,7 +1348,8 @@ const BLOCKS_DB = [
       "kitStandard": false
     },
     "legacyGenerator": true,
-    "_file": "actuators/neopixel_ext_set.md"
+    "_file": "actuators/neopixel_ext_set.md",
+    "doc": "# Externer NeoPixel-Streifen – einzelne LED setzen\n\nSteuert eine einzelne LED eines an einem Grove-Port angeschlossenen WS2812B-Streifens.\n„LEDs:\" gibt die Gesamtzahl der LEDs im Streifen an (für alle Streifen-Blöcke am selben Port gleich wählen)."
   },
   {
     "id": "actuator_lcd_color",
@@ -1346,7 +1381,8 @@ const BLOCKS_DB = [
       "height_mm": 40
     },
     "legacyGenerator": true,
-    "_file": "actuators/lcd_color.md"
+    "_file": "actuators/lcd_color.md",
+    "doc": "# Grove-LCD RGB Backlight – Farbe (I2C)\n\nStellt nur die Hintergrundbeleuchtung farbig ein. Lässt den angezeigten Text **unverändert** –\nden Text setzt der Block „📟 LCD Text\".\n> Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Unterstützt Grove-LCD RGB Backlight V5 (3,3 V)."
   },
   {
     "id": "actuator_lcd_text",
@@ -1387,7 +1423,8 @@ const BLOCKS_DB = [
       "height_mm": 40
     },
     "legacyGenerator": true,
-    "_file": "actuators/lcd_text.md"
+    "_file": "actuators/lcd_text.md",
+    "doc": "# Grove-LCD RGB Backlight – Text (I2C)\n\nZeigt bis zu zwei Zeilen Text an (je 16 Zeichen). Ändert die Hintergrundfarbe **nicht** –\ndafür gibt es den Block „📟 LCD Farbe\".\n> Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Unterstützt Grove-LCD RGB Backlight V5 (3,3 V)."
   },
   {
     "id": "tm1637_number",
@@ -1422,7 +1459,8 @@ const BLOCKS_DB = [
       "height_mm": 23.5
     },
     "legacyGenerator": true,
-    "_file": "actuators/tm1637_number.md"
+    "_file": "actuators/tm1637_number.md",
+    "doc": "# TM1637 4-stelliges 7-Segment-Display – Zahl anzeigen\n\nZeigt eine ganze Zahl (−999 bis 9999) auf dem Display an.\n\n**Verdrahtung (Grove-Port):**\n- CLK → Grove Pin 1 (weiß, z. B. GP2 bei Grove 2)\n- DIO → Grove Signal (gelb, z. B. GP3 bei Grove 2)\n- VCC / GND → Grove VCC / GND\n\n**Lib:** `adafruit_tm1637` aus dem Adafruit CircuitPython Bundle → nach `CIRCUITPY/lib/` kopieren."
   },
   {
     "id": "tm1637_off",
@@ -1449,7 +1487,8 @@ const BLOCKS_DB = [
       "height_mm": 23.5
     },
     "legacyGenerator": true,
-    "_file": "actuators/tm1637_off.md"
+    "_file": "actuators/tm1637_off.md",
+    "doc": "# TM1637 4-stelliges 7-Segment-Display – Ausschalten\n\nLöscht alle Segmente (Display bleibt dunkel)."
   },
   {
     "id": "analog_read",
