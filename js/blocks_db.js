@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-07-09T09:47:48.452Z
+// Generiert: 2026-07-14T08:55:58.438Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -263,6 +263,44 @@ const BLOCKS_DB = [
     "_file": "sensors/icm20948_neigung.md"
   },
   {
+    "id": "sensor_air_quality",
+    "blockCategory": "Sensoren",
+    "subCategory": "Weitere",
+    "label": "Luftqualität (0–100%)",
+    "colour": "#2563EB",
+    "tooltip": "Liest die Luftverschmutzung in Prozent (0 = frische Luft, 100 = sehr schlechte Luft). Der Sensor braucht nach dem Einschalten ca. 20 Sekunden Aufwärmzeit.",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Luftqualität (0–100%)  Port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import board",
+        "import analogio"
+      ],
+      "defs": [
+        {
+          "key": "init_aq_${PIN}",
+          "val": "_aq_${PIN} = analogio.AnalogIn(board.${PIN})"
+        }
+      ],
+      "expression": "round(_aq_${PIN}.value / 65535 * 100)",
+      "order": "FUNCTION_CALL"
+    },
+    "hardware": {
+      "commonName": "Grove Air Quality Sensor v1.3",
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "sensors/air_quality.md"
+  },
+  {
     "id": "sensor_battery",
     "blockCategory": "Sensoren",
     "subCategory": "Weitere",
@@ -392,6 +430,62 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/taster.md"
+  },
+  {
+    "id": "event_air_quality",
+    "blockCategory": "Sensoren",
+    "subCategory": "Ereignisse",
+    "label": "Wenn Luftqualität",
+    "colour": "#D97706",
+    "tooltip": "Führt Code aus, wenn die Luftverschmutzung einen Wert überschreitet/unterschreitet (0 = frisch, 100 = sehr schlecht)",
+    "blockType": "event",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Wenn Luftqualität  Port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
+      },
+      {
+        "name": "OP",
+        "fieldType": "op_dropdown"
+      },
+      {
+        "label": "%",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "VALUE",
+        "check": "Number",
+        "defaultValue": 30
+      }
+    ],
+    "statementInput": {
+      "name": "DO",
+      "label": "dann"
+    },
+    "generator": {
+      "imports": [
+        "import board",
+        "import analogio"
+      ],
+      "defs": [
+        {
+          "key": "init_aq_${PIN}",
+          "val": "_aq_${PIN} = analogio.AnalogIn(board.${PIN})"
+        }
+      ],
+      "code": "if round(_aq_${PIN}.value / 65535 * 100) ${OP} ${VALUE}:\n${DO}"
+    },
+    "hardware": {
+      "commonName": "Grove Air Quality Sensor v1.3",
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "sensors/event_air_quality.md"
   },
   {
     "id": "event_button",
