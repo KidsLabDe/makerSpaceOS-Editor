@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 3508 2481" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;">
+    <g transform="matrix(11.811024,0,0,11.811024,0,0)">
+        <path d="M285,13.411L285,196.589C285,197.368 284.368,198 283.589,198L13.411,198C12.632,198 12,197.368 12,196.589L12,13.411C12,12.632 12.632,12 13.411,12L283.589,12C284.368,12 285,12.632 285,13.411Z" style="fill:none;stroke:black;stroke-width:0.3px;"/>
+        <path d="M281,16.882L281,193.118C281,193.605 280.605,194 280.118,194L16.882,194C16.395,194 16,193.605 16,193.118L16,16.882C16,16.395 16.395,16 16.882,16L280.118,16C280.605,16 281,16.395 281,16.882Z" style="fill:none;stroke:black;stroke-width:0.2px;"/>
+        <g transform="matrix(0.62,0,0,0.62,114.4,40)">
+            <g>
+                <path d="M37.5,11.9L72.5,11.9" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:8px;"/>
+                <path d="M79.25,15.797L96.75,46.103" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:8px;"/>
+                <path d="M96.75,53.897L79.25,84.203" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:8px;"/>
+                <path d="M72.5,88.1L37.5,88.1" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:8px;"/>
+                <path d="M30.75,84.203L13.25,53.897" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:8px;"/>
+                <path d="M13.25,46.103L30.75,15.797" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:8px;"/>
+            </g>
+            <g>
+                <circle cx="33" cy="11.9" r="5.5" style="fill:none;stroke:black;stroke-width:3.6px;"/>
+                <circle cx="77" cy="11.9" r="5.5" style="fill:none;stroke:black;stroke-width:3.6px;"/>
+                <circle cx="99" cy="50" r="5.5" style="fill:none;stroke:black;stroke-width:3.6px;"/>
+                <circle cx="77" cy="88.1" r="5.5" style="fill:none;stroke:black;stroke-width:3.6px;"/>
+                <circle cx="33" cy="88.1" r="5.5" style="fill:none;stroke:black;stroke-width:3.6px;"/>
+                <circle cx="11" cy="50" r="5.5" style="fill:none;stroke:black;stroke-width:3.6px;"/>
+            </g>
+            <path d="M43,40L54,50L43,60" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:6.5px;stroke-linecap:round;stroke-linejoin:round;"/>
+            <path d="M59,60L69,60" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:6.5px;stroke-linecap:round;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,148.5,120)">
+            <text x="-79.145px" y="0px" style="font-family:'PixelifySans-Regular', 'Pixelify Sans';font-size:22px;">m<tspan x="-62.491px -48.477px -36.905px -24.013px -11.341px " y="0px 0px 0px 0px 0px ">akerS</tspan>pa<tspan x="28.237px 40.469px " y="0px 0px ">ce</tspan>OS</text>
+        </g>
+        <g transform="matrix(1,0,0,1,186.176667,150.606667)">
+            <text x="-52.68px" y="0px" style="font-family:'Ubuntu-Regular', 'Ubuntu', sans-serif;font-size:6px;">Digitale Bildung für junge Menschen</text>
+            <text x="47.49px" y="0px" style="font-family:'AppleSDGothicNeo-Regular', 'Apple SD Gothic Neo';font-size:6px;">ッ</text>
+        </g>
+        <g transform="matrix(1,0,0,1,184.178333,160.098667)">
+            <text x="-28.662px" y="0px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:3.4px;">H<tspan x="-26.104px -23.547px -20.99px -18.432px -15.309px -12.751px -10.194px -7.824px -6.778px -5.731px -3.552px -0.995px 0.052px 2.231px 4.41px 6.588px 7.635px 8.682px 11.051px 13.798px 15.977px 18.156px 21.279px 23.837px 26.394px " y="0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0px ">ARDWARE  TRIFFT  SOFTWARE</tspan></text>
+        </g>
+        <g transform="matrix(1,0,0,1,7.366,-20.574)">
+            <path d="M16,166.5L16,164C16,160 18.667,158 24,158L92,158C97.333,158 100,160 100,164L100,166.5L30,166.5L28.2,168.5L22.8,168.5L21,166.5L16,166.5Z" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.5px;"/>
+            <g transform="matrix(1,0,0,1,32,163.78)">
+                <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:3.6px;">Wenn Start</text>
+            </g>
+            <path d="M16,166.5L21,166.5L22.8,168.5L28.2,168.5L30,166.5L100,166.5L100,174L30,174L28.2,176L22.8,176L21,174L16,174L16,166.5Z" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.45px;"/>
+            <g transform="matrix(1,0,0,1,32,171.45)">
+                <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:3.3px;">miss <tspan x="7.517px 9.718px " y="0px 0px ">Ab</tspan>stand</text>
+            </g>
+            <path d="M16,174L21,174L22.8,176L28.2,176L30,174L100,174L100,181L36,181L34.2,183L28.8,183L27,181L22,181L22,196L100,196L100,202L30,202L28.2,204L22.8,204L21,202L16,202L16,174Z" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.5px;"/>
+            <g transform="matrix(1,0,0,1,32,179.04)">
+                <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:3.4px;">wiederhole</text>
+            </g>
+            <path d="M22,181.5L27,181.5L28.8,183.5L34.2,183.5L36,181.5L97,181.5L97,187.8L36,187.8L34.2,189.8L28.8,189.8L27,187.8L22,187.8L22,181.5Z" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+            <g transform="matrix(1,0,0,1,37.5,185.8)">
+                <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:3px;">drehe Servo</text>
+            </g>
+            <path d="M22,188L27,188L28.8,190L34.2,190L36,188L97,188L97,194.3L36,194.3L34.2,196.3L28.8,196.3L27,194.3L22,194.3L22,188Z" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+            <g transform="matrix(1,0,0,1,37.5,192.3)">
+                <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:3px;">leuchte Matrix</text>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(11.811024,0,0,11.811024,0,0)">
+        <path d="M168.5,23.411L168.5,28.589C168.5,29.368 167.868,30 167.089,30L129.911,30C129.132,30 128.5,29.368 128.5,28.589L128.5,23.411C128.5,22.632 129.132,22 129.911,22L167.089,22C167.868,22 168.5,22.632 168.5,23.411Z" style="fill:none;stroke:rgb(255,0,0);stroke-width:0.1px;"/>
+    </g>
+</svg>

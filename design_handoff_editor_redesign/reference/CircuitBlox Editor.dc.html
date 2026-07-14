@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/monofur" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;}
+  *{box-sizing:border-box;}
+  .cb-scroll::-webkit-scrollbar{width:8px;height:8px;}
+  .cb-scroll::-webkit-scrollbar-thumb{background:#cfc7b5;border-radius:4px;}
+  .cb-scroll-dark::-webkit-scrollbar{width:8px;height:8px;}
+  .cb-scroll-dark::-webkit-scrollbar-thumb{background:#334155;border-radius:4px;}
+</style>
+</helmet>
+
+<div style="height:100vh;display:flex;flex-direction:column;font-family:'Inter',system-ui,sans-serif;background:#FBF8F3;color:#111111;overflow:hidden;">
+
+  <!-- ───────── Header ───────── -->
+  <header style="height:64px;flex-shrink:0;background:#ffffff;border-bottom:{{ headerBorder }};display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:16px;z-index:10;">
+
+    <div style="display:flex;align-items:center;gap:14px;">
+      <img src="assets/kids-lab-logo-breit.png" alt="KidsLab" style="height:30px;width:auto;display:block;">
+      <div style="width:1.5px;height:30px;background:#E5DFD0;"></div>
+      <div style="display:flex;flex-direction:column;line-height:1;gap:3px;">
+        <span style="font-family:'Pixelify Sans',cursive;font-size:21px;font-weight:600;color:#111111;letter-spacing:.2px;">CircuitBlox</span>
+        <span style="font-size:10.5px;font-weight:600;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">MakeYourSchool · Maker-Pi RP2040</span>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;">
+      <!-- status pill -->
+      <div style="display:inline-flex;align-items:center;gap:8px;background:#ffffff;border:1.5px solid #E5DFD0;border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600;color:#111111;">
+        <span style="width:9px;height:9px;border-radius:50%;background:#4AB8A6;box-shadow:0 0 0 3px rgba(74,184,166,.25);"></span>
+        Verbunden
+      </div>
+
+      <!-- run (hero, sticker) -->
+      <button style="display:inline-flex;align-items:center;gap:7px;padding:8px 15px;font-size:13.5px;font-weight:700;font-family:inherit;color:#0d2b27;background:{{ runBg }};border:1.5px solid #1a1a1a;border-radius:9px;box-shadow:2px 2px 0 #1a1a1a;cursor:pointer;transition:transform .12s cubic-bezier(.2,.7,.2,1),box-shadow .12s;" style-hover="transform:translate(-1px,-1px);box-shadow:3px 3px 0 #1a1a1a;" style-active="transform:translate(1px,1px);box-shadow:1px 1px 0 #1a1a1a;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653Z"/></svg>
+        Ausführen
+      </button>
+
+      <!-- stop (disabled look) -->
+      <button style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;font-size:13.5px;font-weight:700;font-family:inherit;color:#ffffff;background:#E24D3D;border:1.5px solid rgba(0,0,0,.15);border-radius:9px;cursor:not-allowed;opacity:.38;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z"/></svg>
+        Stopp
+      </button>
+
+      <div style="width:1.5px;height:26px;background:#E5DFD0;margin:0 2px;"></div>
+
+      <!-- ghost actions -->
+      <button title="Programm als main.py auf den RP2040 speichern" style="display:inline-flex;align-items:center;gap:7px;padding:8px 13px;font-size:13px;font-weight:600;font-family:inherit;color:#111111;background:#ffffff;border:1.5px solid #E5DFD0;border-radius:9px;cursor:pointer;transition:border-color .12s,transform .12s;" style-hover="border-color:#1a1a1a;transform:translateY(-1px);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/></svg>
+        Auf RP2040
+      </button>
+      <button title="Gespeicherte Versionen anzeigen" style="display:inline-flex;align-items:center;gap:7px;padding:8px 13px;font-size:13px;font-weight:600;font-family:inherit;color:#111111;background:#ffffff;border:1.5px solid #E5DFD0;border-radius:9px;cursor:pointer;transition:border-color .12s,transform .12s;" style-hover="border-color:#1a1a1a;transform:translateY(-1px);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        Verlauf
+      </button>
+      <button title="KI-Block Generator öffnen" style="display:inline-flex;align-items:center;gap:7px;padding:8px 13px;font-size:13px;font-weight:700;font-family:inherit;color:#A57BC3;background:#ffffff;border:1.5px solid #A57BC3;border-radius:9px;cursor:pointer;transition:background .12s,transform .12s;" style-hover="background:#f6f0fa;transform:translateY(-1px);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
+        KI-Block
+      </button>
+    </div>
+  </header>
+
+  <!-- ───────── Main ───────── -->
+  <div style="flex:1;display:flex;min-height:0;">
+
+    <!-- Toolbox -->
+    <nav class="cb-scroll" style="width:172px;flex-shrink:0;background:#ffffff;border-right:1.5px solid #E5DFD0;padding:10px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:.6px;color:#94a3b8;text-transform:uppercase;padding:4px 8px 8px;">Bausteine</div>
+      <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="8">
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:13.5px;font-weight:600;color:#1e293b;cursor:pointer;background:{{ cat.bg }};border:1.5px solid {{ cat.line }};transition:transform .1s;" style-hover="transform:translateX(2px);">
+          <span style="width:13px;height:13px;border-radius:4px;background:{{ cat.color }};border:1.5px solid rgba(0,0,0,.22);flex-shrink:0;"></span>
+          {{ cat.name }}
+        </div>
+      </sc-for>
+    </nav>
+
+    <!-- Workspace -->
+    <div class="cb-scroll" style="flex:1;min-width:0;position:relative;background:{{ workspaceBg }};overflow:auto;">
+
+      <!-- floating zoom controls -->
+      <div style="position:absolute;right:16px;bottom:16px;display:flex;flex-direction:column;gap:6px;z-index:5;">
+        <button style="width:38px;height:38px;display:grid;place-items:center;background:#ffffff;border:1.5px solid #1a1a1a;border-radius:9px;box-shadow:2px 2px 0 #1a1a1a;cursor:pointer;font-family:inherit;color:#111;" style-hover="transform:translate(-1px,-1px);box-shadow:3px 3px 0 #1a1a1a;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <button style="width:38px;height:38px;display:grid;place-items:center;background:#ffffff;border:1.5px solid #1a1a1a;border-radius:9px;box-shadow:2px 2px 0 #1a1a1a;cursor:pointer;font-family:inherit;color:#111;" style-hover="transform:translate(-1px,-1px);box-shadow:3px 3px 0 #1a1a1a;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19.5 12h-15"/></svg>
+        </button>
+        <button title="Papierkorb" style="width:38px;height:38px;display:grid;place-items:center;background:#ffffff;border:1.5px solid #E5DFD0;border-radius:9px;cursor:pointer;font-family:inherit;color:#64748b;" style-hover="border-color:#E24D3D;color:#E24D3D;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+        </button>
+      </div>
+
+      <!-- block program -->
+      <div style="padding:44px 0 0 56px;display:flex;flex-direction:column;align-items:flex-start;">
+
+        <!-- HAT: Beim Start -->
+        <div style="position:relative;background:#F39A1B;color:#fff;font-weight:700;font-size:14px;padding:11px 18px 12px;border-radius:22px 22px 7px 7px;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 2px 4px rgba(17,17,17,.1);display:inline-flex;align-items:center;gap:9px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>
+          Beim Start
+        </div>
+
+        <!-- C-BLOCK: wiederhole für immer -->
+        <div style="display:flex;flex-direction:column;margin-top:-1px;">
+          <div style="position:relative;background:#4AB8A6;color:#fff;font-weight:700;font-size:14px;padding:10px 18px;border-radius:7px 7px 0 0;border:1.5px solid rgba(0,0,0,.2);border-bottom:none;display:inline-flex;align-items:center;gap:9px;">
+            <span style="position:absolute;top:-5px;left:18px;width:20px;height:6px;background:#4AB8A6;border:1.5px solid rgba(0,0,0,.2);border-top:none;border-radius:0 0 4px 4px;"></span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+            wiederhole für immer
+          </div>
+          <div style="display:flex;">
+            <div style="width:15px;background:#4AB8A6;border-left:1.5px solid rgba(0,0,0,.2);border-right:1.5px solid rgba(0,0,0,.2);"></div>
+            <div style="padding:9px 0 9px 9px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;">
+
+              <!-- NeoPixel -->
+              <div style="position:relative;background:#E24D3D;color:#fff;font-weight:600;font-size:13.5px;padding:9px 15px;border-radius:7px;border:1.5px solid rgba(0,0,0,.2);display:inline-flex;align-items:center;gap:9px;">
+                <span style="position:absolute;top:-5px;left:16px;width:18px;height:6px;background:#E24D3D;border:1.5px solid rgba(0,0,0,.2);border-top:none;border-radius:0 0 4px 4px;"></span>
+                NeoPixel füllen mit
+                <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.22);border-radius:999px;padding:3px 11px;font-weight:700;">
+                  <span style="width:12px;height:12px;border-radius:50%;background:linear-gradient(90deg,#E24D3D,#F39A1B,#F7D94C,#4AB8A6,#4FBFE8,#A57BC3);border:1px solid rgba(0,0,0,.25);"></span>
+                  Regenbogen
+                </span>
+              </div>
+
+              <!-- warte -->
+              <div style="position:relative;background:#A57BC3;color:#fff;font-weight:600;font-size:13.5px;padding:9px 15px;border-radius:7px;border:1.5px solid rgba(0,0,0,.2);display:inline-flex;align-items:center;gap:9px;">
+                <span style="position:absolute;top:-5px;left:16px;width:18px;height:6px;background:#A57BC3;border:1.5px solid rgba(0,0,0,.2);border-top:none;border-radius:0 0 4px 4px;"></span>
+                warte
+                <span style="background:#ffffff;color:#A57BC3;border-radius:999px;padding:3px 12px;font-weight:700;">0.5</span>
+                Sekunden
+              </div>
+
+              <!-- IF block -->
+              <div style="display:flex;flex-direction:column;">
+                <div style="position:relative;background:#4FBFE8;color:#08344a;font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:7px 7px 0 0;border:1.5px solid rgba(0,0,0,.2);border-bottom:none;display:inline-flex;align-items:center;gap:9px;">
+                  <span style="position:absolute;top:-5px;left:16px;width:18px;height:6px;background:#4FBFE8;border:1.5px solid rgba(0,0,0,.2);border-top:none;border-radius:0 0 4px 4px;"></span>
+                  wenn
+                  <span style="background:#ffffff;color:#08344a;border-radius:6px;padding:3px 11px;font-weight:700;">Knopf A gedrückt</span>
+                  dann
+                </div>
+                <div style="display:flex;">
+                  <div style="width:15px;background:#4FBFE8;border-left:1.5px solid rgba(0,0,0,.2);border-right:1.5px solid rgba(0,0,0,.2);"></div>
+                  <div style="padding:9px 0 9px 9px;">
+                    <div style="position:relative;background:#E98685;color:#fff;font-weight:600;font-size:13.5px;padding:9px 15px;border-radius:7px;border:1.5px solid rgba(0,0,0,.2);display:inline-flex;align-items:center;gap:9px;">
+                      <span style="position:absolute;top:-5px;left:16px;width:18px;height:6px;background:#E98685;border:1.5px solid rgba(0,0,0,.2);border-top:none;border-radius:0 0 4px 4px;"></span>
+                      spiele Ton
+                      <span style="background:#ffffff;color:#b5403f;border-radius:6px;padding:3px 11px;font-weight:700;">C5</span>
+                      für
+                      <span style="background:#ffffff;color:#b5403f;border-radius:999px;padding:3px 11px;font-weight:700;">0.2</span>
+                      s
+                    </div>
+                  </div>
+                </div>
+                <div style="height:15px;width:64%;background:#4FBFE8;border-radius:0 0 7px 7px;border:1.5px solid rgba(0,0,0,.2);border-top:none;"></div>
+              </div>
+
+            </div>
+          </div>
+          <div style="height:16px;width:58%;background:#4AB8A6;border-radius:0 0 7px 7px;border:1.5px solid rgba(0,0,0,.2);border-top:none;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Resize divider -->
+    <div style="width:5px;flex-shrink:0;background:#E5DFD0;cursor:col-resize;transition:background .15s;" style-hover="background:#4AB8A6;"></div>
+
+    <!-- ───────── Code / Serial Panel (dark) ───────── -->
+    <aside style="width:452px;flex-shrink:0;display:flex;flex-direction:column;background:#0f172a;border-left:1.5px solid #1a1a1a;min-height:0;">
+
+      <!-- Code header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#16213e;border-bottom:1px solid #243049;flex-shrink:0;">
+        <span style="font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#7dd3fc;">CircuitPython Code</span>
+        <div style="display:flex;gap:4px;">
+          <button title="Code kopieren" style="display:grid;place-items:center;width:30px;height:30px;background:none;border:none;border-radius:6px;color:#94a3b8;cursor:pointer;transition:background .12s,color .12s;" style-hover="background:rgba(255,255,255,.08);color:#e2e8f0;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"/></svg>
+          </button>
+          <button title="Code bearbeiten" style="display:grid;place-items:center;width:30px;height:30px;background:none;border:none;border-radius:6px;color:#94a3b8;cursor:pointer;transition:background .12s,color .12s;" style-hover="background:rgba(255,255,255,.08);color:#e2e8f0;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Code body -->
+      <div class="cb-scroll-dark" style="flex:1;min-height:0;overflow:auto;display:flex;font-family:'monofur','JetBrains Mono',ui-monospace,monospace;font-size:12.5px;line-height:1.7;">
+        <pre style="margin:0;padding:14px 10px 14px 14px;color:#475569;text-align:right;user-select:none;background:#0d1426;font-family:'monofur','JetBrains Mono',ui-monospace,monospace;">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre>
+        <pre style="margin:0;padding:14px 16px;color:#e2e8f0;white-space:pre;flex:1;font-family:'monofur','JetBrains Mono',ui-monospace,monospace;"><span style="color:#ff7edb;">import</span> board, neopixel, time
+<span style="color:#ff7edb;">from</span> digitalio <span style="color:#ff7edb;">import</span> DigitalInOut, Direction, Pull
+
+pixels = <span style="color:#82aaff;">neopixel</span>.NeoPixel(board.GP0, <span style="color:#f78c6c;">8</span>)
+button = <span style="color:#82aaff;">DigitalInOut</span>(board.GP1)
+button.switch_to_input(pull=Pull.UP)
+
+<span style="color:#637777;"># Hauptschleife</span>
+<span style="color:#ff7edb;">while</span> <span style="color:#f78c6c;">True</span>:
+    pixels.fill((<span style="color:#f78c6c;">255</span>, <span style="color:#f78c6c;">0</span>, <span style="color:#f78c6c;">0</span>))
+    time.sleep(<span style="color:#f78c6c;">0.5</span>)
+    <span style="color:#ff7edb;">if</span> <span style="color:#ff7edb;">not</span> button.value:
+        <span style="color:#82aaff;">print</span>(<span style="color:#c3e88d;">"Knopf gedrückt!"</span>)
+        time.sleep(<span style="color:#f78c6c;">0.2</span>)</pre>
+      </div>
+
+      <!-- Serial header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#16213e;border-top:1px solid #243049;border-bottom:1px solid #243049;flex-shrink:0;">
+        <span style="font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#7dd3fc;">Serieller Monitor</span>
+        <button title="Löschen" style="display:grid;place-items:center;width:30px;height:30px;background:none;border:none;border-radius:6px;color:#94a3b8;cursor:pointer;transition:background .12s,color .12s;" style-hover="background:rgba(255,255,255,.08);color:#e2e8f0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+        </button>
+      </div>
+
+      <!-- Serial output -->
+      <div class="cb-scroll-dark" style="flex:0 0 152px;overflow-y:auto;padding:10px 14px;background:#0d1117;font-family:'monofur','JetBrains Mono',ui-monospace,monospace;font-size:12px;line-height:1.65;color:#a5d6a7;">
+        <div>&gt;&gt;&gt; Soft reboot</div>
+        <div style="color:#64748b;">CircuitPython 8.2.0 · MAKER-PI-RP2040</div>
+        <div style="color:#64748b;">code.py output:</div>
+        <div>Knopf gedrückt!</div>
+        <div>Knopf gedrückt!</div>
+        <div>Knopf gedrückt!<span style="display:inline-block;width:7px;height:14px;background:#a5d6a7;vertical-align:-2px;margin-left:3px;"></span></div>
+      </div>
+
+      <!-- Serial input -->
+      <div style="display:flex;gap:8px;padding:10px;background:#0f172a;border-top:1px solid #243049;flex-shrink:0;">
+        <input type="text" placeholder="Befehl senden (Enter)…" style="flex:1;background:#0d1117;border:1.5px solid #243049;border-radius:7px;color:#e2e8f0;font-family:'monofur','JetBrains Mono',monospace;font-size:12px;padding:7px 11px;outline:none;" style-focus="border-color:#4AB8A6;">
+        <button style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:none;border:1.5px solid #243049;border-radius:7px;color:#94a3b8;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:border-color .12s,color .12s;" style-hover="border-color:#4AB8A6;color:#e2e8f0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/></svg>
+          Senden
+        </button>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;accentColor&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;#4AB8A6&quot;,&quot;options&quot;:[&quot;#4AB8A6&quot;,&quot;#2563eb&quot;,&quot;#F39A1B&quot;,&quot;#E98685&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;showGrid&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;stickerHeader&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accentColor || '#4AB8A6';
+    const sticker = this.props.stickerHeader ?? true;
+    const grid = this.props.showGrid ?? true;
+    const tint = (hex) => hex + '14';
+    const line = (hex) => hex + '40';
+    const cats = [
+      { name: 'Ereignisse', color: '#F39A1B' },
+      { name: 'Steuerung',  color: '#A57BC3' },
+      { name: 'Logik',      color: '#4FBFE8' },
+      { name: 'Schleifen',  color: '#4AB8A6' },
+      { name: 'Sensoren',   color: '#E98685' },
+      { name: 'Aktoren',    color: '#E24D3D' },
+      { name: 'Variablen',  color: '#F7D94C' },
+      { name: 'Funktionen', color: '#2563eb' },
+    ].map(c => ({ ...c, bg: tint(c.color), line: line(c.color) }));
+
+    return {
+      runBg: accent,
+      headerBorder: sticker ? '3px solid #1a1a1a' : '1px solid #E5DFD0',
+      workspaceBg: grid
+        ? 'radial-gradient(circle, #E3DCCB 1.3px, transparent 1.3px) 0 0 / 22px 22px, #FBF8F3'
+        : '#FBF8F3',
+      categories: cats,
+    };
+  }
+}
+</script>
+</body>
+</html>
