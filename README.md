@@ -30,6 +30,8 @@ makerSpaceOS ist auf dieses Board zugeschnitten:
 - **CircuitPython**-kompatibel: Wird als USB-Laufwerk (`CIRCUITPY`) erkannt, Code einfach kopieren
 - **Kinder-freundlich**: Robuste Stecker, farbige Ports, kein Löten nötig
 
+> ⚠️ **Stromversorgung für die Motor-Treiber: maximal 6 Volt!** Keine 9-V-Blöcke an den Versorgungseingang (VIN/Batterie-Anschluss) anschließen – das zerstört das Board. Geeignet sind z. B. 4× AA-Batterien (6 V) oder ein LiPo-Akku (3,7 V).
+
 > Bezugsquelle: [Cytron](https://www.cytron.io/p-maker-pi-rp2040) oder gängige Elektronik-Distributoren (Mouser, Reichelt, …)
 
 ### Sensoren & Aktoren (KY-Sensor-Set)
