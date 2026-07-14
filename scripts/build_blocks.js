@@ -300,3 +300,5 @@ const BLOCKS_DB = ${JSON.stringify(blocks, null, 2)};
 
 fs.writeFileSync(OUTPUT_FILE, output, 'utf8');
 console.log(`✅ ${blocks.length} Blöcke → ${path.relative(process.cwd(), OUTPUT_FILE)}`);
+
+require('./bump_cache.js');

@@ -102,6 +102,7 @@ Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein koopera
 
 ## Wichtige Gotchas
 
+- **HTTP-Cache-Busting**: Alle lokalen `js/`- und `css/`-Einbindungen in den HTML-Dateien tragen einen `?v=<Zeitstempel>`. `node scripts/bump_cache.js` erneuert den Stempel (läuft automatisch am Ende von `build_blocks.js`). Nach Änderungen an JS/CSS, die **nicht** über `build_blocks.js` laufen, vor dem Deploy einmal ausführen – sonst liefern Browser alte Dateien aus dem HTTP-Cache (304/heuristisches Caching).
 - **Web Serial API** funktioniert nur in Chrome/Edge. Firefox und Safari schlagen stumm fehl.
 - **Kein Persistenz-Layer** – Projekte werden nicht gespeichert (kommt in Phase 3).
 - **Board-Auswahl** – `boards.js` hält mehrere Profile in `BOARD_PROFILES` (`maker_pi_rp2040` = Default, `lolin_s2_mini` = Wemos S2 Mini, `esp32_d1_r32` = AZ-Delivery ESP32 D1 R32). Das aktive Profil steht in der globalen `let BOARD` und wird aus `localStorage['makerspaceos.board']` gewählt; `setBoard(id)` persistiert die Wahl und **lädt die Seite neu** (Dropdown-Optionen/Toolbox werden nur einmal zur Registrierung aus `BOARD` gebaut, daher Reload statt Live-Wechsel). Das Header-Dropdown `#board-select` steuert dies. Beim Verbinden liest `serial.readBoardId()` `board.board_id` per REPL; `detectAndSwitchBoard()` (app.js) schaltet automatisch auf das erkannte Profil um.
