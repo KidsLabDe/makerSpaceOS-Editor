@@ -195,12 +195,46 @@ async function saveToBoard(code) {
     if (_lastBoardHandle) opts.startIn = _lastBoardHandle;
     const handle = await window.showSaveFilePicker(opts);
     _lastBoardHandle = handle;
-    const writable = await handle.createWritable();
-    await writable.write(code);
-    await writable.close();
-    return 'saved';
+    const ok = await _writeVerified(handle, code);
+    if (ok) return 'saved';
+    // Schreiben scheiterte still (0-Byte-Datei) → Download als Rettungsanker
+    _downloadCode(code);
+    return 'failed_downloaded';
   }
   // Fallback (Browser ohne File System Access API): Download
+  _downloadCode(code);
+  return 'downloaded';
+}
+
+// Chrome schreibt beim Speichern erst eine Tauschdatei (code.py.crswap) und
+// ersetzt die Zieldatei beim close(). Auf dem FAT-Laufwerk des Boards schlägt
+// dieser Tausch teils still fehl (CircuitPython-Auto-Reload funkt dazwischen)
+// und hinterlässt eine 0-Byte-Datei. Daher: nach dem Schreiben Größe prüfen
+// und bei Bedarf bis zu 3× erneut versuchen.
+async function _writeVerified(handle, code) {
+  const expected = new Blob([code]).size;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    if (attempt > 1) {
+      // Auto-Reload des Boards abwarten, bevor erneut geschrieben wird
+      await new Promise(r => setTimeout(r, 600 * attempt));
+      showToast(`💾 Datei war leer – Versuch ${attempt} von 3 …`, 'warn');
+    }
+    try {
+      const writable = await handle.createWritable();
+      await writable.write(code);
+      await writable.close();
+      const file = await handle.getFile();
+      if (file.size === expected) return true;
+      console.warn(`saveToBoard: Versuch ${attempt} ergab ${file.size} statt ${expected} Bytes`);
+    } catch (e) {
+      if (e && e.name === 'AbortError') throw e;
+      console.warn(`saveToBoard: Versuch ${attempt} fehlgeschlagen:`, e);
+    }
+  }
+  return false;
+}
+
+function _downloadCode(code) {
   const blob = new Blob([code], { type: 'text/x-python' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -210,5 +244,4 @@ async function saveToBoard(code) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  return 'downloaded';
 }
