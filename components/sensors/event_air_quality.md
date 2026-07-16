@@ -3,12 +3,15 @@ id: event_air_quality
 blockCategory: Sensoren
 subCategory: Ereignisse
 label: "🌫️ Wenn Luftqualität"
+label_en: "🌫️ When air quality"
 colour: "#D97706"
 tooltip: "Führt Code aus, wenn die Luftverschmutzung einen Wert überschreitet/unterschreitet (0 = frisch, 100 = sehr schlecht)"
+tooltip_en: "Runs code when the air pollution goes above/below a value (0 = fresh, 100 = very bad)"
 blockType: event
 inline: true
 inputs:
   - label: "🌫️ Wenn Luftqualität  Port:"
+    label_en: "🌫️ When air quality  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: analog
@@ -23,6 +26,7 @@ valueInputs:
 statementInput:
   name: DO
   label: "dann"
+  label_en: "then"
 generator:
   imports:
     - "import board"
@@ -41,3 +45,10 @@ legacyGenerator: false
 
 Führt Aktionen aus, wenn die Luftverschmutzung einen Schwellwert über- oder
 unterschreitet (z.B. Lüfter an, wenn > 30 %).
+
+<!-- lang:en -->
+
+# Event: when air quality
+
+Runs actions when the air pollution goes above or below a threshold
+(e.g. fan on when > 30 %).

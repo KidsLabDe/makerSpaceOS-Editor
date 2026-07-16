@@ -29,7 +29,7 @@ Regeln:
 - functionCode: vollständige def-Funktion als einzeiliger String mit \\n für Zeilenumbrüche und 4 Leerzeichen Einrückung
 - NeoPixel-Pin ist GP18 (13 LEDs), Buzzer GP22, externe GPIO-Pins: GP4, GP5, GP16, GP17, GP26, GP27, GP28
 - Verfügbare Bibliotheken: board, digitalio, analogio, neopixel, pwmio, busio, time, math
-- Alle Texte im JSON auf Deutsch (label, tooltip)`;
+- Alle Texte im JSON auf ${IS_EN ? 'Englisch' : 'Deutsch'} (label, tooltip)`;
 
 // ── Gespeicherte Blöcke beim Start laden (sync, vor DOMContentLoaded) ─────────
 
@@ -90,7 +90,7 @@ function _refreshAIToolboxVar() {
   window.AI_BLOCKS_TOOLBOX = _aiBlocks.length
     ? [{
         kind:     'category',
-        name:     'KI-Blöcke',
+        name:     L('KI-Blöcke', 'AI blocks'),
         colour:   '#A57BC3',
         contents: _aiBlocks.map(d => ({ kind: 'block', type: 'ai_' + d.functionName })),
       }]
@@ -108,7 +108,7 @@ function _refreshToolbox() {
 async function _callOpenRouter(userMessage) {
   const apiKey = localStorage.getItem(AI_KEY_STORE) || '';
   const model  = localStorage.getItem(AI_MODEL_STORE) || AI_DEFAULT_MODEL;
-  if (!apiKey) throw new Error('Kein API-Key gespeichert. Bitte in ⚙️ Einstellungen eintragen.');
+  if (!apiKey) throw new Error(L('Kein API-Key gespeichert. Bitte in ⚙️ Einstellungen eintragen.', 'No API key saved. Please enter one in ⚙️ Settings.'));
 
   const messages = [
     { role: 'system', content: AI_SYSTEM_PROMPT },
@@ -129,7 +129,7 @@ async function _callOpenRouter(userMessage) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(`API-Fehler ${res.status}: ${err?.error?.message || res.statusText}`);
+    throw new Error(`${L('API-Fehler', 'API error')} ${res.status}: ${err?.error?.message || res.statusText}`);
   }
 
   const data = await res.json();
@@ -140,7 +140,7 @@ function _extractJSON(text) {
   try { return JSON.parse(text.trim()); } catch (_) {}
   const m = text.match(/\{[\s\S]*\}/);
   if (m) { try { return JSON.parse(m[0]); } catch (_) {} }
-  throw new Error('Keine gültige JSON-Antwort vom Modell erhalten.');
+  throw new Error(L('Keine gültige JSON-Antwort vom Modell erhalten.', 'No valid JSON response received from the model.'));
 }
 
 // ── Chat senden ───────────────────────────────────────────────────────────────
@@ -162,7 +162,7 @@ async function aiSend() {
     const def = _extractJSON(raw);
 
     if (!def.functionName || !def.functionCode) {
-      throw new Error('Antwort enthält keinen Funktionsnamen oder Code.');
+      throw new Error(L('Antwort enthält keinen Funktionsnamen oder Code.', 'Response contains no function name or code.'));
     }
     def.functionName = def.functionName.replace(/[^a-z0-9_]/g, '_');
 
@@ -187,15 +187,15 @@ async function aiSend() {
 
 function aiAddBlock(def, btn) {
   if (_aiBlocks.find(b => b.functionName === def.functionName)) {
-    showToast('Block bereits vorhanden!', 'warn');
+    showToast(L('Block bereits vorhanden!', 'Block already exists!'), 'warn');
     return;
   }
   _registerAIBlock(def);
   _aiBlocks.push(def);
   localStorage.setItem(AI_BLOCKS_STORE, JSON.stringify(_aiBlocks));
   _refreshToolbox();
-  showToast(`Block "${def.label}" hinzugefügt!`, 'ok');
-  if (btn) { btn.disabled = true; btn.textContent = '✔ Hinzugefügt'; }
+  showToast(L(`Block "${def.label}" hinzugefügt!`, `Block "${def.label}" added!`), 'ok');
+  if (btn) { btn.disabled = true; btn.textContent = L('✔ Hinzugefügt', '✔ Added'); }
 }
 
 function aiDeleteBlock(functionName) {
@@ -204,13 +204,13 @@ function aiDeleteBlock(functionName) {
   delete Blockly.Blocks['ai_' + functionName];
   delete Blockly.Python['ai_' + functionName];
   _refreshToolbox();
-  showToast('Block entfernt.', 'ok');
+  showToast(L('Block entfernt.', 'Block removed.'), 'ok');
 }
 
 // ── Chat-Verlauf löschen ──────────────────────────────────────────────────────
 
 function aiClearChat() {
-  if (!confirm('Chat-Verlauf löschen?')) return;
+  if (!confirm(L('Chat-Verlauf löschen?', 'Clear chat history?'))) return;
   _aiChat = [];
   localStorage.removeItem(AI_CHAT_STORE);
   document.getElementById('ai-messages').innerHTML = '';
@@ -228,7 +228,7 @@ function _appendUserMsg(text) {
 function _appendThinkingMsg() {
   const el = document.createElement('div');
   el.className = 'ai-msg-thinking';
-  el.textContent = '⏳ Generiere Code…';
+  el.textContent = L('⏳ Generiere Code…', '⏳ Generating code…');
   _appendToChat(el);
   return el;
 }
@@ -249,13 +249,13 @@ function _appendBotMsg(def) {
 
   const addBtn = document.createElement('button');
   addBtn.className   = 'ai-add-btn';
-  addBtn.textContent = '＋ Block hinzufügen';
+  addBtn.textContent = L('＋ Block hinzufügen', '＋ Add block');
   addBtn.onclick     = () => aiAddBlock(def, addBtn);
 
   const delBtn = document.createElement('button');
   delBtn.className   = 'ai-del-btn';
-  delBtn.textContent = '✕ Entfernen';
-  delBtn.title       = 'Nachricht entfernen';
+  delBtn.textContent = L('✕ Entfernen', '✕ Remove');
+  delBtn.title       = L('Nachricht entfernen', 'Remove message');
   delBtn.onclick     = () => el.remove();
 
   actions.append(addBtn, delBtn);
@@ -305,7 +305,7 @@ function aiSaveSettings() {
   if (key) localStorage.setItem(AI_KEY_STORE, key);
   localStorage.setItem(AI_MODEL_STORE, model);
   document.getElementById('ai-settings').style.display = 'none';
-  showToast('Einstellungen gespeichert.', 'ok');
+  showToast(L('Einstellungen gespeichert.', 'Settings saved.'), 'ok');
 }
 
 // ── Tastaturkürzel ────────────────────────────────────────────────────────────

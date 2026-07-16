@@ -3,11 +3,14 @@ id: actuator_led
 blockCategory: Aktionen
 subCategory: LED
 label: "💡 LED"
+label_en: "💡 LED"
 colour: "#DC2626"
 tooltip: "Schaltet eine LED ein oder aus"
+tooltip_en: "Turns an LED on or off"
 blockType: statement
 inputs:
   - label: "💡 LED  Port:"
+    label_en: "💡 LED  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital
@@ -31,3 +34,9 @@ legacyGenerator: false
 # LED-Block
 
 Schaltet eine einfache LED (oder jeden anderen digitalen Ausgang) ein oder aus.
+
+<!-- lang:en -->
+
+# LED block
+
+Turns a simple LED (or any other digital output) on or off.

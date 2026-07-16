@@ -4,7 +4,7 @@
 const TOOLBOX_STATIC_CONTENTS = [
   {
     kind: 'category',
-    name: 'Steuerung',
+    name: L('Steuerung', 'Control'),
     colour: '#7C3AED',
     contents: [
       { kind: 'block', type: 'control_wait',
@@ -19,7 +19,7 @@ const TOOLBOX_STATIC_CONTENTS = [
   { kind: 'sep' },
   {
     kind: 'category',
-    name: 'Ereignisse',
+    name: L('Ereignisse', 'Events'),
     colour: '#D97706',
     contents: [
       { kind: 'block', type: 'loop_parallel' },
@@ -39,17 +39,17 @@ const TOOLBOX_STATIC_CONTENTS = [
   { kind: 'sep' },
   {
     kind: 'category',
-    name: 'Logik',
+    name: L('Logik', 'Logic'),
     colour: '#4FBFE8',
     contents: [
-      { kind: 'label', text: '── Bedingungen ──' },
+      { kind: 'label', text: L('── Bedingungen ──', '── Conditions ──') },
       { kind: 'block', type: 'controls_if' },
       { kind: 'block', type: 'controls_if', extraState: { hasElse: true } },
       { kind: 'block', type: 'control_wait_until' },
       { kind: 'block', type: 'control_while' },
-      { kind: 'label', text: '── Vergleichen ──' },
+      { kind: 'label', text: L('── Vergleichen ──', '── Compare ──') },
       { kind: 'block', type: 'logic_compare' },
-      { kind: 'label', text: '── Logik ──' },
+      { kind: 'label', text: L('── Logik ──', '── Logic ──') },
       { kind: 'block', type: 'logic_operation' },
       { kind: 'block', type: 'logic_negate' },
       { kind: 'block', type: 'logic_boolean' },
@@ -57,7 +57,7 @@ const TOOLBOX_STATIC_CONTENTS = [
   },
   {
     kind: 'category',
-    name: 'Mathe',
+    name: L('Mathe', 'Math'),
     colour: '#16A34A',
     contents: [
       { kind: 'block', type: 'math_number' },
@@ -80,13 +80,13 @@ const TOOLBOX_STATIC_CONTENTS = [
   },
   {
     kind: 'category',
-    name: 'Variablen',
+    name: L('Variablen', 'Variables'),
     colour: '#CA8A04',
     custom: 'VARIABLE',
   },
   {
     kind: 'category',
-    name: 'Text',
+    name: L('Text', 'Text'),
     colour: '#0891B2',
     contents: [
       { kind: 'block', type: 'text' },
@@ -106,7 +106,7 @@ function buildFinalToolbox() {
   });
 
   // Matrix-Inhalte an Lichter-Kategorie anhängen (board-abhängig ausblendbar)
-  const lichter = hwCats.find(c => c.kind === 'category' && c.name === 'Lichter');
+  const lichter = hwCats.find(c => c.kind === 'category' && c.name === L('Lichter', 'Lights'));
   const hideIds = new Set(BOARD.hideBlockIds || []);
   const matrixContents = (window.MATRIX_TOOLBOX_CONTENTS || [])
     .filter(e => !(e.type && hideIds.has(e.type)));

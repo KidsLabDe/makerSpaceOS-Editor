@@ -6,7 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 makerSpaceOS ist eine **browser-basierte Blockly-IDE**, die visuelle Blöcke in **CircuitPython**-Code für den **Cytron MAKER-PI-RP2040** (RP2040, CircuitPython) übersetzt. Kein Build-Schritt, kein npm – reine statische HTML/JS/CSS-App.
 
-Zielgruppe: **Kinder und Einsteiger**. Alle UI-Strings und Code-Kommentare sind auf **Deutsch**.
+Zielgruppe: **Kinder und Einsteiger**. Code-Kommentare sind auf **Deutsch**. Die App-UI ist **zweisprachig** (Deutsch = Default, Englisch zuschaltbar) – siehe Abschnitt „Zweisprachigkeit (i18n)".
+
+## Zweisprachigkeit (i18n)
+
+Deutsch ist Default; Englisch wird über das Sprach-Dropdown im Header gewählt (`localStorage['makerspaceos.lang']`, Wechsel per Reload wie beim Board-Wechsel). Alles Deutsche bleibt „first class" – Englisch kommt additiv dazu:
+
+- **`js/i18n.js`** (lädt als erstes App-Skript): `LANG`/`IS_EN`, `L(de, en)` für Inline-Strings, `LF(obj, feld)` liest `obj.feld_en` (en) bzw. `obj.feld` (de) mit Fallback auf Deutsch, `setLang(id)` persistiert + Reload. Statische `index.html`-Texte tragen `data-i18n` / `data-i18n-title` / `data-i18n-ph` mit dem englischen Text; Deutsch steht direkt im HTML.
+- **Blockly-Locale**: Englisch ist in `blockly_compressed.js` eingebaut; `msg/de.js` wird in `index.html` nur bei `lang=de` per `document.write` nachgeladen.
+- **Handgeschriebene Blöcke/JS** (`blocks/*.js`, `block_builder.js`, `toolbox.js`, `generator.js`, `app.js`, `docs.js` …): jeden nutzer-sichtbaren String durch `L('deutsch', 'english')` ersetzen. Auch generierte Code-Kommentare und Handler-Namen (`fuer_immer`/`forever`, `beim_start`/`on_start`, `wenn_*`/`when_*`) laufen über `L()`; die Laufzeit-API `immer`/`wenn`/`start` bleibt in beiden Sprachen deutsch (liegt auf dem Board).
+- **Markdown-Blöcke** (`components/**/*.md`): jedes sichtbare Frontmatter-Feld bekommt eine `*_en`-Variante (`label_en`, `tooltip_en`, Input-`label_en`, valueInput-`label_en`/`suffix_en`/`defaultValue_en`, `statementInput.label_en`). Der Doku-Body wird durch eine Zeile `<!-- lang:en -->` geteilt: Deutsch davor, Englisch danach (→ `doc`/`doc_en` in `blocks_db.js`). **Neue Blöcke immer mit EN-Feldern anlegen.**
+- **`components/catalog.json`**: Kategorien haben `label_en` + `subCategories_en` (Map deutscher Subkategorie-Name → englisches Label). Die deutschen Namen bleiben die IDs (Matching, `hideSubCategories`).
+- **`js/docs.js`**: `CORE_DOCS`-Einträge haben `label_en`/`tooltip_en`/`doc_en`, Board-Doku liegt in `BOARD_DOCS` (de) + `BOARD_DOCS_EN` (en).
+- `viewer.html`/`admin.html` (interne Werkzeuge) sind bewusst nur deutsch und laden `i18n.js` nicht.
 
 ## Architektur
 

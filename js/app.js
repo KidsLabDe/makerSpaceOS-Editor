@@ -64,7 +64,7 @@ function initBlockly() {
   const saved = loadCurrent();
   if (saved && saved.state) {
     const result = safeLoadState(saved.state, workspace);
-    if (result.dropped) showToast(`${result.dropped} veraltete(r) Block(e) übersprungen`, 'warn');
+    if (result.dropped) showToast(L(`${result.dropped} veraltete(r) Block(e) übersprungen`, `Skipped ${result.dropped} outdated block(s)`), 'warn');
     if (!result.ok) {
       _createFixedBlock('control_setup',   40, 40);
       _createFixedBlock('control_forever', 360, 40);
@@ -115,7 +115,7 @@ function generateCode() {
   try {
     return Blockly.Python.workspaceToCode(workspace);
   } catch (e) {
-    return `# Fehler beim Generieren:\n# ${e.message}`;
+    return L(`# Fehler beim Generieren:\n# ${e.message}`, `# Error while generating:\n# ${e.message}`);
   }
 }
 
@@ -165,12 +165,12 @@ async function toggleConnect() {
       serial.onData = appendSerialOutput;
       serial.onDisconnect = () => {
         setConnected(false);
-        showToast('Board getrennt', 'warn');
+        showToast(L('Board getrennt', 'Board disconnected'), 'warn');
       };
       setConnected(true);
       detectAndSwitchBoard();   // Board erkennen und ggf. Profil umschalten
     } catch (e) {
-      showToast('Verbindung fehlgeschlagen: ' + e.message, 'error');
+      showToast(L('Verbindung fehlgeschlagen: ', 'Connection failed: ') + e.message, 'error');
     }
   }
 }
@@ -189,16 +189,16 @@ async function detectAndSwitchBoard() {
   const want = _BOARD_ID_MAP[id];
   if (!want) return;   // unbekanntes/kein Board – aktuelle Auswahl gilt
   if (want !== BOARD_ID) {
-    showToast('Board erkannt: ' + BOARD_PROFILES[want].name + ' – lade neu…', 'ok');
+    showToast(L('Board erkannt: ', 'Board detected: ') + BOARD_PROFILES[want].name + L(' – lade neu…', ' – reloading…'), 'ok');
     setBoard(want);    // persistiert + location.reload()
   } else {
-    showToast('Board erkannt: ' + BOARD.name, 'ok');
+    showToast(L('Board erkannt: ', 'Board detected: ') + BOARD.name, 'ok');
   }
 }
 
 async function runCode() {
   if (!serial.isConnected) {
-    showToast('Bitte zuerst verbinden!', 'warn');
+    showToast(L('Bitte zuerst verbinden!', 'Please connect first!'), 'warn');
     return;
   }
   const code = generateCode();
@@ -207,9 +207,9 @@ async function runCode() {
     // Bei jedem Ausführen einen Versionsstand sichern
     pushVersion();
     saveCurrent();
-    showToast('Code wird ausgeführt…', 'ok');
+    showToast(L('Code wird ausgeführt…', 'Running code…'), 'ok');
   } catch (e) {
-    showToast('Fehler: ' + e.message, 'error');
+    showToast(L('Fehler: ', 'Error: ') + e.message, 'error');
   }
 }
 
@@ -219,11 +219,11 @@ async function saveToBoardClick() {
   const code = generateCode();
   try {
     const res = await saveToBoard(code);
-    showToast(res === 'saved' ? 'code.py auf dem RP2040 gespeichert!'
-                              : 'code.py heruntergeladen', 'ok');
+    showToast(res === 'saved' ? L('code.py auf dem RP2040 gespeichert!', 'code.py saved to the board!')
+                              : L('code.py heruntergeladen', 'code.py downloaded'), 'ok');
   } catch (e) {
     if (e && e.name === 'AbortError') return;  // Dialog abgebrochen
-    showToast('Speichern fehlgeschlagen: ' + e.message, 'error');
+    showToast(L('Speichern fehlgeschlagen: ', 'Saving failed: ') + e.message, 'error');
   }
 }
 
@@ -249,7 +249,7 @@ function exportProject() {
   a.download = 'makerSpaceOS-Projekt.xml';
   a.click();
   URL.revokeObjectURL(a.href);
-  showToast('Projekt exportiert', 'ok');
+  showToast(L('Projekt exportiert', 'Project exported'), 'ok');
 }
 
 function importProject(event) {
@@ -261,9 +261,9 @@ function importProject(event) {
       const dom = Blockly.Xml.textToDom(e.target.result);
       workspace.clear();
       Blockly.Xml.domToWorkspace(dom, workspace);
-      showToast('Projekt importiert', 'ok');
+      showToast(L('Projekt importiert', 'Project imported'), 'ok');
     } catch {
-      showToast('Datei konnte nicht gelesen werden', 'error');
+      showToast(L('Datei konnte nicht gelesen werden', 'Could not read file'), 'error');
     }
     event.target.value = '';
   };
@@ -305,8 +305,8 @@ function renderHistory() {
   const versions = getVersions();
   list.innerHTML = '';
   if (!versions.length) {
-    list.innerHTML = '<p class="history-empty">Noch keine gespeicherten Stände. '
-      + 'Führe ein Programm aus, um eine Version anzulegen.</p>';
+    list.innerHTML = '<p class="history-empty">' + L('Noch keine gespeicherten Stände. Führe ein Programm aus, um eine Version anzulegen.',
+      'No saved versions yet. Run a program to create one.') + '</p>';
     return;
   }
   const currentCode = generateCode();
@@ -318,14 +318,14 @@ function renderHistory() {
     head.className = 'history-head';
     const ts = document.createElement('span');
     ts.className = 'history-ts';
-    ts.textContent = '🕘 ' + new Date(v.ts).toLocaleString('de-DE');
+    ts.textContent = '🕘 ' + new Date(v.ts).toLocaleString(L('de-DE', 'en-GB'));
     const btn = document.createElement('button');
     btn.className = 'btn btn-ghost btn-sm';
-    btn.textContent = 'Wiederherstellen';
+    btn.textContent = L('Wiederherstellen', 'Restore');
     btn.addEventListener('click', () => {
       restoreVersion(i);
       closeHistory();
-      showToast('Version wiederhergestellt', 'ok');
+      showToast(L('Version wiederhergestellt', 'Version restored'), 'ok');
     });
     head.appendChild(ts);
     head.appendChild(btn);
@@ -336,14 +336,14 @@ function renderHistory() {
     const pre = document.createElement('pre');
     pre.className = 'history-preview';
     if (!changes.length) {
-      pre.innerHTML = '<span class="diff-eq">≡ identisch mit aktuellem Stand</span>';
+      pre.innerHTML = '<span class="diff-eq">' + L('≡ identisch mit aktuellem Stand', '≡ identical to current state') + '</span>';
     } else {
       // Nur geänderte Zeilen anzeigen, max. 6
       pre.innerHTML = changes.slice(0, 6).map(d => {
         const cls = d.type === '+' ? 'diff-add' : 'diff-rem';
         const prefix = d.type === '+' ? '+ ' : '− ';
         return `<span class="${cls}">${prefix}${d.text.replace(/</g, '&lt;')}</span>`;
-      }).join('\n') + (changes.length > 6 ? `\n<span class="diff-more">… ${changes.length - 6} weitere</span>` : '');
+      }).join('\n') + (changes.length > 6 ? `\n<span class="diff-more">… ${changes.length - 6} ${L('weitere', 'more')}</span>` : '');
     }
 
     item.appendChild(head);
@@ -356,7 +356,7 @@ async function stopCode() {
   if (!serial.isConnected) return;
   try {
     await serial.stop();
-    showToast('Gestoppt', 'ok');
+    showToast(L('Gestoppt', 'Stopped'), 'ok');
   } catch (e) {
     showToast('Fehler: ' + e.message, 'error');
   }
@@ -365,9 +365,9 @@ async function stopCode() {
 function copyCode() {
   const code = codeEditor.getValue();
   navigator.clipboard.writeText(code).then(() => {
-    showToast('Code in Zwischenablage kopiert!', 'ok');
+    showToast(L('Code in Zwischenablage kopiert!', 'Code copied to clipboard!'), 'ok');
   }).catch(() => {
-    showToast('Kopieren fehlgeschlagen', 'error');
+    showToast(L('Kopieren fehlgeschlagen', 'Copy failed'), 'error');
   });
 }
 
@@ -376,7 +376,7 @@ function toggleEdit() {
   codeEditor.setOption('readOnly', !ro);
   const btn = document.getElementById('btn-toggle-edit');
   btn.classList.toggle('active', ro);
-  btn.title = ro ? 'Bearbeitung aktiv (Blöcke sync deaktiviert)' : 'Bearbeiten';
+  btn.title = ro ? L('Bearbeitung aktiv (Blöcke sync deaktiviert)', 'Editing active (block sync disabled)') : L('Bearbeiten', 'Edit');
   if (!ro) {
     // Zurück zu readOnly: Code neu aus Blockly generieren
     updateCode();
@@ -432,13 +432,13 @@ function setConnected(connected) {
 
   if (connected) {
     dot.className  = 'status-dot connected';
-    text.textContent = 'Verbunden';
-    btn.textContent  = 'Trennen';
+    text.textContent = L('Verbunden', 'Connected');
+    btn.textContent  = L('Trennen', 'Disconnect');
     btn.className    = 'btn btn-danger';
   } else {
     dot.className  = 'status-dot';
-    text.textContent = 'Nicht verbunden';
-    btn.textContent  = 'Verbinden';
+    text.textContent = L('Nicht verbunden', 'Not connected');
+    btn.textContent  = L('Verbinden', 'Connect');
     btn.className    = 'btn btn-primary';
   }
 

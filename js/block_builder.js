@@ -6,20 +6,20 @@
 
   // ── Feld-Optionen aus BOARD ────────────────────────────────────────────────
 
-  const _NONE_OPT = ['– bitte auswählen –', '__NONE__'];
+  const _NONE_OPT = [L('– bitte auswählen –', '– please select –'), '__NONE__'];
 
   // Einheitliches Farb-Dropdown für alle Blöcke (colour_picker + rgb_color_dropdown)
   const _COLOR_OPTS = [
-    ['🔴 Rot',    '#FF0000'],
-    ['🟠 Orange', '#FF6600'],
-    ['🟡 Gelb',   '#FFFF00'],
-    ['🟢 Grün',   '#00FF00'],
-    ['🩵 Cyan',   '#00FFFF'],
-    ['🔵 Blau',   '#0000FF'],
-    ['🟣 Lila',   '#8000FF'],
-    ['🩷 Pink',   '#FF00FF'],
-    ['⚪ Weiß',   '#FFFFFF'],
-    ['⚫ Aus',    '#000000'],
+    [L('🔴 Rot', '🔴 Red'),      '#FF0000'],
+    [L('🟠 Orange', '🟠 Orange'),'#FF6600'],
+    [L('🟡 Gelb', '🟡 Yellow'),  '#FFFF00'],
+    [L('🟢 Grün', '🟢 Green'),   '#00FF00'],
+    [L('🩵 Cyan', '🩵 Cyan'),    '#00FFFF'],
+    [L('🔵 Blau', '🔵 Blue'),    '#0000FF'],
+    [L('🟣 Lila', '🟣 Purple'),  '#8000FF'],
+    [L('🩷 Pink', '🩷 Pink'),    '#FF00FF'],
+    [L('⚪ Weiß', '⚪ White'),   '#FFFFFF'],
+    [L('⚫ Aus', '⚫ Off'),      '#000000'],
   ];
 
   function getFieldOptions(inp) {
@@ -42,17 +42,17 @@
       case 'lcd_version_dropdown':
         return [['Version 4', '0x62'], ['Version 5', '0x30']];
       case 'on_off_dropdown':
-        return [['einschalten', 'True'], ['ausschalten', 'False']];
+        return [[L('einschalten', 'turn on'), 'True'], [L('ausschalten', 'turn off'), 'False']];
       case 'direction_dropdown':
-        return [['rechts ↻', 'cw'], ['links ↺', 'ccw']];
+        return [[L('rechts ↻', 'right ↻'), 'cw'], [L('links ↺', 'left ↺'), 'ccw']];
       case 'op_dropdown':
         return [['<', '<'], ['>', '>'], ['=', '==']];
       case 'button_dropdown':
         return Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]);
       case 'state_dropdown':
-        return [['gedrückt', 'pressed'], ['losgelassen', 'released']];
+        return [[L('gedrückt', 'pressed'), 'pressed'], [L('losgelassen', 'released'), 'released']];
       case 'tilt_dropdown':
-        return [['vor/zurück', 'pitch'], ['links/rechts', 'roll']];
+        return [[L('vor/zurück', 'forward/back'), 'pitch'], [L('links/rechts', 'left/right'), 'roll']];
       case 'rgb_color_dropdown':
         return _COLOR_OPTS;
       default:
@@ -64,7 +64,7 @@
 
   function addFields(input, inpDefs) {
     for (const inp of (inpDefs || [])) {
-      if (inp.label) input.appendField(inp.label);
+      if (inp.label) input.appendField(LF(inp, 'label'));
       if (!inp.fieldType || inp.fieldType === 'fixed_label') continue;
 
       if (inp.fieldType === 'number_field') {
@@ -114,8 +114,8 @@
         // Wert-Eingänge (z.B. blinken-Anzahl, Servo-Winkel, Motor-Tempo)
         for (const vi of (def.valueInputs || [])) {
           const v = block.appendValueInput(vi.name).setCheck(vi.check || 'Number');
-          if (vi.label)  v.appendField(vi.label);
-          if (vi.suffix) block.appendDummyInput().appendField(vi.suffix);
+          if (vi.label)  v.appendField(LF(vi, 'label'));
+          if (vi.suffix) block.appendDummyInput().appendField(LF(vi, 'suffix'));
         }
         if (def.valueInputs && def.valueInputs.length) {
           block.setInputsInline(def.inline !== false);
@@ -127,7 +127,7 @@
         // Alle Felder auf dem StatementInput selbst
         const si = block.appendStatementInput(def.statementInput?.name || 'DO');
         addFields(si, def.inputs);
-        si.appendField(def.statementInput?.label || '→ dann');
+        si.appendField((def.statementInput && LF(def.statementInput, 'label')) || L('→ dann', '→ then'));
         block.setPreviousStatement(true, null);
         block.setNextStatement(true, null);
 
@@ -138,14 +138,14 @@
         addFields(vi, def.inputs);
 
         const si = block.appendStatementInput(def.statementInput?.name || 'DO')
-          .appendField(def.statementInput?.label || 'dann');
+          .appendField((def.statementInput && LF(def.statementInput, 'label')) || L('dann', 'then'));
         block.setInputsInline(def.inline !== false);
         block.setPreviousStatement(true, null);
         block.setNextStatement(true, null);
       }
 
       block.setColour(def.colour || '#2563EB');
-      if (def.tooltip) block.setTooltip(def.tooltip);
+      if (def.tooltip) block.setTooltip(LF(def, 'tooltip'));
       if (def.inline) block.setInputsInline(true);
     };
   }
@@ -185,17 +185,18 @@
         }
       }
       if (hasUnset) {
-        block.setWarningText('⚠ Bitte Port / Pin auswählen!');
+        block.setWarningText(L('⚠ Bitte Port / Pin auswählen!', '⚠ Please select a port / pin!'));
         if (block.outputConnection) return ['None', Blockly.Python.ORDER_NONE];
-        return '# ⚠ Kein Port ausgewählt\n';
+        return L('# ⚠ Kein Port ausgewählt\n', '# ⚠ No port selected\n');
       }
       block.setWarningText(null);
 
       // 2. ValueInputs auswerten
       for (const vi of (def.valueInputs || [])) {
+        const viDefault = (IS_EN && vi.defaultValue_en !== undefined) ? vi.defaultValue_en : vi.defaultValue;
         ctx[vi.name] = Blockly.Python.valueToCode(
           block, vi.name, Blockly.Python.ORDER_NONE
-        ) || String(vi.defaultValue ?? '0');
+        ) || String(viDefault ?? '0');
       }
 
       // 3. StatementInput auswerten
@@ -252,7 +253,8 @@
           if (hideSubs.has(sc)) continue;
           const scBlocks = catBlocks.filter(b => b.subCategory === sc);
           if (!scBlocks.length) continue;
-          contents.push({ kind: 'label', text: `── ${sc} ──` });
+          const scLabel = (IS_EN && catDef.subCategories_en && catDef.subCategories_en[sc]) || sc;
+          contents.push({ kind: 'label', text: `── ${scLabel} ──` });
           for (const b of scBlocks) contents.push(toolboxEntry(b));
         }
         // blocks without a subCategory
@@ -266,7 +268,7 @@
 
       categories.push({
         kind:     'category',
-        name:     catDef.label,
+        name:     LF(catDef, 'label'),
         colour:   catDef.colour,
         contents,
       });
@@ -281,11 +283,12 @@
     if (def.valueInputs && def.valueInputs.length) {
       entry.inputs = {};
       for (const vi of def.valueInputs) {
-        if (vi.defaultValue !== undefined) {
+        const dv = (IS_EN && vi.defaultValue_en !== undefined) ? vi.defaultValue_en : vi.defaultValue;
+        if (dv !== undefined) {
           // String-Eingänge bekommen einen editierbaren Text-Schatten, sonst eine Zahl
           entry.inputs[vi.name] = (vi.check === 'String')
-            ? { shadow: { type: 'text', fields: { TEXT: vi.defaultValue } } }
-            : { shadow: { type: 'math_number', fields: { NUM: vi.defaultValue } } };
+            ? { shadow: { type: 'text', fields: { TEXT: dv } } }
+            : { shadow: { type: 'math_number', fields: { NUM: dv } } };
         }
       }
     }
