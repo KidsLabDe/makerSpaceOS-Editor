@@ -3,30 +3,52 @@
     {
       "id": "Sensoren",
       "label": "Sensoren",
+      "label_en": "Sensors",
       "colour": "#2563EB",
-      "subCategories": ["Temperatur & Feuchte", "Abstand & Licht", "Bewegung", "Weitere", "Ereignisse"]
+      "subCategories": ["Temperatur & Feuchte", "Abstand & Licht", "Bewegung", "Weitere", "Ereignisse"],
+      "subCategories_en": {
+        "Temperatur & Feuchte": "Temperature & Humidity",
+        "Abstand & Licht": "Distance & Light",
+        "Bewegung": "Motion",
+        "Weitere": "More",
+        "Ereignisse": "Events"
+      }
     },
     {
       "id": "Aktionen",
       "label": "Aktionen",
+      "label_en": "Actions",
       "colour": "#DC2626",
-      "subCategories": ["LED", "Ton", "Servo & Pumpe", "Motor"]
+      "subCategories": ["LED", "Ton", "Servo & Pumpe", "Motor"],
+      "subCategories_en": {
+        "LED": "LED",
+        "Ton": "Sound",
+        "Servo & Pumpe": "Servo & Pump",
+        "Motor": "Motor"
+      }
     },
     {
       "id": "Lichter",
       "label": "Lichter",
+      "label_en": "Lights",
       "colour": "#EC4899",
-      "subCategories": ["Onboard", "Streifen"]
+      "subCategories": ["Onboard", "Streifen"],
+      "subCategories_en": {
+        "Onboard": "Onboard",
+        "Streifen": "Strips"
+      }
     },
     {
       "id": "Anzeigen",
       "label": "Anzeigen",
+      "label_en": "Displays",
       "colour": "#0D9488",
       "subCategories": []
     },
     {
       "id": "Pins",
       "label": "Pins",
+      "label_en": "Pins",
       "colour": "#64748B",
       "subCategories": []
     }

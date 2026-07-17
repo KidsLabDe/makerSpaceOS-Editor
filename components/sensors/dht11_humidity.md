@@ -3,12 +3,15 @@ id: sensor_dht11_humidity
 blockCategory: Sensoren
 subCategory: Temperatur & Feuchte
 label: "💧 DHT11 Luftfeuchte (%)"
+label_en: "💧 DHT11 humidity (%)"
 colour: "#2563EB"
 tooltip: "Liest die Luftfeuchtigkeit in % vom DHT11 Sensor (KY-015)"
+tooltip_en: "Reads the humidity in % from the DHT11 sensor (KY-015)"
 blockType: value
 output: Number
 inputs:
   - label: "💧 DHT11 Luftfeuchte (%)  Port:"
+    label_en: "💧 DHT11 humidity (%)  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital
@@ -34,3 +37,9 @@ legacyGenerator: false
 # DHT11 Luftfeuchtesensor
 
 Misst die relative Luftfeuchtigkeit in Prozent mit dem DHT11 Sensor.
+
+<!-- lang:en -->
+
+# DHT11 humidity sensor
+
+Measures the relative humidity in percent with the DHT11 sensor.

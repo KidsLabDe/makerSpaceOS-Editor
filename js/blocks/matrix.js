@@ -180,23 +180,23 @@
   };
 
   const SYMBOL_LABELS = {
-    herz:        '❤️ Herz',
-    smiley:      '😊 Smiley',
-    traurig:     '😢 Traurig',
-    stern:       '⭐ Stern',
-    pfeil_oben:  '↑ Oben',
-    pfeil_unten: '↓ Unten',
-    pfeil_links: '← Links',
-    pfeil_rechts:'→ Rechts',
-    x_symbol:    '✕ Kreuz',
-    haken:       '✓ Haken',
-    diamant:     '◇ Diamant',
-    rahmen:      '□ Rahmen',
-    blitz:       '⚡ Blitz',
-    note:        '🎵 Note',
-    haus:        '🏠 Haus',
-    gitter:      '⊞ Gitter',
-    alles_an:    '■ Alles an',
+    herz:        L('❤️ Herz', '❤️ Heart'),
+    smiley:      L('😊 Smiley', '😊 Smiley'),
+    traurig:     L('😢 Traurig', '😢 Sad'),
+    stern:       L('⭐ Stern', '⭐ Star'),
+    pfeil_oben:  L('↑ Oben', '↑ Up'),
+    pfeil_unten: L('↓ Unten', '↓ Down'),
+    pfeil_links: L('← Links', '← Left'),
+    pfeil_rechts:L('→ Rechts', '→ Right'),
+    x_symbol:    L('✕ Kreuz', '✕ Cross'),
+    haken:       L('✓ Haken', '✓ Check'),
+    diamant:     L('◇ Diamant', '◇ Diamond'),
+    rahmen:      L('□ Rahmen', '□ Frame'),
+    blitz:       L('⚡ Blitz', '⚡ Lightning'),
+    note:        L('🎵 Note', '🎵 Note'),
+    haus:        L('🏠 Haus', '🏠 House'),
+    gitter:      L('⊞ Gitter', '⊞ Grid'),
+    alles_an:    L('■ Alles an', '■ All on'),
   };
 
   function gridToMask(grid) {
@@ -217,16 +217,16 @@
 
   // Dieselbe Liste wie in block_builder.js (_COLOR_OPTS) – für matrix.js lokal kopiert
   const COLOR_OPTS = [
-    ['🔴 Rot',    '#FF0000'],
-    ['🟠 Orange', '#FF6600'],
-    ['🟡 Gelb',   '#FFFF00'],
-    ['🟢 Grün',   '#00FF00'],
-    ['🩵 Cyan',   '#00FFFF'],
-    ['🔵 Blau',   '#0000FF'],
-    ['🟣 Lila',   '#8000FF'],
-    ['🩷 Pink',   '#FF00FF'],
-    ['⚪ Weiß',   '#FFFFFF'],
-    ['⚫ Aus',    '#000000'],
+    [L('🔴 Rot', '🔴 Red'),      '#FF0000'],
+    [L('🟠 Orange', '🟠 Orange'),'#FF6600'],
+    [L('🟡 Gelb', '🟡 Yellow'),  '#FFFF00'],
+    [L('🟢 Grün', '🟢 Green'),   '#00FF00'],
+    [L('🩵 Cyan', '🩵 Cyan'),    '#00FFFF'],
+    [L('🔵 Blau', '🔵 Blue'),    '#0000FF'],
+    [L('🟣 Lila', '🟣 Purple'),  '#8000FF'],
+    [L('🩷 Pink', '🩷 Pink'),    '#FF00FF'],
+    [L('⚪ Weiß', '⚪ White'),   '#FFFFFF'],
+    [L('⚫ Aus', '⚫ Off'),      '#000000'],
   ];
 
   // ── Vorschaugröße im Block (klein) ────────────────────────────────────────
@@ -327,7 +327,7 @@
 
       // Titel
       const title = document.createElement('div');
-      title.textContent = '🖊️ LEDs malen';
+      title.textContent = L('🖊️ LEDs malen', '🖊️ Paint LEDs');
       title.style.cssText = 'color:#fff;font-size:15px;font-weight:bold;margin-bottom:14px;text-align:center;';
       panel.appendChild(title);
 
@@ -387,21 +387,21 @@
         'font-size:13px;color:#fff;';
 
       const btnClear = document.createElement('button');
-      btnClear.textContent = '🔳 Löschen';
+      btnClear.textContent = L('🔳 Löschen', '🔳 Clear');
       btnClear.style.cssText = btnStyle + 'background:#444;';
       btnClear.onclick = () => {
         for (let i = 0; i < 64; i++) setCell(i, false);
       };
 
       const btnFill = document.createElement('button');
-      btnFill.textContent = '💡 Alles an';
+      btnFill.textContent = L('💡 Alles an', '💡 All on');
       btnFill.style.cssText = btnStyle + 'background:#444;';
       btnFill.onclick = () => {
         for (let i = 0; i < 64; i++) setCell(i, true);
       };
 
       const btnDone = document.createElement('button');
-      btnDone.textContent = '✓ Fertig';
+      btnDone.textContent = L('✓ Fertig', '✓ Done');
       btnDone.style.cssText = btnStyle + 'background:#EC4899;';
       btnDone.onclick = () => {
         this.setValue(currentMask.join(''));
@@ -563,7 +563,7 @@
 
   // ── Servo-Dropdown-Optionen ───────────────────────────────────────────────
   function matrixServoOptions() {
-    return [['– bitte auswählen –', '__NONE__'], ...Object.entries(BOARD.servos).map(([k, v]) => [`${k} (${v})`, k])];
+    return [[L('– bitte auswählen –', '– please select –'), '__NONE__'], ...Object.entries(BOARD.servos).map(([k, v]) => [`${k} (${v})`, k])];
   }
 
   // ── Block-Definitionen ────────────────────────────────────────────────────
@@ -571,28 +571,28 @@
   Blockly.Blocks['matrix_on'] = {
     init() {
       this.appendDummyInput()
-          .appendField('💡 Matrix anschalten  Port:')
+          .appendField(L('💡 Matrix anschalten  Port:', '💡 Matrix on  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
-          .appendField('  Farbe:')
+          .appendField(L('  Farbe:', '  colour:'))
           .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
-      this.setTooltip('Schaltet alle 64 LEDs der 8×8 Matrix in einer Farbe an');
+      this.setTooltip(L('Schaltet alle 64 LEDs der 8×8 Matrix in einer Farbe an', 'Turns on all 64 LEDs of the 8×8 matrix in one colour'));
     },
   };
 
   Blockly.Blocks['matrix_off'] = {
     init() {
       this.appendDummyInput()
-          .appendField('🔳 Matrix ausschalten  Port:')
+          .appendField(L('🔳 Matrix ausschalten  Port:', '🔳 Matrix off  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
-      this.setTooltip('Schaltet alle LEDs der Matrix aus');
+      this.setTooltip(L('Schaltet alle LEDs der Matrix aus', 'Turns off all LEDs of the matrix'));
     },
   };
 
@@ -600,7 +600,7 @@
   Blockly.Blocks['matrix_brightness'] = {
     init() {
       this.appendDummyInput()
-          .appendField('☀️ Helligkeit  Port:')
+          .appendField(L('☀️ Helligkeit  Port:', '☀️ Brightness  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField('  ')
           .appendField(new Blockly.FieldNumber(50, 0, 100, 1), 'PCT')
@@ -609,24 +609,24 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
-      this.setTooltip('Helligkeit in % (0 = aus, 100 % = max. 0,3 Brightness, sicherer Maximalwert)');
+      this.setTooltip(L('Helligkeit in % (0 = aus, 100 % = max. 0,3 Brightness, sicherer Maximalwert)', 'Brightness in % (0 = off, 100 % = max. 0.3 brightness, safe maximum)'));
     },
   };
 
   Blockly.Blocks['matrix_symbol'] = {
     init() {
       this.appendDummyInput()
-          .appendField('🔣 zeige Symbol  Port:')
+          .appendField(L('🔣 zeige Symbol  Port:', '🔣 show symbol  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField('  ')
           .appendField(new FieldSymbolPicker(DEFAULT_SYMBOL), 'SYMBOL')
-          .appendField('  Farbe:')
+          .appendField(L('  Farbe:', '  colour:'))
           .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
-      this.setTooltip('Zeigt ein vordefiniertes Symbol auf der Matrix an');
+      this.setTooltip(L('Zeigt ein vordefiniertes Symbol auf der Matrix an', 'Shows a predefined symbol on the matrix'));
     },
   };
 
@@ -635,26 +635,26 @@
   Blockly.Blocks['matrix_set_pixel'] = {
     init() {
       this.appendDummyInput()
-          .appendField('🟦 Pixel setzen  Port:')
+          .appendField(L('🟦 Pixel setzen  Port:', '🟦 set pixel  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
-          .appendField('  Farbe:')
+          .appendField(L('  Farbe:', '  colour:'))
           .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
-      this.appendValueInput('X').setCheck('Number').appendField('  Spalte X');
-      this.appendValueInput('Y').setCheck('Number').appendField('Zeile Y');
+      this.appendValueInput('X').setCheck('Number').appendField(L('  Spalte X', '  column X'));
+      this.appendValueInput('Y').setCheck('Number').appendField(L('Zeile Y', 'row Y'));
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
-      this.setTooltip('Setzt einen einzelnen Pixel (Spalte X, Zeile Y – jeweils 0–7) auf eine Farbe');
+      this.setTooltip(L('Setzt einen einzelnen Pixel (Spalte X, Zeile Y – jeweils 0–7) auf eine Farbe', 'Sets a single pixel (column X, row Y – each 0–7) to a colour'));
     },
   };
 
   Blockly.Blocks['matrix_draw'] = {
     init() {
       this.appendDummyInput()
-          .appendField('🖊️ zeige LEDs  Port:')
+          .appendField(L('🖊️ zeige LEDs  Port:', '🖊️ show LEDs  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
-          .appendField('  Farbe:')
+          .appendField(L('  Farbe:', '  colour:'))
           .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
       this.appendDummyInput()
           .appendField(new FieldMatrix8x8(DEFAULT_MASK), 'PIXELS');
@@ -662,7 +662,7 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
-      this.setTooltip('Klicke auf die Vorschau, um den Editor zu öffnen und Pixel zu malen');
+      this.setTooltip(L('Klicke auf die Vorschau, um den Editor zu öffnen und Pixel zu malen', 'Click the preview to open the editor and paint pixels'));
     },
   };
 

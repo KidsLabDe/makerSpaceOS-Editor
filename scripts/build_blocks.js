@@ -200,6 +200,19 @@ function extractFrontMatter(content) {
   return lines.slice(1, endIdx).join('\n');
 }
 
+// Markdown-Body nach dem Front-Matter = Doku-Text des Blocks (für die
+// Bauteil-Bibliothek im Editor, js/docs.js). Eine Zeile "<!-- lang:en -->"
+// trennt den deutschen (davor) vom englischen Doku-Text (danach).
+function extractBody(content) {
+  const lines = content.split('\n');
+  if (lines[0].trim() !== '---') return { de: '', en: '' };
+  const endIdx = lines.indexOf('---', 1);
+  if (endIdx === -1) return { de: '', en: '' };
+  const body = lines.slice(endIdx + 1).join('\n');
+  const m = body.split(/^\s*<!--\s*lang:en\s*-->\s*$/m);
+  return { de: (m[0] || '').trim(), en: (m[1] || '').trim() };
+}
+
 // ── File walker ───────────────────────────────────────────────────────────────
 
 function walkDir(dir, ext = '.md') {
@@ -254,6 +267,9 @@ for (const filePath of mdFiles) {
   }
 
   def._file = path.relative(COMPONENTS_DIR, filePath);
+  const body = extractBody(content);
+  if (body.de) def.doc    = body.de;
+  if (body.en) def.doc_en = body.en;
   blocks.push(def);
 }
 
@@ -284,7 +300,7 @@ function cleanLabelsDeep(node) {
   if (Array.isArray(node)) return node.forEach(cleanLabelsDeep);
   if (node && typeof node === 'object')
     for (const k of Object.keys(node))
-      (k === 'label') ? (node[k] = stripEmoji(node[k])) : cleanLabelsDeep(node[k]);
+      (k === 'label' || k === 'label_en') ? (node[k] = stripEmoji(node[k])) : cleanLabelsDeep(node[k]);
 }
 cleanLabelsDeep(blocks);
 cleanLabelsDeep(catalog);

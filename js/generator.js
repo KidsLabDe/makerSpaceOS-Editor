@@ -29,7 +29,7 @@ Blockly.Python.workspaceToCode = function(workspace) {
   // Jeder Schleifen-Stapel → ein Handler, der per immer(...) endlos läuft.
   for (const b of workspace.getBlocksByType('control_forever', false)) {
     const body = Blockly.Python.statementToCode(b, 'DO') || '    pass\n';
-    _tasks.push({ kind: 'loop', name: 'fuer_immer', body });
+    _tasks.push({ kind: 'loop', name: L('fuer_immer', 'forever'), body });
   }
   const parallel = workspace.getBlocksByType('loop_parallel', false);
   parallel.forEach((b, i) => {
@@ -108,15 +108,15 @@ Blockly.Python.finish = function() {
     return `    global ${used.join(', ')}\n` + body;
   }
 
-  let result = '# === makerSpaceOS – Generierter Code ===\n';
+  let result = L('# === makerSpaceOS – Generierter Code ===\n', '# === makerSpaceOS – generated code ===\n');
   if (hasAsync) result += 'from makerspaceos import immer, wenn, start\n';
   if (imports.length) result += imports.join('\n') + '\n';
-  if (inits.length)   result += '\n# --- Initialisierungen ---\n' + inits.join('\n') + '\n';
+  if (inits.length)   result += L('\n# --- Initialisierungen ---\n', '\n# --- Initialisation ---\n') + inits.join('\n') + '\n';
 
   // Variablen auf Modulebene vordeklarieren (None als Platzhalter),
   // damit sie in allen async-Funktionen per 'global' erreichbar sind.
   if (hasAsync && allVarNames.length) {
-    result += '\n# --- Variablen ---\n' + allVarNames.map(v => `${v} = None`).join('\n') + '\n';
+    result += L('\n# --- Variablen ---\n', '\n# --- Variables ---\n') + allVarNames.map(v => `${v} = None`).join('\n') + '\n';
   }
 
   if (hasAsync) {
@@ -127,11 +127,12 @@ Blockly.Python.finish = function() {
       used[n] = true;
       return n;
     };
-    if (hasSetup) used['beim_start'] = true;
+    const startFn = L('beim_start', 'on_start');
+    if (hasSetup) used[startFn] = true;
     _tasks.forEach(t => { t.fn = unique(t.name); });
 
-    result += '\n# --- Dein Programm ---\n';
-    if (hasSetup) result += 'async def beim_start():\n' + withGlobals(_setupCode) + '\n';
+    result += L('\n# --- Dein Programm ---\n', '\n# --- Your program ---\n');
+    if (hasSetup) result += `async def ${startFn}():\n` + withGlobals(_setupCode) + '\n';
     _tasks.forEach(t => {
       result += `async def ${t.fn}():\n${withGlobals(t.body)}\n`;
     });
@@ -145,9 +146,9 @@ Blockly.Python.finish = function() {
         result += `wenn(lambda: ${t.expr}, ${t.fn}${poll})\n`;
       }
     });
-    result += `start(${hasSetup ? 'beim_start' : ''})\n`;
+    result += `start(${hasSetup ? startFn : ''})\n`;
   } else if (hasSetup) {
-    result += '\n# --- Setup (einmalig) ---\n' + _dedent(_setupCode);
+    result += L('\n# --- Setup (einmalig) ---\n', '\n# --- Setup (runs once) ---\n') + _dedent(_setupCode);
   }
   return result;
 };
@@ -430,7 +431,7 @@ Blockly.Python['actuator_stepper'] = function(block) {
   const idA = block.getFieldValue('PORTA');
   const idB = block.getFieldValue('PORTB');
   if (!idA || idA === '__NONE__' || !idB || idB === '__NONE__') {
-    block.setWarningText('⚠ Bitte beide Anschlüsse auswählen!');
+    block.setWarningText(L('⚠ Bitte beide Anschlüsse auswählen!', '⚠ Please select both connectors!'));
     return '';
   }
   block.setWarningText(null);
@@ -762,16 +763,16 @@ function _imuDefs(portId) {
     `            _i2c_imu_${portId}.deinit()\n` +
     `        except Exception:\n` +
     `            pass\n` +
-    `        time.sleep(0.3)  # Sensor braucht nach dem Einschalten einen Moment\n` +
+    `        time.sleep(0.3)  ` + L('# Sensor braucht nach dem Einschalten einen Moment', '# sensor needs a moment after power-on') + `\n` +
     `if _imu_${portId} is None:\n` +
-    `    raise RuntimeError("Bewegungssensor nicht gefunden - steckt er fest an ${port.label}?")\n` +
+    `    raise RuntimeError("` + L(`Bewegungssensor nicht gefunden - steckt er fest an ${port.label}?`, `Motion sensor not found - is it plugged firmly into ${port.label}?`) + `")\n` +
     `_imu_${portId}.accelerometer_range = adafruit_icm20x.AccelRange.RANGE_16G\n` +
     `_imu_${portId}_last = [0.0, 0.0, 9.81]\n` +
     `def _imu_accel_${portId}():\n` +
     `    try:\n` +
     `        _imu_${portId}_last[0], _imu_${portId}_last[1], _imu_${portId}_last[2] = _imu_${portId}.acceleration\n` +
     `    except OSError:\n` +
-    `        pass  # kurzer Kontakt-Aussetzer: letzten Wert behalten\n` +
+    `        pass  ` + L('# kurzer Kontakt-Aussetzer: letzten Wert behalten', '# brief contact dropout: keep last value') + `\n` +
     `    return _imu_${portId}_last\n` +
     `def _imu_g_${portId}():\n` +
     `    _ax, _ay, _az = _imu_accel_${portId}()\n` +
@@ -787,7 +788,7 @@ function _imuDefs(portId) {
 Blockly.Python['sensor_icm20948_g'] = function(block) {
   const portId = block.getFieldValue('PORT');
   if (!portId || portId === '__NONE__') {
-    block.setWarningText('⚠ Bitte Port auswählen!');
+    block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!'));
     return ['None', Blockly.Python.ORDER_NONE];
   }
   block.setWarningText(null);
@@ -798,7 +799,7 @@ Blockly.Python['sensor_icm20948_g'] = function(block) {
 Blockly.Python['sensor_icm20948_neigung'] = function(block) {
   const portId = block.getFieldValue('PORT');
   if (!portId || portId === '__NONE__') {
-    block.setWarningText('⚠ Bitte Port auswählen!');
+    block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!'));
     return ['None', Blockly.Python.ORDER_NONE];
   }
   block.setWarningText(null);
@@ -883,7 +884,7 @@ function _groveLcdDef(portId, rgbAddr) {
 // damit man die Farbe ändern kann, ohne den Text zu überschreiben – und umgekehrt.
 Blockly.Python['actuator_lcd_text'] = function(block) {
   const portId = block.getFieldValue('PORT');
-  if (!portId || portId === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return ''; }
+  if (!portId || portId === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return ''; }
   block.setWarningText(null);
   const line1 = Blockly.Python.valueToCode(block, 'LINE1', Blockly.Python.ORDER_NONE) || '""';
   const line2 = Blockly.Python.valueToCode(block, 'LINE2', Blockly.Python.ORDER_NONE) || '""';
@@ -893,7 +894,7 @@ Blockly.Python['actuator_lcd_text'] = function(block) {
 
 Blockly.Python['actuator_lcd_color'] = function(block) {
   const portId = block.getFieldValue('PORT');
-  if (!portId || portId === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return ''; }
+  if (!portId || portId === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return ''; }
   block.setWarningText(null);
   const colour = block.getFieldValue('COLOR') || '#FFFFFF';
   _groveLcdDef(portId, '0x30');
@@ -965,25 +966,25 @@ Blockly.Python['actuator_isd1820_record'] = function(block) {
 function _whenDigital(block, prefix, pull, activeLow) {
   const pin = block.getFieldValue('PIN');
   if (!pin || pin === '__NONE__') {
-    block.setWarningText('⚠ Bitte Port auswählen!');
+    block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!'));
     return null;
   }
   block.setWarningText(null);
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _digitalInDef(pin, prefix, pull);
   const expr = activeLow ? `(not _${prefix}_${pin}.value)` : `_${prefix}_${pin}.value`;
-  return _whenTask(`wenn_${prefix}`, expr, body, '0.02');
+  return _whenTask(`${L('wenn', 'when')}_${prefix}`, expr, body, '0.02');
 }
 
 Blockly.Python['when_button'] = function(block) {
   const val   = block.getFieldValue('BTN');
-  if (!val || val === '__NONE__') { block.setWarningText('⚠ Bitte Taster auswählen!'); return null; }
+  if (!val || val === '__NONE__') { block.setWarningText(L('⚠ Bitte Taster auswählen!', '⚠ Please select a button!')); return null; }
   block.setWarningText(null);
   const state   = block.getFieldValue('STATE');
   const body    = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   const varName = _tasterDef(val);
   const expr    = state === 'pressed' ? `(not ${varName}.value)` : `${varName}.value`;
-  return _whenTask(`wenn_taster_${String(val).toLowerCase().replace(/\./g, '_')}`, expr, body, '0.02');
+  return _whenTask(`${L('wenn_taster', 'when_button')}_${String(val).toLowerCase().replace(/\./g, '_')}`, expr, body, '0.02');
 };
 
 Blockly.Python['when_sound'] = function(b) { return _whenDigital(b, 'sound', 'DOWN', true); };
@@ -993,7 +994,7 @@ Blockly.Python['when_touch'] = function(b) { return _whenDigital(b, 'touch', 'DO
 
 Blockly.Python['when_encoder'] = function(block) {
   const portId = block.getFieldValue('PORT');
-  if (!portId || portId === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  if (!portId || portId === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
   block.setWarningText(null);
   const port   = BOARD.grovePortById(portId);
   const pinA   = port.pin1;
@@ -1015,24 +1016,24 @@ Blockly.Python['when_encoder'] = function(block) {
     `def ${fnRunter}():\n` +
     `    _p = ${encVar}.position; _d = _p - ${prevVar}[0]; ${prevVar}[0] = _p; return _d < 0`;
   const fn       = dir === 'up' ? fnHoch : fnRunter;
-  const taskName = dir === 'up' ? `wenn_drehgeber_hoch` : `wenn_drehgeber_runter`;
+  const taskName = dir === 'up' ? L('wenn_drehgeber_hoch', 'when_encoder_up') : L('wenn_drehgeber_runter', 'when_encoder_down');
   return _whenTask(taskName, `${fn}()`, body, '0.02');
 };
 
 Blockly.Python['when_distance'] = function(block) {
   const sig = block.getFieldValue('SIG');
-  if (!sig || sig === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  if (!sig || sig === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
   block.setWarningText(null);
   const op   = block.getFieldValue('OP');
   const val  = block.getFieldValue('VALUE') || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _groveSonarDef(sig);
-  return _whenTask('wenn_abstand', `(_sonar_${sig}.distance ${op} ${val})`, body, '0.05');
+  return _whenTask(L('wenn_abstand', 'when_distance'), `(_sonar_${sig}.distance ${op} ${val})`, body, '0.05');
 };
 
 Blockly.Python['when_light'] = function(block) {
   const pin = block.getFieldValue('PIN');
-  if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  if (!pin || pin === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
   block.setWarningText(null);
   const op   = block.getFieldValue('OP');
   const val  = block.getFieldValue('VALUE') || '50';
@@ -1040,12 +1041,12 @@ Blockly.Python['when_light'] = function(block) {
   _defs['import_board']    = 'import board';
   _defs['import_analogio'] = 'import analogio';
   _defs[`init_ldr_${pin}`] = `_ldr_${pin} = analogio.AnalogIn(board.${pin})`;
-  return _whenTask('wenn_licht', `(round((1 - _ldr_${pin}.value / 65535) * 100) ${op} ${val})`, body, '0.05');
+  return _whenTask(L('wenn_licht', 'when_light'), `(round((1 - _ldr_${pin}.value / 65535) * 100) ${op} ${val})`, body, '0.05');
 };
 
 Blockly.Python['when_temperature'] = function(block) {
   const pin = block.getFieldValue('PIN');
-  if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  if (!pin || pin === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
   block.setWarningText(null);
   const op   = block.getFieldValue('OP');
   const val  = block.getFieldValue('VALUE') || '25';
@@ -1053,12 +1054,12 @@ Blockly.Python['when_temperature'] = function(block) {
   _defs['import_board']  = 'import board';
   _defs['import_dht']    = 'import adafruit_dht';
   _defs[`init_dht11_${pin}`] = `_dht11_${pin} = adafruit_dht.DHT11(board.${pin})`;
-  return _whenTask('wenn_temperatur', `(_dht11_${pin}.temperature ${op} ${val})`, body, '1');
+  return _whenTask(L('wenn_temperatur', 'when_temperature'), `(_dht11_${pin}.temperature ${op} ${val})`, body, '1');
 };
 
 Blockly.Python['when_humidity'] = function(block) {
   const pin = block.getFieldValue('PIN');
-  if (!pin || pin === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  if (!pin || pin === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
   block.setWarningText(null);
   const op   = block.getFieldValue('OP');
   const val  = block.getFieldValue('VALUE') || '60';
@@ -1066,21 +1067,21 @@ Blockly.Python['when_humidity'] = function(block) {
   _defs['import_board']  = 'import board';
   _defs['import_dht']    = 'import adafruit_dht';
   _defs[`init_dht11_${pin}`] = `_dht11_${pin} = adafruit_dht.DHT11(board.${pin})`;
-  return _whenTask('wenn_feuchte', `(_dht11_${pin}.humidity ${op} ${val})`, body, '1');
+  return _whenTask(L('wenn_feuchte', 'when_humidity'), `(_dht11_${pin}.humidity ${op} ${val})`, body, '1');
 };
 
 // ── Bewegungs-Ereignis (ICM20948, geschüttelt / 3g / 6g / 9g) ────────────────
 
 Blockly.Python['when_motion'] = function(block) {
   const portId = block.getFieldValue('PORT');
-  if (!portId || portId === '__NONE__') { block.setWarningText('⚠ Bitte Port auswählen!'); return null; }
+  if (!portId || portId === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
   block.setWarningText(null);
   const mode = block.getFieldValue('MODE');
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
   _imuDefs(portId);
   // „geschüttelt" = Gesamt-g über 2 (in Ruhe ≈ 1); 3g/6g/9g = feste Schwellen
   const threshold = mode === 'shake' ? '2' : mode;
-  const taskName  = mode === 'shake' ? 'wenn_geschuettelt' : `wenn_${mode}g`;
+  const taskName  = mode === 'shake' ? L('wenn_geschuettelt', 'when_shaken') : `${L('wenn', 'when')}_${mode}g`;
   return _whenTask(taskName, `(_imu_g_${portId}() > ${threshold})`, body, '0.02');
 };
 
@@ -1179,9 +1180,9 @@ Blockly.Python['matrix_draw'] = function(block) {
         }
       }
       if (hasNone) {
-        block.setWarningText('⚠ Bitte Port / Pin auswählen!');
+        block.setWarningText(L('⚠ Bitte Port / Pin auswählen!', '⚠ Please select a port / pin!'));
         if (block.outputConnection) return ['None', Blockly.Python.ORDER_NONE];
-        return '# ⚠ Kein Port ausgewählt\n';
+        return L('# ⚠ Kein Port ausgewählt\n', '# ⚠ No port selected\n');
       }
       block.setWarningText(null);
     }

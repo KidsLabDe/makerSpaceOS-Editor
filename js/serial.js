@@ -36,7 +36,7 @@ class CircuitPythonSerial {
 
   async connect() {
     if (!('serial' in navigator)) {
-      throw new Error('Web Serial API nicht verfügbar. Bitte Chrome oder Edge verwenden.');
+      throw new Error(L('Web Serial API nicht verfügbar. Bitte Chrome oder Edge verwenden.', 'Web Serial API not available. Please use Chrome or Edge.'));
     }
     this.port = await navigator.serial.requestPort();
     await this.port.open({ baudRate: 115200 });

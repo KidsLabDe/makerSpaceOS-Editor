@@ -25,20 +25,24 @@ id: mein_block
 blockCategory: Aktoren          # muss in components/catalog.json existieren
 subCategory: LED
 label: "💡 Mein Block"
+label_en: "💡 My block"         # englische Variante (Editor ist zweisprachig, DE = Default)
 colour: "#E65100"               # #1565C0 Sensor-Wert, #0D47A1 Ereignis, #E65100 Aktor
 tooltip: "Beschreibung für Kinder, auf Deutsch, ggf. mit KY-Nummer"
+tooltip_en: "Description for kids, in English"
 blockType: statement            # value | statement | event | event_simple
 # output: Boolean               # nur bei blockType: value (Number/Boolean)
 inputs:                         # gerenderte Felder (Reihenfolge = Anzeige)
   - label: "💡 Mein Block  Pin:"
+    label_en: "💡 My block  pin:"
     name: PIN
     fieldType: pin_dropdown
     pinSource: externalPins
 valueInputs:                    # optional, für statement/event
   - name: SPEED
     label: "Tempo"
+    label_en: "speed"
     defaultValue: 75
-    suffix: "%"                 # optionales Label hinter dem Eingang
+    suffix: "%"                 # optionales Label hinter dem Eingang; suffix_en für Englisch
 generator:
   imports: ["import board", "import digitalio"]
   defs:
@@ -51,7 +55,16 @@ legacyGenerator: false
 # Mein Block
 
 Kurze Beschreibung (wird im Bauteil-Katalog angezeigt).
+
+<!-- lang:en -->
+
+# My block
+
+Short description in English (shown in the component library when the editor
+language is set to English).
 ```
+
+**Zweisprachigkeit:** Der Editor ist zweisprachig (Deutsch = Default, Englisch über den Sprachumschalter). Jedes nutzer-sichtbare Frontmatter-Feld bekommt eine `*_en`-Variante (`label_en`, `tooltip_en`, Input-`label_en`, valueInput-`label_en`/`suffix_en`/`defaultValue_en`, `statementInput.label_en`). Der Doku-Body wird durch eine Zeile `<!-- lang:en -->` in Deutsch (davor) und Englisch (danach) geteilt. Fehlt ein EN-Feld, fällt der Editor auf Deutsch zurück.
 
 **Feldtypen (`fieldType`)** werden von `block_builder.js` aufgelöst: `pin_dropdown`, `on_off_dropdown`, `op_dropdown`, `motor_dropdown`, `servo_dropdown`, `button_dropdown`, `state_dropdown`, `rgb_color_dropdown`, `number_field` (mit `default`/`min`/`max`/`precision`), `colour_picker` (mit `default`), `fixed_label` (nur Text). Braucht ein Feld andere Optionen, ergänze einen Fall in `getFieldOptions()` in `block_builder.js` (keine rohen `options`-Arrays im YAML – der einfache Parser kann sie nicht).
 

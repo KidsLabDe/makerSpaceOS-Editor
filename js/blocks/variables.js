@@ -29,8 +29,8 @@
     };
   }
 
-  defVarDelta('var_increase',  'erhöhe %1 um %2',     'Erhöht die Variable um den angegebenen Wert.');
-  defVarDelta('var_decrease',  'verringere %1 um %2', 'Verringert die Variable um den angegebenen Wert.');
+  defVarDelta('var_increase',  L('erhöhe %1 um %2', 'increase %1 by %2'),     L('Erhöht die Variable um den angegebenen Wert.', 'Increases the variable by the given value.'));
+  defVarDelta('var_decrease',  L('verringere %1 um %2', 'decrease %1 by %2'), L('Verringert die Variable um den angegebenen Wert.', 'Decreases the variable by the given value.'));
 
   // Eigener Variablen-Flyout: baut den Standard-Flyout und tauscht den einen
   // "math_change"-Block gegen "erhöhe" + "verringere" (gleiche VAR/DELTA-Struktur,

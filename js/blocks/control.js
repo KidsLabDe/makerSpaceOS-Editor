@@ -7,20 +7,20 @@ Blockly.Blocks['control_setup'] = {
     this.appendDummyInput()
         .appendField('SETUP');
     this.appendDummyInput()
-        .appendField('läuft einmal beim Start');
+        .appendField(L('läuft einmal beim Start', 'runs once at start'));
     this.appendStatementInput('DO');
     this.setColour('#7C3AED');
-    this.setTooltip('Code hier läuft einmal beim Einschalten / Neustart');
+    this.setTooltip(L('Code hier läuft einmal beim Einschalten / Neustart', 'Code here runs once after power-on / restart'));
   }
 };
 
 Blockly.Blocks['control_forever'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField('FÜR IMMER');
+        .appendField(L('FÜR IMMER', 'FOREVER'));
     this.appendStatementInput('DO');
     this.setColour('#7C3AED');
-    this.setTooltip('Code hier wird immer wieder wiederholt');
+    this.setTooltip(L('Code hier wird immer wieder wiederholt', 'Code here repeats over and over'));
   }
 };
 
@@ -30,14 +30,14 @@ Blockly.Blocks['control_wait'] = {
   init: function() {
     this.appendValueInput('SECONDS')
         .setCheck('Number')
-        .appendField('Warte');
+        .appendField(L('Warte', 'Wait'));
     this.appendDummyInput()
-        .appendField('Sekunden');
+        .appendField(L('Sekunden', 'seconds'));
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#7C3AED');
-    this.setTooltip('Wartet die angegebene Anzahl Sekunden');
+    this.setTooltip(L('Wartet die angegebene Anzahl Sekunden', 'Waits for the given number of seconds'));
   }
 };
 
@@ -49,12 +49,12 @@ Blockly.Blocks['control_wait_until'] = {
   init: function() {
     this.appendValueInput('COND')
         .setCheck('Boolean')
-        .appendField('⏳ warte bis');
+        .appendField(L('⏳ warte bis', '⏳ wait until'));
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4FBFE8');
-    this.setTooltip('Hält an dieser Stelle an, bis die Bedingung erfüllt ist');
+    this.setTooltip(L('Hält an dieser Stelle an, bis die Bedingung erfüllt ist', 'Pauses here until the condition is true'));
   }
 };
 
@@ -62,25 +62,25 @@ Blockly.Blocks['control_while'] = {
   init: function() {
     this.appendValueInput('COND')
         .setCheck('Boolean')
-        .appendField('🔁 solange');
+        .appendField(L('🔁 solange', '🔁 while'));
     this.appendStatementInput('DO')
-        .appendField('mache');
+        .appendField(L('mache', 'do'));
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#4FBFE8');
-    this.setTooltip('Wiederholt die Blöcke, solange die Bedingung erfüllt ist');
+    this.setTooltip(L('Wiederholt die Blöcke, solange die Bedingung erfüllt ist', 'Repeats the blocks while the condition is true'));
   }
 };
 
 Blockly.Blocks['control_print'] = {
   init: function() {
     this.appendValueInput('VALUE')
-        .appendField('Ausgabe:');
+        .appendField(L('Ausgabe:', 'Print:'));
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour('#7C3AED');
-    this.setTooltip('Gibt einen Wert im Seriellen Monitor aus');
+    this.setTooltip(L('Gibt einen Wert im Seriellen Monitor aus', 'Prints a value to the serial monitor'));
   }
 };

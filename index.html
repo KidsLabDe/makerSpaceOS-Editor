@@ -12,7 +12,17 @@
   <script src="https://unpkg.com/blockly@9.3.3/blockly_compressed.js"></script>
   <script src="https://unpkg.com/blockly@9.3.3/blocks_compressed.js"></script>
   <script src="https://unpkg.com/blockly@9.3.3/python_compressed.js"></script>
-  <script src="https://unpkg.com/blockly@9.3.3/msg/de.js"></script>
+  <!-- Blockly-Locale je nach Sprache: Englisch ist in blockly_compressed.js
+       eingebaut, Deutsch wird nur bei lang=de nachgeladen (siehe js/i18n.js) -->
+  <script>
+    window.MSOS_LANG = (function () {
+      try { const l = localStorage.getItem('makerspaceos.lang'); return (l === 'en' || l === 'de') ? l : 'de'; }
+      catch (e) { return 'de'; }
+    })();
+    if (window.MSOS_LANG === 'de') {
+      document.write('<script src="https://unpkg.com/blockly@9.3.3/msg/de.js"><\/script>');
+    }
+  </script>
 
   <!-- CodeMirror -->
   <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
@@ -21,9 +31,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202607150856">
+  <link rel="stylesheet" href="css/fonts.css?v=202607172004">
 
-  <link rel="stylesheet" href="css/style.css?v=202607150856">
+  <link rel="stylesheet" href="css/style.css?v=202607172004">
 </head>
 <body>
 
@@ -39,39 +49,47 @@
     </div>
 
     <div class="connection-area">
-      <select id="board-select" class="board-select" title="Board auswählen">
+      <select id="lang-select" class="board-select" title="Sprache wählen" data-i18n-title="Choose language">
+        <option value="de">DE</option>
+        <option value="en">EN</option>
+      </select>
+      <select id="board-select" class="board-select" title="Board auswählen" data-i18n-title="Select board">
         <option value="maker_pi_rp2040">Maker-Pi RP2040</option>
         <option value="lolin_s2_mini">Wemos S2 Mini</option>
         <option value="esp32_d1_r32">ESP32 D1 R32 (Uno)</option>
       </select>
       <div class="status-indicator">
         <span class="status-dot" id="status-dot"></span>
-        <span id="status-text">Nicht verbunden</span>
+        <span id="status-text" data-i18n="Not connected">Nicht verbunden</span>
       </div>
-      <button id="btn-connect" class="btn btn-primary">Verbinden</button>
-      <button id="btn-run"  class="btn btn-warning" disabled>
+      <button id="btn-connect" class="btn btn-primary" data-i18n="Connect">Verbinden</button>
+      <button id="btn-run"  class="btn btn-warning" disabled data-i18n="Run">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653Z"/></svg>
         Ausführen
       </button>
-      <button id="btn-stop" class="btn btn-danger"  disabled>
+      <button id="btn-stop" class="btn btn-danger"  disabled data-i18n="Stop">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z"/></svg>
         Stopp
       </button>
       <span class="header-divider"></span>
-      <button id="btn-toggle-panel" class="btn btn-ghost" title="Code- & Serial-Bereich aus-/einblenden">
+      <button id="btn-toggle-panel" class="btn btn-ghost" title="Code- & Serial-Bereich aus-/einblenden" data-i18n="Code panel" data-i18n-title="Show/hide code & serial panel">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h12A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6Z"/><path d="M15 3.75v16.5"/></svg>
         Code-Bereich
       </button>
-      <button id="btn-save-board" class="btn btn-ghost" title="Programm als code.py auf den RP2040 speichern">
+      <button id="btn-save-board" class="btn btn-ghost" title="Programm als code.py auf den RP2040 speichern" data-i18n="To board" data-i18n-title="Save program as code.py on the board">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/></svg>
         Auf RP2040
       </button>
-      <button id="btn-history" class="btn btn-ghost" title="Gespeicherte Versionen anzeigen">
+      <button id="btn-history" class="btn btn-ghost" title="Gespeicherte Versionen anzeigen" data-i18n="History" data-i18n-title="Show saved versions">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
         Verlauf
       </button>
+      <button id="btn-library" class="btn btn-ghost" title="Bauteil-Bibliothek: Erklärungen zu Boards, Sensoren und Aktoren" data-i18n="Library" data-i18n-title="Component library: explanations for boards, sensors and actuators">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
+        Bibliothek
+      </button>
       <!-- KI-Block Generator noch nicht fertig – Button vorerst ausgeblendet -->
-      <button onclick="aiOpen()" class="btn btn-ai" title="KI-Block Generator öffnen" style="display:none">
+      <button onclick="aiOpen()" class="btn btn-ai" title="KI-Block Generator öffnen" style="display:none" data-i18n="AI block" data-i18n-title="Open AI block generator">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
         KI-Block
       </button>
@@ -96,13 +114,13 @@
       <div class="panel-header">
         <span>CircuitPython Code</span>
         <div class="panel-actions">
-          <button id="btn-toggle-code" class="btn-icon" title="Code-Editor ausblenden">
+          <button id="btn-toggle-code" class="btn-icon" title="Code-Editor ausblenden" data-i18n-title="Hide code editor">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 8.25 7.5 7.5 7.5-7.5"/></svg>
           </button>
-          <button id="btn-copy"        class="btn-icon" title="Code kopieren">
+          <button id="btn-copy"        class="btn-icon" title="Code kopieren" data-i18n-title="Copy code">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"/></svg>
           </button>
-          <button id="btn-toggle-edit" class="btn-icon" title="Code bearbeiten">
+          <button id="btn-toggle-edit" class="btn-icon" title="Code bearbeiten" data-i18n-title="Edit code">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/></svg>
           </button>
         </div>
@@ -118,8 +136,8 @@
 
       <!-- Serial Monitor Header -->
       <div class="panel-header">
-        <span>Serieller Monitor</span>
-        <button id="btn-clear-serial" class="btn-icon" title="Löschen">
+        <span data-i18n="Serial monitor">Serieller Monitor</span>
+        <button id="btn-clear-serial" class="btn-icon" title="Löschen" data-i18n-title="Clear">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
         </button>
       </div>
@@ -130,8 +148,8 @@
       <!-- Serial Input -->
       <div id="serial-input-row">
         <input id="serial-input" type="text"
-               placeholder="Befehl senden (Enter)…" disabled>
-        <button id="btn-send" class="btn btn-ghost" disabled>Senden</button>
+               placeholder="Befehl senden (Enter)…" data-i18n-ph="Send command (Enter)…" disabled>
+        <button id="btn-send" class="btn btn-ghost" disabled data-i18n="Send">Senden</button>
       </div>
 
     </div><!-- /code-panel -->
@@ -143,15 +161,15 @@
   <!-- KI-Block Drawer -->
   <div id="ai-drawer">
     <div class="panel-header">
-      <span>KI-Block Generator</span>
+      <span data-i18n="AI block generator">KI-Block Generator</span>
       <div class="panel-actions">
-        <button onclick="aiClearChat()" class="btn-icon" title="Verlauf löschen">
+        <button onclick="aiClearChat()" class="btn-icon" title="Verlauf löschen" data-i18n-title="Clear history">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
         </button>
-        <button onclick="aiToggleSettings()" class="btn-icon" title="Einstellungen">
+        <button onclick="aiToggleSettings()" class="btn-icon" title="Einstellungen" data-i18n-title="Settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.281Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
         </button>
-        <button onclick="aiClose()" class="btn-icon" title="Schließen">
+        <button onclick="aiClose()" class="btn-icon" title="Schließen" data-i18n-title="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
         </button>
       </div>
@@ -161,9 +179,9 @@
     <div id="ai-settings" style="display:none">
       <label>API-Key (OpenRouter)</label>
       <input id="ai-key-input" type="password" placeholder="sk-or-…">
-      <label>Modell</label>
+      <label data-i18n="Model">Modell</label>
       <input id="ai-model-input" placeholder="google/gemma-3-27b-it">
-      <button id="ai-save-btn" onclick="aiSaveSettings()">Speichern</button>
+      <button id="ai-save-btn" onclick="aiSaveSettings()" data-i18n="Save">Speichern</button>
     </div>
 
     <!-- Chat-Verlauf -->
@@ -172,8 +190,8 @@
     <!-- Eingabe -->
     <div id="ai-input-row">
       <textarea id="ai-input" rows="3"
-        placeholder="Beschreibe einen Block auf Deutsch, z.B. &quot;Regenbogen-Animation auf NeoPixel&quot; – Strg+Enter zum Senden"></textarea>
-      <button id="ai-send-btn" onclick="aiSend()">
+        placeholder="Beschreibe einen Block auf Deutsch, z.B. &quot;Regenbogen-Animation auf NeoPixel&quot; – Strg+Enter zum Senden" data-i18n-ph="Describe a block, e.g. \"rainbow animation on NeoPixel\" – Ctrl+Enter to send"></textarea>
+      <button id="ai-send-btn" onclick="aiSend()" data-i18n="Generate">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
         Generieren
       </button>
@@ -185,14 +203,14 @@
   <!-- Verlauf-Drawer -->
   <div id="history-drawer">
     <div class="panel-header">
-      <span>Verlauf</span>
-      <button onclick="closeHistory()" class="btn-icon" title="Schließen">
+      <span data-i18n="History">Verlauf</span>
+      <button onclick="closeHistory()" class="btn-icon" title="Schließen" data-i18n-title="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
     <div class="history-io-bar">
-      <button class="btn btn-ghost btn-sm" onclick="exportProject()">⬇ Projekt exportieren</button>
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">⬆ Projekt importieren</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportProject()" data-i18n="⬇ Export project">⬇ Projekt exportieren</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()" data-i18n="⬆ Import project">⬆ Projekt importieren</button>
       <input type="file" id="import-file" accept=".xml" style="display:none" onchange="importProject(event)">
     </div>
     <div id="history-list"></div>
@@ -200,20 +218,22 @@
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/boards.js?v=202607150856"></script>
-  <script src="js/blocks/control.js?v=202607150856"></script>
-  <script src="js/blocks/events.js?v=202607150856"></script>
-  <script src="js/blocks/text.js?v=202607150856"></script>
-  <script src="js/blocks/variables.js?v=202607150856"></script>
-  <script src="js/blocks_db.js?v=202607150856"></script>
-  <script src="js/block_builder.js?v=202607150856"></script>
-  <script src="js/toolbox.js?v=202607150856"></script>
-  <script src="js/blocks/matrix.js?v=202607150856"></script>
-  <script src="js/generator.js?v=202607150856"></script>
-  <script src="js/serial.js?v=202607150856"></script>
-  <script src="js/storage.js?v=202607150856"></script>
-  <script src="js/ai_chat.js?v=202607150856"></script>
-  <script src="js/app.js?v=202607150856"></script>
+  <script src="js/i18n.js?v=202607172004"></script>
+  <script src="js/boards.js?v=202607172004"></script>
+  <script src="js/blocks/control.js?v=202607172004"></script>
+  <script src="js/blocks/events.js?v=202607172004"></script>
+  <script src="js/blocks/text.js?v=202607172004"></script>
+  <script src="js/blocks/variables.js?v=202607172004"></script>
+  <script src="js/blocks_db.js?v=202607172004"></script>
+  <script src="js/block_builder.js?v=202607172004"></script>
+  <script src="js/toolbox.js?v=202607172004"></script>
+  <script src="js/blocks/matrix.js?v=202607172004"></script>
+  <script src="js/generator.js?v=202607172004"></script>
+  <script src="js/serial.js?v=202607172004"></script>
+  <script src="js/storage.js?v=202607172004"></script>
+  <script src="js/docs.js?v=202607172004"></script>
+  <script src="js/ai_chat.js?v=202607172004"></script>
+  <script src="js/app.js?v=202607172004"></script>
 
   <!-- Resize-Divider Logik -->
   <script>
@@ -283,7 +303,7 @@
       btn.addEventListener('click', () => {
         const collapsed = panel.classList.toggle('code-collapsed');
         btn.classList.toggle('active', collapsed);
-        btn.title = collapsed ? 'Code-Editor einblenden' : 'Code-Editor ausblenden';
+        btn.title = collapsed ? L('Code-Editor einblenden', 'Show code editor') : L('Code-Editor ausblenden', 'Hide code editor');
         if (!collapsed && typeof codeEditor !== 'undefined' && codeEditor) codeEditor.refresh();
       });
     })();

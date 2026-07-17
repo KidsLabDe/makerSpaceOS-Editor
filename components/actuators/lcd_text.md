@@ -3,24 +3,31 @@ id: actuator_lcd_text
 blockCategory: Anzeigen
 subCategory: ""
 label: "📟 LCD Text"
+label_en: "📟 LCD text"
 colour: "#0D9488"
 tooltip: "Zeigt zwei Zeilen Text auf dem Grove-LCD an – ohne die Farbe zu ändern"
+tooltip_en: "Shows two lines of text on the Grove LCD – without changing the colour"
 blockType: statement
 inline: false
 inputs:
   - label: "📟 LCD Text  Port:"
+    label_en: "📟 LCD text  port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: i2c
 valueInputs:
   - name: LINE1
     label: "Zeile 1"
+    label_en: "line 1"
     check: String
     defaultValue: "Hallo"
+    defaultValue_en: "Hello"
   - name: LINE2
     label: "Zeile 2"
+    label_en: "line 2"
     check: String
     defaultValue: "Welt"
+    defaultValue_en: "World"
 hardware:
   commonName: "Grove-LCD RGB Backlight"
   verbrauch3j: 0
@@ -35,3 +42,11 @@ legacyGenerator: true
 Zeigt bis zu zwei Zeilen Text an (je 16 Zeichen). Ändert die Hintergrundfarbe **nicht** –
 dafür gibt es den Block „📟 LCD Farbe".
 > Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Unterstützt Grove-LCD RGB Backlight V5 (3,3 V).
+
+<!-- lang:en -->
+
+# Grove LCD RGB Backlight – text (I2C)
+
+Shows up to two lines of text (16 characters each). Does **not** change the
+background colour – that's what the "📟 LCD colour" block is for.
+> Needs `lib/grove_rgb_lcd.py` on `CIRCUITPY/lib/`. Supports Grove LCD RGB Backlight V5 (3.3 V).

@@ -158,7 +158,7 @@ function restoreVersion(index) {
   const v = getVersions()[index];
   if (!v) return;
   const result = safeLoadState(v.state, workspace);
-  if (result.dropped) showToast(`${result.dropped} veraltete(r) Block(e) übersprungen`, 'warn');
+  if (result.dropped) showToast(L(`${result.dropped} veraltete(r) Block(e) übersprungen`, `Skipped ${result.dropped} outdated block(s)`), 'warn');
   ensureFixedBlocks();
   updateCode();
   saveCurrent();
@@ -187,7 +187,7 @@ let _lastBoardHandle = null;
 // CircuitPython lässt sein Laufwerk nicht per Serial beschreiben, daher Dateisystem-API.
 async function saveToBoard(code) {
   if (window.showSaveFilePicker) {
-    showToast('📂 Bitte zum CIRCUITPY-Laufwerk navigieren und code.py speichern', 'ok');
+    showToast(L('📂 Bitte zum CIRCUITPY-Laufwerk navigieren und code.py speichern', '📂 Please navigate to the CIRCUITPY drive and save code.py'), 'ok');
     const opts = {
       suggestedName: 'code.py',
       types: [{ description: 'Python', accept: { 'text/x-python': ['.py'] } }],
