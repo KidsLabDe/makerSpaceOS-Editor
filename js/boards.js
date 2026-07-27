@@ -84,6 +84,47 @@ const BOARD_PROFILES = {
     analogPins:   ['GP26','GP27','GP28'],
   },
 
+  // GamePadPico (KidsLab "nerdYcontroller") – Trägerplatine für einen
+  // Raspberry Pi Pico (board_id: raspberry_pi_pico). Onboard laut Schaltplan:
+  // 5×5-NeoPixel-Matrix (GP12, Zickzack-Verdrahtung), LSM6DS3-Neigungssensor
+  // (I2C: SDA=GP6, SCL=GP7), 4 Touch-Felder als Pfeiltasten (GP14–GP17,
+  // Widerstände auf der Platine), Piezo-Summer (GP20), Mikrofon (GP29),
+  // 4 Servo-Header (GP10/GP11/GP4/GP5) und 1 Grove-Port (GP9=Signal, GP8).
+  gamepad_pico: {
+    name: 'GamePadPico',
+    // Onboard-Matrix = 25 NeoPixel an GP12 – die Onboard-Licht-Blöcke und die
+    // 5×5-Matrix-Blöcke (blocks/matrix5.js) teilen sich dieses _pixels-Objekt.
+    neopixel:  { pin: 'GP12', count: 25 },
+    buzzer:    'GP20',
+    // Keine mechanischen Onboard-Taster – dafür 4 Touch-Felder (siehe touchPins).
+    buttons:   {},
+    // Kein Motortreiber – Motor-Blöcke ausgeblendet.
+    motors:    {},
+    // Servo-Header laut Schaltplan: SERVO_0=GP10, SERVO_1=GP11, SERVO_2=GP4, SERVO_3=GP5
+    servos:    { S1: 'GP10', S2: 'GP11', S3: 'GP4', S4: 'GP5' },
+    battery:   null,
+    // Onboard-Extras (schalten board-spezifische Blöcke frei, siehe
+    // requiresBoardFeature in components/*.md bzw. blocks/matrix5.js):
+    touchPins: { links: 'GP14', oben: 'GP15', rechts: 'GP16', unten: 'GP17' },
+    imu:       { sda: 'GP6', scl: 'GP7' },            // LSM6DS3, Adresse 0x6A
+    matrix5:   { width: 5, height: 5, serpentine: true },
+    usbHid:    true,                                   // Tastatur-Block (USB-HID)
+    // 1 Grove-Port: Pin 1 (gelb) = GP9, Pin 2 (weiß) = GP8. GP8/GP9 sind
+    // zugleich I2C0 (SDA/SCL) → i2c-fähig (busio.I2C(board.GP9, board.GP8)).
+    grovePorts: [
+      { id: 1, label: 'Grove (GP9/GP8)', pin1: 'GP8', signal: 'GP9', analog: false, i2c: true },
+    ],
+    externalPins: ['GP26', 'GP27', 'GP28'],
+    // Freie Header-Pins (GP23/GP24 sind auf dem Pico-Modul intern; GP25 =
+    // Onboard-LED des Pico; Touch-Pins GP14–17 bewusst nicht gelistet, weil
+    // dort feste Touch-Widerstände hängen).
+    allGrovePins: ['GP0','GP1','GP2','GP3','GP18','GP19','GP21','GP22','GP25','GP26','GP27','GP28'],
+    analogPins:   ['GP26','GP27','GP28'],
+
+    hideBlockIds: ['actuator_motor_forward', 'actuator_motor_backward',
+                   'actuator_motor_stop', 'sensor_battery'],
+  },
+
   // Wemos/LOLIN S2 Mini (ESP32-S2). Nacktes Board ohne Grove/Motor/Servo –
   // nur generische GPIO-/Analog-Blöcke + externer NeoPixel (Rest ausgeblendet).
   // CircuitPython-Pin-Namen sind IOxx (board.IO2 …). ADC1 (WLAN-sicher): IO1–IO10.
