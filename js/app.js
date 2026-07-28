@@ -431,19 +431,20 @@ function clearSerial() {
 // ── UI-Hilfsfunktionen ────────────────────────────────────────────────────────
 
 function setConnected(connected) {
-  const dot  = document.getElementById('status-dot');
-  const text = document.getElementById('status-text');
-  const btn  = document.getElementById('btn-connect');
+  const dot   = document.getElementById('status-dot');
+  const text  = document.getElementById('status-text');
+  const btn   = document.getElementById('btn-connect');
+  const label = btn.querySelector('.btn-label');
 
   if (connected) {
     dot.className  = 'status-dot connected';
     text.textContent = L('Verbunden', 'Connected');
-    btn.textContent  = L('Trennen', 'Disconnect');
+    label.textContent = L('Trennen', 'Disconnect');
     btn.className    = 'btn btn-danger';
   } else {
     dot.className  = 'status-dot';
     text.textContent = L('Nicht verbunden', 'Not connected');
-    btn.textContent  = L('Verbinden', 'Connect');
+    label.textContent = L('Verbinden', 'Connect');
     btn.className    = 'btn btn-primary';
   }
 

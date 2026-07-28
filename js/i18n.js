@@ -14,12 +14,18 @@ const LANG_STORAGE = 'makerspaceos.lang';
 
 // index.html liest die Sprache schon vor dem Blockly-Locale-Laden und legt sie
 // in window.MSOS_LANG ab; Fallback hier für Seiten ohne dieses Inline-Skript.
-let LANG = (typeof window !== 'undefined' && window.MSOS_LANG) || 'de';
-if (!window.MSOS_LANG) {
+let LANG = (typeof window !== 'undefined' && window.MSOS_LANG) || null;
+if (!LANG) {
   try {
     const stored = localStorage.getItem(LANG_STORAGE);
     if (stored === 'en' || stored === 'de') LANG = stored;
   } catch (e) { /* localStorage evtl. nicht verfügbar */ }
+}
+if (!LANG) {
+  // Keine gespeicherte Wahl: Browsersprache als Default nutzen (Fallback für
+  // Seiten ohne das Inline-Skript in index.html, siehe dort).
+  const nav = (typeof navigator !== 'undefined' && (navigator.language || navigator.userLanguage)) || 'de';
+  LANG = String(nav).toLowerCase().startsWith('de') ? 'de' : 'en';
 }
 window.MSOS_LANG = LANG;
 

@@ -361,6 +361,25 @@ html, body {
   }
 }
 
+/* Schmales Fenster (aber noch nicht Mobil-Layout): Header bleibt einzeilig,
+   Button-Beschriftungen weichen den Icons (Tooltip via title-Attribut bleibt),
+   damit Verbinden/Ausführen/Bibliothek etc. nicht aus dem sichtbaren Bereich
+   rutschen. Zusätzlich flex-wrap als Sicherheitsnetz bei sehr langen Labels. */
+@media (max-width: 1300px) and (min-width: 769px) {
+  .connection-area {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .connection-area .btn .btn-label {
+    display: none;
+  }
+
+  .connection-area .btn {
+    padding: 8px 10px;
+  }
+}
+
 @media (max-width: 768px) {
   #header {
     height: auto;
