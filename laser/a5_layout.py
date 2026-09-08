@@ -22,10 +22,9 @@ import os
 import vector_font
 
 PAGE_W, PAGE_H = 235.0, 150.0
-CUT_TOL  = 0.4                  # mm Uebermass gesamt fuer Schnitt-Oeffnungen
-                                 # (08.09.: -1.6 war zu eng -> wieder 2mm mehr
-                                 # Abstand, zurueck auf den urspruenglichen
-                                 # Wert 0.4 = leichtes Spiel statt Klemmsitz)
+CUT_TOL  = -0.6                 # mm Uebermass gesamt fuer Schnitt-Oeffnungen
+                                 # (08.09.: 0.4 war noch zu locker -> 1mm
+                                 # kleiner, leichter Klemmsitz statt Spiel)
 LABEL_DY = 3.5                  # mm Abstand Beschriftung ueber Bauteil-Oberkante
 FONT_MM  = 3.5                  # Schriftgroesse Bauteil-Labels (mm)
 

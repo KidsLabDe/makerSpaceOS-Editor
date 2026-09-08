@@ -12,13 +12,13 @@
   <!-- SCHNEIDEN: rot, Haarlinie -->
   <g inkscape:groupmode="layer" inkscape:label="Schnitt"
      fill="none" stroke="#ff0000" stroke-width="0.1">
-    <rect x="73.3" y="14.8" width="88.4" height="64.4" rx="1" ry="1"/>
-    <rect x="77.3" y="89.8" width="80.4" height="40.4" rx="1" ry="1"/>
-    <rect x="25.8" y="46.3" width="19.4" height="26.4" rx="1" ry="1"/>
-    <rect x="29.8" y="83.3" width="12.4" height="23.4" rx="1" ry="1"/>
-    <rect x="177.8" y="14.8" width="41.9" height="23.4" rx="1" ry="1"/>
-    <rect x="177.8" y="67.3" width="40.4" height="20.4" rx="1" ry="1"/>
-    <rect x="177.8" y="98.3" width="45.4" height="20.9" rx="1" ry="1"/>
+    <rect x="73.8" y="15.3" width="87.4" height="63.4" rx="1" ry="1"/>
+    <rect x="77.8" y="90.3" width="79.4" height="39.4" rx="1" ry="1"/>
+    <rect x="26.3" y="46.8" width="18.4" height="25.4" rx="1" ry="1"/>
+    <rect x="30.3" y="83.8" width="11.4" height="22.4" rx="1" ry="1"/>
+    <rect x="178.3" y="15.3" width="40.9" height="22.4" rx="1" ry="1"/>
+    <rect x="178.3" y="67.8" width="39.4" height="19.4" rx="1" ry="1"/>
+    <rect x="178.3" y="98.8" width="44.4" height="19.9" rx="1" ry="1"/>
     <rect x="193" y="119" width="15" height="15" rx="1" ry="1"/>
   </g>
   <!-- GRAVIEREN: schwarz (Logo, Beschriftungen als Pfade) -->
