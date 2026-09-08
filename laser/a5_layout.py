@@ -44,6 +44,18 @@ COMPONENTS = [
     ("Ultraschall",      45.0, 20.5, 178.0,  98.5),   # unten rechts
 ]
 
+# Zusaetzliche reine Schnitt-Ausschnitte ohne Label/Gravur (z.B. Kabeldurchlass):
+# (Name, Breite, Hoehe, x, y). x,y hier bereits fertig berechnet, s.u.
+_ultraschall = next(c for c in COMPONENTS if c[0] == "Ultraschall")
+_us_name, _us_w, _us_h, _us_x, _us_y = _ultraschall
+EXTRA_CUTOUTS = [
+    (
+        "Kabeldurchlass Ultraschall", 15.0, 15.0,
+        _us_x + _us_w / 2 - 7.5,   # x: horizontal mittig zum Ultraschall-Ausschnitt
+        _us_y + _us_h,             # y: direkt unterhalb, angrenzend
+    ),
+]
+
 # ----------------------------------------------------------------------------
 # Logo (Geometrie aus makerSpaceOS/design/svg/logo-mark-mono.svg, viewBox 110x100)
 # ----------------------------------------------------------------------------
@@ -146,6 +158,13 @@ def build_svg():
         tx, ty = x + w / 2, y - LABEL_DY
         labels.append("    " + vector_font.text_path(name, tx, ty, FONT_MM))
 
+    for name, w, h, x, y in EXTRA_CUTOUTS:
+        # Reiner Schnitt-Ausschnitt, keine Toleranz-Anpassung, kein Label.
+        cut.append(
+            '    <rect x="%s" y="%s" width="%s" height="%s" rx="1" ry="1"/>'
+            % (fmt(x), fmt(y), fmt(w), fmt(h))
+        )
+
     return """<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -187,6 +206,8 @@ def check_layout():
         # Label-Zeile als Teil der Bounding-Box mitzaehlen (grobe Breite: w)
         label_h = LABEL_DY + FONT_MM
         boxes.append((name, w, h + label_h, x, y - label_h))
+    for name, w, h, x, y in EXTRA_CUTOUTS:
+        boxes.append((name, w, h, x, y))   # kein Label, keine Extra-Hoehe
     warns = []
     for name, w, h, x, y in boxes:
         if x < 0 or y < 0 or x + w > PAGE_W or y + h > PAGE_H:

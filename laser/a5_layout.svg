@@ -17,6 +17,7 @@
     <rect x="178.8" y="15.8" width="21.4" height="39.9" rx="1" ry="1"/>
     <rect x="178.8" y="68.3" width="38.4" height="18.4" rx="1" ry="1"/>
     <rect x="178.8" y="99.3" width="43.4" height="18.9" rx="1" ry="1"/>
+    <rect x="193" y="119" width="15" height="15" rx="1" ry="1"/>
   </g>
   <!-- GRAVIEREN: schwarz (Logo, Beschriftungen als Pfade) -->
   <g inkscape:groupmode="layer" inkscape:label="Gravur">
