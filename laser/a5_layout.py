@@ -16,16 +16,16 @@ DIN-Format A5 (148 x 210 mm) - "a5" ist hier nur der Projektname/Rufname
 fuer dieses kleinere Cutout, kein Papierformat.
 """
 
+import math
 import os
 
 import vector_font
 
 PAGE_W, PAGE_H = 235.0, 150.0
-CUT_TOL  = -1.6                 # mm Uebermass gesamt fuer Schnitt-Oeffnungen
-                                 # (07.09.: Bauteile sassen zu locker -> 2mm
-                                 # kleiner als vorher (0.4 -> -1.6); Oeffnung
-                                 # damit 1.6mm enger als Bauteil-Nennmass,
-                                 # Klemmsitz statt Spiel)
+CUT_TOL  = 0.4                  # mm Uebermass gesamt fuer Schnitt-Oeffnungen
+                                 # (08.09.: -1.6 war zu eng -> wieder 2mm mehr
+                                 # Abstand, zurueck auf den urspruenglichen
+                                 # Wert 0.4 = leichtes Spiel statt Klemmsitz)
 LABEL_DY = 3.5                  # mm Abstand Beschriftung ueber Bauteil-Oberkante
 FONT_MM  = 3.5                  # Schriftgroesse Bauteil-Labels (mm)
 
@@ -39,7 +39,7 @@ COMPONENTS = [
     ("LCD",              80.0, 40.0,  77.5,  90.0),   # darunter Mitte
     ("Drehgeber",        19.0, 26.0,  26.0,  46.5),   # mitte links (oben links bleibt frei)
     ("Servo",            12.0, 23.0,  30.0,  83.5),   # mitte links, unten
-    ("7-Segment",        23.0, 41.5, 178.0,  15.0),   # oben rechts
+    ("7-Segment",        41.5, 23.0, 178.0,  15.0),   # oben rechts, quer
     ("DHT11",             40.0, 20.0, 178.0,  67.5),   # mitte rechts
     ("Ultraschall",      45.0, 20.5, 178.0,  98.5),   # unten rechts
 ]
@@ -85,6 +85,51 @@ def fmt(v):
     return ("%g" % round(v, 3))
 
 
+def _line_fill_pts(x1, y1, x2, y2, w, cap="butt", segments=16):
+    """Umriss-Punkte einer Linie der Breite w als gefuelltes Polygon
+    (Stroke-to-Fill, reine Vektorrechnung, kein shapely noetig). cap="round"
+    setzt Halbkreise an beide Enden, "butt" schneidet gerade ab."""
+    dx, dy = x2 - x1, y2 - y1
+    length = math.hypot(dx, dy)
+    if length == 0:
+        return []
+    ux, uy = dx / length, dy / length   # Richtung (laengs)
+    r = w / 2
+
+    def to_global(lx, ly):
+        # lokal: Linie liegt auf der x-Achse von (0,0) bis (length,0)
+        return (x1 + lx * ux - ly * uy, y1 + lx * uy + ly * ux)
+
+    if cap != "round":
+        return [to_global(0, r), to_global(length, r),
+                to_global(length, -r), to_global(0, -r)]
+
+    pts = []
+    for i in range(segments + 1):          # Halbkreis am Endpunkt (rechts)
+        a = math.pi / 2 - math.pi * i / segments
+        pts.append(to_global(length + r * math.cos(a), r * math.sin(a)))
+    for i in range(segments + 1):          # Halbkreis am Startpunkt (links)
+        a = -math.pi / 2 - math.pi * i / segments
+        pts.append(to_global(r * math.cos(a), r * math.sin(a)))
+    return pts
+
+
+def _poly_to_d(pts):
+    return "M " + " L ".join("%s,%s" % (fmt(x), fmt(y)) for x, y in pts) + " Z"
+
+
+def _circle_ring_d(cx, cy, r, sw):
+    """Kreisring (Aussen-/Innenradius) als SVG-Pfad, fill-rule evenodd."""
+    r_out, r_in = r + sw / 2, r - sw / 2
+
+    def circle_d(rr):
+        return ("M %s,%s A %s,%s 0 1 0 %s,%s A %s,%s 0 1 0 %s,%s Z"
+                % (fmt(cx + rr), fmt(cy), fmt(rr), fmt(rr), fmt(cx - rr), fmt(cy),
+                   fmt(rr), fmt(rr), fmt(cx + rr), fmt(cy)))
+
+    return circle_d(r_out) + " " + circle_d(r_in)
+
+
 def _lockup_box():
     """Bounding-Box (x, y, w, h) von Logo + Schriftzug (fest: unten links)."""
     s = LOGO_W / LOGO_VB_W
@@ -94,39 +139,32 @@ def _lockup_box():
 
 
 def build_logo():
-    """Logo + Schriftzug + Untertitel als Gravur-SVG (nur Pfade/Grundformen)."""
+    """Logo + Schriftzug + Untertitel als Gravur-SVG (nur gefuellte Pfade,
+    kein stroke - Mr Beam stuft duenne fill:none-Konturen unabhaengig von der
+    Farbe leicht als Schnitt-Kandidat ein, siehe Deckel.svg-Fix. Stroke-to-Fill
+    per reiner Vektorrechnung, s. _line_fill_pts/_circle_ring_d oben)."""
     x0, y0, total_w, logo_h = _lockup_box()
     s = LOGO_W / LOGO_VB_W
 
     def X(v):
-        return fmt(x0 + v * s)
+        return x0 + v * s   # unskaliert (float) - Fill-Berechnung braucht Zahlen
 
     def Y(v):
-        return fmt(y0 + v * s)
+        return y0 + v * s
 
-    out = ['    <g fill="none" stroke="#000000">']
-    out.append('      <g stroke-width="%s">' % fmt(8 * s))
+    out = ['    <g fill="#000000" stroke="none">']
     for x1, y1, x2, y2 in LOGO_HEX_LINES:
-        out.append('        <line x1="%s" y1="%s" x2="%s" y2="%s"/>'
-                   % (X(x1), Y(y1), X(x2), Y(y2)))
-    out.append('      </g>')
-    out.append('      <g stroke-width="%s">' % fmt(LOGO_PIN_SW * s))
+        pts = _line_fill_pts(X(x1), Y(y1), X(x2), Y(y2), 8 * s, cap="butt")
+        out.append('      <path d="%s"/>' % _poly_to_d(pts))
     for cx, cy in LOGO_PINS:
-        out.append('        <circle cx="%s" cy="%s" r="%s"/>'
-                   % (X(cx), Y(cy), fmt(LOGO_PIN_R * s)))
-    out.append('      </g>')
-    out.append(
-        '      <polyline points="%s" stroke-width="%s"'
-        ' stroke-linecap="round" stroke-linejoin="round"/>'
-        % (" ".join("%s,%s" % (X(px), Y(py)) for px, py in LOGO_PROMPT),
-           fmt(6.5 * s))
-    )
+        out.append('      <path fill-rule="evenodd" d="%s"/>'
+                   % _circle_ring_d(X(cx), Y(cy), LOGO_PIN_R * s, LOGO_PIN_SW * s))
+    for (px1, py1), (px2, py2) in zip(LOGO_PROMPT, LOGO_PROMPT[1:]):
+        pts = _line_fill_pts(X(px1), Y(py1), X(px2), Y(py2), 6.5 * s, cap="round")
+        out.append('      <path d="%s"/>' % _poly_to_d(pts))
     ux1, uy1, ux2, uy2 = LOGO_UNDERSCORE
-    out.append(
-        '      <line x1="%s" y1="%s" x2="%s" y2="%s" stroke-width="%s"'
-        ' stroke-linecap="round"/>'
-        % (X(ux1), Y(uy1), X(ux2), Y(uy2), fmt(6.5 * s))
-    )
+    pts = _line_fill_pts(X(ux1), Y(uy1), X(ux2), Y(uy2), 6.5 * s, cap="round")
+    out.append('      <path d="%s"/>' % _poly_to_d(pts))
     out.append('    </g>')
 
     # Schriftzug rechts neben dem Logo, vertikal auf Logo-Mitte
@@ -169,10 +207,12 @@ def build_svg():
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
      width="{pw}mm" height="{ph}mm" viewBox="0 0 {pw} {ph}">
-  <!-- Hilfslinie: Blattrand (nicht schneiden) -->
+  <!-- Hilfslinie: Blattrand (orange statt grau, damit Mr Beam sie als
+       eigenen, klar unterscheidbaren Job-Slot erkennt - Leistung dort auf
+       0 lassen, nicht wirklich schneiden) -->
   <g inkscape:groupmode="layer" inkscape:label="Hilfslinien">
     <rect x="0" y="0" width="{pw}" height="{ph}" fill="none"
-          stroke="#cccccc" stroke-width="0.2" stroke-dasharray="2,2"/>
+          stroke="#ff8800" stroke-width="0.2" stroke-dasharray="2,2"/>
   </g>
   <!-- SCHNEIDEN: rot, Haarlinie -->
   <g inkscape:groupmode="layer" inkscape:label="Schnitt"
