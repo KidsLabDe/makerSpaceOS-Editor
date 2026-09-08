@@ -4,9 +4,11 @@
 
 Erzeugt `a5_layout.svg`. Gleiche Laser-Konventionen wie `a4_layout.py`:
   - Layer "Schnitt"  -> ROT (#FF0000), Haarlinie -> SCHNEIDEN (Oeffnung =
-    Bauteil-Footprint + Toleranz CUT_TOL).
-  - Layer "Gravur"   -> SCHWARZ -> GRAVIEREN (Nennmass-Umriss + Logo +
-    Beschriftungen, alles als Vektorpfade via vector_font.py, kein <text>).
+    Bauteil-Footprint + Toleranz CUT_TOL). Einzige Kontur je Ausschnitt.
+  - Layer "Gravur"   -> SCHWARZ -> GRAVIEREN (Logo + Beschriftungen, alles
+    als Vektorpfade via vector_font.py, kein <text>). Kein zusaetzlicher
+    Nennmass-Umriss mehr (war eine Platzierungshilfe, optisch doppelt zur
+    roten Schnittkontur - auf Wunsch entfernt).
 
 Bauteilmasse aus `components/*.md` (hardware.width_mm/height_mm) bzw. den
 Werten in `a4_layout.py`. Hinweis: 235 x 150 mm entspricht NICHT dem
@@ -128,7 +130,10 @@ def build_logo():
 
 
 def build_svg():
-    cut, outline, labels = [], [], []
+    # Kein schwarzer Nennmass-Umriss mehr um die Ausschnitte (war eine reine
+    # Platzierungshilfe, doppelte sich optisch mit der roten Schnittkontur -
+    # auf Wunsch entfernt). Schnitt (rot) bleibt die einzige Kontur je Bauteil.
+    cut, labels = [], []
     for name, w, h, x, y in COMPONENTS:
         # Schnitt: Oeffnung mit Toleranz
         cx, cy = x - CUT_TOL / 2, y - CUT_TOL / 2
@@ -136,11 +141,6 @@ def build_svg():
         cut.append(
             '    <rect x="%s" y="%s" width="%s" height="%s" rx="1" ry="1"/>'
             % (fmt(cx), fmt(cy), fmt(cw), fmt(ch))
-        )
-        # Gravur: Nennmass-Umriss
-        outline.append(
-            '    <rect x="%s" y="%s" width="%s" height="%s"/>'
-            % (fmt(x), fmt(y), fmt(w), fmt(h))
         )
         # Gravur: Beschriftung mittig ueber dem Bauteil (als Vektorpfad)
         tx, ty = x + w / 2, y - LABEL_DY
@@ -160,11 +160,8 @@ def build_svg():
      fill="none" stroke="#ff0000" stroke-width="0.1">
 {cut}
   </g>
-  <!-- GRAVIEREN: schwarz (Umrisse, Logo, Beschriftungen als Pfade) -->
+  <!-- GRAVIEREN: schwarz (Logo, Beschriftungen als Pfade) -->
   <g inkscape:groupmode="layer" inkscape:label="Gravur">
-    <g fill="none" stroke="#000000" stroke-width="0.2">
-{outline}
-    </g>
 {logo}
     <g fill="#000000" stroke="none">
 {labels}
@@ -174,7 +171,6 @@ def build_svg():
 """.format(
         pw=fmt(PAGE_W), ph=fmt(PAGE_H),
         cut="\n".join(cut),
-        outline="\n".join(outline),
         logo="\n".join(build_logo()),
         labels="\n".join(labels),
     )

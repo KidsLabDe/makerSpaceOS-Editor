@@ -18,17 +18,8 @@
     <rect x="178.8" y="68.3" width="38.4" height="18.4" rx="1" ry="1"/>
     <rect x="178.8" y="99.3" width="43.4" height="18.9" rx="1" ry="1"/>
   </g>
-  <!-- GRAVIEREN: schwarz (Umrisse, Logo, Beschriftungen als Pfade) -->
+  <!-- GRAVIEREN: schwarz (Logo, Beschriftungen als Pfade) -->
   <g inkscape:groupmode="layer" inkscape:label="Gravur">
-    <g fill="none" stroke="#000000" stroke-width="0.2">
-    <rect x="73.5" y="15" width="88" height="64"/>
-    <rect x="77.5" y="90" width="80" height="40"/>
-    <rect x="26" y="46.5" width="19" height="26"/>
-    <rect x="30" y="83.5" width="12" height="23"/>
-    <rect x="178" y="15" width="23" height="41.5"/>
-    <rect x="178" y="67.5" width="40" height="20"/>
-    <rect x="178" y="98.5" width="45" height="20.5"/>
-    </g>
     <g fill="none" stroke="#000000">
       <g stroke-width="1.164">
         <line x1="17.455" y1="113.231" x2="22.545" y2="113.231"/>
