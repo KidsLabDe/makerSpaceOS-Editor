@@ -1,557 +1,428 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>makerSpaceOS – Bauteil-Katalog</title>
-  <style>
-    :root {
-      --bg:      #1e1e2e;
-      --panel:   #252538;
-      --panel2:  #1a1a2e;
-      --border:  #3a3a5c;
-      --text:    #e0e0e0;
-      --muted:   #888;
-      --accent:  #7c6af7;
-      --success: #4caf50;
-      --warn:    #ff9800;
-      --font-mono: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>makerSpaceOS – Bibliothek</title>
+<link rel="stylesheet" href="css/style.css?v=202609080922">
+<style>
+  /* Eigenständige Seite (kein Editor-Overlay) – nutzt die Design-Variablen
+     und .lib-*-Klassen aus css/style.css (dieselbe Optik wie das
+     Rechtsklick-Erklärungspanel im Editor). Hier nur das Seiten-Layout. */
+  body {
+    height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    background: var(--bg); color: var(--text); font-family: var(--font-body);
+  }
+  #v-header {
+    display: flex; align-items: center; gap: 14px;
+    height: var(--header-h); padding: 0 18px;
+    background: var(--surface); border-bottom: 3px solid var(--line-strong);
+    flex-shrink: 0;
+  }
+  #v-header h1 { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+  #v-header .sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  #v-search {
+    flex: 1; max-width: 420px; padding: 8px 14px;
+    border: 1.5px solid var(--line); border-radius: var(--radius-pill);
+    background: var(--surface); color: var(--text);
+    font-family: var(--font-body); font-size: 13px; outline: none;
+    transition: border-color .12s;
+  }
+  #v-search:focus { border-color: var(--accent); }
+  #v-count { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  #v-main { display: flex; flex: 1; overflow: hidden; }
+  #v-tree {
+    width: 300px; flex-shrink: 0; overflow-y: auto;
+    background: var(--surface); border-right: 1.5px solid var(--line);
+    padding: 10px 8px 24px;
+  }
+  #v-detail { flex: 1; overflow-y: auto; padding: 28px 32px 48px; }
+  #v-placeholder {
+    height: 100%; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 12px; color: var(--text-muted);
+    text-align: center; line-height: 1.6;
+  }
+  .v-ph-icon { font-size: 48px; }
+  [hidden] { display: none !important; }
 
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+  /* Top-Level-Bereich: 🔧 Bauteile / 🧩 Programmier-Blöcke / 📘 Boards & Grundlagen */
+  .v-area-hdr {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 8px 6px; margin-top: 4px;
+    font-family: var(--font-display); font-size: 15px; font-weight: 600;
+    cursor: pointer; user-select: none;
+  }
+  .v-area-hdr:first-child { margin-top: 0; }
+  .v-area-arrow { font-size: 11px; color: var(--text-muted); transition: transform .15s; flex-shrink: 0; }
+  .v-area-hdr.collapsed .v-area-arrow { transform: rotate(-90deg); }
+  .v-area-body { border-left: 2px solid var(--line); margin-left: 15px; }
+  .v-area-body.collapsed { display: none; }
 
-    /* ── Header ── */
-    header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 16px;
-      background: var(--panel);
-      border-bottom: 2px solid var(--accent);
-      flex-shrink: 0;
-    }
-    header h1 { font-size: 18px; font-weight: 700; color: var(--accent); }
-    header .sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
-    header .count { margin-left: auto; font-size: 12px; color: var(--muted); }
+  /* Kategorie (wie Blockly-Toolbox-Farben) innerhalb eines Bereichs */
+  .v-cat-hdr {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 10px 3px 10px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted);
+    cursor: pointer; user-select: none;
+  }
+  .v-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .v-cat-arrow { font-size: 9px; transition: transform .15s; flex-shrink: 0; }
+  .v-cat-hdr.collapsed .v-cat-arrow { transform: rotate(-90deg); }
+  .v-cat-body.collapsed { display: none; }
 
-    /* ── Main ── */
-    #main {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
+  /* Technik-Detail (nur Programmier-Blöcke) */
+  .v-tech-section { margin-top: 18px; }
+  .v-tech-title {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; color: var(--text-muted); margin-bottom: 6px;
+  }
+  .v-input-row { display: flex; align-items: baseline; gap: 8px; font-size: 13px; margin-bottom: 4px; }
+  .v-input-name { font-family: var(--font-mono); font-size: 12px; color: var(--accent); min-width: 60px; }
+  .v-legacy-note {
+    background: rgba(243,154,27,.1); border: 1px solid var(--brand-orange);
+    border-radius: var(--radius-md); padding: 8px 12px; font-size: 12px; color: #92400e;
+  }
+  .v-imports {
+    background: var(--code-bg); color: #e2e8f0; border-radius: var(--radius-md);
+    padding: 12px 14px; font-family: var(--font-mono); font-size: 12.5px;
+    line-height: 1.6; overflow-x: auto; margin: 0;
+  }
+  .v-comp-uses { margin-top: 18px; }
+  .v-comp-uses a {
+    display: block; padding: 5px 0; color: var(--brand-blue);
+    text-decoration: none; font-size: 13.5px;
+  }
+  .v-comp-uses a:hover { text-decoration: underline; }
 
-    /* ── Sidebar ── */
-    #sidebar {
-      width: 260px;
-      background: var(--panel);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-
-    #search-wrap {
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    #search {
-      width: 100%;
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 5px 9px;
-      outline: none;
-      transition: border-color .2s;
-    }
-    #search:focus { border-color: var(--accent); }
-
-    #tree {
-      flex: 1;
-      overflow-y: auto;
-      padding: 6px 0 12px;
-    }
-
-    .cat-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 10px 5px;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      cursor: pointer;
-      user-select: none;
-      border-left: 3px solid transparent;
-      transition: background .15s;
-    }
-    .cat-header:hover { background: rgba(255,255,255,.05); }
-    .cat-arrow { font-size: 10px; color: var(--muted); transition: transform .2s; }
-    .cat-header.collapsed .cat-arrow { transform: rotate(-90deg); }
-    .cat-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .cat-body { overflow: hidden; }
-    .cat-body.collapsed { display: none; }
-
-    .subcat-label {
-      padding: 4px 10px 2px 24px;
-      font-size: 10px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-
-    .block-item {
-      padding: 4px 10px 4px 28px;
-      font-size: 13px;
-      cursor: pointer;
-      border-left: 3px solid transparent;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: background .12s;
-    }
-    .block-item:hover { background: rgba(124,106,247,.12); }
-    .block-item.active {
-      background: rgba(124,106,247,.22);
-      border-left-color: var(--accent);
-    }
-
-    /* ── Detail Panel ── */
-    #detail {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px 28px;
-    }
-
-    #placeholder {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      color: var(--muted);
-    }
-    #placeholder .icon { font-size: 48px; }
-    #placeholder p { font-size: 14px; }
-
-    #card { display: none; }
-
-    .card-header {
-      border-left: 5px solid var(--accent);
-      padding: 10px 14px;
-      background: var(--panel);
-      border-radius: 0 8px 8px 0;
-      margin-bottom: 20px;
-    }
-    .card-label {
-      font-size: 22px;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-    .card-id {
-      font-size: 11px;
-      color: var(--muted);
-      font-family: var(--font-mono);
-      margin-top: 4px;
-    }
-
-    .section {
-      margin-bottom: 18px;
-    }
-    .section-title {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .section-body {
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .chip {
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-    .chip.green { background: rgba(76,175,80,.15); border-color: #4caf50; color: #81c784; }
-    .chip.orange { background: rgba(255,152,0,.12); border-color: var(--warn); color: #ffb74d; }
-    .chip.blue { background: rgba(124,106,247,.15); border-color: var(--accent); color: #b0a4ff; }
-
-    .hw-grid {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: 4px 14px;
-      font-size: 13px;
-    }
-    .hw-key { color: var(--muted); }
-    .hw-val { font-weight: 600; }
-    .kit-yes { color: #81c784; }
-    .kit-no  { color: var(--muted); }
-
-    .input-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .input-row {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      font-size: 13px;
-    }
-    .input-name {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--accent);
-      min-width: 60px;
-    }
-    .input-type { color: var(--muted); font-size: 12px; }
-
-    pre.imports {
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 10px 12px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.6;
-      color: #a5d6a7;
-      overflow-x: auto;
-    }
-
-    .legacy-note {
-      background: rgba(255,152,0,.1);
-      border: 1px solid var(--warn);
-      border-radius: 6px;
-      padding: 8px 12px;
-      font-size: 12px;
-      color: #ffb74d;
-    }
-
-    /* ── Scrollbars ── */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-  </style>
+  @media (max-width: 768px) {
+    #v-tree { width: 220px; }
+    #v-detail { padding: 18px 16px 40px; }
+    #v-header h1 { display: none; }
+  }
+</style>
 </head>
 <body>
 
-<header>
-  <span style="font-size:26px">⚡</span>
+<header id="v-header">
+  <span style="font-size:26px">📚</span>
   <div>
-    <h1>Bauteil-Katalog</h1>
-    <div class="sub">makerSpaceOS – MakeYourSchool</div>
+    <h1>Bibliothek</h1>
+    <div class="sub">makerSpaceOS – Bauteile, Blöcke &amp; Boards</div>
   </div>
-  <div class="count" id="count-label"></div>
+  <input id="v-search" type="search" placeholder="🔍 Suchen… (z.B. Taster, LED, Abstand)" autocomplete="off">
+  <span id="v-count"></span>
 </header>
 
-<div id="main">
-
-  <!-- ── Sidebar ── -->
-  <div id="sidebar">
-    <div id="search-wrap">
-      <input id="search" type="search" placeholder="🔍  Suchen…" autocomplete="off">
+<div id="v-main">
+  <div id="v-tree"></div>
+  <div id="v-detail">
+    <div id="v-placeholder">
+      <div class="v-ph-icon">📦</div>
+      <p>← Wähle links ein Bauteil, einen Programmier-Block<br>oder ein Board aus.</p>
     </div>
-    <div id="tree"></div>
+    <div id="v-card" class="lib-card" hidden></div>
   </div>
-
-  <!-- ── Detail ── -->
-  <div id="detail">
-    <div id="placeholder">
-      <div class="icon">📦</div>
-      <p>← Bauteil in der Liste auswählen</p>
-    </div>
-
-    <div id="card">
-      <div class="card-header" id="card-header">
-        <div class="card-label" id="card-label"></div>
-        <div class="card-id"   id="card-id"></div>
-      </div>
-
-      <div class="section" id="sec-desc">
-        <div class="section-title">Beschreibung</div>
-        <div class="section-body" id="card-tooltip"></div>
-      </div>
-
-      <div class="section">
-        <div class="section-title">Eigenschaften</div>
-        <div class="chips" id="card-chips"></div>
-      </div>
-
-      <div class="section" id="sec-hw">
-        <div class="section-title">Hardware</div>
-        <div class="hw-grid" id="card-hw"></div>
-      </div>
-
-      <div class="section" id="sec-inputs">
-        <div class="section-title">Pin-Eingaben</div>
-        <div class="input-list" id="card-inputs"></div>
-      </div>
-
-      <div class="section" id="sec-imports">
-        <div class="section-title">Code-Imports</div>
-        <pre class="imports" id="card-imports"></pre>
-      </div>
-
-      <div class="section" id="sec-legacy">
-        <div class="legacy-note">
-          ⚙️ Komplexer Block – Code-Generator ist in <code>js/generator.js</code> implementiert.
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<script src="js/boards.js?v=202607280733"></script>
-<script src="js/blocks_db.js?v=202607280733"></script>
+<script src="js/boards.js?v=202609080922"></script>
+<script src="js/blocks_db.js?v=202609080922"></script>
+<script src="js/docs_data.js?v=202609080922"></script>
 <script>
-  // ── Hilfsfunktionen ───────────────────────────────────────────────────────
-
-  const BLOCKTYPE_LABELS = {
-    value:        'Wert-Block (gibt Zahl/Wahrheitswert zurück)',
-    statement:    'Anweisungs-Block (führt Aktion aus)',
-    event_simple: 'Ereignis-Block (reagiert auf Bedingung)',
-    event:        'Ereignis-Block (reagiert auf Bedingung)',
-  };
+(function () {
+  'use strict';
 
   const FIELDTYPE_LABELS = {
-    pin_dropdown:    'Pin-Auswahl',
-    on_off_dropdown: 'Ein / Aus',
-    op_dropdown:     'Vergleich (<, >, =)',
-    number_field:    'Zahl',
-    colour_picker:   'Farbe',
-    button_dropdown: 'Taster-Auswahl',
-    motor_dropdown:  'Motor-Auswahl',
-    servo_dropdown:  'Servo-Auswahl',
-    fixed_label:     'Text',
+    pin_dropdown: 'Pin-Auswahl', on_off_dropdown: 'Ein / Aus', op_dropdown: 'Vergleich (<, >, =)',
+    number_field: 'Zahl', colour_picker: 'Farbe', button_dropdown: 'Taster-Auswahl',
+    motor_dropdown: 'Motor-Auswahl', servo_dropdown: 'Servo-Auswahl', fixed_label: 'Text',
+    grove_dropdown: 'Grove-Port', state_dropdown: 'Zustand', rgb_color_dropdown: 'RGB-Farbe',
+    lcd_version_dropdown: 'LCD-Version',
   };
 
-  function hide(id) { document.getElementById(id).style.display = 'none'; }
-  function show(id, display) { document.getElementById(id).style.display = display || 'block'; }
+  function escAttr(s) { return String(s).replace(/"/g, '&quot;'); }
 
-  // ── Baum rendern ──────────────────────────────────────────────────────────
+  // ── 1) Bauteile: BLOCKS_DB nach hardware.commonName gruppieren ───────────
+  // Mehrere Blöcke (z.B. Wert- + Ereignis-Block) teilen sich oft ein
+  // physisches Bauteil – siehe components/*.md `hardware.commonName`.
 
-  let activeItem = null;
-
-  function buildTree(filter) {
-    const tree = document.getElementById('tree');
-    tree.innerHTML = '';
-
-    const q = (filter || '').toLowerCase();
-
-    let totalVisible = 0;
-
-    for (const catDef of BLOCKS_CATALOG.categories) {
-      const catBlocks = BLOCKS_DB.filter(b => {
-        if (b.blockCategory !== catDef.id) return false;
-        if (!q) return true;
-        return (b.label + ' ' + (b.tooltip || '') + ' ' + (b.hardware?.commonName || ''))
-          .toLowerCase().includes(q);
-      });
-
-      if (!catBlocks.length) continue;
-      totalVisible += catBlocks.length;
-
-      // Kategorie-Header
-      const hdr = document.createElement('div');
-      hdr.className = 'cat-header';
-      hdr.innerHTML = `
-        <span class="cat-arrow">▾</span>
-        <span class="cat-dot" style="background:${catDef.colour}"></span>
-        <span>${catDef.label}</span>`;
-      hdr.addEventListener('click', () => {
-        const body = hdr.nextElementSibling;
-        const collapsed = body.classList.toggle('collapsed');
-        hdr.classList.toggle('collapsed', collapsed);
-      });
-      tree.appendChild(hdr);
-
-      const body = document.createElement('div');
-      body.className = 'cat-body';
-
-      if (catDef.subCategories && catDef.subCategories.length) {
-        for (const sc of catDef.subCategories) {
-          const scBlocks = catBlocks.filter(b => b.subCategory === sc);
-          if (!scBlocks.length) continue;
-
-          const lbl = document.createElement('div');
-          lbl.className = 'subcat-label';
-          lbl.textContent = sc;
-          body.appendChild(lbl);
-
-          for (const def of scBlocks) body.appendChild(makeItem(def, catDef.colour));
-        }
-        const noSc = catBlocks.filter(
-          b => !b.subCategory || !catDef.subCategories.includes(b.subCategory)
-        );
-        for (const def of noSc) body.appendChild(makeItem(def, catDef.colour));
-      } else {
-        for (const def of catBlocks) body.appendChild(makeItem(def, catDef.colour));
+  function buildComponentGroups() {
+    const groups = new Map();
+    for (const def of BLOCKS_DB) {
+      const hw = def.hardware;
+      if (!hw || !hw.commonName) continue;
+      const dir = def._file ? 'components/' + def._file.split('/').slice(0, -1).join('/') : 'components';
+      if (!groups.has(hw.commonName)) {
+        groups.set(hw.commonName, {
+          name: hw.commonName, image: '', baseDir: '', tooltip: '', doc: '',
+          kitStandard: false, catId: def.blockCategory, defs: [],
+        });
       }
-
-      tree.appendChild(body);
+      const g = groups.get(hw.commonName);
+      g.defs.push(def);
+      if (hw.image && !g.image) { g.image = hw.image; g.baseDir = dir; }
+      if (!g.tooltip && def.tooltip) g.tooltip = def.tooltip;
+      if (!g.doc && def.doc) { g.doc = def.doc; if (!g.baseDir) g.baseDir = dir; }
+      if (hw.kitStandard) g.kitStandard = true;
     }
-
-    document.getElementById('count-label').textContent =
-      q ? `${totalVisible} Treffer` : `${BLOCKS_DB.length} Bauteile`;
+    return groups;
   }
 
-  function makeItem(def, colour) {
-    const el = document.createElement('div');
-    el.className = 'block-item';
-    el.textContent = def.label;
-    el.dataset.id  = def.id;
-    el.addEventListener('click', () => {
-      if (activeItem) activeItem.classList.remove('active');
-      el.classList.add('active');
-      activeItem = el;
-      showDetail(def, colour);
-    });
-    return el;
+  const COMPONENT_GROUPS = buildComponentGroups();
+  const ENTRIES = docsBuildEntries(false);   // block:*, board:* – flach, immer Deutsch
+
+  // ── 2) Karten-HTML ─────────────────────────────────────────────────────────
+
+  function componentCardHtml(g, catDef) {
+    const entry = {
+      key: 'comp:' + g.name, kind: 'component', label: g.name,
+      colour: (catDef && catDef.colour) || '#4AB8A6',
+      tooltip: g.tooltip, doc: g.doc, baseDir: g.baseDir, image: g.image,
+    };
+    let html = cardHtml(entry, false);
+    if (g.kitStandard) {
+      html = html.replace('<div class="lib-chips">', '<div class="lib-chips"><span class="lib-chip">✓ im Kit enthalten</span>');
+    } else if (!html.includes('lib-chips')) {
+      html = html.replace('</div>\n\n', '</div>\n<div class="lib-chips"></div>\n\n');
+    }
+    const links = g.defs.map(def =>
+      `<a href="?id=block:${encodeURIComponent(def.id)}" data-goto="block:${escAttr(def.id)}">${escHtml(def.label || def.id)}</a>`
+    ).join('');
+    html += `<div class="v-comp-uses"><div class="v-tech-title">Verwendet in diesen Programmier-Blöcken</div>${links}</div>`;
+    return html;
   }
 
-  // ── Detail anzeigen ───────────────────────────────────────────────────────
+  function blockCardHtml(entry) {
+    let html = cardHtml(entry, false);
+    const def = entry.def;
+    if (!def) return html;
 
-  function showDetail(def, colour) {
-    hide('placeholder');
-    show('card');
-
-    // Kopfzeile
-    document.getElementById('card-header').style.borderLeftColor = def.colour || colour || '#7c6af7';
-    document.getElementById('card-label').textContent = def.label;
-    document.getElementById('card-id').textContent    = def.id;
-
-    // Beschreibung
-    if (def.tooltip) {
-      document.getElementById('card-tooltip').textContent = def.tooltip;
-      show('sec-desc');
-    } else {
-      hide('sec-desc');
-    }
-
-    // Chips
-    const chips = document.getElementById('card-chips');
-    chips.innerHTML = '';
-    chips.appendChild(chip(BLOCKTYPE_LABELS[def.blockType] || def.blockType, 'blue'));
-    if (def.output)        chips.appendChild(chip('Ausgabe: ' + def.output, ''));
-    if (def.subCategory)   chips.appendChild(chip(def.subCategory, ''));
-
-    // Hardware
-    const hw = def.hardware;
-    if (hw && (hw.commonName || hw.kyNumber)) {
-      const grid = document.getElementById('card-hw');
-      grid.innerHTML = '';
-      if (hw.commonName)  addHwRow(grid, 'Name',       hw.commonName);
-      if (hw.kyNumber)    addHwRow(grid, 'KY/Joy-IT',  hw.kyNumber);
-      if (hw.verbrauch3j) addHwRow(grid, 'Verbrauch',  hw.verbrauch3j + '× (3 Jahre)');
-      addHwRow(grid, 'Kit-Standard',
-        hw.kitStandard
-          ? '<span class="kit-yes">✓ enthalten</span>'
-          : '<span class="kit-no">– auf Anfrage</span>',
-        true);
-      show('sec-hw');
-    } else {
-      hide('sec-hw');
-    }
-
-    // Pin-Eingaben
     const realInputs = (def.inputs || []).filter(i => i.fieldType && i.fieldType !== 'fixed_label');
     if (realInputs.length) {
-      const list = document.getElementById('card-inputs');
-      list.innerHTML = '';
-      for (const inp of realInputs) {
-        const row = document.createElement('div');
-        row.className = 'input-row';
-        row.innerHTML = `
-          <span class="input-name">${inp.name || ''}</span>
-          <span class="input-type">${FIELDTYPE_LABELS[inp.fieldType] || inp.fieldType}</span>
-          ${inp.label ? '<span style="color:var(--muted);font-size:12px">— ' + inp.label + '</span>' : ''}`;
-        list.appendChild(row);
-      }
-      show('sec-inputs');
-    } else {
-      hide('sec-inputs');
+      html += `<div class="v-tech-section"><div class="v-tech-title">Pin-Eingaben</div>` +
+        realInputs.map(inp => `<div class="v-input-row">` +
+          `<span class="v-input-name">${escHtml(inp.name || '')}</span>` +
+          `<span style="color:var(--text-muted);font-size:12px">${escHtml(FIELDTYPE_LABELS[inp.fieldType] || inp.fieldType)}</span>` +
+          (inp.label ? ` <span style="color:var(--text-muted);font-size:12px">— ${escHtml(inp.label)}</span>` : '') +
+          `</div>`).join('') +
+        `</div>`;
     }
 
-    // Imports / Legacy
     if (def.legacyGenerator) {
-      hide('sec-imports');
-      show('sec-legacy');
-    } else if (def.generator?.imports?.length) {
-      document.getElementById('card-imports').textContent =
-        def.generator.imports.join('\n');
-      show('sec-imports');
-      hide('sec-legacy');
-    } else {
-      hide('sec-imports');
-      hide('sec-legacy');
+      html += `<div class="v-tech-section"><div class="v-legacy-note">⚙️ Komplexer Block – Code-Generator ist in <code>js/generator.js</code> implementiert.</div></div>`;
+    } else if (def.generator && def.generator.imports && def.generator.imports.length) {
+      html += `<div class="v-tech-section"><div class="v-tech-title">Code-Imports</div><pre class="v-imports">${escHtml(def.generator.imports.join('\n'))}</pre></div>`;
+    }
+    return html;
+  }
+
+  // ── 3) Item-Registry: key → { label, colour, searchText, render } ────────
+
+  const ITEMS = new Map();
+
+  for (const [name, g] of COMPONENT_GROUPS) {
+    const catDef = BLOCKS_CATALOG.categories.find(c => c.id === g.catId);
+    ITEMS.set('comp:' + name, {
+      key: 'comp:' + name, label: name, colour: (catDef && catDef.colour) || '#4AB8A6',
+      searchText: (name + ' ' + g.tooltip + ' ' + g.doc).toLowerCase(),
+      render: () => componentCardHtml(g, catDef),
+    });
+  }
+  for (const [key, entry] of ENTRIES) {
+    const hwName = entry.def && entry.def.hardware ? (entry.def.hardware.commonName || '') : '';
+    ITEMS.set(key, {
+      key, label: entry.label, colour: entry.colour,
+      searchText: (entry.label + ' ' + entry.tooltip + ' ' + entry.doc + ' ' + hwName).toLowerCase(),
+      render: () => (entry.kind === 'block' && entry.def) ? blockCardHtml(entry) : cardHtml(entry, false),
+    });
+  }
+
+  // ── 4) Baumstruktur der drei Bereiche ─────────────────────────────────────
+
+  function buildComponentSections() {
+    const sections = [];
+    for (const catDef of BLOCKS_CATALOG.categories) {
+      const names = [...COMPONENT_GROUPS.entries()]
+        .filter(([, g]) => g.catId === catDef.id).map(([n]) => n).sort();
+      if (!names.length) continue;
+      sections.push({ label: catDef.label, colour: catDef.colour,
+        groups: [{ sub: null, keys: names.map(n => 'comp:' + n) }] });
+    }
+    return sections;
+  }
+
+  function buildBlockSections() {
+    const sections = [];
+    // Handgeschriebene 8×8-Matrix-Blöcke (js/blocks/matrix.js) stecken in
+    // CORE_DOCS (section:'Lichter'), nicht in BLOCKS_DB – gehören inhaltlich
+    // aber hierher (steuern eine Hardware-Komponente an), nicht zu
+    // "Boards & Grundlagen".
+    const matrixKeys = CORE_DOCS.filter(c => c.section === 'Lichter').map(c => 'block:' + c.id);
+
+    for (const catDef of BLOCKS_CATALOG.categories) {
+      const catBlocks = BLOCKS_DB.filter(b => b.blockCategory === catDef.id);
+      const groups = [];
+      const addBlocks = (sub, defs) => { if (defs.length) groups.push({ sub, keys: defs.map(d => 'block:' + d.id) }); };
+      if (catBlocks.length) {
+        if (catDef.subCategories && catDef.subCategories.length) {
+          for (const sc of catDef.subCategories) addBlocks(sc, catBlocks.filter(b => b.subCategory === sc));
+          addBlocks(null, catBlocks.filter(b => !b.subCategory || !catDef.subCategories.includes(b.subCategory)));
+        } else {
+          addBlocks(null, catBlocks);
+        }
+      }
+      if (catDef.id === 'Lichter' && matrixKeys.length) groups.push({ sub: '8×8 Matrix', keys: matrixKeys });
+      if (!groups.length) continue;
+      sections.push({ label: catDef.label, colour: catDef.colour, groups });
+    }
+    return sections;
+  }
+
+  function buildCoreSections() {
+    const sections = [];
+    const boardIds = [BOARD_ID, ...Object.keys(BOARD_PROFILES).filter(id => id !== BOARD_ID)];
+    sections.push({ label: 'Boards', colour: '#64748B',
+      groups: [{ sub: null, keys: boardIds.map(id => 'board:' + id) }] });
+    for (const sec of CORE_SECTIONS) {
+      const keys = CORE_DOCS.filter(c => c.section === sec.name).map(c => 'block:' + c.id);
+      if (keys.length) sections.push({ label: sec.name, colour: sec.colour, groups: [{ sub: null, keys }] });
+    }
+    return sections;
+  }
+
+  const AREAS = [
+    { icon: '🔧', label: 'Bauteile', sections: buildComponentSections() },
+    { icon: '🧩', label: 'Programmier-Blöcke', sections: buildBlockSections() },
+    { icon: '📘', label: 'Boards & Grundlagen', sections: buildCoreSections() },
+  ];
+
+  // ── 5) Rendering + Suche + Collapse (default zu, bei Suche auf) ──────────
+
+  let activeEl = null;
+
+  function matchesItem(it, q) { return !q || it.searchText.includes(q); }
+
+  function buildTree(filter) {
+    const tree = document.getElementById('v-tree');
+    tree.innerHTML = '';
+    const q = (filter || '').trim().toLowerCase();
+    let total = 0;
+
+    for (const area of AREAS) {
+      const areaHdr = document.createElement('div');
+      areaHdr.className = 'v-area-hdr' + (q ? '' : ' collapsed');
+      areaHdr.innerHTML = `<span class="v-area-arrow">▾</span><span>${area.icon} ${escHtml(area.label)}</span>`;
+      const areaBody = document.createElement('div');
+      areaBody.className = 'v-area-body' + (q ? '' : ' collapsed');
+      areaHdr.addEventListener('click', () => {
+        const c = areaBody.classList.toggle('collapsed');
+        areaHdr.classList.toggle('collapsed', c);
+      });
+
+      let areaHasItems = false;
+      for (const section of area.sections) {
+        const items = [];
+        for (const group of section.groups) {
+          const visible = group.keys.map(k => ITEMS.get(k)).filter(it => it && matchesItem(it, q));
+          if (!visible.length) continue;
+          if (group.sub) {
+            const lbl = document.createElement('div');
+            lbl.className = 'lib-subcat';
+            lbl.textContent = group.sub;
+            items.push(lbl);
+          }
+          for (const it of visible) {
+            const el = document.createElement('div');
+            el.className = 'lib-item';
+            el.dataset.key = it.key;
+            el.textContent = it.label;
+            el.addEventListener('click', () => selectItem(it.key));
+            items.push(el);
+            total++;
+          }
+        }
+        if (!items.length) continue;
+        areaHasItems = true;
+
+        const catHdr = document.createElement('div');
+        catHdr.className = 'v-cat-hdr' + (q ? '' : ' collapsed');
+        catHdr.innerHTML = `<span class="v-cat-arrow">▾</span><span class="v-cat-dot" style="background:${section.colour}"></span><span>${escHtml(section.label)}</span>`;
+        const catBody = document.createElement('div');
+        catBody.className = 'v-cat-body' + (q ? '' : ' collapsed');
+        for (const el of items) catBody.appendChild(el);
+        catHdr.addEventListener('click', () => {
+          const c = catBody.classList.toggle('collapsed');
+          catHdr.classList.toggle('collapsed', c);
+        });
+        areaBody.appendChild(catHdr);
+        areaBody.appendChild(catBody);
+      }
+
+      if (!areaHasItems) continue;
+      tree.appendChild(areaHdr);
+      tree.appendChild(areaBody);
+    }
+
+    document.getElementById('v-count').textContent = q ? `${total} Treffer` : `${total} Einträge`;
+  }
+
+  function expandAncestors(el) {
+    const catBody = el.closest('.v-cat-body');
+    if (!catBody) return;
+    catBody.classList.remove('collapsed');
+    const catHdr = catBody.previousElementSibling;
+    if (catHdr) catHdr.classList.remove('collapsed');
+    const areaBody = catBody.parentElement;
+    if (areaBody && areaBody.classList.contains('v-area-body')) {
+      areaBody.classList.remove('collapsed');
+      const areaHdr = areaBody.previousElementSibling;
+      if (areaHdr) areaHdr.classList.remove('collapsed');
     }
   }
 
-  function chip(text, cls) {
-    const el = document.createElement('span');
-    el.className = 'chip' + (cls ? ' ' + cls : '');
-    el.textContent = text;
-    return el;
+  function selectItem(key, scrollIntoView) {
+    const it = ITEMS.get(key);
+    if (!it) return;
+
+    // Karte zuerst rendern – das ist der wichtige Teil und darf nicht davon
+    // abhängen, dass Baum-Highlighting/Scrollen (unten) fehlerfrei läuft.
+    document.getElementById('v-placeholder').hidden = true;
+    const card = document.getElementById('v-card');
+    card.hidden = false;
+    card.innerHTML = it.render();
+    card.querySelectorAll('[data-goto]').forEach(a => {
+      a.addEventListener('click', e => { e.preventDefault(); selectItem(a.dataset.goto, true); });
+    });
+    document.getElementById('v-detail').scrollTop = 0;
+
+    if (activeEl) activeEl.classList.remove('active');
+    activeEl = document.querySelector(`.lib-item[data-key="${cssEscape(key)}"]`);
+    if (activeEl) {
+      expandAncestors(activeEl);
+      activeEl.classList.add('active');
+      if (scrollIntoView) {
+        try { activeEl.scrollIntoView({ block: 'center' }); } catch (_) { /* z.B. in Headless-Tests */ }
+      }
+    }
+
+    const url = new URL(location.href);
+    url.searchParams.set('id', key);
+    history.replaceState(null, '', url);
   }
 
-  function addHwRow(grid, key, val, isHtml) {
-    const k = document.createElement('div');
-    k.className = 'hw-key';
-    k.textContent = key;
-    const v = document.createElement('div');
-    v.className = 'hw-val';
-    if (isHtml) v.innerHTML = val; else v.textContent = val;
-    grid.append(k, v);
-  }
+  function cssEscape(s) { return String(s).replace(/["\\]/g, '\\$&'); }
 
-  // ── Suche ─────────────────────────────────────────────────────────────────
-
-  document.getElementById('search').addEventListener('input', function () {
+  document.getElementById('v-search').addEventListener('input', function () {
     buildTree(this.value);
-    // aktive Auswahl aufheben wenn gefiltert
-    activeItem = null;
-    hide('card');
-    show('placeholder');
   });
 
-  // ── Init ──────────────────────────────────────────────────────────────────
+  // ── 6) Init + Deep-Link (?id=block:sensor_ultrasonic / comp:... / board:...) ──
 
   buildTree('');
+  const initialId = new URLSearchParams(location.search).get('id');
+  if (initialId && ITEMS.has(initialId)) selectItem(initialId, true);
+
+})();
 </script>
 
 </body>

@@ -8,10 +8,10 @@
   <meta http-equiv="Expires" content="0">
   <title>makerSpaceOS – MakeYourSchool</title>
 
-  <!-- Blockly 9 -->
-  <script src="https://unpkg.com/blockly@9.3.3/blockly_compressed.js"></script>
-  <script src="https://unpkg.com/blockly@9.3.3/blocks_compressed.js"></script>
-  <script src="https://unpkg.com/blockly@9.3.3/python_compressed.js"></script>
+  <!-- Blockly 9 (lokal gehostet, siehe vendor/blockly/ – kein externer CDN-Request) -->
+  <script src="vendor/blockly/blockly_compressed.js"></script>
+  <script src="vendor/blockly/blocks_compressed.js"></script>
+  <script src="vendor/blockly/python_compressed.js"></script>
   <!-- Blockly-Locale je nach Sprache: Englisch ist in blockly_compressed.js
        eingebaut, Deutsch wird nur bei lang=de nachgeladen (siehe js/i18n.js) -->
   <script>
@@ -25,20 +25,20 @@
       return nav.startsWith('de') ? 'de' : 'en';
     })();
     if (window.MSOS_LANG === 'de') {
-      document.write('<script src="https://unpkg.com/blockly@9.3.3/msg/de.js"><\/script>');
+      document.write('<script src="vendor/blockly/msg/de.js"><\/script>');
     }
   </script>
 
-  <!-- CodeMirror -->
-  <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <!-- CodeMirror (lokal gehostet, siehe vendor/codemirror/ – kein externer CDN-Request) -->
+  <link  rel="stylesheet" href="vendor/codemirror/codemirror.min.css">
+  <link  rel="stylesheet" href="vendor/codemirror/theme/dracula.min.css">
+  <script src="vendor/codemirror/codemirror.min.js"></script>
+  <script src="vendor/codemirror/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202607280733">
+  <link rel="stylesheet" href="css/fonts.css?v=202609080922">
 
-  <link rel="stylesheet" href="css/style.css?v=202607280733">
+  <link rel="stylesheet" href="css/style.css?v=202609080922">
 </head>
 <body>
 
@@ -226,22 +226,23 @@
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/i18n.js?v=202607280733"></script>
-  <script src="js/boards.js?v=202607280733"></script>
-  <script src="js/blocks/control.js?v=202607280733"></script>
-  <script src="js/blocks/events.js?v=202607280733"></script>
-  <script src="js/blocks/text.js?v=202607280733"></script>
-  <script src="js/blocks/variables.js?v=202607280733"></script>
-  <script src="js/blocks_db.js?v=202607280733"></script>
-  <script src="js/block_builder.js?v=202607280733"></script>
-  <script src="js/toolbox.js?v=202607280733"></script>
-  <script src="js/blocks/matrix.js?v=202607280733"></script>
-  <script src="js/generator.js?v=202607280733"></script>
-  <script src="js/serial.js?v=202607280733"></script>
-  <script src="js/storage.js?v=202607280733"></script>
-  <script src="js/docs.js?v=202607280733"></script>
-  <script src="js/ai_chat.js?v=202607280733"></script>
-  <script src="js/app.js?v=202607280733"></script>
+  <script src="js/i18n.js?v=202609080922"></script>
+  <script src="js/boards.js?v=202609080922"></script>
+  <script src="js/blocks/control.js?v=202609080922"></script>
+  <script src="js/blocks/events.js?v=202609080922"></script>
+  <script src="js/blocks/text.js?v=202609080922"></script>
+  <script src="js/blocks/variables.js?v=202609080922"></script>
+  <script src="js/blocks_db.js?v=202609080922"></script>
+  <script src="js/block_builder.js?v=202609080922"></script>
+  <script src="js/toolbox.js?v=202609080922"></script>
+  <script src="js/blocks/matrix.js?v=202609080922"></script>
+  <script src="js/generator.js?v=202609080922"></script>
+  <script src="js/serial.js?v=202609080922"></script>
+  <script src="js/storage.js?v=202609080922"></script>
+  <script src="js/docs_data.js?v=202609080922"></script>
+  <script src="js/docs.js?v=202609080922"></script>
+  <script src="js/ai_chat.js?v=202609080922"></script>
+  <script src="js/app.js?v=202609080922"></script>
 
   <!-- Resize-Divider Logik -->
   <script>
