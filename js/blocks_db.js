@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-07-15T16:40:50.780Z
+// Generiert: 2026-09-08T09:22:55.269Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -237,8 +237,8 @@ const BLOCKS_DB = [
       "commonName": "Grove Ultrasonic Ranger",
       "verbrauch3j": 13,
       "kitStandard": true,
-      "width_mm": 50,
-      "height_mm": 25
+      "width_mm": 45,
+      "height_mm": 20.5
     },
     "legacyGenerator": true,
     "_file": "sensors/ultrasonic.md",
@@ -468,8 +468,8 @@ const BLOCKS_DB = [
       "commonName": "Grove Encoder / Drehgeber",
       "verbrauch3j": 0,
       "kitStandard": true,
-      "width_mm": 21.5,
-      "height_mm": 18.5
+      "width_mm": 19,
+      "height_mm": 26
     },
     "legacyGenerator": true,
     "_file": "sensors/encoder.md",
@@ -664,7 +664,7 @@ const BLOCKS_DB = [
     },
     "hardware": {
       "kyNumber": "KY-018",
-      "commonName": "LDR",
+      "commonName": "LDR / Fotowiderstand",
       "verbrauch3j": 9,
       "kitStandard": true
     },
@@ -776,8 +776,8 @@ const BLOCKS_DB = [
       "commonName": "Grove Ultrasonic Ranger",
       "verbrauch3j": 13,
       "kitStandard": true,
-      "width_mm": 50,
-      "height_mm": 25
+      "width_mm": 45,
+      "height_mm": 20.5
     },
     "legacyGenerator": true,
     "_file": "sensors/event_ultrasonic.md",
@@ -1665,8 +1665,8 @@ const BLOCKS_DB = [
       "commonName": "7-Segment Display TM1637 (4-stellig)",
       "verbrauch3j": 0,
       "kitStandard": false,
-      "width_mm": 42,
-      "height_mm": 23.5
+      "width_mm": 23,
+      "height_mm": 41.5
     },
     "legacyGenerator": true,
     "_file": "actuators/tm1637_number.md",
@@ -1697,8 +1697,8 @@ const BLOCKS_DB = [
       "commonName": "7-Segment Display TM1637 (4-stellig)",
       "verbrauch3j": 0,
       "kitStandard": false,
-      "width_mm": 42,
-      "height_mm": 23.5
+      "width_mm": 23,
+      "height_mm": 41.5
     },
     "legacyGenerator": true,
     "_file": "actuators/tm1637_off.md",

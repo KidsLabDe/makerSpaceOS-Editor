@@ -19,8 +19,8 @@ hardware:
   commonName: "Grove Encoder / Drehgeber"
   verbrauch3j: 0
   kitStandard: true
-  width_mm: 21.5
-  height_mm: 18.5
+  width_mm: 19
+  height_mm: 26
 legacyGenerator: true
 ---
 

@@ -37,7 +37,7 @@ generator:
   code: "if round(_ldr_${PIN}.value / 65535 * 100) ${OP} ${VALUE}:\n${DO}"
 hardware:
   kyNumber: "KY-018"
-  commonName: "LDR"
+  commonName: "LDR / Fotowiderstand"
   verbrauch3j: 9
   kitStandard: true
 legacyGenerator: false

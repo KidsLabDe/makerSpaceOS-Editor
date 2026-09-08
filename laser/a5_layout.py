@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Kleines Test-Layout (235 x 150 mm) fuer 7 Bauteile.
+"""Cutout-Layout (235 x 150 mm, Projektname "a5") fuer 7 Bauteile.
 
-Erzeugt `testset_layout.svg`. Gleiche Laser-Konventionen wie `a4_layout.py`:
+Erzeugt `a5_layout.svg`. Gleiche Laser-Konventionen wie `a4_layout.py`:
   - Layer "Schnitt"  -> ROT (#FF0000), Haarlinie -> SCHNEIDEN (Oeffnung =
     Bauteil-Footprint + Toleranz CUT_TOL).
   - Layer "Gravur"   -> SCHWARZ -> GRAVIEREN (Nennmass-Umriss + Logo +
     Beschriftungen, alles als Vektorpfade via vector_font.py, kein <text>).
 
 Bauteilmasse aus `components/*.md` (hardware.width_mm/height_mm) bzw. den
-Werten in `a4_layout.py`. 235 x 150 mm ist KEIN A5 (A5 = 148 x 210 mm) -
-eigenes, kleineres Testformat.
+Werten in `a4_layout.py`. Hinweis: 235 x 150 mm entspricht NICHT dem
+DIN-Format A5 (148 x 210 mm) - "a5" ist hier nur der Projektname/Rufname
+fuer dieses kleinere Cutout, kein Papierformat.
 """
 
 import os
@@ -18,21 +19,27 @@ import os
 import vector_font
 
 PAGE_W, PAGE_H = 235.0, 150.0
-CUT_TOL  = 0.4                  # mm Uebermass gesamt fuer Schnitt-Oeffnungen
+CUT_TOL  = -1.6                 # mm Uebermass gesamt fuer Schnitt-Oeffnungen
+                                 # (07.09.: Bauteile sassen zu locker -> 2mm
+                                 # kleiner als vorher (0.4 -> -1.6); Oeffnung
+                                 # damit 1.6mm enger als Bauteil-Nennmass,
+                                 # Klemmsitz statt Spiel)
 LABEL_DY = 3.5                  # mm Abstand Beschriftung ueber Bauteil-Oberkante
 FONT_MM  = 3.5                  # Schriftgroesse Bauteil-Labels (mm)
 
 # (Name, Breite, Hoehe, x, y) -- x,y = linke obere Ecke (mm)
-# Reihe 1 (klein, oben): Ultraschall, 7-Segment, DHT11, Drehgeber, Servo
-# Reihe 2 (gross, unten): Maker-Pi RP2040, LCD
+# Maker-Pi + LCD als Mittelblock nach oben gerueckt (mehr Steg zum unteren
+# Blattrand - 2 mm Rand ist beim Lasercutten abgerissen), Logo daher aus der
+# Kopfzeile raus und stattdessen unten in die linke Spalte verschoben.
+# Masse Ultraschall/Drehgeber/7-Segment nachgemessen (07.09., vgl. commit).
 COMPONENTS = [
-    ("Ultraschall",     50.0, 25.0,  10.0,  32.0),
-    ("7-Segment",       42.0, 23.5,  70.0,  32.0),
-    ("DHT11",           40.0, 20.0, 122.0,  32.0),
-    ("Drehgeber",       21.5, 18.5, 172.0,  32.0),
-    ("Servo",           12.0, 23.0, 203.0,  32.0),
-    ("Maker-Pi RP2040", 88.0, 64.0,  15.0,  76.0),
-    ("LCD",             80.0, 40.0, 135.0,  84.0),
+    ("Maker-Pi RP2040", 88.0, 64.0,  73.5,  15.0),   # oben Mitte
+    ("LCD",              80.0, 40.0,  77.5,  90.0),   # darunter Mitte
+    ("Drehgeber",        19.0, 26.0,  26.0,  46.5),   # mitte links (oben links bleibt frei)
+    ("Servo",            12.0, 23.0,  30.0,  83.5),   # mitte links, unten
+    ("7-Segment",        23.0, 41.5, 178.0,  15.0),   # oben rechts
+    ("DHT11",             40.0, 20.0, 178.0,  67.5),   # mitte rechts
+    ("Ultraschall",      45.0, 20.5, 178.0,  98.5),   # unten rechts
 ]
 
 # ----------------------------------------------------------------------------
@@ -50,7 +57,8 @@ LOGO_PROMPT = [(43, 40), (54, 50), (43, 60)]     # ">" (stroke-width 6.5, round)
 LOGO_UNDERSCORE = (59, 60, 69, 60)               # "_" (stroke-width 6.5, round)
 
 LOGO_W    = 16.0            # Logo-Breite auf dem Blatt (mm)
-LOGO_TOP  = 6.0              # Oberkante Logo (mm)
+LOGO_X    = 12.0             # linke Kante Logo (mm) -- unten links, unter Servo
+LOGO_Y    = 111.5            # obere Kante Logo (mm)
 TITLE     = "makerSpaceOS"
 TITLE_MM  = 5.5              # Schriftgroesse Schriftzug (mm)
 TITLE_GAP = 4.0               # Abstand Logo -> Schriftzug (mm)
@@ -64,11 +72,11 @@ def fmt(v):
 
 
 def _lockup_box():
-    """Bounding-Box (x, y, w, h) von Logo + Schriftzug, mittig auf dem Blatt."""
+    """Bounding-Box (x, y, w, h) von Logo + Schriftzug (fest: unten links)."""
     s = LOGO_W / LOGO_VB_W
     logo_h = LOGO_VB_H * s
     total_w = LOGO_W + TITLE_GAP + vector_font.text_width(TITLE, TITLE_MM)
-    return (PAGE_W / 2 - total_w / 2, LOGO_TOP, total_w, logo_h)
+    return (LOGO_X, LOGO_Y, total_w, logo_h)
 
 
 def build_logo():
@@ -199,7 +207,7 @@ def check_layout():
 
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
-    out = os.path.join(here, "testset_layout.svg")
+    out = os.path.join(here, "a5_layout.svg")
     with open(out, "w", encoding="utf-8") as f:
         f.write(build_svg())
     print("geschrieben: %s" % out)
