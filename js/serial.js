@@ -140,28 +140,49 @@ class CircuitPythonSerial {
   }
 
   // Code per Raw REPL auf das Board laden und ausführen.
-  // Prompt-bewusst: wartet aktiv auf die Raw-REPL-Antworten, statt blinde Delays
-  // zu nutzen. So funktioniert erneutes „Play" auch ohne vorheriges Stop –
-  // der noch laufende Code wird sicher unterbrochen, bevor der neue gesendet wird.
+  // Prompt-bewusst: wartet aktiv auf die Antworten des Boards, statt blinde
+  // Delays zu nutzen. Zuerst wird das Board zuverlässig auf den normalen
+  // Prompt (>>>) gebracht – egal in welchem Zustand es ist (normal, raw oder
+  // mit laufendem Programm) –, erst dann wird der neue Code gesendet. Auch die
+  // Kompilier-Bestätigung ('OK') wird geprüft. Die Sperre verhindert zwei
+  // parallele Starts (z. B. Doppelpressen auf „Play").
   async uploadAndRun(code) {
     if (!this.port) throw new Error('Nicht verbunden');
+    if (this._uploading) throw new Error('Der vorige Start läuft noch – bitte kurz warten.');
+    this._uploading = true;
 
     this._rxBuffer = '';
     this._capturing = true;
     try {
-      // 1. Laufenden Code unterbrechen (Ctrl+C) und auf den normalen Prompt warten.
-      await this._write('\x03');
-      await this._delay(80);
-      await this._write('\x03');
-      await this._waitFor('>>>', 1500);
+      // 1. Zuverlässig auf den normalen Prompt (>>>):
+      //    – Ctrl+C unterbricht ein laufendes Programm (oder zeigt den Prompt neu),
+      //    – ein einzelnes Enter erzwingt einen frischen „>>>", wenn das Board
+      //      am normalen REPL steht,
+      //    – Ctrl+B verlässt die Raw-REPL, falls sie noch aktiv ist (nach dem
+      //      vorherigen Play steht das Board nämlich in der Raw-REPL).
+      //    Weiter geht es erst, wenn „>>>" wirklich angekommen ist (max. 3
+      //    Durchgänge) – sonst läuft vielleicht noch das alte Programm und der
+      //    neue Code würde nie gestartet.
+      let ready = false;
+      for (let versuch = 1; versuch <= 3 && !ready; versuch++) {
+        this._rxBuffer = '';
+        await this._write('\x03');
+        await this._delay(80);
+        await this._write('\x03');
+        await this._write('\r');
+        if (await this._waitFor('>>>', 1500)) { ready = true; break; }
+        await this._write('\x02');
+        if (await this._waitFor('>>>', 1500)) { ready = true; break; }
+      }
+      if (!ready) {
+        throw new Error('Das Board ist noch beschäftigt – das laufende Programm konnte nicht gestoppt werden. Bitte „Stop“ drücken oder kurz warten und erneut versuchen.');
+      }
 
       // 2. Raw REPL aktivieren (Ctrl+A) und auf dessen Banner warten.
       this._rxBuffer = '';
       await this._write('\x01');
       if (!await this._waitFor('raw REPL', 1500)) {
-        // Zweiter Versuch: nochmal unterbrechen und Raw REPL anfordern.
-        await this._write('\x03');
-        await this._delay(120);
+        // Zweiter Versuch: Raw REPL erneut anfordern.
         this._rxBuffer = '';
         await this._write('\x01');
         if (!await this._waitFor('raw REPL', 1500)) {
@@ -174,10 +195,14 @@ class CircuitPythonSerial {
       this._rxBuffer = '';
       await this._write(PIN_RESET_PRELUDE + '\n' + code);
 
-      // 4. Ausführen (Ctrl+D) und auf Kompilier-Bestätigung ('OK') warten.
+      // 4. Ausführen (Ctrl+D) und auf die Kompilier-Bestätigung ('OK') warten.
+      //    Geprüft: Ohne Bestätigung ist der Code NICHT gestartet (z. B. Syntax-Fehler).
       await this._write('\x04');
-      await this._waitFor('OK', 1500);
+      if (!await this._waitFor('OK', 4000)) {
+        throw new Error('Der Code wurde nicht gestartet – das Board hat keine Bestätigung („OK“) geschickt. Bitte erneut versuchen.');
+      }
     } finally {
+      this._uploading = false;
       this._capturing = false;
       this._rxBuffer = '';
     }

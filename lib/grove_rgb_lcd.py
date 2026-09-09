@@ -1,18 +1,21 @@
-# grove_rgb_lcd.py – Grove-LCD RGB Backlight für CircuitPython
+# grove_rgb_lcd.py – Grove-LCD (Text + optionale RGB-Beleuchtung) für CircuitPython
 #
 # Eigenständige, an CircuitPython (busio) angepasste Bibliothek.
-# Unterstützt beide Hardware-Versionen des Grove-LCD RGB Backlight:
+# Das Text-Display (HD44780 via JHD1313/JHD1802) liegt auf I2C 0x3E –
+# auf ALLEN Varianten. Die Hintergrundbeleuchtung wird automatisch
+# erkannt (wird nur gesucht, ist nie zwingend erforderlich):
 #   * V4.0 – RGB-Treiber PCA9633  @ I2C 0x62
 #   * V5.0 – RGB-Treiber SGM31323 @ I2C 0x30
-# Das Text-Display (JHD1313) liegt in beiden Fällen auf 0x3E.
+#   * Grove-16x2-LCD (Mono-Versionen, z. B. Schwarz/Gelb) – gar kein
+#     I2C-Beleuchtungstriever → Text-Modus, set_rgb() hat keine Wirkung
 #
 # Verwendung:
 #   import board, busio
 #   from grove_rgb_lcd import GroveRgbLcd
 #   i2c = busio.I2C(board.GP17, board.GP16)   # (scl, sda)
-#   lcd = GroveRgbLcd(i2c, rgb_addr=0x62)      # 0x62 = V4, 0x30 = V5
-#   lcd.set_rgb(0, 128, 64)
+#   lcd = GroveRgbLcd(i2c)                    # Beleuchtung wird automatisch erkannt
 #   lcd.set_text("Hallo\nWelt")
+#   lcd.set_rgb(0, 128, 64)   # greift nur, wenn ein RGB-Treiber gefunden wurde
 #
 # Diese Datei nach CIRCUITPY/lib/ kopieren.
 
@@ -22,9 +25,9 @@ _TEXT_ADDR = 0x3E   # Text-Controller (JHD1313), versionsunabhängig
 
 
 class GroveRgbLcd:
-    def __init__(self, i2c, rgb_addr=0x62):
+    def __init__(self, i2c, rgb_addr=None):
         self._i2c = i2c
-        self._rgb_addr = rgb_addr
+        self._rgb_addr = None
 
         # --- Text-Display initialisieren (robuste HD44780-Sequenz) ---
         # Function set MUSS nach dem Einschalten mehrfach mit Wartezeiten kommen,
@@ -42,14 +45,19 @@ class GroveRgbLcd:
         self._cmd(0x06)        # Entry mode: Adresse hochzählen
         time.sleep(0.002)
 
-        # --- Hintergrundbeleuchtung initialisieren (versionsabhängig) ---
-        if rgb_addr == 0x30:           # V5.0 – SGM31323
-            self._reg(0x00, 0x07)      # Reset
-            self._reg(0x04, 0x15)      # LED-Ausgänge aktivieren
-        else:                          # V4.0 – PCA9633
-            self._reg(0x00, 0x00)      # MODE1
-            self._reg(0x01, 0x00)      # MODE2
-            self._reg(0x08, 0xAA)      # LEDOUT: alle Kanäle PWM-gesteuert
+        # --- Hintergrundbeleuchtung: automatisch erkennen (oder explizit) ---
+        # Das 16x2-LCD (Mono) hat keinen I2C-Beleuchtungstriever – das ist kein
+        # Fehler: wir fallen auf Text-Modus zurück, set_rgb() hat dann keine
+        # Wirkung. Die Beleuchtung dieser Displays ist fest angeschlossen.
+        if rgb_addr is not None:
+            self._init_backlight(rgb_addr)
+        else:
+            for _addr in (0x30, 0x62):      # erst V5, dann V4 versuchen
+                if self._init_backlight(_addr):
+                    break
+        if self._rgb_addr is None:
+            print("LCD: keine RGB-Beleuchtung gefunden – nur Text-Modus "
+                  "(set_rgb hat keine Wirkung)")
 
         self.set_rgb(255, 255, 255)
 
@@ -68,8 +76,30 @@ class GroveRgbLcd:
     def _reg(self, reg, value):
         self._write(self._rgb_addr, reg, value)
 
+    def _init_backlight(self, addr):
+        """Initialisiert den Beleuchtungstriever auf `addr`.
+
+        Liefert True bei Erfolg. Antwortet kein Gerät (z. B. 16x2-LCD ohne
+        RGB-Treiber), wird False geliefert – statt einer OSError nach oben.
+        """
+        try:
+            if addr == 0x30:           # V5.0 – SGM31323
+                self._write(addr, 0x00, 0x07)  # Reset
+                self._write(addr, 0x04, 0x15)  # LED-Ausgänge aktivieren
+            else:                          # V4.0 – PCA9633
+                self._write(addr, 0x00, 0x00)  # MODE1
+                self._write(addr, 0x01, 0x00)  # MODE2
+                self._write(addr, 0x08, 0xAA)  # LEDOUT: alle Kanäle PWM-gesteuert
+        except OSError:
+            self._rgb_addr = None
+            return False
+        self._rgb_addr = addr
+        return True
+
     # --- Öffentliche API ---
     def set_rgb(self, r, g, b):
+        if self._rgb_addr is None:     # keine RGB-Beleuchtung (z. B. 16x2-Mono-LCD)
+            return
         if self._rgb_addr == 0x30:     # V5.0
             self._reg(0x06, r)
             self._reg(0x07, g)

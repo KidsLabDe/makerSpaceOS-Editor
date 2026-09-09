@@ -248,10 +248,30 @@ function _groveSonarDef(sig) {
   _defs[`init_sonar_${sig}`]        = `_sonar_${sig} = GroveUltrasonic(board.${sig})`;
 }
 
-Blockly.Python['sensor_ultrasonic'] = function(block) {
-  const sig = block.getFieldValue('SIG');
+// Freier HC-SR04 am Grove-Port: TRIG = Signal-Pin, ECHO = 2. Pin (pin1) des
+// Ports. Nutzt lib/sr04.py (nach CIRCUITPY/lib/ kopieren).
+function _sr04SonarDef(sig) {
+  const port = (BOARD.grovePorts || []).find(p => p.signal === sig);
+  const echo = port ? port.pin1 : sig;
+  _defs['import_board']            = 'import board';
+  _defs['from_sr04']               = 'from sr04 import SR04';
+  _defs[`init_sr04_${sig}`]        = `_sr04_${sig} = SR04(board.${sig}, board.${echo})`;
+}
+
+// Sensor-Ausdruck je nach Block-Feld TYPE ('grove' | 'sr04', Default 'grove').
+function _sonarExpression(block) {
+  const sig  = block.getFieldValue('SIG');
+  const type = block.getFieldValue('TYPE') || 'grove';
+  if (type === 'sr04') {
+    _sr04SonarDef(sig);
+    return `_sr04_${sig}.distance`;
+  }
   _groveSonarDef(sig);
-  return [`_sonar_${sig}.distance`, Blockly.Python.ORDER_MEMBER];
+  return `_sonar_${sig}.distance`;
+}
+
+Blockly.Python['sensor_ultrasonic'] = function(block) {
+  return [_sonarExpression(block), Blockly.Python.ORDER_MEMBER];
 };
 
 Blockly.Python['sensor_ldr'] = function(block) {
@@ -295,12 +315,11 @@ Blockly.Python['event_temperature'] = function(block) {
 };
 
 Blockly.Python['event_ultrasonic'] = function(block) {
-  const sig  = block.getFieldValue('SIG');
+  const expr = _sonarExpression(block);
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _groveSonarDef(sig);
-  return `if _sonar_${sig}.distance ${op} ${val}:\n${body}`;
+  return `if ${expr} ${op} ${val}:\n${body}`;
 };
 
 Blockly.Python['event_ldr'] = function(block) {
@@ -810,9 +829,18 @@ Blockly.Python['sensor_icm20948_neigung'] = function(block) {
 };
 
 // ── Drehgeber-Generator (KY-040) ──────────────────────────────────────────────
+// rotaryio (PIO) verlangt benachbarte GPIO-Pins (GPn + GPn±1) – sonst
+// RuntimeError „Pins must be sequential GPIO pins" auf dem Board.
+function _encoderWarning(block, port) {
+  const num = (n) => { const m = String(n).match(/(\d+)$/); return m ? Number(m[1]) : NaN; };
+  const ok = !Number.isNaN(num(port.pin1)) && Math.abs(num(port.pin1) - num(port.signal)) === 1;
+  block.setWarningText(ok ? null
+    : L('⚠ Drehgeber braucht benachbarte Pins – bitte anderen Port wählen!', '⚠ Encoder needs adjacent pins – please choose another port!'));
+}
 
 Blockly.Python['sensor_encoder'] = function(block) {
   const port = BOARD.grovePortById(block.getFieldValue('PORT'));
+  _encoderWarning(block, port);
   const pinA = port.pin1;
   const pinB = port.signal;
   _defs['import_board']    = 'import board';
@@ -867,9 +895,11 @@ Blockly.Python['text_verbinden'] = function(block) {
   return [`str(${a}) + str(${b})`, Blockly.Python.ORDER_ADDITIVE];
 };
 
-// ── Grove-LCD RGB Backlight (I2C) ─────────────────────────────────────────────
-// Nutzt lib/grove_rgb_lcd.py. Hardcodiert auf V5 (SGM31323 @ 0x30, 3,3 V).
-function _groveLcdDef(portId, rgbAddr) {
+// ── Grove-LCD (I2C): Text + optionale RGB-Beleuchtung ─────────────────────────
+// Nutzt lib/grove_rgb_lcd.py. Die Beleuchtung erkennt die Library automatisch:
+// V5 (SGM31323 @ 0x30), V4 (PCA9633 @ 0x62) oder gar keine (Grove-16x2-LCD,
+// Mono-Version → Text-Modus, set_rgb hat dann keine Wirkung).
+function _groveLcdDef(portId) {
   const port = BOARD.grovePortById(portId);
   _defs['import_board'] = 'import board';
   _defs['import_busio'] = 'import busio';
@@ -877,7 +907,7 @@ function _groveLcdDef(portId, rgbAddr) {
   // I2C + LCD-Objekt in einem Eintrag (Reihenfolge garantiert)
   _defs['init_grove_lcd'] =
     `_i2c_lcd = busio.I2C(board.${port.signal}, board.${port.pin1})\n` +
-    `_lcd = GroveRgbLcd(_i2c_lcd, rgb_addr=${rgbAddr})`;
+    `_lcd = GroveRgbLcd(_i2c_lcd)`;
 }
 
 // Text und Farbe sind getrennte Blöcke (gemeinsames _lcd-Objekt via _defs),
@@ -888,7 +918,7 @@ Blockly.Python['actuator_lcd_text'] = function(block) {
   block.setWarningText(null);
   const line1 = Blockly.Python.valueToCode(block, 'LINE1', Blockly.Python.ORDER_NONE) || '""';
   const line2 = Blockly.Python.valueToCode(block, 'LINE2', Blockly.Python.ORDER_NONE) || '""';
-  _groveLcdDef(portId, '0x30');
+  _groveLcdDef(portId);
   return `_lcd.set_text((${line1})[:16] + "\\n" + (${line2})[:16])\n`;
 };
 
@@ -897,7 +927,7 @@ Blockly.Python['actuator_lcd_color'] = function(block) {
   if (!portId || portId === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return ''; }
   block.setWarningText(null);
   const colour = block.getFieldValue('COLOR') || '#FFFFFF';
-  _groveLcdDef(portId, '0x30');
+  _groveLcdDef(portId);
   const rgb = hexToRgbTuple(colour).slice(1, -1); // "(r, g, b)" → "r, g, b"
   return `_lcd.set_rgb(${rgb})\n`;
 };
@@ -997,6 +1027,7 @@ Blockly.Python['when_encoder'] = function(block) {
   if (!portId || portId === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
   block.setWarningText(null);
   const port   = BOARD.grovePortById(portId);
+  _encoderWarning(block, port);
   const pinA   = port.pin1;
   const pinB   = port.signal;
   const dir    = block.getFieldValue('DIR');

@@ -28,16 +28,18 @@ hardware:
 legacyGenerator: true
 ---
 
-# Grove-LCD RGB Backlight – Farbe (I2C)
+# Grove-LCD – Farbe (I2C)
 
 Stellt nur die Hintergrundbeleuchtung farbig ein. Lässt den angezeigten Text **unverändert** –
 den Text setzt der Block „📟 LCD Text".
-> Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Unterstützt Grove-LCD RGB Backlight V5 (3,3 V).
+> Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Greift nur bei Displays mit RGB-Beleuchtung
+> (Grove-LCD RGB Backlight V4/V5). Beim Grove-16x2-LCD (Mono) wird der Block harmlos ignoriert.
 
 <!-- lang:en -->
 
-# Grove LCD RGB Backlight – colour (I2C)
+# Grove LCD – colour (I2C)
 
 Only sets the coloured backlight. Leaves the displayed text **unchanged** –
 the text is set by the "📟 LCD text" block.
-> Needs `lib/grove_rgb_lcd.py` on `CIRCUITPY/lib/`. Supports Grove LCD RGB Backlight V5 (3.3 V).
+> Needs `lib/grove_rgb_lcd.py` on `CIRCUITPY/lib/`. Only works on displays with an RGB backlight
+> (Grove LCD RGB Backlight V4/V5). On the Grove 16x2 LCD (monochrome) the block is harmlessly ignored.

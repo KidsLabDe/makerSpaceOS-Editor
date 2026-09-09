@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-09-08T09:22:55.269Z
+// Generiert: 2026-09-09T06:50:14.731Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -220,8 +220,8 @@ const BLOCKS_DB = [
     "label": "Abstand (cm)",
     "label_en": "Distance (cm)",
     "colour": "#2563EB",
-    "tooltip": "Misst den Abstand in cm mit dem Grove-Ultraschall-Ranger (ein Signal-Pin)",
-    "tooltip_en": "Measures the distance in cm with the Grove ultrasonic ranger (one signal pin)",
+    "tooltip": "Misst den Abstand in cm – Typ wählen: Grove-Ranger (1 Pin) oder freier HC-SR04 (TRIG + ECHO)",
+    "tooltip_en": "Measures the distance in cm – choose type: Grove Ranger (1 pin) or bare HC-SR04 (TRIG + ECHO)",
     "blockType": "value",
     "output": "Number",
     "inputs": [
@@ -231,10 +231,16 @@ const BLOCKS_DB = [
         "name": "SIG",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
+      },
+      {
+        "label": "Typ:",
+        "label_en": "type:",
+        "name": "TYPE",
+        "fieldType": "sensor_type_dropdown"
       }
     ],
     "hardware": {
-      "commonName": "Grove Ultrasonic Ranger",
+      "commonName": "Ultraschall-Ranger (Grove / HC-SR04)",
       "verbrauch3j": 13,
       "kitStandard": true,
       "width_mm": 45,
@@ -242,8 +248,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/ultrasonic.md",
-    "doc": "# Grove Ultraschall-Abstandssensor\n\nMisst Abstände von ca. 2 cm bis 350 cm. Der Grove-Ranger nutzt **einen einzigen Signal-Pin**\n(Trigger und Echo teilen sich Pin 2 des Grove-Steckers). Generator: siehe `js/generator.js`.",
-    "doc_en": "# Grove ultrasonic distance sensor\n\nMeasures distances from about 2 cm to 350 cm. The Grove ranger uses **a single\nsignal pin** (trigger and echo share pin 2 of the Grove connector). Generator:\nsee `js/generator.js`."
+    "doc": "# Ultraschall-Abstandssensor\n\nMisst Abstände von ca. 2 cm bis 400 cm. Wähle im Block den passenden **Sensor-Typ**:\n\n- **Grove Ranger (1 Pin)**: Das Grove-Ultraschall-Modul misst mit nur einem\n  Signal-Kabel (Trigger und Echo teilen sich Pin 2 des Grove-Steckers).\n- **HC-SR04 (TRIG + ECHO)**: Freier SR04 am Grove-Port verkabelt: VCC und GND\n  an die Stromkabel, **TRIG** an das Signal-Kabel (Pin 2), **ECHO** an das 2.\n  Datenkabel (Pin 1). Der Generator nimmt automatisch die beiden Pins des\n  gewählten Ports.\n\nAchtung: Am Grove-Port hat der Sensor nur 3,3 V statt 5 V – er funktioniert,\naber die maximale Reichweite wird kleiner. Generatoren: siehe `js/generator.js`.",
+    "doc_en": "# Ultrasonic distance sensor\n\nMeasures distances from about 2 cm to 4 m. Choose the matching **sensor type**\nin the block:\n\n- **Grove Ranger (1 pin)**: The Grove ultrasonic module measures with a single\n  signal wire (trigger and echo share pin 2 of the Grove connector).\n- **HC-SR04 (TRIG + ECHO)**: Bare SR04 wired to a Grove port: VCC and GND to\n  the power wires, **TRIG** to the signal wire (pin 2), **ECHO** to the second\n  data wire (pin 1). The generator picks both pins of the chosen port\n  automatically.\n\nNote: On a Grove port the sensor only gets 3.3 V instead of 5 V – it works,\nbut the maximum range is reduced. Generators: see `js/generator.js`."
   },
   {
     "id": "sensor_icm20948_g",
@@ -461,7 +467,7 @@ const BLOCKS_DB = [
         "label_en": "Encoder position  port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
-        "groveRole": "2pin"
+        "groveRole": "2pin_sequential"
       }
     ],
     "hardware": {
@@ -473,8 +479,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/encoder.md",
-    "doc": "# Drehgeber / Rotary Encoder (Grove)\n\nZählt Drehbewegungen (unbegrenzt). Positiver Wert = Rechtsdrehung, negativer Wert = Linksdrehung.\nNutzt beide Pins des Grove-Ports (Pin1 = CLK, Pin2 = DT). Generator: siehe `js/generator.js`.",
-    "doc_en": "# Rotary encoder (Grove)\n\nCounts rotations (unlimited). Positive value = clockwise, negative value = counter-clockwise.\nUses both pins of the Grove port (pin 1 = CLK, pin 2 = DT). Generator: see `js/generator.js`."
+    "doc": "# Drehgeber / Rotary Encoder (Grove)\n\nZählt Drehbewegungen (unbegrenzt). Positiver Wert = Rechtsdrehung, negativer Wert = Linksdrehung.\nNutzt beide Pins des Grove-Ports (Pin1 = CLK, Pin2 = DT). Generator: siehe `js/generator.js`.\n\n**Wichtiger Hinweis:** CircuitPython liest den Drehgeber per PIO – die beiden Pins müssen\n**benachbarte GPIOs** sein (z. B. GP0/GP1). Deshalb bietet der Port-Auswahlbereich nur\ngeeignete Ports an (beim MAKER-PI: Grove 1, 2, 3, 4, 6 – **nicht** Grove 5 und 7).",
+    "doc_en": "# Rotary encoder (Grove)\n\nCounts rotations (unlimited). Positive value = clockwise, negative value = counter-clockwise.\nUses both pins of the Grove port (pin 1 = CLK, pin 2 = DT). Generator: see `js/generator.js`.\n\n**Important:** CircuitPython reads the encoder via PIO – the two pins must be\n**adjacent GPIOs** (e.g. GP0/GP1). The port dropdown therefore only lists suitable\nports (on the MAKER-PI: Grove 1, 2, 3, 4, 6 – **not** Grove 5 and 7)."
   },
   {
     "id": "sensor_taster",
@@ -739,8 +745,8 @@ const BLOCKS_DB = [
     "label": "Wenn Abstand",
     "label_en": "When distance",
     "colour": "#D97706",
-    "tooltip": "Führt Code aus, wenn der Abstand einen Wert überschreitet/unterschreitet",
-    "tooltip_en": "Runs code when the distance goes above/below a value",
+    "tooltip": "Führt Code aus, wenn der Abstand einen Wert überschreitet/unterschreitet (Grove-Ranger oder HC-SR04)",
+    "tooltip_en": "Runs code when the distance goes above/below a value (Grove Ranger or HC-SR04)",
     "blockType": "event",
     "inline": true,
     "inputs": [
@@ -750,6 +756,12 @@ const BLOCKS_DB = [
         "name": "SIG",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
+      },
+      {
+        "label": "Typ:",
+        "label_en": "type:",
+        "name": "TYPE",
+        "fieldType": "sensor_type_dropdown"
       },
       {
         "name": "OP",
@@ -781,8 +793,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/event_ultrasonic.md",
-    "doc": "# Ereignis: Wenn Abstand (Grove Ultrasonic Ranger)\n\nFührt Aktionen aus, wenn der gemessene Abstand einen Schwellwert über- oder unterschreitet.\nSingle-Pin-Messung – Generator: siehe `js/generator.js`.",
-    "doc_en": "# Event: when distance (Grove Ultrasonic Ranger)\n\nRuns actions when the measured distance goes above or below a threshold.\nSingle-pin measurement – generator: see `js/generator.js`."
+    "doc": "# Ereignis: Wenn Abstand\n\nFührt Aktionen aus, wenn der gemessene Abstand einen Schwellwert über- oder\nunterschreitet. Sensor-Typ wählbar: **Grove Ranger (1 Pin)** oder freier\n**HC-SR04** (TRIG an Pin 2, ECHO an Pin 1 des Grove-Steckers).\nGeneratoren: siehe `js/generator.js`.",
+    "doc_en": "# Event: when distance\n\nRuns actions when the measured distance goes above or below a threshold.\nSensor type selectable: **Grove Ranger (1 pin)** or bare **HC-SR04** (TRIG on\npin 2, ECHO on pin 1 of the Grove connector). Generators: see `js/generator.js`."
   },
   {
     "id": "actuator_led",
@@ -1579,8 +1591,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/lcd_color.md",
-    "doc": "# Grove-LCD RGB Backlight – Farbe (I2C)\n\nStellt nur die Hintergrundbeleuchtung farbig ein. Lässt den angezeigten Text **unverändert** –\nden Text setzt der Block „📟 LCD Text\".\n> Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Unterstützt Grove-LCD RGB Backlight V5 (3,3 V).",
-    "doc_en": "# Grove LCD RGB Backlight – colour (I2C)\n\nOnly sets the coloured backlight. Leaves the displayed text **unchanged** –\nthe text is set by the \"📟 LCD text\" block.\n> Needs `lib/grove_rgb_lcd.py` on `CIRCUITPY/lib/`. Supports Grove LCD RGB Backlight V5 (3.3 V)."
+    "doc": "# Grove-LCD – Farbe (I2C)\n\nStellt nur die Hintergrundbeleuchtung farbig ein. Lässt den angezeigten Text **unverändert** –\nden Text setzt der Block „📟 LCD Text\".\n> Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Greift nur bei Displays mit RGB-Beleuchtung\n> (Grove-LCD RGB Backlight V4/V5). Beim Grove-16x2-LCD (Mono) wird der Block harmlos ignoriert.",
+    "doc_en": "# Grove LCD – colour (I2C)\n\nOnly sets the coloured backlight. Leaves the displayed text **unchanged** –\nthe text is set by the \"📟 LCD text\" block.\n> Needs `lib/grove_rgb_lcd.py` on `CIRCUITPY/lib/`. Only works on displays with an RGB backlight\n> (Grove LCD RGB Backlight V4/V5). On the Grove 16x2 LCD (monochrome) the block is harmlessly ignored."
   },
   {
     "id": "actuator_lcd_text",
@@ -1629,8 +1641,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/lcd_text.md",
-    "doc": "# Grove-LCD RGB Backlight – Text (I2C)\n\nZeigt bis zu zwei Zeilen Text an (je 16 Zeichen). Ändert die Hintergrundfarbe **nicht** –\ndafür gibt es den Block „📟 LCD Farbe\".\n> Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Unterstützt Grove-LCD RGB Backlight V5 (3,3 V).",
-    "doc_en": "# Grove LCD RGB Backlight – text (I2C)\n\nShows up to two lines of text (16 characters each). Does **not** change the\nbackground colour – that's what the \"📟 LCD colour\" block is for.\n> Needs `lib/grove_rgb_lcd.py` on `CIRCUITPY/lib/`. Supports Grove LCD RGB Backlight V5 (3.3 V)."
+    "doc": "# Grove-LCD – Text (I2C)\n\nZeigt bis zu zwei Zeilen Text an (je 16 Zeichen). Ändert die Hintergrundfarbe **nicht** –\ndafür gibt es den Block „📟 LCD Farbe\".\n> Benötigt `lib/grove_rgb_lcd.py` auf `CIRCUITPY/lib/`. Unterstützt Grove-LCD RGB Backlight (V4/V5)\n> **und** das Grove-16x2-LCD (Mono-Versionen, z. B. Schwarz/Gelb) – die Beleuchtung wird automatisch erkannt.",
+    "doc_en": "# Grove LCD – text (I2C)\n\nShows up to two lines of text (16 characters each). Does **not** change the\nbackground colour – that's what the \"📟 LCD colour\" block is for.\n> Needs `lib/grove_rgb_lcd.py` on `CIRCUITPY/lib/`. Supports the Grove LCD RGB Backlight (V4/V5)\n> **and** the Grove 16x2 LCD (monochrome variants, e.g. black on yellow) – the backlight is detected automatically."
   },
   {
     "id": "tm1637_number",

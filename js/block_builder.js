@@ -51,6 +51,12 @@
         return Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]);
       case 'state_dropdown':
         return [[L('gedrückt', 'pressed'), 'pressed'], [L('losgelassen', 'released'), 'released']];
+      case 'sensor_type_dropdown':
+        // Erste Option = Default (alte Projekte ohne TYPE-Feld bleiben "grove")
+        return [
+          [L('Grove Ranger (1 Pin)', 'Grove Ranger (1 pin)'), 'grove'],
+          [L('HC-SR04 (TRIG + ECHO)', 'HC-SR04 (TRIG + ECHO)'), 'sr04'],
+        ];
       case 'tilt_dropdown':
         return [[L('vor/zurück', 'forward/back'), 'pitch'], [L('links/rechts', 'left/right'), 'roll']];
       case 'rgb_color_dropdown':

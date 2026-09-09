@@ -15,10 +15,10 @@
 
   const groveField  = (role) => new Blockly.FieldDropdown([_NONE_OPT, ...BOARD.groveOptions(role || 'digital')]);
 
-  // Alle Grove-Ports als 2pin (Encoder braucht beide Pins)
+  // Alle gültigen Grove-Ports als 2pin (Encoder braucht benachbarte Pins → gefiltert)
   const encPortField = () => new Blockly.FieldDropdown([
     _NONE_OPT,
-    ...BOARD.grovePorts.map(p => [p.label, String(p.id)]),
+    ...BOARD.groveOptions('2pin_sequential'),
   ]);
 
   // Kombiniertes Taster-Dropdown: Onboard-Taster (aus BOARD.buttons) + alle Grove-Ports

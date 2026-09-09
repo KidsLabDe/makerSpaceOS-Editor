@@ -23,6 +23,14 @@ function _groveOptions(profile, role) {
       return profile.grovePorts.filter(p => p.i2c).map(p => [p.label, String(p.id)]);
     case '2pin':
       return profile.grovePorts.map(p => [p.label, String(p.id)]);
+    case '2pin_sequential': {
+      // Für den Drehgeber: rotaryio (PIO) braucht benachbarte GPIO-Pins
+      // (GPn + GPn±1, gleiche Pin-Gruppe) → sonst RuntimeError auf dem Board.
+      const num = (n) => { const m = String(n).match(/(\d+)$/); return m ? Number(m[1]) : NaN; };
+      return profile.grovePorts
+        .filter(p => !Number.isNaN(num(p.pin1)) && Math.abs(num(p.pin1) - num(p.signal)) === 1)
+        .map(p => [p.label, String(p.id)]);
+    }
     case 'digital':
     default: {
       const usedSignals = new Set(profile.grovePorts.map(p => p.signal));
