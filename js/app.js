@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBlockly();
   initCodeEditor();
   initButtons();
+  initBoardSetup();
 });
 
 function initBlockly() {
@@ -139,6 +140,7 @@ function initButtons() {
   document.getElementById('btn-clear-serial').addEventListener('click', clearSerial);
   document.getElementById('btn-send').addEventListener('click', sendLine);
   document.getElementById('btn-save-board').addEventListener('click', saveToBoardClick);
+  document.getElementById('btn-board-libs').addEventListener('click', onBoardLibsClick);
   document.getElementById('btn-history').addEventListener('click', toggleHistory);
 
   document.getElementById('serial-input').addEventListener('keydown', e => {

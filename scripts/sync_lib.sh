@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# sync_lib.sh – kopiert die lib/-Dateien des Repos auf das Board (CIRCUITPY/lib/)
+# sync_lib.sh – CLI-FALLBACK: kopiert die lib/-Dateien des Repos auf das Board
+# (CIRCUITPY/lib/). Primärweg: der „Libs prüfen"/„Jetzt aktualisieren"-Button
+# im Editor (js/board_setup.js) – läuft komplett im Browser inkl. Soft-Reboot.
+# Dieses Skript ist für Umgebungen ohne File System Access API gedacht
+# (Firefox/Safari, Headless, CI …).
 #
 # Findet das CIRCUITPY-Volume automatisch:
 #   macOS:  /Volumes/CIRCUITPY

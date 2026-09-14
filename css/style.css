@@ -142,6 +142,17 @@ html, body {
 .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--line); }
 .btn-ghost:not(:disabled):hover { border-color: var(--line-strong); transform: translateY(-1px); }
 
+/* Libs-Button-Zustände: ok (teal) / stale (rot, wie Sticker-„Gefahr") */
+.btn-board-libs--ok { color: var(--accent); border-color: var(--accent); }
+.btn-board-libs--ok:not(:disabled):hover { transform: translateY(-1px); }
+.btn-board-libs--stale {
+  background: var(--danger);
+  color: #fff;
+  border-color: rgba(0,0,0,.15);
+  font-weight: 700;
+}
+.btn-board-libs--stale:not(:disabled):hover { transform: translateY(-1px); }
+
 /* Sticker-Primäraktion (Verbinden / Ausführen) */
 .btn-primary, .btn-warning {
   background: var(--accent);

@@ -67,6 +67,7 @@ Firefox und Safari werden **nicht** unterstützt.
 - **Visueller Editor** mit Blockly (Drag & Drop)
 - **Live-Codegenerierung** – CircuitPython-Code wird in Echtzeit angezeigt
 - **Direkt ausführen** – Code wird per Web Serial Raw REPL auf das Board geladen und gestartet
+- **Board-Libs-Button** – prüft, ob die Bibliotheken auf dem Board aktuell sind (🟢 „Libs aktuell" / 🔴 „Jetzt aktualisieren") und installiert sie bei Bedarf automatisch, inkl. Neustart
 - **Parallele Aktionen (Ereignis-Blöcke)** – mehrere Stapel laufen gleichzeitig (z. B. eine Dauer-Animation *und* eine Sensor-Reaktion), ähnlich wie bei Lego Spike. Umgesetzt über kooperatives Multitasking mit `asyncio`.
 - **Serieller Monitor** – `print()`-Ausgaben des Boards live im Browser sehen
 - **REPL-Eingabe** – manuelle Befehle direkt ins Board schicken
@@ -77,13 +78,13 @@ Firefox und Safari werden **nicht** unterstützt.
 ## Schnellstart
 
 1. Board per USB-C anschließen (CircuitPython muss installiert sein)
-2. Benötigte Bibliotheken nach `CIRCUITPY/lib/` kopieren (aus dem Adafruit CircuitPython Bundle):
-   - **`asyncio`** und **`adafruit_ticks`** – Pflicht, da der generierte Code immer mit kooperativem Multitasking läuft
-   - je nach genutzten Blöcken zusätzlich `adafruit_dht`, `neopixel`, `adafruit_hcsr04`, `adafruit_motor`, `adafruit_bmp280`
-3. `index.html` in Chrome oder Edge öffnen
+2. `index.html` in Chrome oder Edge öffnen
+3. **Board einrichten** – Header-Button „📦 Libs prüfen": Beim ersten Mal das Board-Laufwerk `CIRCUITPY` wählen. Der Editor kopiert automatisch alle benötigten Bibliotheken (`makerspaceos.py`, `asyncio`, `adafruit_ticks`, je nach Blöcken `adafruit_dht`, `neopixel`, …) aus dem Repo nach `CIRCUITPY/lib/` und startet das Board per serieller Verbindung neu. Der Button wird grün („Libs aktuell") – fertig. Liegt das Board nicht aktuell, wird der Button rot („Jetzt aktualisieren").
 4. Blöcke zusammenstecken
 5. **▶ Ausführen** klicken → Browser fragt nach Zugriff auf den seriellen Port → Board auswählen
 6. Programm läuft auf dem Board; Ausgaben erscheinen im Seriellen Monitor
+
+> **Ohne serialen Port / ohne File System Access API?** `lib/` manuell oder per `scripts/sync_lib.sh` auf `CIRCUITPY/lib/` kopieren und danach das Board neu starten (USB trennen & neu stecken).
 
 ---
 
@@ -103,6 +104,8 @@ js/
   generator.js       – Blockly → CircuitPython Transpiler (asyncio-Multitask)
   app.js             – Workspace-Init & UI-Events
   serial.js          – Web Serial API (Raw REPL)
+  lib_manifest.js    – generiertes lib/-Manifest (libVersion für den Board-Libs-Button)
+  board_setup.js     – Board-Libs-Button: Versions-Check + lib/-Installation + Auto-Reboot
 ```
 
 ---
