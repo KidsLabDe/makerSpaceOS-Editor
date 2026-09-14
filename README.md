@@ -68,6 +68,7 @@ Firefox und Safari werden **nicht** unterstützt.
 - **Live-Codegenerierung** – CircuitPython-Code wird in Echtzeit angezeigt
 - **Direkt ausführen** – Code wird per Web Serial Raw REPL auf das Board geladen und gestartet
 - **Board-Libs-Button** – prüft, ob die Bibliotheken auf dem Board aktuell sind (🟢 „Libs aktuell" / 🔴 „Jetzt aktualisieren") und installiert sie bei Bedarf automatisch, inkl. Neustart
+- **UF2-Firmware-Button** – flasht die Firmware aus dem Browser ins BOOTSEL-Laufwerk des Boards (`RP2040`/`RPI-RP2`): Manifest-Check per SHA-256, chunkweises Schreiben mit Fortschritt, Schritt-für-Schritt-Fotos als Hilfe („So geht's") vor dem Flash, kein Brick-Risiko (der ROM-Bootloader ist über Mass Storage nicht überschreibbar)
 - **Parallele Aktionen (Ereignis-Blöcke)** – mehrere Stapel laufen gleichzeitig (z. B. eine Dauer-Animation *und* eine Sensor-Reaktion), ähnlich wie bei Lego Spike. Umgesetzt über kooperatives Multitasking mit `asyncio`.
 - **Serieller Monitor** – `print()`-Ausgaben des Boards live im Browser sehen
 - **REPL-Eingabe** – manuelle Befehle direkt ins Board schicken
@@ -77,14 +78,15 @@ Firefox und Safari werden **nicht** unterstützt.
 
 ## Schnellstart
 
-1. Board per USB-C anschließen (CircuitPython muss installiert sein)
-2. `index.html` in Chrome oder Edge öffnen
-3. **Board einrichten** – Header-Button „📦 Libs prüfen": Beim ersten Mal das Board-Laufwerk `CIRCUITPY` wählen. Der Editor kopiert automatisch alle benötigten Bibliotheken (`makerspaceos.py`, `asyncio`, `adafruit_ticks`, je nach Blöcken `adafruit_dht`, `neopixel`, …) aus dem Repo nach `CIRCUITPY/lib/` und startet das Board per serieller Verbindung neu. Der Button wird grün („Libs aktuell") – fertig. Liegt das Board nicht aktuell, wird der Button rot („Jetzt aktualisieren").
-4. Blöcke zusammenstecken
-5. **▶ Ausführen** klicken → Browser fragt nach Zugriff auf den seriellen Port → Board auswählen
-6. Programm läuft auf dem Board; Ausgaben erscheinen im Seriellen Monitor
+1. Editor per lokalem Web-Server ausliefern, z. B. `python3 -m http.server 8001` im Editor-Verzeichnis, und `http://localhost:8001` in Chrome oder Edge öffnen
+2. **Firmware installieren** (nur bei leerem Pico): **BOOTSEL gedrückt halten** und per USB-C anstecken (das Laufwerk `RP2040`/`RPI-RP2` erscheint) → „⚡ Firmware" im Header → Bootloader-Laufwerk wählen → **Flashen**. Der Bootloader verifiziert das UF2-Image (SHA-256-Prüfdaten aus dem generierten Manifest) und startet automatisch in die neue Firmware.
+3. Board per USB-C anschließen (Normalbetrieb)
+4. **Board einrichten** – Header-Button „📦 Libs prüfen": Beim ersten Mal das Board-Laufwerk `CIRCUITPY` wählen. Der Editor lädt danach alle benötigten Bibliotheken (`makerspaceos.py`, `asyncio`, `adafruit_ticks`, je nach Blöcken `adafruit_dht`, `neopixel`, …) per `fetch()` von dem Server herunter, der die Seite ausliefert, kopiert sie nach `CIRCUITPY/lib/` und startet das Board per serieller Verbindung neu – kein lokaler Repo-Checkout nötig, ein leeres Board wird so komplett bespielt. Der Button wird grün („Libs aktuell") – fertig. Liegt das Board nicht aktuell, wird der Button rot („Jetzt aktualisieren").
+5. Blöcke zusammenstecken
+6. **▶ Ausführen** klicken → Browser fragt nach Zugriff auf den seriellen Port → Board auswählen
+7. Programm läuft auf dem Board; Ausgaben erscheinen im Seriellen Monitor
 
-> **Ohne serialen Port / ohne File System Access API?** `lib/` manuell oder per `scripts/sync_lib.sh` auf `CIRCUITPY/lib/` kopieren und danach das Board neu starten (USB trennen & neu stecken).
+> **Ohne serialen Port / ohne File System Access API / Seite unter `file://` geöffnet?** `lib/` manuell oder per `scripts/sync_lib.sh` auf `CIRCUITPY/lib/` kopieren und danach das Board neu starten (USB trennen & neu stecken).
 
 ---
 
@@ -106,6 +108,9 @@ js/
   serial.js          – Web Serial API (Raw REPL)
   lib_manifest.js    – generiertes lib/-Manifest (libVersion für den Board-Libs-Button)
   board_setup.js     – Board-Libs-Button: Versions-Check + lib/-Installation + Auto-Reboot
+  firmware_manifest.js – generierte UF2-Firmware-Liste (Name + Größe + SHA-256)
+  firmware_flash.js  – UF2-Firmware-Dialog: BOOTSEL-Laufwerk wählen + verifiziertes Flashen
+firmware/            – UF2-Images (Pico) + ESP32 .bin (nicht per UF2 flashbar)
 ```
 
 ---

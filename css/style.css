@@ -52,10 +52,18 @@ html, body {
   overflow: hidden;
 }
 
+/* App-Shell (nur index.html): Header + Main als Flex-Spalte. Der Header
+   darf wachsen (z. B. wenn die Buttons umbrechen); #main füllt den Rest. */
+#app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 /* ── Header ──────────────────────────────────────────────────────────────── */
 
 #header {
-  height: var(--header-h);
+  min-height: var(--header-h);
   background: var(--surface);
   border-bottom: 3px solid var(--line-strong);
   display: flex;
@@ -80,7 +88,7 @@ html, body {
   color: var(--text-muted); text-transform: uppercase;
 }
 
-.connection-area { display: flex; align-items: center; gap: 10px; }
+.connection-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .header-divider { width: 1.5px; height: 26px; background: var(--line); margin: 0 2px; }
 
 .board-select {
@@ -210,6 +218,12 @@ html, body {
   display: flex;
   height: calc(100vh - var(--header-h));
   overflow: hidden;
+}
+/* Im App-Shell: flex statt calc(), weil die Header-Höhe dynamisch ist
+   (Buttons brechen um). flex-basis: 0 setzt die calc()-Höhe außer Kraft. */
+#app-shell #main {
+  flex: 1 1 0;
+  min-height: 0;
 }
 
 /* ── Blockly-Panel ───────────────────────────────────────────────────────── */
@@ -363,6 +377,208 @@ html, body {
 .toast.ok    { border-left-color: var(--accent); }
 .toast.warn  { border-left-color: var(--brand-orange); }
 .toast.error { border-left-color: var(--danger); }
+
+/* ── Firmware-Dialog (UF2 flashen) ─────────────────────────────────────── */
+
+.fw-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(17, 17, 17, .45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.fw-modal[hidden] { display: none; }
+
+.fw-modal-box {
+  background: var(--surface);
+  border: 3px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 40px rgba(17,17,17,.3);
+  width: min(480px, 100%);
+  padding: 16px 18px 18px;
+}
+
+.fw-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.fw-modal-head h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.fw-modal-hint {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.fw-volume-row {
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin-bottom: 12px;
+}
+.fw-volume-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.fw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+.fw-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  cursor: pointer;
+  background: var(--bg);
+  transition: border-color .15s var(--ease-out), background .15s var(--ease-out);
+}
+.fw-item:hover { border-color: var(--line-strong); }
+.fw-item:has(input:checked) { border-color: var(--accent); background: var(--bg-alt); }
+.fw-item input { accent-color: var(--accent); margin: 0; }
+.fw-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.fw-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fw-item-meta {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.fw-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.fw-status {
+  min-height: 18px;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+.fw-status.warn  { color: var(--brand-orange); }
+.fw-status.error { color: var(--danger); }
+
+.fw-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Firmware-Hilfe: Schritt-für-Schritt-Fotos (Overlay über dem Dialog) */
+.fw-help-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  background: rgba(17, 17, 17, .55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.fw-help-modal[hidden] { display: none; }
+
+.fw-help-box {
+  background: var(--surface);
+  border: 3px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 40px rgba(17,17,17,.3);
+  width: min(520px, 100%);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+}
+
+.fw-help-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.fw-help-head h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.fw-help-steps {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 4px;
+}
+
+.fw-help-step {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0;
+}
+.fw-help-num {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #0d2b27;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.fw-help-body {
+  min-width: 0;
+  flex: 1;
+}
+.fw-help-body img {
+  display: block;
+  width: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+.fw-help-step figcaption {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.fw-help-foot {
+  margin-top: 14px;
+}
+.fw-help-foot .btn { width: 100%; }
 
 /* ── Responsive Overhaul ────────────────────────────────────────────────── */
 

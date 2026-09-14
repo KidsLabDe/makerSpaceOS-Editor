@@ -317,8 +317,9 @@ const BLOCKS_DB = ${JSON.stringify(blocks, null, 2)};
 fs.writeFileSync(OUTPUT_FILE, output, 'utf8');
 console.log(`✅ ${blocks.length} Blöcke → ${path.relative(process.cwd(), OUTPUT_FILE)}`);
 
-// lib/-Manifest regenerieren (libVersion für den Board-Libs-Button),
-// danach Cache-Busting-Stamp über alle HTML-Dateien (deckt auch die
-// neuen Script-Tags ab).
+// lib/-Manifest regenerieren (libVersion für den Board-Libs-Button) und
+// UF2-Firmware-Liste für den Firmware-Dialog, danach Cache-Busting-Stamp
+// über alle HTML-Dateien (deckt auch die neuen Script-Tags ab).
 require('./build_lib_manifest.js');
+require('./build_firmware_manifest.js');
 require('./bump_cache.js');

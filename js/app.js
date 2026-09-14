@@ -141,6 +141,13 @@ function initButtons() {
   document.getElementById('btn-send').addEventListener('click', sendLine);
   document.getElementById('btn-save-board').addEventListener('click', saveToBoardClick);
   document.getElementById('btn-board-libs').addEventListener('click', onBoardLibsClick);
+  document.getElementById('btn-firmware').addEventListener('click', openFwHelp);   // erst die Anleitung, dann Picker + Flash
+  document.getElementById('fw-close').addEventListener('click', closeFwModal);
+  document.getElementById('fw-close-btn').addEventListener('click', closeFwModal);
+  document.getElementById('fw-flash-btn').addEventListener('click', flashSelectedFirmware);
+  document.getElementById('fw-help-btn').addEventListener('click', openFwHelp);
+  document.getElementById('fw-help-close').addEventListener('click', closeFwHelp);
+  document.getElementById('fw-help-flash-btn').addEventListener('click', fwHelpContinue);
   document.getElementById('btn-history').addEventListener('click', toggleHistory);
 
   document.getElementById('serial-input').addEventListener('keydown', e => {
@@ -154,7 +161,7 @@ function initButtons() {
     boardSel.addEventListener('change', () => setBoard(boardSel.value));
   }
   const logoSub = document.getElementById('logo-sub');
-  if (logoSub) logoSub.textContent = 'MakeYourSchool · ' + BOARD.name;
+  if (logoSub) logoSub.textContent = BOARD.name;
 }
 
 async function toggleConnect() {

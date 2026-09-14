@@ -69,7 +69,7 @@ The exact SVGs are in the reference file — copy them. Mapping:
 **c) Header logo lockup.** Replace the `.logo` markup with: the wide KidsLab PNG
 (`assets/kids-lab-logo-breit.png`, height 30px) → a 1.5px `#E5DFD0` vertical divider →
 a column with `CircuitBlox` (Pixelify Sans, 21px, `#111`) above
-`MAKEYOURSCHOOL · MAKER-PI RP2040` (Inter, 10.5px, uppercase, `#64748b`).
+`MAKER-PI RP2040` (Inter, 10.5px, uppercase, `#64748b`).
 
 ### 2. `css/style.css` — full reskin
 

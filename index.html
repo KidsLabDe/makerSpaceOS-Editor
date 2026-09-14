@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>makerSpaceOS – MakeYourSchool</title>
+  <title>makerSpaceOS</title>
 
   <!-- Blockly 9 (lokal gehostet, siehe vendor/blockly/ – kein externer CDN-Request) -->
   <script src="vendor/blockly/blockly_compressed.js"></script>
@@ -36,11 +36,12 @@
   <script src="vendor/codemirror/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202609141103">
+  <link rel="stylesheet" href="css/fonts.css?v=202609141623">
 
-  <link rel="stylesheet" href="css/style.css?v=202609141103">
+  <link rel="stylesheet" href="css/style.css?v=202609141623">
 </head>
 <body>
+<div id="app-shell">
 
   <!-- ── Header ──────────────────────────────────────────────────────────── -->
   <header id="header">
@@ -49,7 +50,7 @@
       <span class="logo-divider"></span>
       <span class="logo-titles">
         <span class="logo-text">makerSpaceOS</span>
-        <span class="logo-sub" id="logo-sub">MakeYourSchool · Maker-Pi RP2040</span>
+        <span class="logo-sub" id="logo-sub">Cytron MAKER-PI-RP2040</span>
       </span>
     </div>
 
@@ -91,6 +92,10 @@
       <button id="btn-board-libs" class="btn btn-ghost" title="Bibliotheken (lib/) auf dem Board prüfen" data-i18n-title="Check the board's lib/ libraries">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         <span class="btn-label" data-i18n="Check libs">Libs prüfen</span>
+      </button>
+      <button id="btn-firmware" class="btn btn-ghost" title="UF2-Firmware auf das Board flashen (Board im BOOTSEL-Modus)" data-i18n-title="Flash UF2 firmware to the board (board in BOOTSEL mode)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span class="btn-label" data-i18n="Firmware">Firmware</span>
       </button>
       <button id="btn-history" class="btn btn-ghost" title="Gespeicherte Versionen anzeigen" data-i18n-title="Show saved versions">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
@@ -166,9 +171,81 @@
 
     </div><!-- /code-panel -->
   </div><!-- /main -->
+</div><!-- /app-shell -->
 
   <!-- Toast -->
   <div id="toast" class="toast"></div>
+
+  <!-- Firmware-Dialog (UF2 flashen) -->
+  <div id="fw-modal" class="fw-modal" hidden>
+    <div class="fw-modal-box">
+      <div class="fw-modal-head">
+        <h3 data-i18n="Flash UF2 firmware">UF2-Firmware flashen</h3>
+        <button id="fw-close" class="btn-icon" title="Schließen" data-i18n-title="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="fw-modal-hint" data-i18n="Selected bootloader volume:">Gewähltes Bootloader-Laufwerk:</p>
+      <div class="fw-volume-row">
+        <span id="fw-volume-name" class="fw-volume-name">–</span>
+      </div>
+      <div id="fw-list" class="fw-list"></div>
+      <div id="fw-status" class="fw-status"></div>
+      <div class="fw-modal-foot">
+        <button id="fw-help-btn" class="btn btn-ghost" title="Schritt-für-Schritt-Anleitung mit Fotos" data-i18n-title="Step-by-step guide with photos">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2.25 12.75.75.75-1.5 1.5.75.75m1.5-4.5h3l.75.75m7.5-3h1.5l.75-.75m-2.25 3h1.5l.75-.75M3 19.5h18v-2.25a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 17.25v2.25Zm6.75-3.75h.008v.008H9.75v-.008Z"/></svg>
+          <span class="btn-label" data-i18n="So geht's">So geht's</span>
+        </button>
+        <button id="fw-close-btn" class="btn btn-ghost" data-i18n="Cancel">Abbrechen</button>
+        <button id="fw-flash-btn" class="btn btn-primary" data-i18n="Flash">Flashen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firmware-Hilfe: Schritt-für-Schritt-Fotos (vor dem eigentlichen Flash) -->
+  <div id="fw-help-modal" class="fw-help-modal" hidden>
+    <div class="fw-help-box">
+      <div class="fw-help-head">
+        <h3 data-i18n="Flashen in 4 Schritten">Flashen in 4 Schritten</h3>
+        <button id="fw-help-close" class="btn-icon" title="Schließen" data-i18n-title="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="fw-help-steps">
+        <figure class="fw-help-step">
+          <span class="fw-help-num">1</span>
+          <div class="fw-help-body">
+            <img src="assets/fw-help/step-1.jpg" alt="BOOTSEL-Button auf dem Board" loading="lazy">
+            <figcaption data-i18n="BOOTSEL-Button gedrückt halten und das Board per USB anschließen">BOOTSEL-Button gedrückt halten und das Board per USB anschließen</figcaption>
+          </div>
+        </figure>
+        <figure class="fw-help-step">
+          <span class="fw-help-num">2</span>
+          <div class="fw-help-body">
+            <img src="assets/fw-help/step-2.png" alt="Bootloader-Laufwerk auswählen" loading="lazy">
+            <figcaption data-i18n="Das Bootloader-Laufwerk auswählen (RP2040 / RPI-RP2)">Das Bootloader-Laufwerk auswählen (RP2040 / RPI-RP2)</figcaption>
+          </div>
+        </figure>
+        <figure class="fw-help-step">
+          <span class="fw-help-num">3</span>
+          <div class="fw-help-body">
+            <img src="assets/fw-help/step-3.png" alt="Firmware auswählen" loading="lazy">
+            <figcaption data-i18n="Die Firmware auswählen und bestätigen">Die Firmware auswählen und bestätigen</figcaption>
+          </div>
+        </figure>
+        <figure class="fw-help-step">
+          <span class="fw-help-num">4</span>
+          <div class="fw-help-body">
+            <img src="assets/fw-help/step-4.png" alt="Flashen bestätigen" loading="lazy">
+            <figcaption data-i18n="Mit „Flashen" bestätigen – der Bootloader startet die neue Firmware automatisch">Mit „Flashen" bestätigen – der Bootloader startet die neue Firmware automatisch</figcaption>
+          </div>
+        </figure>
+      </div>
+      <div class="fw-help-foot">
+        <button id="fw-help-flash-btn" class="btn btn-primary" data-i18n="Let's go">Los geht's</button>
+      </div>
+    </div>
+  </div>
 
   <!-- KI-Block Drawer -->
   <div id="ai-drawer">
@@ -230,25 +307,27 @@
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/i18n.js?v=202609141103"></script>
-  <script src="js/boards.js?v=202609141103"></script>
-  <script src="js/blocks/control.js?v=202609141103"></script>
-  <script src="js/blocks/events.js?v=202609141103"></script>
-  <script src="js/blocks/text.js?v=202609141103"></script>
-  <script src="js/blocks/variables.js?v=202609141103"></script>
-  <script src="js/blocks_db.js?v=202609141103"></script>
-  <script src="js/block_builder.js?v=202609141103"></script>
-  <script src="js/toolbox.js?v=202609141103"></script>
-  <script src="js/blocks/matrix.js?v=202609141103"></script>
-  <script src="js/generator.js?v=202609141103"></script>
-  <script src="js/serial.js?v=202609141103"></script>
-  <script src="js/storage.js?v=202609141103"></script>
-  <script src="js/lib_manifest.js?v=202609141103"></script>
-  <script src="js/board_setup.js?v=202609141103"></script>
-  <script src="js/docs_data.js?v=202609141103"></script>
-  <script src="js/docs.js?v=202609141103"></script>
-  <script src="js/ai_chat.js?v=202609141103"></script>
-  <script src="js/app.js?v=202609141103"></script>
+  <script src="js/i18n.js?v=202609141623"></script>
+  <script src="js/boards.js?v=202609141623"></script>
+  <script src="js/blocks/control.js?v=202609141623"></script>
+  <script src="js/blocks/events.js?v=202609141623"></script>
+  <script src="js/blocks/text.js?v=202609141623"></script>
+  <script src="js/blocks/variables.js?v=202609141623"></script>
+  <script src="js/blocks_db.js?v=202609141623"></script>
+  <script src="js/block_builder.js?v=202609141623"></script>
+  <script src="js/toolbox.js?v=202609141623"></script>
+  <script src="js/blocks/matrix.js?v=202609141623"></script>
+  <script src="js/generator.js?v=202609141623"></script>
+  <script src="js/serial.js?v=202609141623"></script>
+  <script src="js/storage.js?v=202609141623"></script>
+  <script src="js/lib_manifest.js?v=202609141623"></script>
+  <script src="js/board_setup.js?v=202609141623"></script>
+  <script src="js/firmware_manifest.js?v=202609141623"></script>
+  <script src="js/firmware_flash.js?v=202609141623"></script>
+  <script src="js/docs_data.js?v=202609141623"></script>
+  <script src="js/docs.js?v=202609141623"></script>
+  <script src="js/ai_chat.js?v=202609141623"></script>
+  <script src="js/app.js?v=202609141623"></script>
 
   <!-- Resize-Divider Logik -->
   <script>

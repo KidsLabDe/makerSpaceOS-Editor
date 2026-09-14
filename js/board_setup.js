@@ -10,15 +10,18 @@
 // Pro-Datei-Hashing). Ohne vorherige Berechtigung bleibt der Button neutral
 // (idle) bis zum ersten Klick.
 //
-// Der Update-Flow kopiert den kompletten lib/-Baum idempotent vom Repo
-// (zweites Directory-Handle, einmalig gewählt und in IndexedDB persistiert)
+// Der Update-Flow lädt den kompletten lib/-Baum per fetch() von dem Server,
+// der den Editor ausliefert (Dateiliste + Größen aus dem generierten
+// js/lib_manifest.js – kein lokaler Repo-Ordner nötig: ein Nutzer mit nur
+// dem Browser kann so ein leeres Board bespielen) und kopiert ihn idempotent
 // auf das Board, schreibt die Versionsdatei und startet das Board über Web
 // Serial weich neu (Soft-Reboot) – danach wird automatisch wieder verbunden.
 //
 // CircuitPython lässt sein Laufwerk nicht per Serial beschreiben, daher
-// File System Access API. Greift zur Laufzeit auf globale app.js-/i18n.js-
-// Funktionen zu (serial, showToast, setConnected, L) – diese existieren
-// beim Aufruf bereits.
+// File System Access API – die einmalige Wahl des CIRCUITPY-Volumens (per
+// Picker) bleibt der einzige User-Gesture-Punkt. Greift zur Laufzeit auf
+// globale app.js-/i18n.js-Funktionen zu (serial, showToast, setConnected, L)
+// – diese existieren beim Aufruf bereits.
 
 const BS_DB_NAME      = 'makerspaceos-fs';
 const BS_DB_VERSION   = 1;
@@ -29,7 +32,7 @@ let _bsState      = 'idle';    // 'idle' | 'ok' | 'stale'
 let _bsToastShown = false;     // einmaliger Warn-Toast pro Sitzungsstart
 let _bsCopying    = false;     // Sperre gegen parallele Updates
 
-// ---------- IndexedDB: persistente Directory-Handles (CIRCUITPY + Repo lib/) ----------
+// ---------- IndexedDB: persistenter CIRCUITPY-Volume-Handle ----------
 
 function _bsOpenDb() {
   return new Promise((resolve, reject) => {
@@ -184,32 +187,44 @@ async function _ensureCircuitPyHandle(mode) {
   return handle;
 }
 
-// Repo-Handle für lib/: einmalig wählen, persistieren, Validierung über
-// makerspaceos.py. Bei veraltetem/ungültigem Handle neu wählen.
-async function _ensureRepoLibHandle() {
-  let handle = await _bsLoadHandle('repoLib').catch(() => null);
-  if (handle && await _repoLibUsable(handle)) return handle;
-  // (veraltetes Handle unten durch die Neuauswahl überschrieben)
-  showToast(L('📂 Bitte den lib/-Ordner des makerSpaceOS-Editors wählen',
-              '📂 Please select the lib/ folder of the makerSpaceOS-Editor'), 'ok');
-  handle = await window.showDirectoryPicker();
-  await _bsSaveHandle('repoLib', handle).catch(() => {});
-  if (await _repoLibUsable(handle)) return handle;
-  showToast(L('Das ist vermutlich nicht der lib/-Ordner (makerspaceos.py fehlt) – bitte neu wählen',
-              'This is probably not the lib/ folder (makerspaceos.py is missing) – please pick again'), 'warn');
-  return null;
+// ---------- Fetch-Quelle: lib/-Dateien vom ausliefernden Server ----------
+
+// Lädt eine lib/-Datei per fetch() relativ zur Seite (z. B. "lib/neopixel.py")
+// und liefert den Blob. Wirft bei fehlendem Manifest, HTTP-Fehler oder
+// file://-Kontext (mit Hinweis im Error-Text).
+async function _fetchLibFile(path) {
+  if (typeof window.LIB_MANIFEST === 'undefined' || !Array.isArray(window.LIB_MANIFEST.files)) {
+    throw new Error(L('lib_manifest.js fehlt – bitte Build ausführen (node scripts/build_blocks.js)',
+                      'lib_manifest.js is missing – please run the build (node scripts/build_blocks.js)'));
+  }
+  const resp = await fetch('lib/' + path, { cache: 'no-cache' });
+  let hint = '';
+  if (!resp.ok && location.protocol === 'file:') {
+    hint = L(' – Hinweis: Seite läuft unter file://, bitte per HTTP-Server ausliefern (z. B. python3 -m http.server) oder scripts/sync_lib.sh nutzen',
+             ' – Note: page runs under file://, serve it via an HTTP server (e.g. python3 -m http.server) or use scripts/sync_lib.sh');
+  }
+  if (!resp.ok) throw new Error(L('Laden fehlgeschlagen: lib/' + path + ' (HTTP ' + resp.status + ')' + hint,
+                                  'Fetch failed: lib/' + path + ' (HTTP ' + resp.status + ')' + hint));
+  const blob = await resp.blob();
+  const manifest = window.LIB_MANIFEST.files.find((f) => f.path === path);
+  if (manifest && blob.size !== manifest.size) {
+    console.warn(`_fetchLibFile: ${path}: ${blob.size} statt Manifest-Größe ${manifest.size} Bytes`);
+  }
+  return blob;
 }
 
-async function _repoLibUsable(handle) {
-  let perm = 'prompt';
-  try { perm = await handle.queryPermission({ mode: 'read' }); } catch (_) { return false; }
-  if (perm !== 'granted') {
-    try {
-      const asked = await handle.requestPermission({ mode: 'read' });
-      if (asked !== 'granted') return false;
-    } catch (_) { return false; }
+// Unterordner-Handle sicherstellen (idempotent, mit Cache gegen erneute
+// FAT-Zugriffe). subPath = relativ zum lib/-Root, z. B. "adafruit_bus_device".
+async function _ensureSubDir(libRoot, subPath, cache) {
+  const parts = subPath.split('/');
+  let dir = libRoot;
+  for (let i = 0; i < parts.length; i++) {
+    const key = parts.slice(0, i + 1).join('/');
+    let next = cache.get(key);
+    if (!next) { next = await dir.getDirectoryHandle(parts[i], { create: true }); cache.set(key, next); }
+    dir = next;
   }
-  try { await handle.getFileHandle('makerspaceos.py'); return true; } catch (_) { return false; }
+  return dir;
 }
 
 // ---------- Klick-Handler (State-Maschine) ----------
@@ -251,8 +266,6 @@ async function updateBoardLibs() {
   try {
     const cp = await _ensureCircuitPyHandle('readwrite');
     if (!cp) return;
-    const lib = await _ensureRepoLibHandle();
-    if (!lib) return;
 
     // Sinn-Check: CIRCUITPY-Volumen erkennen (code.py/boot.py/lib) – falls der
     // Nutzer versehentlich einen anderen Ordner gewählt hat.
@@ -267,11 +280,10 @@ async function updateBoardLibs() {
       await _bsSleep(2500);  // Toast anzeigen lassen, bevor's weitergeht
     }
 
-    showToast(L('Bibliotheken werden auf das Board kopiert …', 'Copying libraries to the board …'), 'ok');
     const libDirOnBoard = await cp.getDirectoryHandle('lib', { create: true });
     let copied = 0;
     try {
-      copied = await _copyLibTree(lib, libDirOnBoard, '');
+      copied = await _copyLibTreeFromServer(libDirOnBoard);
     } catch (e) {
       if (e && e.name === 'AbortError') return;
       console.warn('board_setup: Kopieren fehlgeschlagen:', e);
@@ -303,38 +315,49 @@ async function updateBoardLibs() {
   } catch (e) {
     if (e && e.name === 'AbortError') return;   // Picker abgebrochen
     console.warn('board_setup: Update fehlgeschlagen:', e);
-    showToast(L('Update fehlgeschlagen: ', 'Update failed: ') + e.message, 'error');
+    let msg = e.message;
+    if (location.protocol === 'file:' && e && e.name === 'TypeError') {
+      msg += L(' – Hinweis: Die Seite muss per HTTP-Server ausgeliefert werden (z. B. python3 -m http.server), Fallback: scripts/sync_lib.sh',
+               ' – Note: the page must be served via an HTTP server (e.g. python3 -m http.server), fallback: scripts/sync_lib.sh');
+    }
+    showToast(L('Update fehlgeschlagen: ', 'Update failed: ') + msg, 'error');
   } finally {
     _bsCopying = false;
   }
 }
 
-// Rekursiver, idempotenter Kopiervorgang. srcDir/destDir = Directory-Handles,
-// subPath = relativer Pfad (Schrittweise-Anlegen der Unterordner). __pycache__
-// wird übersprungen. Liefert die Anzahl kopierter Dateien; wirft bei
-// Schreibfehlern (nach 3 Versuchen) mit Dateinamen.
-async function _copyLibTree(srcDir, destDir, subPath) {
-  let dest = destDir;
-  if (subPath) {
-    for (const part of subPath.split('/')) {
-      dest = await dest.getDirectoryHandle(part, { create: true });
-    }
+// Idempotentes Kopieren des kompletten lib/-Baums: Die Dateiliste kommt aus
+// dem generierten Manifest (window.LIB_MANIFEST.files – __pycache__ ist dort
+// nicht enthalten), der Inhalt wird per fetch() von dem Server geladen, der
+// die Seite ausliefert (kein lokaler Repo-Ordner nötig). Fortschritt als
+// Toast pro Datei. Liefert die Anzahl kopierter Dateien; wirft bei
+// Fetch-/Schreibfehlern mit Dateinamen.
+async function _copyLibTreeFromServer(libRoot) {
+  if (typeof window.LIB_MANIFEST === 'undefined' || !Array.isArray(window.LIB_MANIFEST.files)
+      || window.LIB_MANIFEST.files.length === 0) {
+    throw new Error(L('lib_manifest.js fehlt oder ist leer – bitte Build ausführen (node scripts/build_blocks.js)',
+                      'lib_manifest.js is missing or empty – please run the build (node scripts/build_blocks.js)'));
   }
-  let count = 0;
-  for await (const entry of srcDir.values()) {
-    if (entry.kind === 'directory') {
-      if (entry.name === '__pycache__') continue;
-      count += await _copyLibTree(entry, destDir, subPath ? subPath + '/' + entry.name : entry.name);
-    } else {
-      const file = await entry.getFile();
-      const destHandle = await dest.getFileHandle(entry.name, { create: true });
-      const ok = await _writeFileVerified(destHandle, file);
-      if (!ok) throw new Error(L('Datei konnte nicht geschrieben werden: ' + entry.name,
-                                 'Could not write file: ' + entry.name));
-      count++;
+  const files = window.LIB_MANIFEST.files;
+  const total = files.length;
+  const dirCache = new Map();   // Subpfad → Directory-Handle (vermeidet FAT-Zugriffe)
+  let copied = 0;
+  for (let i = 0; i < total; i++) {
+    const entry = files[i];
+    showToast(L('Kopiere ' + (i + 1) + '/' + total + ': ' + entry.path,
+                'Copying ' + (i + 1) + '/' + total + ': ' + entry.path), 'ok');
+    const blob = await _fetchLibFile(entry.path);
+    const parts = entry.path.split('/');
+    const fileName = parts.pop();
+    const dest = parts.length ? await _ensureSubDir(libRoot, parts.join('/'), dirCache) : libRoot;
+    const fh = await dest.getFileHandle(fileName, { create: true });
+    if (!await _writeFileVerified(fh, blob)) {
+      throw new Error(L('Datei konnte nicht geschrieben werden: ' + entry.path,
+                        'Could not write file: ' + entry.path));
     }
+    copied++;
   }
-  return count;
+  return copied;
 }
 
 // Dateiinhalte schreiben mit Größen-Check (crswap-0-Byte-Falle), 3 Versuche.
