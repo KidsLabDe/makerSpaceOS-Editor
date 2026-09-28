@@ -56,6 +56,24 @@ Der ULN2003-Treiber hat vier Eingänge **IN1–IN4**, angesteuert über zwei Gro
 > Stromversorgung (**5 V + GND**) des ULN2003 wird extern vom **Servo-Header**
 > des Boards abgegriffen. Generator: siehe `js/generator.js`.
 
+## Foto-Anleitung
+
+So sieht das komplette Set aus Treiberboard und 28BYJ-48-Schrittmotor aus:
+
+![Treiberboard und 28BYJ-48-Schrittmotor mit Verbindungskabel](../images/stepper_uebersicht.jpg)
+
+Die beiden Grove-Kabel (Anschluss 1 und Anschluss 2) werden an zwei benachbarte Grove-Ports des Boards angeschlossen:
+
+![Zwei Grove-Kabel an benachbarten Grove-Ports des Boards](../images/stepper_verkabelung_1.jpg)
+
+Die Kabel führen gemeinsam zum Eingangsstecker des ULN2003-Treiberboards. Die Motorspannung (5–12 V) kommt separat über die Schraubklemme:
+
+![Grove-Kabel am Eingangsstecker des ULN2003-Treiberboards](../images/stepper_verkabelung_2.jpg)
+
+Auf der anderen Seite des Treiberboards führt die Leitung weiter zum Schrittmotor:
+
+![Ausgangsseite des Treiberboards zum Schrittmotor](../images/stepper_verkabelung_3.jpg)
+
 <!-- lang:en -->
 
 # Stepper motor (28BYJ-48 + ULN2003)
@@ -73,3 +91,21 @@ The ULN2003 driver has four inputs **IN1–IN4**, driven via two Grove ports:
 > **5 V supply:** the Grove ports only provide a 3.3 V signal. The power
 > supply (**5 V + GND**) of the ULN2003 is taken externally from the board's
 > **servo header**. Generator: see `js/generator.js`.
+
+## Photo guide
+
+This is the complete set of driver board and 28BYJ-48 stepper motor:
+
+![Driver board and 28BYJ-48 stepper motor with connecting cable](../images/stepper_uebersicht.jpg)
+
+Both Grove cables (connector 1 and connector 2) are plugged into two neighboring Grove ports on the board:
+
+![Two Grove cables on neighboring Grove ports of the board](../images/stepper_verkabelung_1.jpg)
+
+The cables lead together to the input connector of the ULN2003 driver board. The motor voltage (5–12 V) comes in separately via the screw terminal:
+
+![Grove cables at the input connector of the ULN2003 driver board](../images/stepper_verkabelung_2.jpg)
+
+On the other side of the driver board, the wiring continues to the stepper motor:
+
+![Output side of the driver board to the stepper motor](../images/stepper_verkabelung_3.jpg)
