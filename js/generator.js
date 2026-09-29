@@ -96,9 +96,17 @@ Blockly.Python.finish = function() {
     else inits.push(val);
   }
 
-  // Alle Blockly-Variablen aus dem Workspace sammeln
+  // Alle Blockly-Variablen aus dem Workspace sammeln – als Python-Namen aus
+  // nameDB_ (gleiche Umwandlung wie in den Blöcken: Leerzeichen → "_",
+  // Umlaute kodiert). Mit v.name kämen z.B. "meine liste = None" heraus.
   const ws = Blockly.getMainWorkspace();
-  const allVarNames = ws ? ws.getAllVariables().map(v => v.name) : [];
+  const allVarNames = ws ? ws.getAllVariables().map(v => {
+    try {
+      return Blockly.Python.nameDB_.getName(v.getId(), Blockly.Names.NameType.VARIABLE);
+    } catch (_) {
+      return v.name;
+    }
+  }) : [];
 
   // Fügt 'global var1, var2' an den Anfang eines Funktionskörpers ein,
   // für alle Variablen die im Body vorkommen.

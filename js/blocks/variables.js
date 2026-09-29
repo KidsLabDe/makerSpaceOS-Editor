@@ -52,6 +52,20 @@
     return out;
   };
 
+  // Variablennamen ohne Leerzeichen und Umlaute: Blockly nutzt den Namen-Dialog
+  // nur für "Variable erstellen" / "umbenennen". Leerzeichen werden dort direkt
+  // zu "_", Umlaute ausgeschrieben (größe → groesse) – sonst kodiert Blockly sie
+  // im Python-Code unleserlich (gr_C3_B6_C3_9Fe). So steht der Name im Editor
+  // genau so, wie er im Code auftaucht.
+  const UMLAUTE = { 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue', 'ß': 'ss' };
+
+  Blockly.dialog.setPrompt(function (message, defaultValue, callback) {
+    const name = window.prompt(message, defaultValue);
+    callback(name == null ? name : name.trim()
+      .replace(/\s+/g, '_')
+      .replace(/[äöüÄÖÜß]/g, (c) => UMLAUTE[c]));
+  });
+
   function _cloneAs(el, type) {
     const clone = el.cloneNode(true);   // übernimmt VAR-Feld + DELTA-Shadow (math_number = 1)
     clone.setAttribute('type', type);
