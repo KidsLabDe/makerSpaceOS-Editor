@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-09-28T10:11:07.382Z
+// Generiert: 2026-09-29T11:27:14.849Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -1788,5 +1788,53 @@ const BLOCKS_DB = [
     ],
     "legacyGenerator": true,
     "_file": "actuators/digital_write.md"
+  },
+  {
+    "id": "pwm_write",
+    "blockCategory": "Pins",
+    "subCategory": "",
+    "label": "PWM",
+    "label_en": "PWM",
+    "colour": "#64748B",
+    "tooltip": "Gibt auf einem Port eine stufenlose Stärke aus (0 % = aus, 100 % = voll an) – z. B. für MOSFET-Module, LED-Streifen oder Lüfter",
+    "tooltip_en": "Outputs a variable power level on a port (0 % = off, 100 % = fully on) – e.g. for MOSFET modules, LED strips or fans",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "PWM  Port:",
+        "label_en": "PWM  port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "PERCENT",
+        "label": "Stärke",
+        "label_en": "power",
+        "check": "Number",
+        "defaultValue": 50,
+        "suffix": "%"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import board",
+        "import pwmio"
+      ],
+      "defs": [
+        {
+          "key": "init_pwmout_${PIN}",
+          "val": "_pwmout_${PIN} = pwmio.PWMOut(board.${PIN}, frequency=1000, duty_cycle=0)"
+        }
+      ],
+      "code": "_pwmout_${PIN}.duty_cycle = max(0, min(65535, int((${PERCENT}) * 655.35)))\n"
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/pwm_write.md",
+    "doc": "# PWM-Ausgabe\n\nSchaltet den Port nicht nur **an oder aus**, sondern stufenlos dazwischen:\n0 % = aus, 50 % = halbe Kraft, 100 % = voll an. Dafür schaltet der Pin sehr\nschnell (1000-mal pro Sekunde) an und aus. Je länger er jedes Mal an bleibt,\ndesto heller leuchtet eine LED oder desto schneller dreht ein Lüfter.\n\n**Typischer Einsatz: MOSFET-Modul.** Der Pin selbst liefert nur wenig Strom.\nEin MOSFET-Modul schaltet damit große Lasten mit eigener Stromversorgung:\nLED-Streifen dimmen, Lüfter oder kleine Motoren langsamer und schneller laufen\nlassen. Das Signal-Kabel (gelb / SIG) des Grove-Ports kommt an den Signal-Eingang\ndes Moduls.\n\n**Gut zu wissen:**\n- Am besten **Grove 1–4** nutzen. Auf dem MAKER-PI teilen sich immer zwei Pins\n  einen Taktgeber: Grove 5 und 6 vertragen sich nicht mit Motor M2, Grove 7\n  nicht mit Servo S1/S2 – wer beides gleichzeitig nutzt, bekommt beim Start\n  einen Fehler.\n- Denselben Port im Programm nicht zusätzlich mit „🔌 Digital\" schalten.\n- Werte unter 0 % oder über 100 % werden automatisch begrenzt.",
+    "doc_en": "# PWM output\n\nSwitches the port not just **on or off**, but smoothly in between:\n0 % = off, 50 % = half power, 100 % = fully on. To do this the pin switches\non and off very quickly (1000 times per second). The longer it stays on each\ntime, the brighter an LED shines or the faster a fan spins.\n\n**Typical use: MOSFET module.** The pin itself only supplies a little current.\nA MOSFET module uses it to switch big loads with their own power supply:\ndim LED strips, make fans or small motors run slower or faster. The signal wire\n(yellow / SIG) of the Grove port goes to the signal input of the module.\n\n**Good to know:**\n- Best use **Grove 1–4**. On the MAKER-PI two pins always share one timer:\n  Grove 5 and 6 do not get along with motor M2, Grove 7 not with servo S1/S2 –\n  using both at the same time gives an error at start.\n- Do not also switch the same port with \"🔌 Digital\" in the program.\n- Values below 0 % or above 100 % are limited automatically."
   }
 ];

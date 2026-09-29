@@ -1,7 +1,7 @@
 // GENERIERT von scripts/build_lib_manifest.js – NICHT MANUELL BEARBEITEN!
-// Generiert am 2026-09-28T10:11:07.398Z aus lib/ (30 Dateien).
+// Generiert am 2026-09-29T11:27:14.863Z aus lib/ (30 Dateien).
 window.LIB_MANIFEST = {
-  generatedAt: "2026-09-28T10:11:07.398Z",
+  generatedAt: "2026-09-29T11:27:14.863Z",
   libVersion: "702d70c8f54a546ed39232e1dce38fff4182ade544edeb33fcdb8d0e68b81b36",
   files: [
     {
