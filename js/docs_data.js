@@ -16,6 +16,7 @@ const LOGIC_COLOUR   = '#4FBFE8';
 const MATH_COLOUR    = '#16A34A';
 const VAR_COLOUR     = '#CA8A04';
 const TEXT_COLOUR    = '#0891B2';
+const LIST_COLOUR    = '#9333EA';
 const MATRIX_COLOUR  = '#EC4899';
 
 const CORE_SECTIONS = [
@@ -24,6 +25,7 @@ const CORE_SECTIONS = [
   { name: 'Logik',      label_en: 'Logic',     colour: LOGIC_COLOUR },
   { name: 'Mathe',      label_en: 'Math',      colour: MATH_COLOUR },
   { name: 'Variablen',  label_en: 'Variables', colour: VAR_COLOUR },
+  { name: 'Listen',     label_en: 'Lists',     colour: LIST_COLOUR },
   { name: 'Text',       label_en: 'Text',      colour: TEXT_COLOUR },
 ];
 
@@ -345,6 +347,66 @@ on every button press.`,
 Leben um 1", wenn etwas schiefgeht.`,
     doc_en: `Counts the variable **down** by the given value – e.g. "decrease lives by 1"
 when something goes wrong.`,
+  },
+
+  // ── Listen ──
+  {
+    id: 'lists_create_empty', label: 'leere Liste', label_en: 'empty list', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Eine **Liste** ist ein Merkzettel mit vielen nummerierten Plätzen – Platz 1,
+Platz 2, Platz 3 … Dieser Block erzeugt eine Liste ganz ohne Einträge.
+Speichere sie mit "setze … auf" in einer Variable, z.B. im SETUP.`,
+    doc_en: `A **list** is a sticky note with many numbered places – place 1,
+place 2, place 3 … This block creates a list with no entries at all.
+Store it in a variable with "set … to", e.g. in SETUP.`,
+  },
+  {
+    id: 'lists_create_with', label: 'Liste mit Werten', label_en: 'list with values', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Erzeugt eine Liste, die schon Werte enthält – z.B. die Töne einer Melodie.
+Über das Zahnrad kannst du Plätze hinzufügen oder entfernen.`,
+    doc_en: `Creates a list that already contains values – e.g. the notes of a melody.
+Use the gear icon to add or remove places.`,
+  },
+  {
+    id: 'list_append', label: 'hänge an Liste an', label_en: 'append to list', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Hängt einen Wert **hinten** an die Liste an – z.B. jeden neuen Messwert.
+Gibt es die Liste noch nicht, wird sie dabei automatisch angelegt.`,
+    doc_en: `Adds a value to the **end** of the list – e.g. every new measurement.
+If the list does not exist yet, it is created automatically.`,
+  },
+  {
+    id: 'list_get', label: 'Element Nr. … aus Liste', label_en: 'item no. … of list', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Liefert den Wert an einer Stelle der Liste. **Nr. 1 ist der erste Platz.**
+Gibt es die Nummer nicht (Liste zu kurz), meldet der Serielle Monitor einen
+\`IndexError\`.`,
+    doc_en: `Returns the value at one place in the list. **No. 1 is the first place.**
+If the number does not exist (list too short), the serial monitor shows an
+\`IndexError\`.`,
+  },
+  {
+    id: 'list_set', label: 'setze Element Nr. …', label_en: 'set item no. …', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Überschreibt den Wert an einer Stelle der Liste. Die Liste wird dabei
+nicht länger – zum Verlängern nimm "hänge an".`,
+    doc_en: `Overwrites the value at one place in the list. The list does not get
+longer – to make it longer, use "append".`,
+  },
+  {
+    id: 'lists_length', label: 'Länge der Liste', label_en: 'length of list', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Zählt, wie viele Einträge in der Liste stehen.`,
+    doc_en: `Counts how many entries the list has.`,
+  },
+  {
+    id: 'lists_isEmpty', label: 'Liste ist leer', label_en: 'list is empty', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Ist **wahr**, wenn die Liste keinen einzigen Eintrag hat.`,
+    doc_en: `Is **true** if the list has no entries at all.`,
+  },
+  {
+    id: 'controls_forEach', label: 'für jeden Wert aus der Liste', label_en: 'for each item in list', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Geht die Liste von vorne nach hinten durch. Bei jedem Durchlauf steht der
+aktuelle Eintrag in der Variable (z.B. \`i\`) – so kannst du z.B. alle Werte
+mit dem Ausgabe-Block im Seriellen Monitor anzeigen.`,
+    doc_en: `Goes through the list from front to back. On each round the current
+entry is stored in the variable (e.g. \`i\`) – so you can e.g. show every value
+in the serial monitor with the print block.`,
   },
 
   // ── Text ──

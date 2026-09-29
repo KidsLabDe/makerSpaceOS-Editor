@@ -86,6 +86,34 @@ const TOOLBOX_STATIC_CONTENTS = [
   },
   {
     kind: 'category',
+    name: L('Listen', 'Lists'),
+    colour: '#9333EA',
+    contents: [
+      { kind: 'block', type: 'lists_create_empty' },
+      { kind: 'block', type: 'lists_create_with', extraState: { itemCount: 3 },
+        inputs: {
+          ADD0: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+          ADD1: { shadow: { type: 'math_number', fields: { NUM: 2 } } },
+          ADD2: { shadow: { type: 'math_number', fields: { NUM: 3 } } },
+        }
+      },
+      { kind: 'block', type: 'list_append',
+        inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } } } },
+      { kind: 'block', type: 'list_get',
+        inputs: { INDEX: { shadow: { type: 'math_number', fields: { NUM: 1 } } } } },
+      { kind: 'block', type: 'list_set',
+        inputs: {
+          INDEX: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+          VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+        }
+      },
+      { kind: 'block', type: 'lists_length' },
+      { kind: 'block', type: 'lists_isEmpty' },
+      { kind: 'block', type: 'controls_forEach' },
+    ]
+  },
+  {
+    kind: 'category',
     name: L('Text', 'Text'),
     colour: '#0891B2',
     contents: [

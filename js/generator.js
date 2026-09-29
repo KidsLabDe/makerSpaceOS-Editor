@@ -79,10 +79,13 @@ Blockly.Python.finish = function() {
   // Import-Einträge aus Standard-Blockly-Blöcken übernehmen (z.B. math_random_int →
   // 'import random', math_single → 'import math'). Diese landen in
   // Blockly.Python.definitions_ statt in _defs und würden sonst fehlen.
+  // Hilfsfunktionen (provideFunction_ → 'def …', z.B. von Standard-Listenblöcken)
+  // ebenso – sie landen als Initialisierung hinter den Imports.
+  const helperFns = [];
   for (const [k, v] of Object.entries(Blockly.Python.definitions_ || {})) {
-    if (typeof v === 'string' && (v.startsWith('import ') || v.startsWith('from '))) {
-      _defs[k] = v;
-    }
+    if (typeof v !== 'string') continue;
+    if (v.startsWith('import ') || v.startsWith('from ')) _defs[k] = v;
+    else if (v.startsWith('def ')) helperFns.push(v.trimEnd());
   }
 
   const imports = [];
@@ -112,6 +115,7 @@ Blockly.Python.finish = function() {
   if (hasAsync) result += 'from makerspaceos import immer, wenn, start\n';
   if (imports.length) result += imports.join('\n') + '\n';
   if (inits.length)   result += L('\n# --- Initialisierungen ---\n', '\n# --- Initialisation ---\n') + inits.join('\n') + '\n';
+  if (helperFns.length) result += L('\n# --- Hilfsfunktionen ---\n', '\n# --- Helper functions ---\n') + helperFns.join('\n\n') + '\n';
 
   // Variablen auf Modulebene vordeklarieren (None als Platzhalter),
   // damit sie in allen async-Funktionen per 'global' erreichbar sind.
@@ -181,6 +185,40 @@ function _varDelta(block, op) {
 }
 Blockly.Python['var_increase'] = (block) => _varDelta(block, '+');
 Blockly.Python['var_decrease'] = (block) => _varDelta(block, '-');
+
+// ── Listen (siehe js/blocks/lists.js) ─────────────────────────────────────────
+// Positionen zählen im Block ab 1 → Python-Index = Nr. - 1.
+
+function _listVarName(block) {
+  try {
+    return Blockly.Python.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.Names.NameType.VARIABLE);
+  } catch (_) {
+    return block.getFieldValue('VAR');
+  }
+}
+
+function _listIndex(block) {
+  const idx = Blockly.Python.valueToCode(block, 'INDEX', Blockly.Python.ORDER_NONE) || '1';
+  return /^\d+$/.test(idx) ? String(Math.max(0, parseInt(idx, 10) - 1)) : `int(${idx}) - 1`;
+}
+
+// Variablen sind auf Modulebene mit None vordeklariert → Anhängen legt die
+// Liste bei Bedarf selbst an, damit Kinder nicht erst "leere Liste" setzen müssen.
+Blockly.Python['list_append'] = function(block) {
+  const v   = _listVarName(block);
+  const val = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || 'None';
+  return `if not isinstance(${v}, list):\n    ${v} = []\n${v}.append(${val})\n`;
+};
+
+Blockly.Python['list_get'] = function(block) {
+  return [`${_listVarName(block)}[${_listIndex(block)}]`, Blockly.Python.ORDER_MEMBER];
+};
+
+Blockly.Python['list_set'] = function(block) {
+  const val = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || 'None';
+  return `${_listVarName(block)}[${_listIndex(block)}] = ${val}\n`;
+};
 
 // ── Pflicht-Startblöcke ───────────────────────────────────────────────────────
 
