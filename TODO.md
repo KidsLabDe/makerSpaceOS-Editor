@@ -1,5 +1,13 @@
 # makerSpaceOS – TODO & Ideen
 
+
+
+- Layout - nur bi 110% bricht er um... da stimmt was noch nicht
+- Magic Installer
+- Beispielcode fertig machen
+- Stop / Play butten noch mal testen
+- anleitung - wie teste ich die box?
+
 ## ✅ Phase 2 – Serial-Verbindung (erledigt)
 - [x] Web Serial API implementiert (serial.js)
 - [x] "▶ Ausführen" Button: Code per Raw REPL auf Board laden und starten
@@ -29,26 +37,26 @@
 
 
 ## Offen / Ideen
-- [ ] GitHub Pages: README mit Screenshot und Kurzanleitung ergänzen
+- [x] GitHub Pages: README mit Screenshot und Kurzanleitung ergänzen
 
-- [ ] fasse alle featiures und kompontenten mal zusammen
+- [x] fasse alle featiures und kompontenten mal zusammen
 
 - [x] Generische Digital AN / AUS und Analog LESEN / SETZEN blöcke - Brauchen wir da einen PULLUP / PULLDOWN init? oder ein INPUT oder OUTPUT init?
 
 - [x] helligkeit - ist verkehrtherum 99% ist sehr dunkel und 5% ist hell....
 
-- [ ] Motor Testen
+- [x] Motor Testen
 
-- [ ] Schrittmotor programmieren (2 groove ports)  Set bestehend aus einem 28BYJ48 Schrittmotor und einem Treiberboard ULN2003 Der 28BYJ48 ist ein kleiner DC 5V 4-Phasen Schrittmotor mit 5  Anschlussleitungen. Zum Ansteuern enthält dieses Set ein ULN2003  Treiberboard welches direkt an einen Arduino angeschlossen wird.
+- [x] Schrittmotor programmieren (2 groove ports)  Set bestehend aus einem 28BYJ48 Schrittmotor und einem Treiberboard ULN2003 Der 28BYJ48 ist ein kleiner DC 5V 4-Phasen Schrittmotor mit 5  Anschlussleitungen. Zum Ansteuern enthält dieses Set ein ULN2003  Treiberboard welches direkt an einen Arduino angeschlossen wird.
 
-- [ ] Schrittmotor testen 
+- [x] Schrittmotor testen 
 
-- [ ] aktualisiere die komponten in ../makerSpaceOS_Module
+- [x] aktualisiere die komponten in ../makerSpaceOS_Module
 
 - [ ] KI Block - wie ist die integration? wie ist der system prompt? der muss ja die blöcke auch kennen und die möglichen elemente und wie die angesprochen werden
 
-- [ ] "Auf RP2040" - umbennen in "Auf ... " - was ist ein guter name? da soll auch ne anleitung zuerst angezeigt werden... "Wähle CIRCUITPY" links in der leist...
+- [x] "Auf RP2040" - umbennen in "Auf ... " - was ist ein guter name? da soll auch ne anleitung zuerst angezeigt werden... "Wähle CIRCUITPY" links in der leist...
 
-- [ ] 
+- [x] 
 
   
