@@ -107,6 +107,8 @@ const TOOLBOX_STATIC_CONTENTS = [
           VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
         }
       },
+      { kind: 'block', type: 'list_remove',
+        inputs: { INDEX: { shadow: { type: 'math_number', fields: { NUM: 1 } } } } },
       { kind: 'block', type: 'lists_length' },
       { kind: 'block', type: 'lists_isEmpty' },
       { kind: 'block', type: 'controls_forEach' },

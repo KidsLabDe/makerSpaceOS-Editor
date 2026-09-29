@@ -228,6 +228,10 @@ Blockly.Python['list_set'] = function(block) {
   return `${_listVarName(block)}[${_listIndex(block)}] = ${val}\n`;
 };
 
+Blockly.Python['list_remove'] = function(block) {
+  return `del ${_listVarName(block)}[${_listIndex(block)}]\n`;
+};
+
 // ── Pflicht-Startblöcke ───────────────────────────────────────────────────────
 
 Blockly.Python['control_setup'] = function(block) {

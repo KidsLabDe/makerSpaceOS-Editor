@@ -390,6 +390,15 @@ nicht länger – zum Verlängern nimm "hänge an".`,
 longer – to make it longer, use "append".`,
   },
   {
+    id: 'list_remove', label: 'lösche Element Nr. …', label_en: 'remove item no. …', colour: LIST_COLOUR, section: 'Listen',
+    doc: `Entfernt den Eintrag an einer Stelle aus der Liste. Die Liste wird um
+einen Platz kürzer, alle Einträge dahinter rutschen nach vorne – aus Nr. 3
+wird Nr. 2. "lösche Element Nr. 1" entfernt also immer den ältesten Eintrag.`,
+    doc_en: `Removes the entry at one place in the list. The list gets one place
+shorter and all entries after it move up – no. 3 becomes no. 2.
+"remove item no. 1" therefore always removes the oldest entry.`,
+  },
+  {
     id: 'lists_length', label: 'Länge der Liste', label_en: 'length of list', colour: LIST_COLOUR, section: 'Listen',
     doc: `Zählt, wie viele Einträge in der Liste stehen.`,
     doc_en: `Counts how many entries the list has.`,

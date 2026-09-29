@@ -69,4 +69,24 @@
       });
     },
   };
+
+  // 🗑️ lösche Element Nr. [1] aus [liste]
+  Blockly.Blocks['list_remove'] = {
+    init: function () {
+      this.jsonInit({
+        message0: L('🗑️ lösche Element Nr. %1 aus %2', '🗑️ remove item no. %1 from %2'),
+        args0: [
+          { type: 'input_value',    name: 'INDEX', check: 'Number' },
+          { type: 'field_variable', name: 'VAR', variable: L('liste', 'list') },
+        ],
+        inputsInline: true,
+        previousStatement: null,
+        nextStatement: null,
+        colour: COLOUR,
+        tooltip: L('Entfernt den Wert an dieser Stelle. Die Einträge dahinter rutschen einen Platz nach vorne.',
+                   'Removes the value at this position. The entries after it move up one place.'),
+        helpUrl: '',
+      });
+    },
+  };
 })();
