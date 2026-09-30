@@ -139,6 +139,8 @@ const BOARD_PROFILES = {
   // Onboard: board.LED = IO15, board.BUTTON = IO0.
   lolin_s2_mini: {
     name: 'Wemos S2 Mini',
+    // WLAN vorhanden → Kategorie „Internet“ (requiresBoardFeature: wifi)
+    wifi:      true,
     // Onboard-NeoPixel gibt es nicht (nur eine einfache blaue LED an IO15) – die
     // Onboard-LED-Blöcke sind ausgeblendet; dieser Default wird daher nie benutzt.
     neopixel:  { pin: 'IO18', count: 1 },
@@ -193,6 +195,10 @@ const BOARD_PROFILES = {
   // 5-V-tolerant!
   esp32_d1_r32: {
     name: 'ESP32 D1 R32 (Uno)',
+    // Kein natives USB → kein CIRCUITPY-Laufwerk; Dateien per Serial (wifi_setup.js)
+    usbDrive:  false,
+    // WLAN vorhanden → Kategorie „Internet“ (requiresBoardFeature: wifi)
+    wifi:      true,
     // Kein Onboard-NeoPixel (nur einfache LED an GPIO2 = Uno A0) –
     // Onboard-LED-Blöcke sind ausgeblendet; dieser Default wird nie benutzt.
     neopixel:  { pin: 'D26', count: 1 },
@@ -256,6 +262,10 @@ const BOARD_PROFILES = {
   // (github.com/CytronTechnologies/Cytron-ROBO-ESP32).
   esp32_robo: {
     name: 'Cytron Robo ESP32',
+    // Kein natives USB → kein CIRCUITPY-Laufwerk; Dateien per Serial (wifi_setup.js)
+    usbDrive:  false,
+    // WLAN vorhanden → Kategorie „Internet“ (requiresBoardFeature: wifi)
+    wifi:      true,
     // 2 Onboard-NeoPixel an D15
     neopixel:  { pin: 'D15', count: 2 },
     buzzer:    'D23',

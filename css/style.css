@@ -1247,3 +1247,18 @@ html, body {
     border-top: 3px solid var(--line-strong);
   }
 }
+
+/* ── WLAN-Dialog (js/wifi_setup.js) ─────────────────────────────────────── */
+.wifi-field { display: flex; flex-direction: column; gap: 4px; margin: 10px 0 0; font-size: 13px; font-weight: 600; }
+.wifi-field input {
+  font: inherit; font-weight: 400;
+  padding: 7px 9px;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-alt);
+  color: var(--text);
+}
+.wifi-field input:focus { outline: none; border-color: var(--accent); }
+.wifi-show { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12.5px; color: var(--text-muted); }
+.wifi-show input { accent-color: var(--accent); margin: 0; }
+#btn-wifi[hidden] { display: none; }

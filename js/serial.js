@@ -154,41 +154,7 @@ class CircuitPythonSerial {
     this._rxBuffer = '';
     this._capturing = true;
     try {
-      // 1. Zuverlässig auf den normalen Prompt (>>>):
-      //    – Ctrl+C unterbricht ein laufendes Programm (oder zeigt den Prompt neu),
-      //    – ein einzelnes Enter erzwingt einen frischen „>>>", wenn das Board
-      //      am normalen REPL steht,
-      //    – Ctrl+B verlässt die Raw-REPL, falls sie noch aktiv ist (nach dem
-      //      vorherigen Play steht das Board nämlich in der Raw-REPL).
-      //    Weiter geht es erst, wenn „>>>" wirklich angekommen ist (max. 3
-      //    Durchgänge) – sonst läuft vielleicht noch das alte Programm und der
-      //    neue Code würde nie gestartet.
-      let ready = false;
-      for (let versuch = 1; versuch <= 3 && !ready; versuch++) {
-        this._rxBuffer = '';
-        await this._write('\x03');
-        await this._delay(80);
-        await this._write('\x03');
-        await this._write('\r');
-        if (await this._waitFor('>>>', 1500)) { ready = true; break; }
-        await this._write('\x02');
-        if (await this._waitFor('>>>', 1500)) { ready = true; break; }
-      }
-      if (!ready) {
-        throw new Error('Das Board ist noch beschäftigt – das laufende Programm konnte nicht gestoppt werden. Bitte „Stop“ drücken oder kurz warten und erneut versuchen.');
-      }
-
-      // 2. Raw REPL aktivieren (Ctrl+A) und auf dessen Banner warten.
-      this._rxBuffer = '';
-      await this._write('\x01');
-      if (!await this._waitFor('raw REPL', 1500)) {
-        // Zweiter Versuch: Raw REPL erneut anfordern.
-        this._rxBuffer = '';
-        await this._write('\x01');
-        if (!await this._waitFor('raw REPL', 1500)) {
-          throw new Error('Board reagiert nicht (Raw REPL). Bitte erneut versuchen.');
-        }
-      }
+      await this._enterRawRepl();
 
       // 3. Aufräum-Prolog (gibt Pins des vorherigen Laufs frei) + eigentlichen Code senden.
       //    Kein Soft-Reboot → code.py/main.py des Boards wird NICHT gestartet.
@@ -204,6 +170,76 @@ class CircuitPythonSerial {
     } finally {
       this._uploading = false;
       this._capturing = false;
+      this._rxBuffer = '';
+    }
+  }
+
+  // Board zuverlässig in die Raw-REPL bringen (Voraussetzung: _capturing aktiv).
+  // Wirft einen Fehler, wenn das Board nicht reagiert.
+  async _enterRawRepl() {
+    // 1. Zuverlässig auf den normalen Prompt (>>>):
+    //    – Ctrl+C unterbricht ein laufendes Programm (oder zeigt den Prompt neu),
+    //    – ein einzelnes Enter erzwingt einen frischen „>>>", wenn das Board
+    //      am normalen REPL steht,
+    //    – Ctrl+B verlässt die Raw-REPL, falls sie noch aktiv ist (nach dem
+    //      vorherigen Play steht das Board nämlich in der Raw-REPL).
+    //    Weiter geht es erst, wenn „>>>" wirklich angekommen ist (max. 3
+    //    Durchgänge) – sonst läuft vielleicht noch das alte Programm und der
+    //    neue Code würde nie gestartet.
+    let ready = false;
+    for (let versuch = 1; versuch <= 3 && !ready; versuch++) {
+      this._rxBuffer = '';
+      await this._write('\x03');
+      await this._delay(80);
+      await this._write('\x03');
+      await this._write('\r');
+      if (await this._waitFor('>>>', 1500)) { ready = true; break; }
+      await this._write('\x02');
+      if (await this._waitFor('>>>', 1500)) { ready = true; break; }
+    }
+    if (!ready) {
+      throw new Error('Das Board ist noch beschäftigt – das laufende Programm konnte nicht gestoppt werden. Bitte „Stop“ drücken oder kurz warten und erneut versuchen.');
+    }
+
+    // 2. Raw REPL aktivieren (Ctrl+A) und auf dessen Banner warten.
+    this._rxBuffer = '';
+    await this._write('\x01');
+    if (!await this._waitFor('raw REPL', 1500)) {
+      // Zweiter Versuch: Raw REPL erneut anfordern.
+      this._rxBuffer = '';
+      await this._write('\x01');
+      if (!await this._waitFor('raw REPL', 1500)) {
+        throw new Error('Board reagiert nicht (Raw REPL). Bitte erneut versuchen.');
+      }
+    }
+  }
+
+  // Python-Code still (ohne Monitor-Ausgabe) per Raw REPL ausführen und die
+  // Ausgabe zurückgeben. Wartet, bis `doneMarker` oder ein Traceback kommt.
+  // Genutzt z. B. vom WLAN-Dialog (settings.toml schreiben) – das Passwort
+  // erscheint so weder im Monitor noch in einer REPL-Historie.
+  async execSilent(code, doneMarker, timeoutMs = 5000) {
+    if (!this.port) throw new Error(L('Nicht verbunden', 'Not connected'));
+    if (this._uploading) throw new Error(L('Das Board ist gerade beschäftigt – bitte kurz warten.', 'The board is busy – please wait a moment.'));
+    this._uploading = true;
+    this._rxBuffer = '';
+    this._capturing = true;
+    this._suppressOnData = true;
+    try {
+      await this._enterRawRepl();
+      this._rxBuffer = '';
+      await this._write(code);
+      await this._write('\x04');
+      if (!await this._waitFor('OK', 3000)) throw new Error(L('Das Board hat den Befehl nicht angenommen.', 'The board did not accept the command.'));
+      await this._waitFor([doneMarker, 'Traceback', 'Error'], timeoutMs);
+      await this._delay(100);
+      return this._rxBuffer;
+    } finally {
+      await this._write('\x02');     // zurück zum normalen REPL
+      await this._delay(100);
+      this._uploading = false;
+      this._capturing = false;
+      this._suppressOnData = false;
       this._rxBuffer = '';
     }
   }

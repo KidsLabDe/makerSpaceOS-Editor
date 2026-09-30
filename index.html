@@ -36,9 +36,9 @@
   <script src="vendor/codemirror/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202609300925">
+  <link rel="stylesheet" href="css/fonts.css?v=202609300947">
 
-  <link rel="stylesheet" href="css/style.css?v=202609300925">
+  <link rel="stylesheet" href="css/style.css?v=202609300947">
 </head>
 <body>
 <div id="app-shell">
@@ -97,6 +97,10 @@
       <button id="btn-firmware" class="btn btn-ghost" title="UF2-Firmware auf das Board flashen (Board im BOOTSEL-Modus)" data-i18n-title="Flash UF2 firmware to the board (board in BOOTSEL mode)">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         <span class="btn-label" data-i18n="Firmware">Firmware</span>
+      </button>
+      <button id="btn-wifi" class="btn btn-ghost" hidden title="WLAN-Zugangsdaten auf dem Board speichern (settings.toml)" data-i18n-title="Save Wi-Fi credentials on the board (settings.toml)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z"/></svg>
+        <span class="btn-label" data-i18n="Wi-Fi">WLAN</span>
       </button>
       <button id="btn-history" class="btn btn-ghost" title="Gespeicherte Versionen anzeigen" data-i18n-title="Show saved versions">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
@@ -199,6 +203,32 @@
         </button>
         <button id="fw-close-btn" class="btn btn-ghost" data-i18n="Cancel">Abbrechen</button>
         <button id="fw-flash-btn" class="btn btn-primary" data-i18n="Flash">Flashen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WLAN-Dialog: schreibt settings.toml auf dem Board (js/wifi_setup.js) -->
+  <div id="wifi-modal" class="fw-modal" hidden>
+    <div class="fw-modal-box">
+      <div class="fw-modal-head">
+        <h3 data-i18n="Wi-Fi setup">WLAN einrichten</h3>
+        <button id="wifi-close" class="btn-icon" title="Schließen" data-i18n-title="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="fw-modal-hint" data-i18n="The credentials are only stored on the board (settings.toml) – not in the project. Only WPA2-Personal or a phone hotspot; school Wi-Fi with user login (802.1X) or a login page does not work.">Die Zugangsdaten werden nur auf dem Board gespeichert (settings.toml) – nicht im Projekt. Nur WPA2-Personal oder Handy-Hotspot; Schul-WLAN mit Benutzer-Anmeldung (802.1X) oder Anmeldeseite geht nicht.</p>
+      <label class="wifi-field"><span data-i18n="Wi-Fi name (SSID)">WLAN-Name (SSID)</span>
+        <input id="wifi-ssid" type="text" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="wifi-field"><span data-i18n="Password">Passwort</span>
+        <input id="wifi-password" type="password" autocomplete="new-password" spellcheck="false">
+      </label>
+      <label class="wifi-show"><input id="wifi-show" type="checkbox"> <span data-i18n="show password">Passwort anzeigen</span></label>
+      <div id="wifi-status" class="fw-status"></div>
+      <div class="fw-modal-foot">
+        <button id="wifi-test-btn" class="btn btn-ghost" data-i18n="Test connection">Verbindung testen</button>
+        <button id="wifi-close-btn" class="btn btn-ghost" data-i18n="Close">Schließen</button>
+        <button id="wifi-save-btn" class="btn btn-primary" data-i18n="Save">Speichern</button>
       </div>
     </div>
   </div>
@@ -308,28 +338,29 @@
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/i18n.js?v=202609300925"></script>
-  <script src="js/boards.js?v=202609300925"></script>
-  <script src="js/blocks/control.js?v=202609300925"></script>
-  <script src="js/blocks/events.js?v=202609300925"></script>
-  <script src="js/blocks/text.js?v=202609300925"></script>
-  <script src="js/blocks/variables.js?v=202609300925"></script>
-  <script src="js/blocks/lists.js?v=202609300925"></script>
-  <script src="js/blocks_db.js?v=202609300925"></script>
-  <script src="js/block_builder.js?v=202609300925"></script>
-  <script src="js/toolbox.js?v=202609300925"></script>
-  <script src="js/blocks/matrix.js?v=202609300925"></script>
-  <script src="js/generator.js?v=202609300925"></script>
-  <script src="js/serial.js?v=202609300925"></script>
-  <script src="js/storage.js?v=202609300925"></script>
-  <script src="js/lib_manifest.js?v=202609300925"></script>
-  <script src="js/board_setup.js?v=202609300925"></script>
-  <script src="js/firmware_manifest.js?v=202609300925"></script>
-  <script src="js/firmware_flash.js?v=202609300925"></script>
-  <script src="js/docs_data.js?v=202609300925"></script>
-  <script src="js/docs.js?v=202609300925"></script>
-  <script src="js/ai_chat.js?v=202609300925"></script>
-  <script src="js/app.js?v=202609300925"></script>
+  <script src="js/i18n.js?v=202609300947"></script>
+  <script src="js/boards.js?v=202609300947"></script>
+  <script src="js/blocks/control.js?v=202609300947"></script>
+  <script src="js/blocks/events.js?v=202609300947"></script>
+  <script src="js/blocks/text.js?v=202609300947"></script>
+  <script src="js/blocks/variables.js?v=202609300947"></script>
+  <script src="js/blocks/lists.js?v=202609300947"></script>
+  <script src="js/blocks_db.js?v=202609300947"></script>
+  <script src="js/block_builder.js?v=202609300947"></script>
+  <script src="js/toolbox.js?v=202609300947"></script>
+  <script src="js/blocks/matrix.js?v=202609300947"></script>
+  <script src="js/generator.js?v=202609300947"></script>
+  <script src="js/serial.js?v=202609300947"></script>
+  <script src="js/storage.js?v=202609300947"></script>
+  <script src="js/lib_manifest.js?v=202609300947"></script>
+  <script src="js/board_setup.js?v=202609300947"></script>
+  <script src="js/firmware_manifest.js?v=202609300947"></script>
+  <script src="js/wifi_setup.js?v=202609300947"></script>
+  <script src="js/firmware_flash.js?v=202609300947"></script>
+  <script src="js/docs_data.js?v=202609300947"></script>
+  <script src="js/docs.js?v=202609300947"></script>
+  <script src="js/ai_chat.js?v=202609300947"></script>
+  <script src="js/app.js?v=202609300947"></script>
 
   <!-- Resize-Divider Logik -->
   <script>
