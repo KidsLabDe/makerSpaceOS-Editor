@@ -38,6 +38,7 @@ js/
   serial.js          – Web Serial API (Raw REPL)
 components/**/*.md   – Markdown-Quelle der Sensor-/Aktor-Blöcke (Frontmatter = Block-Definition)
 scripts/build_blocks.js – baut components/*.md → js/blocks_db.js (node scripts/build_blocks.js)
+components/datasources/*.md – Internet-Datenquellen (je Datei ein Block, Schema: schemas/datasource.schema.json)
 RaspberryPico_allCodes_en/  – MicroPython-Referenzdateien (nicht geladen, nur Doku)
 ```
 
@@ -104,9 +105,18 @@ Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein koopera
 - Helfer in `generator.js`: `_indent(code, levels)`, `_whenTask(name, expr, body, poll)` (liefert einen Deskriptor `{kind:'event', name, expr, body, poll}`, **kein** fertiger Code mehr). `workspaceToCode` sammelt Deskriptoren in `_tasks`; `finish()` baut daraus die `async def`-Handler + Registrierungszeilen und vergibt eindeutige Namen (Kollision → Suffix `_2`).
 - Ein neuer Ereignis-Hut-Block braucht: Definition in `js/blocks/events.js`, Generator in `generator.js` (gibt `_whenTask(name, ...)` zurück), Eintrag im `_HAT_TYPES`-Array **und** in der Toolbox-Kategorie „🎬 Ereignisse".
 
+## Internet / WLAN (Ebene 2: Daten aus dem Internet)
+
+- **Kategorie „Internet“** (`components/catalog.json`) erscheint nur bei Profilen mit `wifi: true` (S2 Mini, D1 R32, Robo ESP32) – Blöcke tragen `requiresBoardFeature: wifi`, `block_builder.js` filtert danach.
+- **Laufzeit `lib/makerspaceos_netz.py`** (+ `adafruit_requests`, `adafruit_connection_manager`, `adafruit_ntp` als `.mpy`, gebaut mit mpy-cross aus CircuitPython 10.2.1): `wlan_verbunden`, `ip_adresse`, `wlan_signal` (ohne Verbindung -100), `internet_da` (HTTP-Test gegen detectportal.firefox.com, 30 s gecacht – bewusst nicht NTP, das ist in Schulnetzen oft gesperrt), `hole_quelle`/`hole_json` (Mindestintervall pro Quelle, Fehlversuche zählen fürs Intervall, letzter gültiger Wert bzw. `None`, `gc.collect()`, `MemoryError` abgefangen), `json_wert` (Pfad `a.b.0`, `-1` = letzter), `sicher_auswerten`, `uhrzeit`/`zeit_text` (NTP, Fallback HTTP-`Date`-Header, MEZ/MESZ selbst gerechnet, alle 6 h neu).
+- **Abrufe blockieren** (`adafruit_requests` ist synchron, Timeout 5 s): Währenddessen stehen auch alle parallelen Schleifen und `wenn`-Ereignisse. Parallele Schleifen helfen dagegen nicht (kooperatives asyncio). Für Ebene 1 (Webserver) muss `_abrufen()` nicht-blockierend werden.
+- **Datenquellen** = `components/datasources/*.md` (Frontmatter nach `schemas/datasource.schema.json`, englische Feldnamen, `*_en`, Doku-Body wie bei Blöcken). `build_blocks.js` macht aus jeder Datei über `scripts/datasources_lib.js` einen Wert-Block `quelle_<id>` (Parameter = Wert-Eingänge, Generator `hole_quelle(url, pfad, intervall, typ, **param)`). Prüfen: `node scripts/test_datasources.js` (offline: Schema, Platzhalter, Pfad in `exampleResponse`) bzw. `--online` (echte API, Größe messen). `verified: true` erst nach Online-Test **und** Board-Test. Nur Quellen ohne API-Key.
+- **WLAN-Zugangsdaten** nur in `settings.toml` auf dem Board (`CIRCUITPY_WIFI_SSID`/`_PASSWORD`), nie im Workspace/localStorage/Export. Header-Button „WLAN“ (`js/wifi_setup.js`): Profile mit `usbDrive: false` (klassischer ESP32, kein CIRCUITPY-Laufwerk, Dateisystem vom Board beschreibbar) schreiben per Raw REPL (`serial.execSilent`), andere über den CIRCUITPY-Handle aus `board_setup.js`. Bestehende Einträge bleiben erhalten. Hinweis: `CIRCUITPY_WIFI_SSID` startet auf ESP32 auch den Web Workflow (HTTP-Server Port 80) – relevant für Ebene 1.
+- Hardware-Checkliste: `docs/wlan-hardwaretest.md`.
+
 ## Block-Design-Prinzipien
 
-- **Emoji im Label** – jeder Block bekommt ein passendes Emoji (🌡️, 🚧, ⚡ …).
+- **Keine Emojis auf Blöcken** – `build_blocks.js` entfernt Emojis aus allen `label`/`label_en`-Feldern (KidsLab-Vorgabe). Neue Blöcke gleich ohne Emoji anlegen.
 - **Minimale Pflichtfelder** – so wenige Dropdowns/Eingaben wie möglich; sinnvolle Defaults.
 - **Kein Fachvokabular** – Kinder sollen Blöcke ohne Erklärung verstehen.
 - **Deutsche Labels und Tooltips** durchgängig.
