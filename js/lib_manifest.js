@@ -1,8 +1,8 @@
 // GENERIERT von scripts/build_lib_manifest.js – NICHT MANUELL BEARBEITEN!
-// Generiert am 2026-09-29T11:27:14.863Z aus lib/ (30 Dateien).
+// Generiert am 2026-09-30T09:38:53.659Z aus lib/ (34 Dateien).
 window.LIB_MANIFEST = {
-  generatedAt: "2026-09-29T11:27:14.863Z",
-  libVersion: "702d70c8f54a546ed39232e1dce38fff4182ade544edeb33fcdb8d0e68b81b36",
+  generatedAt: "2026-09-30T09:38:53.661Z",
+  libVersion: "475ec64d7ded9d127d193bff3407d0e27127ecdf64273de8f7cb133ca6327abd",
   files: [
     {
       "path": "adafruit_bus_device/__init__.py",
@@ -20,6 +20,11 @@ window.LIB_MANIFEST = {
       "sha256": "28746c2bf1ec8614e5ef69b63db5b56dbbc5619495e1f56f70dee2eaaa4ac309"
     },
     {
+      "path": "adafruit_connection_manager.mpy",
+      "size": 3588,
+      "sha256": "5d535b1ca73098d81d8a9d354c324eb3182cd6e40f0b61e54a99536478315eb8"
+    },
+    {
       "path": "adafruit_dht.mpy",
       "size": 2324,
       "sha256": "679d082f96c5ddd7f6532d7570dc59fe48b2df21751b79116ad5889d3eff131a"
@@ -28,6 +33,11 @@ window.LIB_MANIFEST = {
       "path": "adafruit_icm20x.mpy",
       "size": 8361,
       "sha256": "48b35e9caea575ad43cf1aa83133c8f22299e61ef6c9f7e03cf348dbcdf7bae6"
+    },
+    {
+      "path": "adafruit_ntp.mpy",
+      "size": 2149,
+      "sha256": "1ecc59692e5ab4419ece4fcb47dc2d46aa33cb025a6dfb8f5ca56320360b9780"
     },
     {
       "path": "adafruit_register/__init__.py",
@@ -78,6 +88,11 @@ window.LIB_MANIFEST = {
       "path": "adafruit_register/register_bits.mpy",
       "size": 882,
       "sha256": "c6d5cc3ea408b778317771b288cf7ec8d7ac035f7c9975865280aee387d3197e"
+    },
+    {
+      "path": "adafruit_requests.mpy",
+      "size": 7065,
+      "sha256": "23f7f9b40fb054c88833fe9f86869e2739c9209d8eba68d435b0c7e20f5209ae"
     },
     {
       "path": "adafruit_ticks.mpy",
@@ -133,6 +148,11 @@ window.LIB_MANIFEST = {
       "path": "grove_ultrasonic.py",
       "size": 1009,
       "sha256": "57dc0e890286abc31b70c52b77e208cc13090c1891e6cdf083aa4d092ca5e26c"
+    },
+    {
+      "path": "makerspaceos_netz.py",
+      "size": 13816,
+      "sha256": "fd0d5db75a705bc02a3c2464d25769f799abf73cb8611f5a3a1e5b34ec12167e"
     },
     {
       "path": "makerspaceos.py",
