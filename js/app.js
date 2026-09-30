@@ -10,7 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initBlockly();
   initCodeEditor();
   initButtons();
-  initBoardSetup();
+  // Boards ohne CIRCUITPY-Laufwerk (usbDrive: false): Libs-Check und UF2-Flash
+  // brauchen ein Laufwerk → Buttons ausblenden, kein Start-Check.
+  if (BOARD.usbDrive === false) {
+    document.getElementById('btn-board-libs').hidden = true;
+    document.getElementById('btn-firmware').hidden = true;
+  } else {
+    initBoardSetup();
+  }
 });
 
 function initBlockly() {
@@ -245,8 +252,10 @@ async function saveToBoardClick() {
       showToast(L('Speichern aufs Board schlug fehl (Datei blieb leer) – code.py wurde stattdessen heruntergeladen, bitte manuell aufs Laufwerk kopieren',
                   'Saving to the board failed (file stayed empty) – code.py was downloaded instead, please copy it to the drive manually'), 'error');
     } else {
-      showToast(res === 'saved' ? L('code.py auf dem RP2040 gespeichert!', 'code.py saved to the board!')
-                                : L('code.py heruntergeladen', 'code.py downloaded'), 'ok');
+      showToast(res === 'saved_serial'
+        ? L('code.py auf dem Board gespeichert – startet beim nächsten Reset', 'code.py saved to the board – runs after the next reset')
+        : res === 'saved' ? L('code.py auf dem Board gespeichert!', 'code.py saved to the board!')
+                          : L('code.py heruntergeladen', 'code.py downloaded'), 'ok');
     }
   } catch (e) {
     if (e && e.name === 'AbortError') return;  // Dialog abgebrochen

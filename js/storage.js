@@ -186,6 +186,9 @@ let _lastBoardHandle = null;
 // Generierten Code als code.py speichern (Datei-Dialog → CIRCUITPY-Laufwerk).
 // CircuitPython lässt sein Laufwerk nicht per Serial beschreiben, daher Dateisystem-API.
 async function saveToBoard(code) {
+  // Boards ohne CIRCUITPY-Laufwerk (klassischer ESP32): Das Board schreibt
+  // code.py selbst – per Raw REPL über die serielle Verbindung.
+  if (BOARD.usbDrive === false) return _saveViaSerial(code);
   if (window.showSaveFilePicker) {
     showToast(L('📂 Bitte zum CIRCUITPY-Laufwerk navigieren und code.py speichern', '📂 Please navigate to the CIRCUITPY drive and save code.py'), 'ok');
     const opts = {
@@ -232,6 +235,27 @@ async function _writeVerified(handle, code) {
     }
   }
   return false;
+}
+
+async function _saveViaSerial(code) {
+  if (!serial.isConnected) throw new Error(L('Bitte zuerst verbinden!', 'Please connect first!'));
+  // Code als JSON-String-Literal (gültige Python-Syntax); Länge in Zeichen
+  // (Codepoints) zur Kontrolle zurückmelden.
+  const py = [
+    `_c = ${JSON.stringify(code)}`,
+    'try:',
+    '    with open("/code.py", "w") as _f:',
+    '        _f.write(_c)',
+    '    print(">>" + "GESPEICHERT " + str(len(_c)) + "<<")',
+    'except OSError as _e:',
+    '    print(">>" + "FEHLER " + str(_e) + "<<")',
+    '',
+  ].join('\n');
+  const out = await serial.execSilent(py, '<<', 8000);
+  const ok = out.match(/>>GESPEICHERT (\d+)<</);
+  if (ok && Number(ok[1]) === [...code].length) return 'saved_serial';
+  const err = out.match(/>>FEHLER (.*?)<</);
+  throw new Error(err ? err[1] : L('Das Board hat das Speichern nicht bestätigt.', 'The board did not confirm saving.'));
 }
 
 function _downloadCode(code) {
