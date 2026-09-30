@@ -72,6 +72,7 @@ Firefox und Safari werden **nicht** unterstützt.
 - **Parallele Aktionen (Ereignis-Blöcke)** – mehrere Stapel laufen gleichzeitig (z. B. eine Dauer-Animation *und* eine Sensor-Reaktion), ähnlich wie bei Lego Spike. Umgesetzt über kooperatives Multitasking mit `asyncio`.
 - **Serieller Monitor** – `print()`-Ausgaben des Boards live im Browser sehen
 - **REPL-Eingabe** – manuelle Befehle direkt ins Board schicken
+- **KI-Agenten (optional)** – über einen MCP-Server können Claude, Codex oder lokale Modelle Blöcke im Editor bauen, das Board starten und die Konsole lesen (siehe unten)
 - **Keine Installation** – `index.html` im Browser öffnen, fertig
 
 ---
@@ -87,6 +88,21 @@ Firefox und Safari werden **nicht** unterstützt.
 7. Programm läuft auf dem Board; Ausgaben erscheinen im Seriellen Monitor
 
 > **Ohne serialen Port / ohne File System Access API / Seite unter `file://` geöffnet?** `lib/` manuell oder per `scripts/sync_lib.sh` auf `CIRCUITPY/lib/` kopieren und danach das Board neu starten (USB trennen & neu stecken).
+
+---
+
+## KI-Agenten per MCP (optional)
+
+Ein kleiner MCP-Server (`mcp/`) verbindet KI-Agenten mit dem laufenden Editor. Die App selbst bleibt ohne npm – nur dieses Entwickler-Werkzeug braucht Node.
+
+**Regel:** Agenten ändern Programme **nur über Blöcke**. Python-Code ist für sie nur lesbar (Debugging); es gibt kein Werkzeug, das Code schreibt oder fremden Code startet. Lässt sich ein Problem nicht mit Blöcken lösen, erzeugt `prepare_bug_report` einen Bericht, den du bei [kidslab.de](https://kidslab.de) oder als [GitHub-Issue](https://github.com/KidsLabDe/makerSpaceOS-Editor/issues) meldest.
+
+1. `cd mcp && npm install`
+2. Server im MCP-Client eintragen, z. B. `claude mcp add makerspaceos -- node /pfad/zu/makerSpaceOS-Editor/mcp/server.js` (Codex und lokale Modelle: siehe [`mcp/README.md`](mcp/README.md))
+3. Editor wie im Schnellstart ausliefern (`python3 -m http.server 8000`), den Agenten `get_editor_url` aufrufen lassen und die URL (`…?agent=1&port=…&token=…`) in Chrome/Edge öffnen – unten links erscheint „🤖 Agent verbunden". Ohne `?agent=1` ist die Brücke aus.
+4. Board einmal selbst per „Verbinden" wählen (Browser-Regel); danach kann der Agent ausführen und die Konsole lesen.
+
+Der Agent bekommt Wissen aus der eingebauten Bibliothek (Blöcke, Boards, `docs/`) und feste Regeln/Erinnerungen (`mcp/rules.js`, `mcp/guide.{de,en}.md`).
 
 ---
 
@@ -110,6 +126,8 @@ js/
   board_setup.js     – Board-Libs-Button: Versions-Check + lib/-Installation + Auto-Reboot
   firmware_manifest.js – generierte UF2-Firmware-Liste (Name + Größe + SHA-256)
   firmware_flash.js  – UF2-Firmware-Dialog: BOOTSEL-Laufwerk wählen + verifiziertes Flashen
+  agent/             – Brücke für den MCP-Server (lädt nur mit ?agent=1)
+mcp/                 – MCP-Server für KI-Agenten (Node, nur Dev-Werkzeug)
 firmware/            – UF2-Images (Pico) + ESP32 .bin (nicht per UF2 flashbar)
 ```
 

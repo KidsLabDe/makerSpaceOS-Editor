@@ -1,0 +1,13 @@
+{
+  "name": "makerspaceos-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP-Server: lässt KI-Agenten Blöcke im makerSpaceOS-Editor bauen (nur Blöcke, Code nur lesend)",
+  "scripts": { "start": "node server.js", "test": "node test.mjs" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "ws": "^8.22.0",
+    "zod": "^3.25.0"
+  }
+}

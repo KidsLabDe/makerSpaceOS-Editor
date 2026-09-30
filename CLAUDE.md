@@ -139,6 +139,15 @@ Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein koopera
 - **PWM-Block** (`components/actuators/pwm_write.md`, Kategorie „Pins") – rein markdown-getrieben: `pwmio.PWMOut(..., frequency=1000)` als `_pwmout_<PIN>` (bewusst anderes Präfix als die Servos mit `_pwm_`), Stärke 0–100 % wird auf `duty_cycle` 0–65535 begrenzt. RP2040: Zwei benachbarte GPIOs teilen sich einen PWM-Taktgeber (Slice = (GP >> 1) & 7), Pins auf einem Taktgeber müssen dieselbe Frequenz haben → Grove 5/6 (GP26/27) kollidieren mit Motor M2 (GP10/11, 50 Hz), Grove 7 (GP28) mit Servo S1/S2 (GP12/13, 50 Hz). In der Block-Doku steht deshalb „Grove 1–4 nutzen".
 - `RaspberryPico_allCodes_en/` enthält **MicroPython**-Referenzcode (nicht CircuitPython). Bei neuen Blöcken den Code in CircuitPython übersetzen (`digitalio`/`analogio` statt `machine`).
 
+## KI-Agenten-Schnittstelle (MCP)
+
+`mcp/` enthält einen MCP-Server (Node, nur Dev-Tool – die App bleibt ohne npm), `js/agent/*.js` die Brücke im Editor (lädt **nur** mit `?agent=1&token=…`, siehe Loader am Ende von `index.html`). Details: `mcp/README.md`.
+
+- **Kernregel:** Agenten ändern Programme **nur über Blöcke**. Es gibt bewusst kein Werkzeug, das Python schreibt, das Code-Feld (`codeEditor`) bearbeitet oder fremden Code ausführt; `run` startet immer `generateCode()` aus den Blöcken. Code ist nur lesbar (`get_python`, `get_code_editor`). Nicht mit Blöcken lösbar → `prepare_bug_report` (sendet nichts) → kidslab.de / GitHub-Issues. Diese Regel nicht aufweichen.
+- **Neuer Editor-Befehl:** `AGENT_COMMANDS.<name> = async (args) => …` in `js/agent/*.js` + `tool(...)`-Eintrag in `mcp/server.js`. Regeltexte/Erinnerungen (DE/EN) zentral in `mcp/rules.js`, Leitfaden in `mcp/guide.{de,en}.md` (bei Regeländerungen beide pflegen).
+- `serial.connect(port)` nimmt einen bereits freigegebenen Port (`getPorts()`, ohne Dialog); `connectBoard(port)` in `app.js` ist der gemeinsame Verbindungsweg für Button und Bridge. `serial.onDataTap` ist ein zweiter Lauscher neben dem Monitor.
+- Bridge-IDs von Blockly enthalten Sonderzeichen (`]`, `}` …) – immer als JSON-String behandeln.
+
 ## Commit-Stil
 
 Deutsche Commit-Nachrichten, wie in der Git-History. Kein vorgeschriebenes Format.
