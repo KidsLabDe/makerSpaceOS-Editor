@@ -552,6 +552,33 @@ Das Board hat **kein CIRCUITPY-Laufwerk** am Computer. Bibliotheken kommen per
 Thonny auf das Board – oder man flasht das fertige Komplett-Image
 \`firmware/makerSpaceOS_firmware_esp32-d1-r32.bin\` (enthält schon alles).
 Ausführliche Anleitung mit Fotos: \`docs/esp32-d1-r32.md\` im Projekt.`,
+
+  esp32_robo: `Der große Bruder des Maker-Pi mit **WLAN**: Cytron Robo ESP32.
+Fast alles ist gleich – Taster, Summer, NeoPixel, Motoren, Servos und 7 Grove-Ports.
+
+## Eingebaut auf dem Board
+
+- **2 Taster** B1 (D34) und B2 (D35)
+- **Summer** (Piepser) mit An/Aus-Schalter
+- **2 NeoPixel** (bunte LEDs)
+- **2 Motor-Anschlüsse** M1 und M2 (mit Test-Tastern)
+- **4 Servo-Anschlüsse** S1 bis S4
+- **7 Grove-Ports** für Sensoren und Aktoren
+
+## Anders als beim Maker-Pi
+
+- **Keine Batterie-Messung.**
+- Analoge Sensoren gehören an **Grove 4, 5, 6 oder 7**.
+- **Grove 6 und 7** können nur **lesen** (Sensoren ja, LEDs/Summer nein).
+- Benachbarte Grove-Ports teilen sich einen Pin (3+4, 4+5, 5+6, 6+7) –
+  also nicht zwei Nachbarn gleichzeitig benutzen.
+- I2C-Geräte (LCD, Bewegungssensor …) am besten an **Grove 2**.
+
+## Gut zu wissen
+
+Das Board hat **kein CIRCUITPY-Laufwerk** am Computer (wie der ESP32 D1 R32).
+Firmware und Bibliotheken kommen genauso drauf wie dort beschrieben:
+\`docs/esp32-d1-r32.md\` im Projekt.`,
 };
 
 const BOARD_DOCS_EN = {
@@ -622,6 +649,33 @@ The board has **no CIRCUITPY drive** on the computer. Libraries are copied to
 the board via Thonny – or you flash the ready-made complete image
 \`firmware/makerSpaceOS_firmware_esp32-d1-r32.bin\` (contains everything).
 Detailed guide with photos: \`docs/esp32-d1-r32.md\` in the project.`,
+
+  esp32_robo: `The Maker-Pi's big brother with **Wi-Fi**: Cytron Robo ESP32.
+Almost everything is the same – buttons, buzzer, NeoPixels, motors, servos and 7 Grove ports.
+
+## Built into the board
+
+- **2 buttons** B1 (D34) and B2 (D35)
+- **Buzzer** with on/off switch
+- **2 NeoPixels** (colourful LEDs)
+- **2 motor connectors** M1 and M2 (with test buttons)
+- **4 servo connectors** S1 to S4
+- **7 Grove ports** for sensors and actuators
+
+## Different from the Maker-Pi
+
+- **No battery measurement.**
+- Analog sensors go to **Grove 4, 5, 6 or 7**.
+- **Grove 6 and 7** can only **read** (sensors yes, LEDs/buzzer no).
+- Neighbouring Grove ports share a pin (3+4, 4+5, 5+6, 6+7) – so don't use
+  two neighbours at the same time.
+- I2C devices (LCD, motion sensor …) preferably on **Grove 2**.
+
+## Good to know
+
+The board has **no CIRCUITPY drive** on the computer (like the ESP32 D1 R32).
+Firmware and libraries are installed the same way as described there:
+\`docs/esp32-d1-r32.md\` in the project.`,
 };
 
 // ── Feld-/Sprachauswahl ohne globalen i18n-State (Nachbau von LF() aus i18n.js) ──

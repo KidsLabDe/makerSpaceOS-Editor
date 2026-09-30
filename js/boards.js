@@ -245,6 +245,56 @@ const BOARD_PROFILES = {
     hideBlockIds:      ['actuator_motor_forward', 'actuator_motor_backward',
                         'actuator_motor_stop', 'sensor_battery'],
   },
+
+  // Cytron Robo ESP32 – Gegenstück zum MAKER-PI mit WLAN. Trägerplatine für
+  // ein gestecktes NodeMCU-ESP32-Modul (klassischer ESP32-WROOM-32, USB über
+  // Seriell-Wandler → KEIN CIRCUITPY-Laufwerk, wie beim D1 R32).
+  // Firmware: derselbe generische Build "DOIT ESP32 DevKit V1"
+  // (board_id: doit_esp32_devkit_v1) → Pin-Namen board.D<gpio>, IO36/IO39
+  // heißen dort board.VP / board.VN.
+  // Pins laut Cytron-Demo-Code + Platinenaufdruck
+  // (github.com/CytronTechnologies/Cytron-ROBO-ESP32).
+  esp32_robo: {
+    name: 'Cytron Robo ESP32',
+    // 2 Onboard-NeoPixel an D15
+    neopixel:  { pin: 'D15', count: 2 },
+    buzzer:    'D23',
+    // Programmierbare Taster D34/D35 (GPIO34/35 = reine Eingänge ohne interne
+    // Pull-ups; die Platine hat eigene Pull-ups).
+    buttons:   { B1: 'D34', B2: 'D35' },
+    // Motortreiber (PWM/PWM) mit Test-Tastern M1A/M1B/M2A/M2B
+    motors: {
+      M1: { pinA: 'D12', pinB: 'D13' },
+      M2: { pinA: 'D14', pinB: 'D27' }
+    },
+    servos:    { S1: 'D4', S2: 'D5', S3: 'D18', S4: 'D19' },
+    // Keine Batterie-Messung auf der Platine
+    battery:   null,
+    // Grove-Ports laut Aufdruck (Reihenfolge GND, 3V3, pin1/weiß, signal/gelb).
+    // Benachbarte Ports teilen sich einen Pin (G3/G4: D25, G4/G5: D33,
+    // G5/G6: D32, G6/G7: IO39) – wie beim MAKER-PI mit GP26.
+    // I2C: SDA = pin1, SCL = signal. Grove 2 = Standard-I2C des ESP32 (D21/D22).
+    // Analog nur an ADC1-Pins (D32, D33, IO36, IO39) – ADC2 (D25/D26) ist
+    // gesperrt, solange WLAN läuft, darum Grove 3 nicht als Analog-Port.
+    // IO36/IO39 (Grove 6-Signal, Grove 7) sind NUR Eingänge.
+    grovePorts: [
+      { id: 1, label: 'Grove 1', pin1: 'D17', signal: 'D16', analog: false, i2c: true  },
+      { id: 2, label: 'Grove 2', pin1: 'D21', signal: 'D22', analog: false, i2c: true  },
+      { id: 3, label: 'Grove 3', pin1: 'D26', signal: 'D25', analog: false, i2c: true  },
+      { id: 4, label: 'Grove 4', pin1: 'D25', signal: 'D33', analog: true,  i2c: true  },
+      { id: 5, label: 'Grove 5', pin1: 'D33', signal: 'D32', analog: true,  i2c: true  },
+      { id: 6, label: 'Grove 6', pin1: 'D32', signal: 'VN',  analog: true,  i2c: false },
+      { id: 7, label: 'Grove 7', pin1: 'VN',  signal: 'VP',  analog: true,  i2c: false },
+    ],
+    externalPins: ['D16','D22','D25','D33','D32','VN','VP'],
+    // Grove-Pins (10 eindeutige, = die 10 "GPIO STATUS"-LEDs) + 4 Servo-Pins
+    allGrovePins: ['D16','D17','D21','D22','D25','D26','D32','D33','VP','VN',
+                   'D4','D5','D18','D19'],
+    // ADC1 (mit WLAN nutzbar) – alle schon als Ports gelistet
+    analogPins:   ['D33','D32','VN','VP'],
+
+    hideBlockIds: ['sensor_battery'],
+  },
 };
 
 Object.values(BOARD_PROFILES).forEach(_attachGroveMethods);

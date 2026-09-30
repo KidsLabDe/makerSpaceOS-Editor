@@ -189,14 +189,27 @@ async function toggleConnect() {
 const _BOARD_ID_MAP = {
   lolin_s2_mini:          'lolin_s2_mini',
   cytron_maker_pi_rp2040: 'maker_pi_rp2040',
-  // Generischer ESP32-WROOM-Build – bei uns auf dem AZ-Delivery ESP32 D1 R32.
-  doit_esp32_devkit_v1:   'esp32_d1_r32',
+  // Generischer ESP32-WROOM-Build – läuft auf dem AZ-Delivery ESP32 D1 R32 UND
+  // dem Cytron Robo ESP32. Die board_id unterscheidet die beiden nicht →
+  // Liste; ist eines davon schon gewählt, bleibt die Auswahl.
+  doit_esp32_devkit_v1:   ['esp32_robo', 'esp32_d1_r32'],
 };
 async function detectAndSwitchBoard() {
   let id = null;
   try { id = await serial.readBoardId(); } catch (_) { return; }
-  const want = _BOARD_ID_MAP[id];
+  let want = _BOARD_ID_MAP[id];
   if (!want) return;   // unbekanntes/kein Board – aktuelle Auswahl gilt
+  if (Array.isArray(want)) {
+    if (want.includes(BOARD_ID)) {
+      want = BOARD_ID;
+    } else {
+      // Mehrdeutig: nicht raten, sondern Nutzer wählen lassen
+      showToast(L('ESP32 erkannt – bitte oben das Board wählen (',
+                  'ESP32 detected – please choose the board above (') +
+                want.map(w => BOARD_PROFILES[w].name).join(L(' oder ', ' or ')) + ')', 'warn');
+      return;
+    }
+  }
   if (want !== BOARD_ID) {
     showToast(L('Board erkannt: ', 'Board detected: ') + BOARD_PROFILES[want].name + L(' – lade neu…', ' – reloading…'), 'ok');
     setBoard(want);    // persistiert + location.reload()
