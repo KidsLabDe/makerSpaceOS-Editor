@@ -258,6 +258,8 @@ def hole_json(url, intervall=30):
 
 def sicher_auswerten(funktion, daten):
     """Ruft eine selbst geschriebene Auswerte-Funktion auf; Fehler -> None."""
+    if daten is None:        # noch keine Daten (z. B. kein WLAN) – still None
+        return None
     try:
         return funktion(daten)
     except Exception as fehler:

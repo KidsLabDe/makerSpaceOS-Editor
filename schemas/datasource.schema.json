@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/KidsLabDe/makerSpaceOS-Editor/schemas/datasource.schema.json",
+  "title": "makerSpaceOS-Datenquelle",
+  "description": "Frontmatter einer Datei in components/datasources/*.md. Jede Datei wird ein eigener Block in der Kategorie Internet. Geprueft von scripts/build_blocks.js und scripts/test_datasources.js.",
+  "type": "object",
+  "required": ["id", "label", "label_en", "category", "url", "path", "type", "minInterval_s", "source", "exampleResponse", "verified"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Eindeutige ID (Kleinbuchstaben, Ziffern, _). Block-ID wird quelle_<id>."
+    },
+    "label": { "type": "string", "description": "Blocktext Deutsch, z.B. \"Temperatur jetzt\"" },
+    "label_en": { "type": "string", "description": "Blocktext Englisch" },
+    "tooltip": { "type": "string" },
+    "tooltip_en": { "type": "string" },
+    "category": {
+      "type": "string",
+      "enum": ["Wetter", "Wasser", "Energie", "Uhrzeit", "WLAN", "Experten"],
+      "description": "Unterkategorie in der Toolbox (deutsche ID aus components/catalog.json)"
+    },
+    "url": {
+      "type": "string",
+      "pattern": "^https?://",
+      "description": "Adresse der API. Platzhalter {name} werden durch die Parameter ersetzt (URL-kodiert). Nur Felder anfragen, die gebraucht werden – der Speicher auf dem Board ist knapp."
+    },
+    "params": {
+      "type": "array",
+      "description": "Parameter, die im Block als Eingabefelder erscheinen",
+      "items": {
+        "type": "object",
+        "required": ["name", "label", "label_en", "type", "defaultValue"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "not": { "enum": ["url", "pfad", "intervall", "typ"] },
+            "description": "Name des Platzhalters in der URL, z.B. lat fuer {lat}"
+          },
+          "label": { "type": "string" },
+          "label_en": { "type": "string" },
+          "type": { "type": "string", "enum": ["number", "text"] },
+          "defaultValue": { "type": ["number", "string"] }
+        }
+      }
+    },
+    "path": {
+      "type": "string",
+      "description": "Pfad zum Wert in der JSON-Antwort, z.B. current.temperature_2m oder items.0.name (Zahl = Listenindex, -1 = letzter Eintrag)"
+    },
+    "type": { "type": "string", "enum": ["number", "text", "boolean"] },
+    "unit": { "type": "string", "description": "Einheit fuer Anzeige und Doku, z.B. °C" },
+    "minInterval_s": {
+      "type": "integer",
+      "minimum": 30,
+      "description": "Mindestabstand zwischen zwei echten Abrufen in Sekunden (15 Teams teilen sich eine Schul-IP)"
+    },
+    "source": { "type": "string", "pattern": "^https?://", "description": "Info-Seite / Nutzungsbedingungen der Quelle" },
+    "exampleResponse": { "type": "string", "description": "Beispiel-Antwort als JSON-Text (fuer den Offline-Test)" },
+    "responseSize_bytes": { "type": "integer", "minimum": 0, "description": "Gemessene Antwortgroesse (scripts/test_datasources.js --online)" },
+    "verified": {
+      "type": "boolean",
+      "description": "true erst, wenn die echte API mit test_datasources.js --online UND auf dem Board geprueft wurde"
+    }
+  }
+}

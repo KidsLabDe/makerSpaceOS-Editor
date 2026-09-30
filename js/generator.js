@@ -1243,6 +1243,28 @@ Blockly.Python['matrix_draw'] = function(block) {
   return `${varN}.fill((0, 0, 0))\n${pixels ? pixels + '\n' : ''}${varN}.show()\n`;
 };
 
+// ── Internet: "werte aus mit Python" (Expertenblock) ─────────────────────────
+// Nutzercode wird Körper einer eigenen Funktion auswerten_<hash>(daten) (landet
+// über definitions_ im Abschnitt Hilfsfunktionen); Aufruf über
+// sicher_auswerten() → Fehler liefern None + Ausgabe in der Konsole.
+
+Blockly.Python['net_python_auswerten'] = function(block) {
+  const code  = String(block.getFieldValue('CODE') || '').replace(/\t/g, '    ').replace(/\s+$/, '');
+  const daten = Blockly.Python.valueToCode(block, 'DATEN', Blockly.Python.ORDER_NONE) || 'None';
+  // Gleicher Code → gleiche Funktion (djb2-Hash als stabiler Name)
+  let h = 5381;
+  for (let i = 0; i < code.length; i++) h = ((h * 33) ^ code.charCodeAt(i)) >>> 0;
+  const fn = `auswerten_${h.toString(16)}`;
+  const body = code.trim() ? _indent(code + '\n', 1) : '    return None\n';
+  Blockly.Python.definitions_[fn] =
+    `def ${fn}(daten):\n` +
+    L('    # eigener Python-Code aus dem Block "werte aus mit Python"\n',
+      '    # own Python code from the block "evaluate with Python"\n') +
+    body;
+  _defs['from_sicher_auswerten'] = 'from makerspaceos_netz import sicher_auswerten';
+  return [`sicher_auswerten(${fn}, ${daten})`, Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
 // ── "Bitte auswählen"-Schutz: blockToCode-Wrapper ────────────────────────────
 // Fängt alle verschachtelten Blöcke (Statement + Value) ab, bevor der
 // eigentliche Generator aufgerufen wird. HAT-Blöcke werden direkt in

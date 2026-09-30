@@ -62,7 +62,8 @@
       case 'rgb_color_dropdown':
         return _COLOR_OPTS;
       default:
-        return (inp.options || []);
+        // options aus der md: [{label, label_en, value}, …]
+        return (inp.options || []).map(o => Array.isArray(o) ? o : [LF(o, 'label'), String(o.value)]);
     }
   }
 
@@ -83,6 +84,8 @@
           ),
           inp.name
         );
+      } else if (inp.fieldType === 'multiline_text') {
+        input.appendField(new Blockly.FieldMultilineInput(LF(inp, 'default') || ''), inp.name);
       } else if (inp.fieldType === 'colour_picker') {
         input.appendField(new Blockly.FieldDropdown(_COLOR_OPTS), inp.name);
       } else {
@@ -96,6 +99,21 @@
     }
   }
 
+  // Typ-Prüfung: 'Any' (oder fehlend bei Ausgängen beliebiger Daten) = keine Prüfung
+  const _check = (c, fallback) => c === 'Any' ? null : (c || fallback);
+
+  // Wert-Eingänge (z.B. blinken-Anzahl, Servo-Winkel, Motor-Tempo, Quellen-Parameter)
+  function addValueInputs(block, def) {
+    for (const vi of (def.valueInputs || [])) {
+      const v = block.appendValueInput(vi.name).setCheck(_check(vi.check, 'Number'));
+      if (vi.label)  v.appendField(LF(vi, 'label'));
+      if (vi.suffix) block.appendDummyInput().appendField(LF(vi, 'suffix'));
+    }
+    if (def.valueInputs && def.valueInputs.length) {
+      block.setInputsInline(def.inline !== false);
+    }
+  }
+
   // ── Block-init-Funktion aus Definition bauen ───────────────────────────────
 
   function buildInit(def) {
@@ -105,7 +123,8 @@
       if (def.blockType === 'value') {
         const dummyInput = block.appendDummyInput();
         addFields(dummyInput, def.inputs);
-        block.setOutput(true, def.output || 'Number');
+        addValueInputs(block, def);
+        block.setOutput(true, _check(def.output, 'Number'));
 
       } else if (def.blockType === 'statement') {
         if (def.inputs && def.inputs.length) {
@@ -117,15 +136,7 @@
             addFields(row, [inp]);
           }
         }
-        // Wert-Eingänge (z.B. blinken-Anzahl, Servo-Winkel, Motor-Tempo)
-        for (const vi of (def.valueInputs || [])) {
-          const v = block.appendValueInput(vi.name).setCheck(vi.check || 'Number');
-          if (vi.label)  v.appendField(LF(vi, 'label'));
-          if (vi.suffix) block.appendDummyInput().appendField(LF(vi, 'suffix'));
-        }
-        if (def.valueInputs && def.valueInputs.length) {
-          block.setInputsInline(def.inline !== false);
-        }
+        addValueInputs(block, def);
         block.setPreviousStatement(true, null);
         block.setNextStatement(true, null);
 
@@ -202,7 +213,7 @@
         const viDefault = (IS_EN && vi.defaultValue_en !== undefined) ? vi.defaultValue_en : vi.defaultValue;
         ctx[vi.name] = Blockly.Python.valueToCode(
           block, vi.name, Blockly.Python.ORDER_NONE
-        ) || String(viDefault ?? '0');
+        ) || String(viDefault ?? (vi.check === 'Any' ? 'None' : '0'));
       }
 
       // 3. StatementInput auswerten
@@ -245,7 +256,10 @@
     const hideCats  = new Set(BOARD.hideCategories    || []);
     const hideSubs  = new Set(BOARD.hideSubCategories || []);
     const hideIds   = new Set(BOARD.hideBlockIds      || []);
-    const visible   = b => !hideIds.has(b.id);
+    // requiresBoardFeature: Block nur zeigen, wenn das Profil das Feature hat
+    // (z.B. wifi: true bei den ESP32-Boards)
+    const visible   = b => !hideIds.has(b.id) &&
+      (!b.requiresBoardFeature || !!BOARD[b.requiresBoardFeature]);
 
     for (const catDef of BLOCKS_CATALOG.categories) {
       if (hideCats.has(catDef.id)) continue;

@@ -6,6 +6,7 @@ const fs   = require('fs');
 const path = require('path');
 
 const COMPONENTS_DIR = path.join(__dirname, '..', 'components');
+const { checkDatasource, datasourceToBlock } = require('./datasources_lib.js');
 const OUTPUT_FILE    = path.join(__dirname, '..', 'js', 'blocks_db.js');
 
 // ── YAML-Parser (Subset: strings, booleans, numbers, arrays, nested objects) ──
@@ -260,6 +261,21 @@ for (const filePath of mdFiles) {
 
   // Reine Hardware-/Doku-MDs (kein Blockly-Block) still überspringen.
   if (def.block === false) continue;
+
+  // Datenquellen (components/datasources/*.md) → je ein Wert-Block in „Internet“.
+  // Format: schemas/datasource.schema.json; Offline-/Online-Test:
+  // node scripts/test_datasources.js [--online]
+  if (filePath.split(path.sep).includes('datasources')) {
+    const dsErrors = checkDatasource(def);
+    if (dsErrors.length) {
+      dsErrors.forEach(e => errors.push(`${filePath}: ${e}`));
+      continue;
+    }
+    const block = datasourceToBlock(def, extractBody(content));
+    block._file = path.relative(COMPONENTS_DIR, filePath);
+    blocks.push(block);
+    continue;
+  }
 
   if (!def.id || !def.blockCategory || !def.blockType) {
     errors.push(`${filePath}: fehlende Pflichtfelder (id, blockCategory, blockType)`);

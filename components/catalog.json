@@ -46,6 +46,21 @@
       "subCategories": []
     },
     {
+      "id": "Internet",
+      "label": "Internet",
+      "label_en": "Internet",
+      "colour": "#7C3AED",
+      "subCategories": ["WLAN", "Uhrzeit", "Wetter", "Wasser", "Energie", "Experten"],
+      "subCategories_en": {
+        "WLAN": "Wi-Fi",
+        "Uhrzeit": "Time",
+        "Wetter": "Weather",
+        "Wasser": "Water",
+        "Energie": "Energy",
+        "Experten": "Experts"
+      }
+    },
+    {
       "id": "Pins",
       "label": "Pins",
       "label_en": "Pins",

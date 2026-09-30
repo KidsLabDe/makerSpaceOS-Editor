@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-09-29T11:27:14.849Z
+// Generiert: 2026-09-30T09:47:14.152Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -62,6 +62,28 @@ const BLOCKS_CATALOG = {
       "label_en": "Displays",
       "colour": "#0D9488",
       "subCategories": []
+    },
+    {
+      "id": "Internet",
+      "label": "Internet",
+      "label_en": "Internet",
+      "colour": "#7C3AED",
+      "subCategories": [
+        "WLAN",
+        "Uhrzeit",
+        "Wetter",
+        "Wasser",
+        "Energie",
+        "Experten"
+      ],
+      "subCategories_en": {
+        "WLAN": "Wi-Fi",
+        "Uhrzeit": "Time",
+        "Wetter": "Weather",
+        "Wasser": "Water",
+        "Energie": "Energy",
+        "Experten": "Experts"
+      }
     },
     {
       "id": "Pins",
@@ -1716,6 +1738,572 @@ const BLOCKS_DB = [
     "_file": "actuators/tm1637_off.md",
     "doc": "# TM1637 4-stelliges 7-Segment-Display – Ausschalten\n\nLöscht alle Segmente (Display bleibt dunkel).",
     "doc_en": "# TM1637 4-digit 7-segment display – turn off\n\nClears all segments (display stays dark)."
+  },
+  {
+    "id": "net_internet_da",
+    "blockCategory": "Internet",
+    "subCategory": "WLAN",
+    "requiresBoardFeature": "wifi",
+    "label": "Internet erreichbar?",
+    "label_en": "Internet reachable?",
+    "colour": "#7C3AED",
+    "tooltip": "Wahr, wenn wirklich eine Internetseite abgerufen werden kann. Wird höchstens alle 30 Sekunden neu geprüft.",
+    "tooltip_en": "True if a web page can really be fetched. Re-checked at most every 30 seconds.",
+    "blockType": "value",
+    "output": "Boolean",
+    "inputs": [
+      {
+        "label": "Internet erreichbar?",
+        "label_en": "Internet reachable?"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import internet_da"
+      ],
+      "expression": "internet_da()",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "internet/net_internet_da.md",
+    "doc": "# Internet erreichbar?\n\nRuft eine winzige Testseite ab und prüft die Antwort. So merkt der Block auch,\nwenn das WLAN eine Anmeldeseite vorschaltet (dann: falsch).\n\nDas Ergebnis wird 30 Sekunden lang gemerkt – du kannst den Block also ruhig in\neiner Schleife benutzen. Beim echten Test wartet das Board kurz (höchstens\n5 Sekunden).",
+    "doc_en": "# Internet reachable?\n\nFetches a tiny test page and checks the answer. This way the block also notices\nwhen the Wi-Fi puts a login page in front (then: false).\n\nThe result is remembered for 30 seconds – so it is fine to use the block in a\nloop. During the real test the board waits briefly (at most 5 seconds)."
+  },
+  {
+    "id": "net_ip_adresse",
+    "blockCategory": "Internet",
+    "subCategory": "WLAN",
+    "requiresBoardFeature": "wifi",
+    "label": "IP-Adresse",
+    "label_en": "IP address",
+    "colour": "#7C3AED",
+    "tooltip": "Die IP-Adresse des Boards im WLAN als Text, oder keine",
+    "tooltip_en": "The board's IP address in the Wi-Fi network as text, or keine (none)",
+    "blockType": "value",
+    "output": "String",
+    "inputs": [
+      {
+        "label": "IP-Adresse",
+        "label_en": "IP address"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import ip_adresse"
+      ],
+      "expression": "ip_adresse()",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "internet/net_ip_adresse.md",
+    "doc": "# IP-Adresse\n\nDie Adresse, unter der das Board im WLAN erreichbar ist, z. B. `192.168.1.42`.\nOhne Verbindung kommt der Text `keine` zurück.",
+    "doc_en": "# IP address\n\nThe address of the board in the Wi-Fi network, e.g. `192.168.1.42`. Without a\nconnection the text `keine` (none) is returned."
+  },
+  {
+    "id": "net_wlan_signal",
+    "blockCategory": "Internet",
+    "subCategory": "WLAN",
+    "requiresBoardFeature": "wifi",
+    "label": "WLAN-Signalstärke (dBm)",
+    "label_en": "Wi-Fi signal strength (dBm)",
+    "colour": "#7C3AED",
+    "tooltip": "Wie stark das WLAN empfangen wird: -50 sehr gut, -70 ok, -85 schwach. Ohne Verbindung -100.",
+    "tooltip_en": "How strong the Wi-Fi signal is: -50 very good, -70 ok, -85 weak. Without a connection -100.",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "WLAN-Signalstärke (dBm)",
+        "label_en": "Wi-Fi signal strength (dBm)"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import wlan_signal"
+      ],
+      "expression": "wlan_signal()",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "internet/net_wlan_signal.md",
+    "doc": "# WLAN-Signalstärke\n\nDie Empfangsstärke in dBm – das sind **negative** Zahlen:\n\n| Wert | Bedeutung |\n|---|---|\n| -30 bis -55 | sehr gut |\n| -55 bis -70 | gut |\n| -70 bis -85 | schwach |\n| -100 | keine Verbindung |\n\nIdee: Den Wert auf dem LCD anzeigen und mit dem Board herumlaufen.",
+    "doc_en": "# Wi-Fi signal strength\n\nThe received signal strength in dBm – these are **negative** numbers:\n\n| Value | Meaning |\n|---|---|\n| -30 to -55 | very good |\n| -55 to -70 | good |\n| -70 to -85 | weak |\n| -100 | no connection |\n\nIdea: show the value on the LCD and walk around with the board."
+  },
+  {
+    "id": "net_wlan_verbunden",
+    "blockCategory": "Internet",
+    "subCategory": "WLAN",
+    "requiresBoardFeature": "wifi",
+    "label": "WLAN verbunden?",
+    "label_en": "Wi-Fi connected?",
+    "colour": "#7C3AED",
+    "tooltip": "Wahr, wenn das Board mit einem WLAN verbunden ist. Sagt nichts darüber, ob das Internet erreichbar ist.",
+    "tooltip_en": "True if the board is connected to a Wi-Fi network. Says nothing about whether the internet is reachable.",
+    "blockType": "value",
+    "output": "Boolean",
+    "inputs": [
+      {
+        "label": "WLAN verbunden?",
+        "label_en": "Wi-Fi connected?"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import wlan_verbunden"
+      ],
+      "expression": "wlan_verbunden()",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "internet/net_wlan_verbunden.md",
+    "doc": "# WLAN verbunden?\n\nWahr, sobald das Board in einem WLAN angemeldet ist. Die Zugangsdaten stehen in\nder Datei `settings.toml` auf dem Board – im Editor über **WLAN einrichten**.\n\nAchtung: *Verbunden* heißt noch nicht *im Internet*. In WLANs mit Anmeldeseite\n(Hotel, manche Schulen) ist das Board verbunden, kommt aber nicht raus – dafür\ngibt es den Block **Internet erreichbar?**.\n\nEs funktionieren nur WLANs mit normalem Passwort (WPA2-Personal) oder ein\nHandy-Hotspot. Schul-WLANs mit Benutzername und Passwort (802.1X) gehen nicht.",
+    "doc_en": "# Wi-Fi connected?\n\nTrue as soon as the board is logged into a Wi-Fi network. The credentials are\nstored in the file `settings.toml` on the board – in the editor via **Wi-Fi setup**.\n\nNote: *connected* does not mean *on the internet*. In networks with a login page\n(hotels, some schools) the board is connected but cannot get out – use the\n**Internet reachable?** block for that.\n\nOnly networks with a normal password (WPA2-Personal) or a phone hotspot work.\nSchool networks with user name and password (802.1X) do not."
+  },
+  {
+    "id": "net_uhrzeit",
+    "blockCategory": "Internet",
+    "subCategory": "Uhrzeit",
+    "requiresBoardFeature": "wifi",
+    "label": "Uhrzeit",
+    "label_en": "Clock",
+    "colour": "#7C3AED",
+    "tooltip": "Teil der aktuellen Uhrzeit (deutsche Zeit, mit Sommerzeit). Die Uhr wird einmal über das Internet gestellt.",
+    "tooltip_en": "Part of the current time (German time incl. daylight saving). The clock is set once via the internet.",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Uhrzeit:",
+        "label_en": "clock:",
+        "name": "TEIL",
+        "fieldType": "dropdown",
+        "options": [
+          {
+            "label": "Stunde",
+            "label_en": "hour",
+            "value": "stunde"
+          },
+          {
+            "label": "Minute",
+            "label_en": "minute",
+            "value": "minute"
+          },
+          {
+            "label": "Sekunde",
+            "label_en": "second",
+            "value": "sekunde"
+          },
+          {
+            "label": "Tag",
+            "label_en": "day",
+            "value": "tag"
+          },
+          {
+            "label": "Monat",
+            "label_en": "month",
+            "value": "monat"
+          },
+          {
+            "label": "Jahr",
+            "label_en": "year",
+            "value": "jahr"
+          },
+          {
+            "label": "Wochentag (1 = Montag)",
+            "label_en": "weekday (1 = Monday)",
+            "value": "wochentag"
+          }
+        ]
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import uhrzeit"
+      ],
+      "expression": "uhrzeit(\"${TEIL}\")",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "internet/net_uhrzeit.md",
+    "doc": "# Uhrzeit\n\nDas Board hat eine eingebaute Uhr, die aber nach jedem Start falsch geht. Beim\nersten Benutzen dieses Blocks stellt das Board sie über das Internet (NTP) –\ndanach läuft sie von allein weiter und wird alle 6 Stunden neu gestellt.\n\n- Deutsche Zeit, Sommer- und Winterzeit werden automatisch berücksichtigt.\n- **Wochentag:** 1 = Montag … 7 = Sonntag.\n- Solange die Uhr noch nicht gestellt ist (kein WLAN), liefert der Block\n  **nichts** (`None`).\n- Manche Schulnetze sperren NTP. Dann holt sich das Board die Uhrzeit aus der\n  Antwort einer Webseite (auf die Sekunde genau reicht das nicht ganz).\n\nIdee: Pausen-Gong – um 9:45 Uhr spielt der Summer eine Melodie.",
+    "doc_en": "# Clock\n\nThe board has a built-in clock, but it is wrong after every start. The first\ntime this block is used, the board sets it via the internet (NTP) – after that\nit keeps running on its own and is re-set every 6 hours.\n\n- German time; summer and winter time are handled automatically.\n- **Weekday:** 1 = Monday … 7 = Sunday.\n- As long as the clock has not been set (no Wi-Fi), the block returns\n  **nothing** (`None`).\n- Some school networks block NTP. Then the board takes the time from a web\n  page's response (not quite accurate to the second).\n\nIdea: break bell – at 9:45 the buzzer plays a tune."
+  },
+  {
+    "id": "net_zeit_text",
+    "blockCategory": "Internet",
+    "subCategory": "Uhrzeit",
+    "requiresBoardFeature": "wifi",
+    "label": "Uhrzeit als Text",
+    "label_en": "Time as text",
+    "colour": "#7C3AED",
+    "tooltip": "Uhrzeit wie 14:05 oder Datum wie 30.09.2026 als Text – gut für das LCD. Solange unbekannt: --:--",
+    "tooltip_en": "Time like 14:05 or date like 30.09.2026 as text – good for the LCD. While unknown: --:--",
+    "blockType": "value",
+    "output": "String",
+    "inputs": [
+      {
+        "label": "als Text:",
+        "label_en": "as text:",
+        "name": "ART",
+        "fieldType": "dropdown",
+        "options": [
+          {
+            "label": "Uhrzeit (14:05)",
+            "label_en": "time (14:05)",
+            "value": "uhr"
+          },
+          {
+            "label": "Datum (30.09.2026)",
+            "label_en": "date (30.09.2026)",
+            "value": "datum"
+          }
+        ]
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import zeit_text"
+      ],
+      "expression": "zeit_text(\"${ART}\")",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "internet/net_zeit_text.md",
+    "doc": "# Uhrzeit als Text\n\nFertig formatiert zum Anzeigen, z. B. auf dem LCD: `14:05` oder `30.09.2026`.\nSolange die Uhr noch nicht gestellt ist, kommt `--:--` bzw. `--.--.----`\nzurück – der Block liefert also immer einen Text.",
+    "doc_en": "# Time as text\n\nReady formatted for display, e.g. on the LCD: `14:05` or `30.09.2026`. As long\nas the clock has not been set, `--:--` or `--.--.----` is returned – so the\nblock always delivers text."
+  },
+  {
+    "id": "quelle_wetter_niederschlag",
+    "blockCategory": "Internet",
+    "subCategory": "Wetter",
+    "requiresBoardFeature": "wifi",
+    "label": "Niederschlag jetzt",
+    "label_en": "Precipitation now",
+    "colour": "#7C3AED",
+    "tooltip": "Regen/Schnee in der letzten Viertelstunde in mm – von Open-Meteo",
+    "tooltip_en": "Rain/snow in the last quarter hour in mm – from Open-Meteo",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Niederschlag jetzt (mm)",
+        "label_en": "Precipitation now (mm)"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "LAT",
+        "label": "Breite",
+        "label_en": "latitude",
+        "check": "Number",
+        "defaultValue": 48.37
+      },
+      {
+        "name": "LON",
+        "label": "Länge",
+        "label_en": "longitude",
+        "check": "Number",
+        "defaultValue": 10.9
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import hole_quelle"
+      ],
+      "expression": "hole_quelle(\"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=precipitation\", \"current.precipitation\", 60, \"zahl\", lat=${LAT}, lon=${LON})",
+      "order": "FUNCTION_CALL"
+    },
+    "doc": "# Niederschlag jetzt (Open-Meteo)\n\nWie viel Regen (oder Schnee als Wasser) gerade fällt, in Millimetern pro\nViertelstunde. `0` heißt: trocken. Ort als Koordinaten wie beim Block\n„Temperatur jetzt“.\n\nIdee: Regenwarner – bei mehr als 0 mm leuchten die NeoPixel blau.\n\n---\nQuelle: https://open-meteo.com · Abruf höchstens alle 60 s · **noch nicht auf echter Hardware geprüft**",
+    "doc_en": "# Precipitation now (Open-Meteo)\n\nHow much rain (or snow as water) is falling right now, in millimetres per\nquarter hour. `0` means dry. Location as coordinates, like in the\n\"Temperature now\" block.\n\nIdea: rain alarm – above 0 mm the NeoPixels light up blue.\n\n---\nSource: https://open-meteo.com · fetched at most every 60 s · **not yet verified on real hardware**",
+    "datasource": {
+      "id": "wetter_niederschlag",
+      "label": "Niederschlag jetzt",
+      "label_en": "Precipitation now",
+      "tooltip": "Regen/Schnee in der letzten Viertelstunde in mm – von Open-Meteo",
+      "tooltip_en": "Rain/snow in the last quarter hour in mm – from Open-Meteo",
+      "category": "Wetter",
+      "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=precipitation",
+      "params": [
+        {
+          "name": "lat",
+          "label": "Breite",
+          "label_en": "latitude",
+          "type": "number",
+          "defaultValue": 48.37
+        },
+        {
+          "name": "lon",
+          "label": "Länge",
+          "label_en": "longitude",
+          "type": "number",
+          "defaultValue": 10.9
+        }
+      ],
+      "path": "current.precipitation",
+      "type": "number",
+      "unit": "mm",
+      "minInterval_s": 60,
+      "source": "https://open-meteo.com",
+      "exampleResponse": "{\"latitude\":48.36,\"longitude\":10.9,\"generationtime_ms\":0.02,\"utc_offset_seconds\":0,\"timezone\":\"GMT\",\"timezone_abbreviation\":\"GMT\",\"elevation\":494.0,\"current_units\":{\"time\":\"iso8601\",\"interval\":\"seconds\",\"precipitation\":\"mm\"},\"current\":{\"time\":\"2026-09-30T09:15\",\"interval\":900,\"precipitation\":0.0}}",
+      "verified": false
+    },
+    "_file": "datasources/wetter_niederschlag.md"
+  },
+  {
+    "id": "quelle_wetter_temperatur",
+    "blockCategory": "Internet",
+    "subCategory": "Wetter",
+    "requiresBoardFeature": "wifi",
+    "label": "Temperatur jetzt",
+    "label_en": "Temperature now",
+    "colour": "#7C3AED",
+    "tooltip": "Aktuelle Lufttemperatur (2 m über dem Boden) an einem Ort – von Open-Meteo",
+    "tooltip_en": "Current air temperature (2 m above ground) at a location – from Open-Meteo",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Temperatur jetzt (°C)",
+        "label_en": "Temperature now (°C)"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "LAT",
+        "label": "Breite",
+        "label_en": "latitude",
+        "check": "Number",
+        "defaultValue": 48.37
+      },
+      {
+        "name": "LON",
+        "label": "Länge",
+        "label_en": "longitude",
+        "check": "Number",
+        "defaultValue": 10.9
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import hole_quelle"
+      ],
+      "expression": "hole_quelle(\"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m\", \"current.temperature_2m\", 60, \"zahl\", lat=${LAT}, lon=${LON})",
+      "order": "FUNCTION_CALL"
+    },
+    "doc": "# Temperatur jetzt (Open-Meteo)\n\nLiefert die aktuelle Lufttemperatur in °C für einen Ort. Den Ort gibst du als\n**Koordinaten** an (Breite/Länge) – voreingestellt ist Augsburg. Koordinaten\nfindest du z. B. in einer Karten-App (lange auf den Ort tippen).\n\nOpen-Meteo aktualisiert die Werte alle 15 Minuten. Der Block fragt höchstens\neinmal pro Minute nach, dazwischen kommt der gespeicherte Wert zurück.\n\nSolange noch kein Wert geholt wurde (z. B. kein WLAN), liefert der Block\n**nichts** (`None`). Prüfe das, bevor du damit rechnest – sonst bricht das\nProgramm ab.\n\n---\nQuelle: https://open-meteo.com · Abruf höchstens alle 60 s · **noch nicht auf echter Hardware geprüft**",
+    "doc_en": "# Temperature now (Open-Meteo)\n\nReturns the current air temperature in °C for a location. You enter the\nlocation as **coordinates** (latitude/longitude) – the default is Augsburg.\nYou can find coordinates e.g. in a map app (long-press on the place).\n\nOpen-Meteo updates the values every 15 minutes. The block asks at most once per\nminute; in between it returns the stored value.\n\nAs long as no value has been fetched yet (e.g. no Wi-Fi), the block returns\n**nothing** (`None`). Check for that before calculating with it – otherwise\nthe program stops.\n\n---\nSource: https://open-meteo.com · fetched at most every 60 s · **not yet verified on real hardware**",
+    "datasource": {
+      "id": "wetter_temperatur",
+      "label": "Temperatur jetzt",
+      "label_en": "Temperature now",
+      "tooltip": "Aktuelle Lufttemperatur (2 m über dem Boden) an einem Ort – von Open-Meteo",
+      "tooltip_en": "Current air temperature (2 m above ground) at a location – from Open-Meteo",
+      "category": "Wetter",
+      "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m",
+      "params": [
+        {
+          "name": "lat",
+          "label": "Breite",
+          "label_en": "latitude",
+          "type": "number",
+          "defaultValue": 48.37
+        },
+        {
+          "name": "lon",
+          "label": "Länge",
+          "label_en": "longitude",
+          "type": "number",
+          "defaultValue": 10.9
+        }
+      ],
+      "path": "current.temperature_2m",
+      "type": "number",
+      "unit": "°C",
+      "minInterval_s": 60,
+      "source": "https://open-meteo.com",
+      "exampleResponse": "{\"latitude\":48.36,\"longitude\":10.9,\"generationtime_ms\":0.02,\"utc_offset_seconds\":0,\"timezone\":\"GMT\",\"timezone_abbreviation\":\"GMT\",\"elevation\":494.0,\"current_units\":{\"time\":\"iso8601\",\"interval\":\"seconds\",\"temperature_2m\":\"°C\"},\"current\":{\"time\":\"2026-09-30T09:15\",\"interval\":900,\"temperature_2m\":14.2}}",
+      "verified": false
+    },
+    "_file": "datasources/wetter_temperatur.md"
+  },
+  {
+    "id": "quelle_pegel_wasserstand",
+    "blockCategory": "Internet",
+    "subCategory": "Wasser",
+    "requiresBoardFeature": "wifi",
+    "label": "Wasserstand",
+    "label_en": "Water level",
+    "colour": "#7C3AED",
+    "tooltip": "Aktueller Wasserstand an einem Pegel einer Bundeswasserstraße in cm – von PEGELONLINE (WSV)",
+    "tooltip_en": "Current water level at a gauge on a German federal waterway in cm – from PEGELONLINE (WSV)",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Wasserstand (cm)",
+        "label_en": "Water level (cm)"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "PEGEL",
+        "label": "Pegel",
+        "label_en": "gauge",
+        "check": "String",
+        "defaultValue": "PFELLING"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import hole_quelle"
+      ],
+      "expression": "hole_quelle(\"https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/{pegel}/W/currentmeasurement.json\", \"value\", 300, \"zahl\", pegel=${PEGEL})",
+      "order": "FUNCTION_CALL"
+    },
+    "doc": "# Wasserstand (PEGELONLINE)\n\nDer aktuelle Wasserstand an einem Pegel in Zentimetern. PEGELONLINE ist der\nDienst der Wasserstraßen- und Schifffahrtsverwaltung des Bundes.\n\n**Achtung:** Es gibt nur Pegel an **Bundeswasserstraßen** – also z. B. an der\nDonau ab Kelheim, aber **nicht** an Lech oder Wertach. Den Pegelnamen findest\ndu auf pegelonline.wsv.de (Großbuchstaben, z. B. „PFELLING“).\n\nPegel werden meist alle 15 Minuten gemessen – der Block fragt höchstens alle\n5 Minuten nach.\n\n---\nQuelle: https://www.pegelonline.wsv.de · Abruf höchstens alle 300 s · **noch nicht auf echter Hardware geprüft**",
+    "doc_en": "# Water level (PEGELONLINE)\n\nThe current water level at a gauge in centimetres. PEGELONLINE is the service\nof the German Federal Waterways and Shipping Administration.\n\n**Note:** There are only gauges on **federal waterways** – e.g. on the Danube\nfrom Kelheim downstream, but **not** on the Lech or Wertach. Find the gauge name\non pegelonline.wsv.de (capital letters, e.g. \"PFELLING\").\n\nGauges usually measure every 15 minutes – the block asks at most every\n5 minutes.\n\n---\nSource: https://www.pegelonline.wsv.de · fetched at most every 300 s · **not yet verified on real hardware**",
+    "datasource": {
+      "id": "pegel_wasserstand",
+      "label": "Wasserstand",
+      "label_en": "Water level",
+      "tooltip": "Aktueller Wasserstand an einem Pegel einer Bundeswasserstraße in cm – von PEGELONLINE (WSV)",
+      "tooltip_en": "Current water level at a gauge on a German federal waterway in cm – from PEGELONLINE (WSV)",
+      "category": "Wasser",
+      "url": "https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/{pegel}/W/currentmeasurement.json",
+      "params": [
+        {
+          "name": "pegel",
+          "label": "Pegel",
+          "label_en": "gauge",
+          "type": "text",
+          "defaultValue": "PFELLING"
+        }
+      ],
+      "path": "value",
+      "type": "number",
+      "unit": "cm",
+      "minInterval_s": 300,
+      "source": "https://www.pegelonline.wsv.de",
+      "exampleResponse": "{\"timestamp\":\"2026-09-30T11:00:00+02:00\",\"value\":301.0,\"stateMnwMhw\":\"normal\",\"stateNswHsw\":\"normal\"}",
+      "verified": false
+    },
+    "_file": "datasources/pegel_wasserstand.md"
+  },
+  {
+    "id": "net_hole_json",
+    "blockCategory": "Internet",
+    "subCategory": "Experten",
+    "requiresBoardFeature": "wifi",
+    "label": "hole JSON von URL",
+    "label_en": "get JSON from URL",
+    "colour": "#7C3AED",
+    "tooltip": "Ruft eine Internetadresse ab und liefert die ganze JSON-Antwort. Höchstens alle 30 Sekunden ein echter Abruf.",
+    "tooltip_en": "Fetches an internet address and returns the whole JSON answer. At most one real fetch every 30 seconds.",
+    "blockType": "value",
+    "output": "Any",
+    "inputs": [
+      {
+        "label": "hole JSON von",
+        "label_en": "get JSON from"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "URL",
+        "check": "String",
+        "defaultValue": "https://api.open-meteo.com/v1/forecast?latitude=48.37&longitude=10.9&current=temperature_2m"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import hole_json"
+      ],
+      "expression": "hole_json(${URL})",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "internet/net_hole_json.md",
+    "doc": "# hole JSON von URL\n\nFür Fortgeschrittene: ruft **irgendeine** Internetadresse ab, die JSON liefert,\nund gibt die ganze Antwort zurück. Einen einzelnen Wert daraus holst du mit dem\nBlock **Wert aus … Pfad …**.\n\n- Frag nur das an, was du brauchst – große Antworten passen nicht in den\n  Speicher des Boards (dann kommt `None` und in der Konsole steht\n  „zu wenig Speicher“).\n- Höchstens alle 30 Sekunden ein echter Abruf, dazwischen die gespeicherte\n  Antwort.\n- Nur Dienste **ohne** Anmeldung/API-Schlüssel.",
+    "doc_en": "# get JSON from URL\n\nFor advanced users: fetches **any** internet address that delivers JSON and\nreturns the whole answer. Get a single value out of it with the\n**value from … path …** block.\n\n- Only request what you need – large answers don't fit into the board's memory\n  (then you get `None` and the console says \"zu wenig Speicher\").\n- At most one real fetch every 30 seconds, the stored answer in between.\n- Only services **without** login/API key."
+  },
+  {
+    "id": "net_json_wert",
+    "blockCategory": "Internet",
+    "subCategory": "Experten",
+    "requiresBoardFeature": "wifi",
+    "label": "Wert aus Daten",
+    "label_en": "value from data",
+    "colour": "#7C3AED",
+    "tooltip": "Holt einen Wert aus JSON-Daten. Pfad mit Punkten, Zahlen sind Listenplätze (0 = erster, -1 = letzter).",
+    "tooltip_en": "Gets a value from JSON data. Path with dots, numbers are list positions (0 = first, -1 = last).",
+    "blockType": "value",
+    "output": "Any",
+    "inputs": [
+      {
+        "label": "Wert aus",
+        "label_en": "value from"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "DATEN",
+        "check": "Any"
+      },
+      {
+        "name": "PFAD",
+        "label": "Pfad",
+        "label_en": "path",
+        "check": "String",
+        "defaultValue": "current.temperature_2m"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "from makerspaceos_netz import json_wert"
+      ],
+      "expression": "json_wert(${DATEN}, ${PFAD})",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "internet/net_json_wert.md",
+    "doc": "# Wert aus Daten\n\nSucht in verschachtelten JSON-Daten einen einzelnen Wert. Der **Pfad** besteht\naus Namen und Zahlen, getrennt durch Punkte:\n\n| Pfad | bedeutet |\n|---|---|\n| `current.temperature_2m` | im Bereich „current“ der Wert „temperature_2m“ |\n| `items.0.name` | aus der Liste „items“ der **erste** Eintrag, davon „name“ |\n| `werte.-1` | der **letzte** Eintrag der Liste „werte“ |\n\nGibt es den Pfad nicht, liefert der Block `None` und schreibt in die Konsole,\nwelcher Teil gefehlt hat.",
+    "doc_en": "# value from data\n\nFinds a single value in nested JSON data. The **path** consists of names and\nnumbers separated by dots:\n\n| Path | means |\n|---|---|\n| `current.temperature_2m` | in the \"current\" section the value \"temperature_2m\" |\n| `items.0.name` | from the list \"items\" the **first** entry, of that \"name\" |\n| `werte.-1` | the **last** entry of the list \"werte\" |\n\nIf the path does not exist, the block returns `None` and writes to the console\nwhich part was missing."
+  },
+  {
+    "id": "net_python_auswerten",
+    "blockCategory": "Internet",
+    "subCategory": "Experten",
+    "requiresBoardFeature": "wifi",
+    "label": "werte aus mit Python",
+    "label_en": "evaluate with Python",
+    "colour": "#7C3AED",
+    "tooltip": "Expertenblock: eigener Python-Code wertet die Daten aus (Variable daten) und gibt mit return ein Ergebnis zurück. Fehler liefern None.",
+    "tooltip_en": "Expert block: your own Python code evaluates the data (variable daten) and returns a result with return. Errors give None.",
+    "blockType": "value",
+    "output": "Any",
+    "inputs": [
+      {
+        "label": "werte aus mit Python",
+        "label_en": "evaluate with Python"
+      },
+      {
+        "name": "CODE",
+        "fieldType": "multiline_text",
+        "default": "return daten[\"current\"][\"temperature_2m\"]"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "DATEN",
+        "label": "Daten",
+        "label_en": "data",
+        "check": "Any"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "internet/net_python_auswerten.md",
+    "doc": "# werte aus mit Python\n\n**Expertenblock.** Hier schreibst du ein paar Zeilen Python, die die Daten\nauswerten. Die Daten stehen in der Variable `daten`, dein Ergebnis gibst du mit\n`return` zurück:\n\n```python\nwerte = daten[\"hourly\"][\"temperature_2m\"]\nreturn max(werte)\n```\n\n- Der Editor macht daraus eine Funktion `def auswerten_…(daten):` und rückt\n  deinen Code automatisch ein.\n- Passiert ein Fehler, liefert der Block `None` und der Fehler steht in der\n  Konsole – das Programm läuft weiter.\n- Kopierten Code, den du nicht verstehst, bitte nicht hier einfügen: Der normale\n  Weg sind die Blöcke **Wert aus … Pfad …**. Dieser Block ist ein Ausweg, wenn\n  die Blöcke nicht reichen.",
+    "doc_en": "# evaluate with Python\n\n**Expert block.** Write a few lines of Python here that evaluate the data. The\ndata is in the variable `daten`, return your result with `return`:\n\n```python\nwerte = daten[\"hourly\"][\"temperature_2m\"]\nreturn max(werte)\n```\n\n- The editor turns this into a function `def auswerten_…(daten):` and indents\n  your code automatically.\n- If an error happens, the block returns `None` and the error is shown in the\n  console – the program keeps running.\n- Please don't paste copied code you don't understand here: the normal way are\n  the **value from … path …** blocks. This block is a way out when the blocks\n  are not enough."
   },
   {
     "id": "analog_read",
