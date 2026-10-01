@@ -425,7 +425,8 @@ let _serialPending = false;
 let _errTail = '';
 function _checkSerialError(text) {
   _errTail = (_errTail + text).slice(-600); // Rest-Puffer, falls der Fehler über Chunks geteilt ankommt
-  if (/Traceback|\w(?:Error|Exception):/.test(_errTail)) showErrorBanner();
+  // Nur die Fehlerzeile zählt (nicht "Traceback"): Stopp sendet Ctrl+C → "Traceback … KeyboardInterrupt:" ist kein Fehler
+  if (/\w(?:Error|Exception):/.test(_errTail)) showErrorBanner();
 }
 function showErrorBanner() {
   // Code-/Serial-Panel einblenden, falls ausgeblendet – dort steht die Fehlermeldung

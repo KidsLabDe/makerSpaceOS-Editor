@@ -394,8 +394,9 @@ html, body {
   font-weight: 700;
   box-shadow: 0 4px 20px rgba(0,0,0,.35);
   z-index: 100;
+  cursor: pointer;
+  text-align: center;
 }
-.error-banner { cursor: pointer; text-align: center; }
 .error-banner small {
   display: block;
   margin-top: 6px;
@@ -414,7 +415,6 @@ html, body {
   filter: drop-shadow(0 4px 8px rgba(0,0,0,.35)); /* wie der Schatten der Fehlerbox */
 }
 .error-arrow[hidden] { display: none; }
-.error-banner[hidden] { display: none; }
 
 /* ── Firmware-Dialog (UF2 flashen) ─────────────────────────────────────── */
 
