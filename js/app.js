@@ -219,6 +219,7 @@ async function runCode() {
   const code = generateCode();
   try {
     await serial.uploadAndRun(code);
+    hideErrorBanner();
     // Bei jedem Ausführen einen Versionsstand sichern
     pushVersion();
     saveCurrent();
@@ -420,7 +421,58 @@ const _SERIAL_MAX = 100000;  // max. Zeichen im Monitor
 let _serialBuf = '';
 let _serialPending = false;
 
+// Fehler-Banner: erkennt Python-Fehler im Board-Output, bleibt bis zum nächsten erfolgreichen Upload
+let _errTail = '';
+function _checkSerialError(text) {
+  _errTail = (_errTail + text).slice(-600); // Rest-Puffer, falls der Fehler über Chunks geteilt ankommt
+  if (/Traceback|\w(?:Error|Exception):/.test(_errTail)) showErrorBanner();
+}
+function showErrorBanner() {
+  // Code-/Serial-Panel einblenden, falls ausgeblendet – dort steht die Fehlermeldung
+  if (document.getElementById('code-panel').style.display === 'none') {
+    document.getElementById('btn-toggle-panel').click();
+  }
+  document.getElementById('error-banner').hidden = false;
+  drawErrorArrow();
+}
+// Eine Kurve von der Mitte der Banner-Unterkante zur linken Mitte des seriellen Monitors
+function drawErrorArrow() {
+  const arrow = document.getElementById('error-arrow');
+  const b = document.getElementById('error-banner').getBoundingClientRect();
+  const m = document.getElementById('serial-output').getBoundingClientRect();
+  const sx = b.left + b.width / 2, sy = b.bottom + 14;   // Abstand zum Banner
+  const ex = m.left - 14,          ey = m.top + m.height / 2; // Abstand zum Monitor
+  const pt = t => {                                        // Punkt auf der Kurve (kubische Bézier)
+    const u = 1 - t, c = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+    return [c[0] * sx + c[1] * sx + c[2] * (ex - 120) + c[3] * ex,
+            c[0] * sy + c[1] * ey + c[2] * ey + c[3] * ey];
+  };
+  // Handgezeichnet: Punkte seitlich leicht wackeln lassen (an den Enden auslaufend)
+  const N = 48, pts = [];
+  for (let i = 0; i <= N; i++) {
+    const t = i / N, [x, y] = pt(t), [x2, y2] = pt(Math.min(1, t + 0.01));
+    const len = Math.hypot(x2 - x, y2 - y) || 1;
+    const w = (3 * Math.sin(t * 17) + 2 * Math.sin(t * 41 + 1)) * Math.sin(Math.PI * t);
+    pts.push(`${(x - (y2 - y) / len * w).toFixed(1)} ${(y + (x2 - x) / len * w).toFixed(1)}`);
+  }
+  arrow.querySelector('path').setAttribute('d',
+    `M${pts.join(' L')} ` +
+    `M${ex - 19} ${ey - 11} L${ex} ${ey} M${ex} ${ey} L${ex - 15} ${ey + 14}`); // Pfeilspitze leicht schief
+  arrow.toggleAttribute('hidden', false); // SVG hat keine .hidden-Property
+}
+window.addEventListener('resize', () => {
+  if (!document.getElementById('error-arrow').hasAttribute('hidden')) drawErrorArrow();
+});
+// Klick auf die Fehlerbox schließt Box und Pfeil (sonst erst beim nächsten erfolgreichen Upload)
+document.getElementById('error-banner').addEventListener('click', () => hideErrorBanner());
+function hideErrorBanner() {
+  _errTail = '';
+  document.getElementById('error-banner').hidden = true;
+  document.getElementById('error-arrow').toggleAttribute('hidden', true);
+}
+
 function appendSerialOutput(text) {
+  _checkSerialError(text);
   _serialBuf += text;
   if (_serialPending) return;
   _serialPending = true;
