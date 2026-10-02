@@ -1,3 +1,5 @@
 .DS_Store
 *.log
 __pycache__/
+mcp/node_modules/
+mcp/.agent_token

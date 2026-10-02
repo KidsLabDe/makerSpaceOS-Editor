@@ -12,7 +12,7 @@ const HTML_FILES = ['index.html', 'viewer.html', 'admin.html'];
 
 function bump() {
   const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12); // JJJJMMTThhmm
-  const re = /(\b(?:src|href)=")((?:js|css)\/[^"?]+)(?:\?v=[^"]*)?(")/g;
+  const re = /(\b(?:src|href)=")((?:js|css)\/[^"?']+)(?:\?v=[^"]*)?(")/g;
 
   for (const file of HTML_FILES) {
     const filePath = path.join(ROOT, file);

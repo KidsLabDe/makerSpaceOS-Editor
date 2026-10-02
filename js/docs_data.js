@@ -484,7 +484,9 @@ that should light up, and choose a colour.`,
   },
   {
     id: 'faq_robo_esp32', label: 'Robo ESP32: Anschlüsse und Bauteile', colour: FAQ_COLOUR, section: 'FAQ',
+    label_en: 'Robo ESP32: ports and parts',
     tooltip: 'Welcher Pin ist wo, und was steckt man wohin?',
+    tooltip_en: 'Which pin is where, and what plugs in where?',
     doc: `Diese Seite erklärt dir, was auf dem Robo ESP32 ist, welche Anschlüsse es gibt und wie du Bauteile richtig ansteckst. Mit dieser Anleitung vermeidest du den häufigsten Fehler: **zwei Bauteile am selben Pin**.
 
 > **Wichtig:** Auf dem Board stehen keine Nummern wie „Grove 1“. Suche einen Anschluss anhand der **GPIO-Zahlen** neben dem Stecker (zum Beispiel \`17\` und \`16\`).
@@ -627,6 +629,148 @@ Meine Bauteile und meine Aufgabe:
 \`\`\`
 
 > **Tipp:** Wenn die KI Pins benutzt, die nicht in der Liste stehen, sag ihr: „Bitte benutze nur die Pins aus meiner Liste.“`,
+    doc_en: `This page explains what is on the Robo ESP32, which ports it has and how to plug in parts correctly. This guide helps you avoid the most common mistake: **two parts on the same pin**.
+
+> **Important:** The board has no numbers like "Grove 1". Find a port by the **GPIO numbers** next to the connector (for example \`17\` and \`16\`).
+
+## 1. What is on the board
+
+- 7 Grove ports (small white connectors with 4 wires)
+- 1 Maker port (small connector, shares its pins with the I2C Grove port)
+- 4 servo ports
+- 2 motor ports for small DC motors
+- 2 buttons, 1 piezo buzzer with a mute switch
+- 2 RGB LEDs, 10 status LEDs for pins
+- A reset button and an on/off switch
+- A socket for a NodeMCU ESP32 (30 pins) with a pin header
+
+The pins for the buttons, buzzer, RGB LEDs and motors are listed in the [board's datasheet](https://docs.google.com/document/d/1sX5PVDH0t97U6eEQNhdARgjXWjdCvVvBfn_B1Vv0p9o/edit?usp=sharing). These pins are already in use. Don't use them for your own parts if you also need the buttons, the buzzer or the motors.
+
+## 2. Power
+
+The board can get power in three ways. One of them is enough:
+
+- via **USB** (5 V)
+- via a **LiPo battery** (1 cell)
+- via the **VIN terminals** (3.6 to 6 V)
+
+The on/off switch turns everything on and off. The motors use the same power source as the board.
+
+## 3. Port overview
+
+We tested these ports on the board. "Output" means the pin can also send signals.
+
+| Port (GPIO pins) | What for | Note |
+|---|---|---|
+| **22 (SDA) and 21 (SCL)** | I2C devices (OLED, many sensors) | Also on the Maker port. On our board **SDA = 22 and SCL = 21**. |
+| **17 and 16** | two signal lines | Both pins are outputs. |
+| **26 and 25** | two signal lines | Both pins are outputs. No analog reading with Wi-Fi (ADC2). |
+| **33 and 32** | two signal lines | Both pins are outputs. Analog reading with Wi-Fi works. |
+| **36 and 39** | **reading sensors only** | Input only. No display, no LED strip. |
+| **Servo: 4, 5, 18, 19** | servos or one signal line | Output. The servo port also has 5 V and GND. Better not use pin 5 (see section 4). |
+
+> **Careful, these ports share pins:**
+>
+> - **22 + 39** shares pin 22 with the I2C port.
+> - **25 + 33** shares pin 25 with port 26 + 25 and pin 33 with port 33 + 32.
+>
+> If you plug a part in there while the other port is also in use, you will get errors.
+
+## 4. Pin rules
+
+1. **Each pin for one part only.** If two ports share a pin, you can only use one of them. Exception: I2C devices may share one I2C port if they have different addresses.
+2. **Pins 34 to 39 can only read.** They cannot send anything. They don't work for displays, LED strips, servos or the DHT sensor.
+3. **Never use pins 6 to 11.** They are connected to the ESP32's memory.
+4. **Be careful with pins 0, 2, 5, 12 and 15.** They affect how the board starts. If you use them, uploading or starting may fail.
+5. **Wi-Fi and analog reading:** Pins on ADC2 (for example 25 and 26) cannot read analog values while Wi-Fi is on. Use 32, 33, 36 or 39 instead.
+
+## 5. Which part goes where?
+
+### I2C devices (OLED display, many sensors)
+
+- Plug them into the **I2C port** (22 and 21).
+- In code: \`Wire.begin(22, 21);\` (SDA first, then SCL).
+- Several I2C devices can share the same port if they have different addresses. Most OLEDs use \`0x3C\`.
+- If the device is not found, swap SDA and SCL in the code.
+
+### 4-digit display (TM1637)
+
+- Needs **two output pins** (CLK and DIO). Use 17 and 16, for example.
+- Each display needs its **own pin pair**.
+- If a display stays dark: swap CLK and DIO in the code.
+- Write the number again regularly in your program (for example every second). Then the display doesn't stay dark after a power glitch.
+
+### Temperature and humidity sensor (DHT11 / DHT22)
+
+- Has **one data line**. The pin must be an **output**, so not 34 to 39. Use a servo pin like 4.
+- Power it with **3.3 V** only, not 5 V. Otherwise the ESP32 gets too much voltage.
+- Read it at most every 2 seconds.
+
+### LED strip (WS2812 / NeoPixel)
+
+- Has **one data line**. Use an output pin, for example 18.
+- Put a **330 Ω** resistor in the data line.
+- Power it with **5 V**. For more than about 8 LEDs you need a separate 5 V power supply. Then connect its **GND** to the board's **GND**.
+- Start with a low brightness (for example 30 out of 255).
+
+### Servos and motors
+
+- Servos go into the **4 servo ports**, motors into the **2 motor ports**.
+- Motors and servos need a lot of power. Use a power supply or a battery, not just USB.
+
+### Analog sensors (for example light, soil moisture)
+
+- Use a pin that can read analog values: **36, 39, 32 or 33**. These also work with Wi-Fi.
+
+## 6. Finding problems
+
+| Problem | What you can do |
+|---|---|
+| A device doesn't react at all | Is the connector pushed in all the way? Is the board on? Check the pin numbers in the code. |
+| OLED or I2C sensor is not found | Swap SDA and SCL. Check that the device is on the I2C port. |
+| Display stays dark | Swap CLK and DIO. Write the number again regularly. |
+| Sensor shows "TIMEOUT" | Is it on an output pin (not 34 to 39)? Check the 3.3 V. |
+| LEDs light up wrong or not at all | Check GND, 5 V, the data pin and the 330 Ω resistor. Enter the correct number of LEDs in the code. |
+| Uploading doesn't work | Unplug everything from pins 0, 2, 5, 12 and 15 and try again. |
+| The board acts strangely | Unplug everything and plug the parts back in one by one until you find the culprit. |
+
+## 7. Prompt for chat AIs
+
+Do you want an AI (for example ChatGPT or Claude) to help you program? Copy the text below and paste it **before your question**. At \`[YOUR TASK GOES HERE]\` at the end, write what you want to build and which parts you use.
+
+\`\`\`text
+You help students in grades 7 to 9 program the Cytron Robo ESP32.
+
+Language: Answer in simple English with short sentences. Briefly explain technical terms. Explain the code in a few steps.
+
+Board: Cytron Robo ESP32 (ESP32 with the Arduino framework, PlatformIO or Arduino IDE).
+
+Ports I may use (GPIO pins):
+- I2C: SDA = 22, SCL = 21. Always pass them yourself in code, for example Wire.begin(22, 21).
+- Two signal lines (both outputs): 17 and 16
+- Two signal lines (both outputs): 26 and 25 (ADC2, no analog reading with Wi-Fi)
+- Two signal lines (both outputs): 33 and 32
+- Input only (reading sensors only): 36 and 39
+- Servo ports (output): 4, 5, 18, 19 (better not use pin 5)
+
+Rules:
+1. Only use the pins listed above. Don't make up other pins.
+2. GPIO 34 to 39 can only read. Never use them as outputs (no display, no LED strip, no servo, no DHT sensor).
+3. Don't use pins 6 to 11. Avoid 0, 2, 5, 12 and 15.
+4. Each pin may be used by only one part. If my task would need two parts on the same pin, tell me and suggest a solution.
+5. Ports 22 + 39 and 25 + 33 share pins with other ports. Don't use them.
+6. Write the pins as constants at the start of the program, for example: constexpr uint8_t LED_PIN = 18;
+7. If a device with two signal lines (I2C or 4-digit display) doesn't work, remind me that I can swap the two pins.
+8. A DHT sensor needs 3.3 V and may be read at most every 2 seconds. An LED strip needs 5 V, a 330 ohm resistor in the data line and a low brightness at the start (for example 30).
+9. 4-digit displays should get their number again regularly (for example every second).
+10. Give me complete code that I can copy directly. Write comments in English.
+11. If you are not sure about something, ask me first instead of guessing.
+
+My parts and my task:
+[YOUR TASK GOES HERE]
+\`\`\`
+
+> **Tip:** If the AI uses pins that are not in the list, tell it: "Please only use the pins from my list."`,
   },
 ];
 

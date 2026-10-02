@@ -22,6 +22,7 @@ class CircuitPythonSerial {
     this.writer   = null;
     this._reading = false;
     this.onData   = null;  // callback(string)
+    this.onDataTap = null; // zweiter, unabhängiger Lauscher (Agent-Bridge); bekommt dieselben Daten wie der Monitor
     this.onDisconnect = null;        // callback() bei unerwartetem Verbindungsverlust
     this._intentionalClose = false;  // true = vom Nutzer ausgelöstes Trennen
     this._disconnectBound  = false;
@@ -34,11 +35,13 @@ class CircuitPythonSerial {
     return this.port !== null;
   }
 
-  async connect() {
+  // port: optional ein bereits freigegebener Port (navigator.serial.getPorts()) –
+  // dann ohne Auswahl-Dialog. Ohne Angabe fragt der Browser den Nutzer (Geste nötig).
+  async connect(port = null) {
     if (!('serial' in navigator)) {
       throw new Error(L('Web Serial API nicht verfügbar. Bitte Chrome oder Edge verwenden.', 'Web Serial API not available. Please use Chrome or Edge.'));
     }
-    this.port = await navigator.serial.requestPort();
+    this.port = port || await navigator.serial.requestPort();
     await this.port.open({ baudRate: 115200 });
     this._intentionalClose = false;
     this._bindDisconnectEvent();
@@ -80,6 +83,7 @@ class CircuitPythonSerial {
                 const text = new TextDecoder().decode(value);
                 if (self._capturing) self._rxBuffer += text;
                 if (self.onData && !self._suppressOnData) self.onData(text);
+                if (self.onDataTap && !self._suppressOnData) self.onDataTap(text);
               }
             }
           } finally {
