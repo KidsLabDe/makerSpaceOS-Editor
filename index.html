@@ -329,6 +329,13 @@
   <script src="js/docs.js?v=202609300919"></script>
   <script src="js/ai_chat.js?v=202609300919"></script>
   <script src="js/app.js?v=202609300919"></script>
+  <!-- KI-Agent-Brücke (MCP): nur mit ?agent=1&token=… – siehe mcp/README.md -->
+  <script>
+    if (/[?&]agent=1\b/.test(location.search)) {
+      ['bridge', 'knowledge', 'workspace', 'board'].forEach(n =>
+        document.write('<script src="js/agent/' + n + '.js?v=' + Date.now() + '"><\/script>'));
+    }
+  </script>
 
   <!-- Resize-Divider Logik -->
   <script>

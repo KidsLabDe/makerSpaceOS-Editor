@@ -170,18 +170,24 @@ async function toggleConnect() {
     setConnected(false);
   } else {
     try {
-      await serial.connect();
-      serial.onData = appendSerialOutput;
-      serial.onDisconnect = () => {
-        setConnected(false);
-        showToast(L('Board getrennt', 'Board disconnected'), 'warn');
-      };
-      setConnected(true);
-      detectAndSwitchBoard();   // Board erkennen und ggf. Profil umschalten
+      await connectBoard();
     } catch (e) {
       showToast(L('Verbindung fehlgeschlagen: ', 'Connection failed: ') + e.message, 'error');
     }
   }
+}
+
+// Verbindet das Board und richtet UI + Monitor ein. port = optional bereits
+// freigegebener Port (Agent-Bridge); ohne Angabe öffnet der Browser den Picker.
+async function connectBoard(port = null) {
+  await serial.connect(port);
+  serial.onData = appendSerialOutput;
+  serial.onDisconnect = () => {
+    setConnected(false);
+    showToast(L('Board getrennt', 'Board disconnected'), 'warn');
+  };
+  setConnected(true);
+  detectAndSwitchBoard();   // Board erkennen und ggf. Profil umschalten
 }
 
 // Erkennt das angeschlossene Board über board.board_id und schaltet bei Bedarf
