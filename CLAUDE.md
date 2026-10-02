@@ -13,7 +13,7 @@ Zielgruppe: **Kinder und Einsteiger**. Code-Kommentare sind auf **Deutsch**. Die
 Deutsch ist Default; Englisch wird über das Sprach-Dropdown im Header gewählt (`localStorage['makerspaceos.lang']`, Wechsel per Reload wie beim Board-Wechsel). Alles Deutsche bleibt „first class" – Englisch kommt additiv dazu:
 
 - **`js/i18n.js`** (lädt als erstes App-Skript): `LANG`/`IS_EN`, `L(de, en)` für Inline-Strings, `LF(obj, feld)` liest `obj.feld_en` (en) bzw. `obj.feld` (de) mit Fallback auf Deutsch, `setLang(id)` persistiert + Reload. Statische `index.html`-Texte tragen `data-i18n` / `data-i18n-title` / `data-i18n-ph` mit dem englischen Text; Deutsch steht direkt im HTML.
-- **Blockly-Locale**: Englisch ist in `blockly_compressed.js` eingebaut; `msg/de.js` wird in `index.html` nur bei `lang=de` per `document.write` nachgeladen.
+- **Blockly-Locale**: `blockly_compressed.js` (9.3.3) enthält **keine** Texte – `index.html` lädt per `document.write` immer genau eine Locale `vendor/blockly/msg/{de,en}.js` (beide aus dem npm-Paket `blockly@9.3.3`). Fehlt sie, scheitern Standardblöcke beim Erzeugen („Message does not reference all N arg(s)").
 - **Handgeschriebene Blöcke/JS** (`blocks/*.js`, `block_builder.js`, `toolbox.js`, `generator.js`, `app.js`, `docs.js` …): jeden nutzer-sichtbaren String durch `L('deutsch', 'english')` ersetzen. Auch generierte Code-Kommentare und Handler-Namen (`fuer_immer`/`forever`, `beim_start`/`on_start`, `wenn_*`/`when_*`) laufen über `L()`; die Laufzeit-API `immer`/`wenn`/`start` bleibt in beiden Sprachen deutsch (liegt auf dem Board).
 - **Markdown-Blöcke** (`components/**/*.md`): jedes sichtbare Frontmatter-Feld bekommt eine `*_en`-Variante (`label_en`, `tooltip_en`, Input-`label_en`, valueInput-`label_en`/`suffix_en`/`defaultValue_en`, `statementInput.label_en`). Der Doku-Body wird durch eine Zeile `<!-- lang:en -->` geteilt: Deutsch davor, Englisch danach (→ `doc`/`doc_en` in `blocks_db.js`). **Neue Blöcke immer mit EN-Feldern anlegen.**
 - **`components/catalog.json`**: Kategorien haben `label_en` + `subCategories_en` (Map deutscher Subkategorie-Name → englisches Label). Die deutschen Namen bleiben die IDs (Matching, `hideSubCategories`).
@@ -147,6 +147,7 @@ Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein koopera
 - **Neuer Editor-Befehl:** `AGENT_COMMANDS.<name> = async (args) => …` in `js/agent/*.js` + `tool(...)`-Eintrag in `mcp/server.js`. Regeltexte/Erinnerungen (DE/EN) zentral in `mcp/rules.js`, Leitfaden in `mcp/guide.{de,en}.md` (bei Regeländerungen beide pflegen).
 - `serial.connect(port)` nimmt einen bereits freigegebenen Port (`getPorts()`, ohne Dialog); `connectBoard(port)` in `app.js` ist der gemeinsame Verbindungsweg für Button und Bridge. `serial.onDataTap` ist ein zweiter Lauscher neben dem Monitor.
 - Bridge-IDs von Blockly enthalten Sonderzeichen (`]`, `}` …) – immer als JSON-String behandeln.
+- **Event-Timing:** Blockly 9 feuert Änderungs-Events erst per `requestAnimationFrame` → `setTimeout` (im Hintergrund-Tab pausiert rAF ganz). `bridge.js` ersetzt daher im Agent-Modus rAF im verdeckten Tab durch einen Microtask und wartet vor jeder Antwort mit `agentFlushEvents()`, bis die Events gefeuert sind – sonst hinken Undo-Verlauf, Code-Feld und Autosave hinterher (`undo` traf den falschen Schritt).
 
 ## Commit-Stil
 

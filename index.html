@@ -12,8 +12,9 @@
   <script src="vendor/blockly/blockly_compressed.js"></script>
   <script src="vendor/blockly/blocks_compressed.js"></script>
   <script src="vendor/blockly/python_compressed.js"></script>
-  <!-- Blockly-Locale je nach Sprache: Englisch ist in blockly_compressed.js
-       eingebaut, Deutsch wird nur bei lang=de nachgeladen (siehe js/i18n.js) -->
+  <!-- Blockly-Locale je nach Sprache: blockly_compressed.js (9.x) enthält KEINE
+       Texte – ohne msg/*.js scheitern Standardblöcke („Message does not
+       reference all args"). Deshalb immer genau eine Locale laden (siehe js/i18n.js) -->
   <script>
     window.MSOS_LANG = (function () {
       try {
@@ -24,9 +25,7 @@
       const nav = ((navigator.language || navigator.userLanguage || 'de') + '').toLowerCase();
       return nav.startsWith('de') ? 'de' : 'en';
     })();
-    if (window.MSOS_LANG === 'de') {
-      document.write('<script src="vendor/blockly/msg/de.js"><\/script>');
-    }
+    document.write('<script src="vendor/blockly/msg/' + window.MSOS_LANG + '.js"><\/script>');
   </script>
 
   <!-- CodeMirror (lokal gehostet, siehe vendor/codemirror/ – kein externer CDN-Request) -->
@@ -36,9 +35,9 @@
   <script src="vendor/codemirror/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202610020608">
+  <link rel="stylesheet" href="css/fonts.css?v=202610020609">
 
-  <link rel="stylesheet" href="css/style.css?v=202610020608">
+  <link rel="stylesheet" href="css/style.css?v=202610020609">
 </head>
 <body>
 <div id="app-shell">
@@ -313,28 +312,28 @@
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/i18n.js?v=202610020608"></script>
-  <script src="js/boards.js?v=202610020608"></script>
-  <script src="js/blocks/control.js?v=202610020608"></script>
-  <script src="js/blocks/events.js?v=202610020608"></script>
-  <script src="js/blocks/text.js?v=202610020608"></script>
-  <script src="js/blocks/variables.js?v=202610020608"></script>
-  <script src="js/blocks/lists.js?v=202610020608"></script>
-  <script src="js/blocks_db.js?v=202610020608"></script>
-  <script src="js/block_builder.js?v=202610020608"></script>
-  <script src="js/toolbox.js?v=202610020608"></script>
-  <script src="js/blocks/matrix.js?v=202610020608"></script>
-  <script src="js/generator.js?v=202610020608"></script>
-  <script src="js/serial.js?v=202610020608"></script>
-  <script src="js/storage.js?v=202610020608"></script>
-  <script src="js/lib_manifest.js?v=202610020608"></script>
-  <script src="js/board_setup.js?v=202610020608"></script>
-  <script src="js/firmware_manifest.js?v=202610020608"></script>
-  <script src="js/firmware_flash.js?v=202610020608"></script>
-  <script src="js/docs_data.js?v=202610020608"></script>
-  <script src="js/docs.js?v=202610020608"></script>
-  <script src="js/ai_chat.js?v=202610020608"></script>
-  <script src="js/app.js?v=202610020608"></script>
+  <script src="js/i18n.js?v=202610020609"></script>
+  <script src="js/boards.js?v=202610020609"></script>
+  <script src="js/blocks/control.js?v=202610020609"></script>
+  <script src="js/blocks/events.js?v=202610020609"></script>
+  <script src="js/blocks/text.js?v=202610020609"></script>
+  <script src="js/blocks/variables.js?v=202610020609"></script>
+  <script src="js/blocks/lists.js?v=202610020609"></script>
+  <script src="js/blocks_db.js?v=202610020609"></script>
+  <script src="js/block_builder.js?v=202610020609"></script>
+  <script src="js/toolbox.js?v=202610020609"></script>
+  <script src="js/blocks/matrix.js?v=202610020609"></script>
+  <script src="js/generator.js?v=202610020609"></script>
+  <script src="js/serial.js?v=202610020609"></script>
+  <script src="js/storage.js?v=202610020609"></script>
+  <script src="js/lib_manifest.js?v=202610020609"></script>
+  <script src="js/board_setup.js?v=202610020609"></script>
+  <script src="js/firmware_manifest.js?v=202610020609"></script>
+  <script src="js/firmware_flash.js?v=202610020609"></script>
+  <script src="js/docs_data.js?v=202610020609"></script>
+  <script src="js/docs.js?v=202610020609"></script>
+  <script src="js/ai_chat.js?v=202610020609"></script>
+  <script src="js/app.js?v=202610020609"></script>
   <!-- KI-Agent-Brücke (MCP): nur mit ?agent=1&token=… – siehe mcp/README.md -->
   <script>
     if (/[?&]agent=1\b/.test(location.search)) {
