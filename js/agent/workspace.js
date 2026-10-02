@@ -178,7 +178,11 @@ AGENT_COMMANDS.set_field = async ({ block_id, field, value }) => agentEdit(() =>
   return { ok: true, ...agentSummary() };
 });
 
-AGENT_COMMANDS.undo = async () => { workspace.undo(false); return { ok: true, ...agentSummary() }; };
+AGENT_COMMANDS.undo = async () => {
+  await agentFlushEvents();   // ungefeuerte Events (z. B. Mensch hat gerade gezogen) erst in den Undo-Verlauf
+  workspace.undo(false);
+  return { ok: true, ...agentSummary() };
+};
 
 AGENT_COMMANDS.validate = async () => {
   const s = agentSummary();

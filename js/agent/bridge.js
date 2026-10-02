@@ -75,6 +75,40 @@ AGENT_COMMANDS.wait_for_output = async ({ pattern, since, timeout_ms = 10000 }) 
   }
 };
 
+// ── Blockly-Events zeitnah feuern ───────────────────────────────────────────
+// Blockly 9 feuert Änderungs-Events erst per requestAnimationFrame → setTimeout.
+// Erst dann landen sie im Undo-Verlauf, im Code-Feld und im Autosave. Zwei Folgen:
+//  1. Agent-Befehle kommen schneller als ein Frame → `undo` direkt nach einer
+//     Änderung machte den VORHERIGEN Schritt rückgängig (z. B. ganzen Block gelöscht).
+//  2. Im Hintergrund-Tab pausiert der Browser requestAnimationFrame → Events
+//     (und Autosave) blieben liegen, solange der Mensch im Terminal/IDE arbeitet.
+// Abhilfe (nur im Agent-Modus): rAF läuft im verdeckten Tab per Microtask, und
+// jede Antwort wartet, bis die Event-Warteschlange abgearbeitet ist.
+(function agentRafShim() {
+  const raf = window.requestAnimationFrame.bind(window);
+  const pending = new Set();   // noch nicht gelaufene rAF-Callbacks (Reihenfolge = Einfügen)
+  window.requestAnimationFrame = (cb) => {
+    if (document.hidden) { queueMicrotask(() => cb(performance.now())); return 0; }
+    const entry = {};
+    entry.run = () => { if (entry.done) return; entry.done = true; pending.delete(entry); cb(performance.now()); };
+    pending.add(entry);
+    return raf(entry.run);
+  };
+  // Tab wird verdeckt, während Callbacks warten → sofort nachholen statt bis zur Rückkehr hängen
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) for (const e of [...pending]) queueMicrotask(e.run);
+  });
+})();
+
+// Wartet, bis Blocklys Event-Warteschlange gefeuert hat. Blockly reiht fireNow per
+// rAF → setTimeout(0) ein; dieselbe Kette danach eingereiht läuft garantiert später (FIFO).
+function agentFlushEvents() {
+  return new Promise((res) => {
+    const guard = setTimeout(res, 3000);   // Notausgang, falls der Browser Timer drosselt
+    requestAnimationFrame(() => setTimeout(() => { clearTimeout(guard); res(); }, 0));
+  });
+}
+
 // ── Transport ───────────────────────────────────────────────────────────────
 (function startBridge() {
   const q = new URLSearchParams(location.search);
@@ -100,6 +134,7 @@ AGENT_COMMANDS.wait_for_output = async ({ pattern, since, timeout_ms = 10000 }) 
       } catch (e) {
         reply = { id: msg.id, ok: false, error: e && e.message ? e.message : String(e) };
       }
+      await agentFlushEvents();   // Undo-Verlauf/Code-Feld/Autosave sind aktuell, bevor der Agent weitermacht
       reply.serial = typeof serial !== 'undefined' && serial.isConnected;
       reply.lang = LANG;   // Server richtet Erinnerungen/Berichte danach aus
       ws.send(JSON.stringify(reply));

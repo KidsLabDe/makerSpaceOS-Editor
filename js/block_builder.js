@@ -193,7 +193,8 @@
       if (hasUnset) {
         block.setWarningText(L('⚠ Bitte Port / Pin auswählen!', '⚠ Please select a port / pin!'));
         if (block.outputConnection) return ['None', Blockly.Python.ORDER_NONE];
-        return L('# ⚠ Kein Port ausgewählt\n', '# ⚠ No port selected\n');
+        // pass statt reinem Kommentar – sonst bleibt z. B. fuer_immer() ohne Rumpf (IndentationError)
+        return L('pass  # ⚠ Kein Port ausgewählt\n', 'pass  # ⚠ No port selected\n');
       }
       block.setWarningText(null);
 
