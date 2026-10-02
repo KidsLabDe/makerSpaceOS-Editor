@@ -478,14 +478,14 @@ Blockly.Python['actuator_motor_forward'] = function(block) {
   const m     = block.getFieldValue('MOTOR');
   const speed = Blockly.Python.valueToCode(block, 'SPEED', Blockly.Python.ORDER_NONE) || '75';
   _motorDefs(m);
-  return `_motor_${m}.throttle = ${speed} / 100\n`;
+  return `_motor_${m}.throttle = max(0, min(100, ${speed})) / 100\n`;
 };
 
 Blockly.Python['actuator_motor_backward'] = function(block) {
   const m     = block.getFieldValue('MOTOR');
   const speed = Blockly.Python.valueToCode(block, 'SPEED', Blockly.Python.ORDER_NONE) || '75';
   _motorDefs(m);
-  return `_motor_${m}.throttle = -(${speed} / 100)\n`;
+  return `_motor_${m}.throttle = -max(0, min(100, ${speed})) / 100\n`;
 };
 
 Blockly.Python['actuator_motor_stop'] = function(block) {
