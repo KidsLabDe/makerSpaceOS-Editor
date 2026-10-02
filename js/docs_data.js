@@ -16,6 +16,7 @@ const LOGIC_COLOUR   = '#4FBFE8';
 const MATH_COLOUR    = '#16A34A';
 const VAR_COLOUR     = '#CA8A04';
 const TEXT_COLOUR    = '#0891B2';
+const FAQ_COLOUR     = '#64748B';
 const LIST_COLOUR    = '#9333EA';
 const MATRIX_COLOUR  = '#EC4899';
 
@@ -27,6 +28,7 @@ const CORE_SECTIONS = [
   { name: 'Variablen',  label_en: 'Variables', colour: VAR_COLOUR },
   { name: 'Listen',     label_en: 'Lists',     colour: LIST_COLOUR },
   { name: 'Text',       label_en: 'Text',      colour: TEXT_COLOUR },
+  { name: 'FAQ',        label_en: 'FAQ',       colour: FAQ_COLOUR },
 ];
 
 const CORE_DOCS = [
@@ -480,6 +482,296 @@ die leuchten sollen, und eine Farbe wählen.`,
     doc_en: `Paint your own picture: click the dots in the 8×8 grid on the block
 that should light up, and choose a colour.`,
   },
+  {
+    id: 'faq_robo_esp32', label: 'Robo ESP32: Anschlüsse und Bauteile', colour: FAQ_COLOUR, section: 'FAQ',
+    label_en: 'Robo ESP32: ports and parts',
+    tooltip: 'Welcher Pin ist wo, und was steckt man wohin?',
+    tooltip_en: 'Which pin is where, and what plugs in where?',
+    doc: `Diese Seite erklärt dir, was auf dem Robo ESP32 ist, welche Anschlüsse es gibt und wie du Bauteile richtig ansteckst. Mit dieser Anleitung vermeidest du den häufigsten Fehler: **zwei Bauteile am selben Pin**.
+
+> **Wichtig:** Auf dem Board stehen keine Nummern wie „Grove 1“. Suche einen Anschluss anhand der **GPIO-Zahlen** neben dem Stecker (zum Beispiel \`17\` und \`16\`).
+
+## 1. Das ist auf dem Board
+
+- 7 Grove-Anschlüsse (kleine weiße Stecker mit 4 Kabeln)
+- 1 Maker-Anschluss (kleiner Stecker, teilt sich die Pins mit dem I2C-Grove-Anschluss)
+- 4 Servo-Anschlüsse
+- 2 Motor-Anschlüsse für kleine Gleichstrommotoren
+- 2 Tasten, 1 Piezo-Summer (Buzzer) mit Stumm-Schalter
+- 2 RGB-LEDs, 10 Status-LEDs für Pins
+- Ein Reset-Knopf und ein Ein/Aus-Schalter
+- Ein Steckplatz für ein NodeMCU ESP32 (30 Pins) mit Pin-Leiste
+
+Die Pins für Tasten, Summer, RGB-LEDs und Motoren stehen im [Datenblatt des Boards](https://docs.google.com/document/d/1sX5PVDH0t97U6eEQNhdARgjXWjdCvVvBfn_B1Vv0p9o/edit?usp=sharing). Diese Pins sind schon belegt. Benutze sie nicht für eigene Bauteile, wenn du die Tasten, den Summer oder die Motoren auch brauchst.
+
+## 2. Strom
+
+Das Board bekommt Strom auf drei Wegen. Es reicht einer davon:
+
+- über **USB** (5 V)
+- über einen **LiPo-Akku** (1 Zelle)
+- über die **VIN-Klemmen** (3,6 bis 6 V)
+
+Der Ein/Aus-Schalter schaltet alles. Die Motoren nutzen dieselbe Stromquelle wie das Board.
+
+## 3. Anschluss-Übersicht
+
+Diese Anschlüsse haben wir am Board geprüft. „Ausgang“ bedeutet, dass der Pin auch Signale senden kann.
+
+| Anschluss (GPIO-Pins) | Für was | Hinweis |
+|---|---|---|
+| **22 (SDA) und 21 (SCL)** | I2C-Geräte (OLED, viele Sensoren) | Auch am Maker-Anschluss. Bei uns ist **SDA = 22 und SCL = 21**. |
+| **17 und 16** | zwei Signalleitungen | Beide Pins sind Ausgang. |
+| **26 und 25** | zwei Signalleitungen | Beide Pins sind Ausgang. Kein Analog-Lesen mit WLAN (ADC2). |
+| **33 und 32** | zwei Signalleitungen | Beide Pins sind Ausgang. Analog-Lesen mit WLAN geht. |
+| **36 und 39** | **nur Sensoren lesen** | Nur Eingang. Kein Display, kein LED-Streifen. |
+| **Servo: 4, 5, 18, 19** | Servos oder eine Signalleitung | Ausgang. Am Servo-Anschluss gibt es auch 5 V und GND. Pin 5 lieber nicht benutzen (siehe Abschnitt 4). |
+
+> **Achtung, diese Anschlüsse teilen sich Pins:**
+>
+> - **22 + 39** teilt sich Pin 22 mit dem I2C-Anschluss.
+> - **25 + 33** teilt sich Pin 25 mit dem Anschluss 26 + 25 und Pin 33 mit dem Anschluss 33 + 32.
+>
+> Wenn du dort ein Bauteil ansteckst und der andere Anschluss auch benutzt wird, gibt es Fehler.
+
+## 4. Regeln für Pins
+
+1. **Jeder Pin nur für ein Bauteil.** Wenn zwei Anschlüsse denselben Pin haben, kannst du nur einen davon benutzen. Ausnahme: I2C-Geräte dürfen sich einen I2C-Anschluss teilen, wenn sie verschiedene Adressen haben.
+2. **Pins 34 bis 39 können nur lesen.** Sie können nichts senden. Für Displays, LED-Streifen, Servos und den DHT-Sensor gehen sie nicht.
+3. **Pins 6 bis 11 nie benutzen.** Sie hängen am Speicher des ESP32.
+4. **Vorsicht bei den Pins 0, 2, 5, 12 und 15.** Sie beeinflussen den Start des Boards. Wenn du sie benutzt, kann das Hochladen oder der Start fehlschlagen.
+5. **WLAN und analoges Lesen:** Pins auf ADC2 (zum Beispiel 25 und 26) können kein Analog-Lesen, wenn WLAN an ist. Nimm dafür 32, 33, 36 oder 39.
+
+## 5. Welches Bauteil kommt wohin?
+
+### I2C-Geräte (OLED-Display, viele Sensoren)
+
+- Stecke sie an den **I2C-Anschluss** (22 und 21).
+- Im Code: \`Wire.begin(22, 21);\` (erst SDA, dann SCL).
+- Mehrere I2C-Geräte gehen zusammen an denselben Anschluss, wenn sie verschiedene Adressen haben. Die meisten OLEDs haben \`0x3C\`.
+- Wenn das Gerät nicht gefunden wird, tausche SDA und SCL im Code.
+
+### 4-Ziffern-Display (TM1637)
+
+- Braucht **zwei Ausgangs-Pins** (CLK und DIO). Nimm zum Beispiel 17 und 16.
+- Jedes Display braucht sein **eigenes Pin-Paar**.
+- Wenn ein Display dunkel bleibt: tausche CLK und DIO im Code.
+- Schreibe die Zahl im Programm regelmäßig neu (zum Beispiel jede Sekunde). Dann bleibt das Display nach einem Stromfehler nicht dunkel.
+
+### Temperatur- und Feuchtigkeitssensor (DHT11 / DHT22)
+
+- Hat **eine Datenleitung**. Der Pin muss ein **Ausgang** sein, also nicht 34 bis 39. Nimm einen Servo-Pin wie 4.
+- Strom nur mit **3,3 V**, nicht mit 5 V. Sonst bekommt der ESP32 zu viel Spannung.
+- Lies ihn höchstens alle 2 Sekunden.
+
+### LED-Streifen (WS2812 / NeoPixel)
+
+- Hat **eine Datenleitung**. Nimm einen Ausgangs-Pin, zum Beispiel 18.
+- Setze einen Widerstand mit **330 Ω** in die Datenleitung.
+- Strom mit **5 V**. Für mehr als etwa 8 LEDs brauchst du ein eigenes 5-V-Netzteil. Verbinde dann dessen **GND** mit dem **GND** vom Board.
+- Stelle die Helligkeit am Anfang niedrig ein (zum Beispiel 30 von 255).
+
+### Servos und Motoren
+
+- Servos gehören an die **4 Servo-Anschlüsse**. Motoren an die **2 Motor-Anschlüsse**.
+- Motoren und Servos brauchen viel Strom. Nutze ein Netzteil oder einen Akku, nicht nur USB.
+
+### Analoge Sensoren (zum Beispiel Licht, Boden-Feuchtigkeit)
+
+- Nimm einen Pin, der Analog lesen kann: **36, 39, 32 oder 33**. Diese gehen auch mit WLAN.
+
+## 6. Fehler finden
+
+| Problem | Das kannst du tun |
+|---|---|
+| Ein Gerät reagiert gar nicht | Ist der Stecker ganz drin? Ist das Board an? Prüfe die Pin-Zahlen im Code. |
+| OLED oder I2C-Sensor wird nicht gefunden | Tausche SDA und SCL. Prüfe, ob das Gerät am I2C-Anschluss steckt. |
+| Display bleibt dunkel | Tausche CLK und DIO. Schreibe die Zahl regelmäßig neu. |
+| Sensor zeigt „TIMEOUT“ | Hängt er an einem Ausgangs-Pin (nicht 34 bis 39)? Prüfe die 3,3 V. |
+| LEDs leuchten falsch oder gar nicht | Prüfe GND, 5 V, den Datenpin und den 330-Ω-Widerstand. Trage die richtige LED-Anzahl im Code ein. |
+| Hochladen klappt nicht | Ziehe alle Stecker von den Pins 0, 2, 5, 12 und 15 ab und versuche es noch einmal. |
+| Das Board spinnt | Ziehe alle Stecker ab und stecke sie einzeln wieder an, bis du das Bauteil findest. |
+
+## 7. Prompt für Chat-KIs
+
+Du willst, dass dir eine KI (zum Beispiel ChatGPT oder Claude) beim Programmieren hilft? Kopiere den Text unten und füge ihn **vor deine Frage** ein. Schreibe am Ende bei \`[HIER KOMMT DEINE AUFGABE]\`, was du bauen willst und welche Bauteile du benutzt.
+
+\`\`\`text
+Du hilfst Schülerinnen und Schülern der Klassen 7 bis 9 beim Programmieren mit dem Cytron Robo ESP32.
+
+Sprache: Antworte auf einfachem Deutsch mit kurzen Sätzen. Erkläre Fachwörter kurz. Erkläre den Code in wenigen Schritten.
+
+Board: Cytron Robo ESP32 (ESP32 mit Arduino-Framework, PlatformIO oder Arduino IDE).
+
+Anschlüsse, die ich benutzen darf (GPIO-Pins):
+- I2C: SDA = 22, SCL = 21. Übergib sie im Code immer selbst, zum Beispiel Wire.begin(22, 21).
+- Zwei Signalleitungen (beide Ausgang): 17 und 16
+- Zwei Signalleitungen (beide Ausgang): 26 und 25 (ADC2, kein Analog-Lesen mit WLAN)
+- Zwei Signalleitungen (beide Ausgang): 33 und 32
+- Nur Eingang (nur Sensoren lesen): 36 und 39
+- Servo-Anschlüsse (Ausgang): 4, 5, 18, 19 (Pin 5 lieber nicht benutzen)
+
+Regeln:
+1. Benutze nur die oben genannten Pins. Erfinde keine anderen Pins.
+2. GPIO 34 bis 39 können nur lesen. Benutze sie nie als Ausgang (kein Display, kein LED-Streifen, kein Servo, kein DHT-Sensor).
+3. Benutze nicht die Pins 6 bis 11. Vermeide 0, 2, 5, 12 und 15.
+4. Jeder Pin darf nur von einem Bauteil benutzt werden. Wenn meine Aufgabe zwei Bauteile am selben Pin brauchen würde, sag mir das und schlage eine Lösung vor.
+5. Die Anschlüsse 22 + 39 und 25 + 33 teilen sich Pins mit anderen Anschlüssen. Benutze sie nicht.
+6. Schreibe die Pins am Anfang des Programms als Konstanten, zum Beispiel: constexpr uint8_t LED_PIN = 18;
+7. Wenn ein Gerät mit zwei Signalleitungen (I2C oder 4-Ziffern-Display) nicht geht, weise mich darauf hin, dass ich die beiden Pins tauschen kann.
+8. Ein DHT-Sensor braucht 3,3 V und darf höchstens alle 2 Sekunden gelesen werden. Ein LED-Streifen braucht 5 V, einen 330-Ohm-Widerstand in der Datenleitung und eine niedrige Helligkeit am Anfang (zum Beispiel 30).
+9. 4-Ziffern-Displays sollen ihre Zahl regelmäßig neu bekommen (zum Beispiel jede Sekunde).
+10. Gib mir kompletten Code, den ich direkt kopieren kann. Schreibe Kommentare auf Deutsch.
+11. Wenn du etwas nicht sicher weißt, frag mich zuerst, statt zu raten.
+
+Meine Bauteile und meine Aufgabe:
+[HIER KOMMT DEINE AUFGABE]
+\`\`\`
+
+> **Tipp:** Wenn die KI Pins benutzt, die nicht in der Liste stehen, sag ihr: „Bitte benutze nur die Pins aus meiner Liste.“`,
+    doc_en: `This page explains what is on the Robo ESP32, which ports it has and how to plug in parts correctly. This guide helps you avoid the most common mistake: **two parts on the same pin**.
+
+> **Important:** The board has no numbers like "Grove 1". Find a port by the **GPIO numbers** next to the connector (for example \`17\` and \`16\`).
+
+## 1. What is on the board
+
+- 7 Grove ports (small white connectors with 4 wires)
+- 1 Maker port (small connector, shares its pins with the I2C Grove port)
+- 4 servo ports
+- 2 motor ports for small DC motors
+- 2 buttons, 1 piezo buzzer with a mute switch
+- 2 RGB LEDs, 10 status LEDs for pins
+- A reset button and an on/off switch
+- A socket for a NodeMCU ESP32 (30 pins) with a pin header
+
+The pins for the buttons, buzzer, RGB LEDs and motors are listed in the [board's datasheet](https://docs.google.com/document/d/1sX5PVDH0t97U6eEQNhdARgjXWjdCvVvBfn_B1Vv0p9o/edit?usp=sharing). These pins are already in use. Don't use them for your own parts if you also need the buttons, the buzzer or the motors.
+
+## 2. Power
+
+The board can get power in three ways. One of them is enough:
+
+- via **USB** (5 V)
+- via a **LiPo battery** (1 cell)
+- via the **VIN terminals** (3.6 to 6 V)
+
+The on/off switch turns everything on and off. The motors use the same power source as the board.
+
+## 3. Port overview
+
+We tested these ports on the board. "Output" means the pin can also send signals.
+
+| Port (GPIO pins) | What for | Note |
+|---|---|---|
+| **22 (SDA) and 21 (SCL)** | I2C devices (OLED, many sensors) | Also on the Maker port. On our board **SDA = 22 and SCL = 21**. |
+| **17 and 16** | two signal lines | Both pins are outputs. |
+| **26 and 25** | two signal lines | Both pins are outputs. No analog reading with Wi-Fi (ADC2). |
+| **33 and 32** | two signal lines | Both pins are outputs. Analog reading with Wi-Fi works. |
+| **36 and 39** | **reading sensors only** | Input only. No display, no LED strip. |
+| **Servo: 4, 5, 18, 19** | servos or one signal line | Output. The servo port also has 5 V and GND. Better not use pin 5 (see section 4). |
+
+> **Careful, these ports share pins:**
+>
+> - **22 + 39** shares pin 22 with the I2C port.
+> - **25 + 33** shares pin 25 with port 26 + 25 and pin 33 with port 33 + 32.
+>
+> If you plug a part in there while the other port is also in use, you will get errors.
+
+## 4. Pin rules
+
+1. **Each pin for one part only.** If two ports share a pin, you can only use one of them. Exception: I2C devices may share one I2C port if they have different addresses.
+2. **Pins 34 to 39 can only read.** They cannot send anything. They don't work for displays, LED strips, servos or the DHT sensor.
+3. **Never use pins 6 to 11.** They are connected to the ESP32's memory.
+4. **Be careful with pins 0, 2, 5, 12 and 15.** They affect how the board starts. If you use them, uploading or starting may fail.
+5. **Wi-Fi and analog reading:** Pins on ADC2 (for example 25 and 26) cannot read analog values while Wi-Fi is on. Use 32, 33, 36 or 39 instead.
+
+## 5. Which part goes where?
+
+### I2C devices (OLED display, many sensors)
+
+- Plug them into the **I2C port** (22 and 21).
+- In code: \`Wire.begin(22, 21);\` (SDA first, then SCL).
+- Several I2C devices can share the same port if they have different addresses. Most OLEDs use \`0x3C\`.
+- If the device is not found, swap SDA and SCL in the code.
+
+### 4-digit display (TM1637)
+
+- Needs **two output pins** (CLK and DIO). Use 17 and 16, for example.
+- Each display needs its **own pin pair**.
+- If a display stays dark: swap CLK and DIO in the code.
+- Write the number again regularly in your program (for example every second). Then the display doesn't stay dark after a power glitch.
+
+### Temperature and humidity sensor (DHT11 / DHT22)
+
+- Has **one data line**. The pin must be an **output**, so not 34 to 39. Use a servo pin like 4.
+- Power it with **3.3 V** only, not 5 V. Otherwise the ESP32 gets too much voltage.
+- Read it at most every 2 seconds.
+
+### LED strip (WS2812 / NeoPixel)
+
+- Has **one data line**. Use an output pin, for example 18.
+- Put a **330 Ω** resistor in the data line.
+- Power it with **5 V**. For more than about 8 LEDs you need a separate 5 V power supply. Then connect its **GND** to the board's **GND**.
+- Start with a low brightness (for example 30 out of 255).
+
+### Servos and motors
+
+- Servos go into the **4 servo ports**, motors into the **2 motor ports**.
+- Motors and servos need a lot of power. Use a power supply or a battery, not just USB.
+
+### Analog sensors (for example light, soil moisture)
+
+- Use a pin that can read analog values: **36, 39, 32 or 33**. These also work with Wi-Fi.
+
+## 6. Finding problems
+
+| Problem | What you can do |
+|---|---|
+| A device doesn't react at all | Is the connector pushed in all the way? Is the board on? Check the pin numbers in the code. |
+| OLED or I2C sensor is not found | Swap SDA and SCL. Check that the device is on the I2C port. |
+| Display stays dark | Swap CLK and DIO. Write the number again regularly. |
+| Sensor shows "TIMEOUT" | Is it on an output pin (not 34 to 39)? Check the 3.3 V. |
+| LEDs light up wrong or not at all | Check GND, 5 V, the data pin and the 330 Ω resistor. Enter the correct number of LEDs in the code. |
+| Uploading doesn't work | Unplug everything from pins 0, 2, 5, 12 and 15 and try again. |
+| The board acts strangely | Unplug everything and plug the parts back in one by one until you find the culprit. |
+
+## 7. Prompt for chat AIs
+
+Do you want an AI (for example ChatGPT or Claude) to help you program? Copy the text below and paste it **before your question**. At \`[YOUR TASK GOES HERE]\` at the end, write what you want to build and which parts you use.
+
+\`\`\`text
+You help students in grades 7 to 9 program the Cytron Robo ESP32.
+
+Language: Answer in simple English with short sentences. Briefly explain technical terms. Explain the code in a few steps.
+
+Board: Cytron Robo ESP32 (ESP32 with the Arduino framework, PlatformIO or Arduino IDE).
+
+Ports I may use (GPIO pins):
+- I2C: SDA = 22, SCL = 21. Always pass them yourself in code, for example Wire.begin(22, 21).
+- Two signal lines (both outputs): 17 and 16
+- Two signal lines (both outputs): 26 and 25 (ADC2, no analog reading with Wi-Fi)
+- Two signal lines (both outputs): 33 and 32
+- Input only (reading sensors only): 36 and 39
+- Servo ports (output): 4, 5, 18, 19 (better not use pin 5)
+
+Rules:
+1. Only use the pins listed above. Don't make up other pins.
+2. GPIO 34 to 39 can only read. Never use them as outputs (no display, no LED strip, no servo, no DHT sensor).
+3. Don't use pins 6 to 11. Avoid 0, 2, 5, 12 and 15.
+4. Each pin may be used by only one part. If my task would need two parts on the same pin, tell me and suggest a solution.
+5. Ports 22 + 39 and 25 + 33 share pins with other ports. Don't use them.
+6. Write the pins as constants at the start of the program, for example: constexpr uint8_t LED_PIN = 18;
+7. If a device with two signal lines (I2C or 4-digit display) doesn't work, remind me that I can swap the two pins.
+8. A DHT sensor needs 3.3 V and may be read at most every 2 seconds. An LED strip needs 5 V, a 330 ohm resistor in the data line and a low brightness at the start (for example 30).
+9. 4-digit displays should get their number again regularly (for example every second).
+10. Give me complete code that I can copy directly. Write comments in English.
+11. If you are not sure about something, ask me first instead of guessing.
+
+My parts and my task:
+[YOUR TASK GOES HERE]
+\`\`\`
+
+> **Tip:** If the AI uses pins that are not in the list, tell it: "Please only use the pins from my list."`,
+  },
 ];
 
 // ── Doku pro Board-Profil (Port-Tabelle wird dynamisch angehängt) ──────────
@@ -677,12 +969,19 @@ function mdInline(s, baseDir) {
 function mdToHtml(md, baseDir) {
   const lines = String(md).split('\n');
   const out = [];
-  let para = [], list = null, quote = [], code = null;
+  let para = [], list = null, quote = [], code = null, tbl = null;
 
   const flushPara  = () => { if (para.length)  { out.push('<p>' + mdInline(para.join(' '), baseDir) + '</p>'); para = []; } };
   const flushList  = () => { if (list) { out.push(`<${list.tag}>` + list.items.map(i => '<li>' + mdInline(i, baseDir) + '</li>').join('') + `</${list.tag}>`); list = null; } };
   const flushQuote = () => { if (quote.length) { out.push('<blockquote>' + mdInline(quote.join(' '), baseDir) + '</blockquote>'); quote = []; } };
-  const flushAll   = () => { flushPara(); flushList(); flushQuote(); };
+  const flushTable = () => {
+    if (!tbl) return;
+    const [head, , ...rows] = tbl;   // 2. Zeile = |---|---|
+    const row = (cells, tag) => '<tr>' + cells.map(c => `<${tag}>` + mdInline(c, baseDir) + `</${tag}>`).join('') + '</tr>';
+    out.push('<table class="lib-table">' + row(head, 'th') + rows.map(r => row(r, 'td')).join('') + '</table>');
+    tbl = null;
+  };
+  const flushAll   = () => { flushTable(); flushPara(); flushList(); flushQuote(); };
 
   for (const raw of lines) {
     const line = raw.replace(/\s+$/, '');
@@ -695,6 +994,14 @@ function mdToHtml(md, baseDir) {
     if (/^```/.test(line)) { flushAll(); code = []; continue; }
 
     if (!line.trim()) { flushAll(); continue; }
+
+    if (/^\|.*\|$/.test(line.trim())) {
+      flushPara(); flushList(); flushQuote();
+      tbl = tbl || [];
+      tbl.push(line.trim().slice(1, -1).split('|').map(c => c.trim()));
+      continue;
+    }
+    flushTable();
 
     const hm = line.match(/^(#{1,4})\s+(.*)$/);
     if (hm) {
