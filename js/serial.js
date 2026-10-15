@@ -143,6 +143,153 @@ class CircuitPythonSerial {
     return false;
   }
 
+  // Board zuverlässig in die Raw-REPL bringen – egal in welchem Zustand es ist
+  // (normal, raw oder mit laufendem Programm). Voraussetzung: _capturing aktiv.
+  async _enterRawRepl() {
+    // 1. Zuverlässig auf den normalen Prompt (>>>):
+    //    – Ctrl+C unterbricht ein laufendes Programm (oder zeigt den Prompt neu),
+    //    – ein einzelnes Enter erzwingt einen frischen „>>>", wenn das Board
+    //      am normalen REPL steht,
+    //    – Ctrl+B verlässt die Raw-REPL, falls sie noch aktiv ist (nach dem
+    //      vorherigen Play steht das Board nämlich in der Raw-REPL).
+    //    Weiter geht es erst, wenn „>>>" wirklich angekommen ist (max. 3
+    //    Durchgänge) – sonst läuft vielleicht noch das alte Programm und der
+    //    neue Code würde nie gestartet.
+    let ready = false;
+    for (let versuch = 1; versuch <= 3 && !ready; versuch++) {
+      this._rxBuffer = '';
+      await this._write('\x03');
+      await this._delay(80);
+      await this._write('\x03');
+      await this._write('\r');
+      if (await this._waitFor('>>>', 1500)) { ready = true; break; }
+      await this._write('\x02');
+      if (await this._waitFor('>>>', 1500)) { ready = true; break; }
+    }
+    if (!ready) {
+      throw new Error('Das Board ist noch beschäftigt – das laufende Programm konnte nicht gestoppt werden. Bitte „Stop“ drücken oder kurz warten und erneut versuchen.');
+    }
+
+    // 2. Raw REPL aktivieren (Ctrl+A) und auf dessen Banner warten.
+    this._rxBuffer = '';
+    await this._write('\x01');
+    if (!await this._waitFor('raw REPL', 1500)) {
+      // Zweiter Versuch: Raw REPL erneut anfordern.
+      this._rxBuffer = '';
+      await this._write('\x01');
+      if (!await this._waitFor('raw REPL', 1500)) {
+        throw new Error('Board reagiert nicht (Raw REPL). Bitte erneut versuchen.');
+      }
+    }
+  }
+
+  // Wartet, bis der Mitschnitt-Puffer auf den regulären Ausdruck passt.
+  async _waitForMatch(re, timeoutMs) {
+    const start = performance.now();
+    while (performance.now() - start < timeoutMs) {
+      if (re.test(this._rxBuffer)) return true;
+      await this._delay(10);
+    }
+    return false;
+  }
+
+  // Führt Code in der bereits aktiven Raw-REPL aus. Antwort des Boards:
+  // "OK" <Ausgabe> \x04 <Fehler> \x04 ">". Liefert { out, err }.
+  async _rawExec(code, timeoutMs = 5000) {
+    this._rxBuffer = '';
+    await this._write(code);
+    await this._write('\x04');
+    const re = /OK([\s\S]*?)\x04([\s\S]*?)\x04>/;
+    if (!await this._waitForMatch(re, timeoutMs)) {
+      throw new Error(L('Board antwortet nicht (Raw REPL).', 'Board is not responding (raw REPL).'));
+    }
+    const m = this._rxBuffer.match(re);
+    return { out: m[1], err: m[2].trim() };
+  }
+
+  // Mehrere Befehle am Stück in der Raw-REPL ausführen, Monitor stumm.
+  // fn bekommt exec(code, timeoutMs) → { out, err }. Für Werkzeuge wie die
+  // Lib-Installation über die serielle Schnittstelle (Boards ohne CIRCUITPY).
+  async withRawRepl(fn) {
+    if (!this.port) throw new Error(L('Nicht verbunden', 'Not connected'));
+    if (this._uploading) throw new Error(L('Das Board ist gerade beschäftigt – bitte kurz warten.', 'The board is busy – please wait a moment.'));
+    this._uploading = true;
+    this._rxBuffer = '';
+    this._capturing = true;
+    this._suppressOnData = true;
+    try {
+      await this._enterRawRepl();
+      return await fn((code, t) => this._rawExec(code, t));
+    } finally {
+      try { await this._write('\x02'); } catch (_) {}   // zurück ins normale REPL
+      this._uploading = false;
+      this._capturing = false;
+      this._suppressOnData = false;
+      this._rxBuffer = '';
+    }
+  }
+
+  // Dateien über die Raw-REPL ins Dateisystem des Boards schreiben – für
+  // Boards ohne CIRCUITPY-Laufwerk (ESP32-C6 & Co.), deren Dateisystem aus
+  // Python beschreibbar ist. files = [{ path: '/lib/x.py', bytes: Uint8Array }].
+  // base64 in Stücken, Größe per os.stat geprüft, bis zu 3 Versuche pro Datei.
+  // onProgress({ file, files, bytes, total }) nach jedem geschriebenen Stück.
+  async writeFiles(files, onProgress) {
+    const CHUNK = 1536;   // Bytes pro Schreibbefehl (≈ 2 KB base64)
+    const b64 = (bytes) => {
+      let bin = '';
+      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin);
+    };
+    const total = files.reduce((a, f) => a + f.bytes.length, 0) || 1;
+    let done = 0;
+    const report = (i) => { if (onProgress) onProgress({ file: i, files: files.length, bytes: done, total }); };
+    return this.withRawRepl(async (exec) => {
+      const run = async (code) => {
+        const r = await exec(code);
+        if (r.err) throw new Error(r.err.split('\n').filter(Boolean).pop());
+        return r.out;
+      };
+      await run(
+        "import os, binascii\n" +
+        "def _mk(p):\n" +
+        " d = ''\n" +
+        " for t in p.split('/')[1:-1]:\n" +
+        "  d += '/' + t\n" +
+        "  try:\n" +
+        "   os.mkdir(d)\n" +
+        "  except OSError:\n" +
+        "   pass\n");
+      for (let i = 0; i < files.length; i++) {
+        const { path, bytes } = files[i];
+        report(i);
+        let ok = false;
+        const start = done;
+        for (let versuch = 1; versuch <= 3 && !ok; versuch++) {
+          done = start;
+          await run(`_mk(${JSON.stringify(path)})\n_f = open(${JSON.stringify(path)}, 'wb')\n`);
+          for (let o = 0; o < bytes.length; o += CHUNK) {
+            await run(`_f.write(binascii.a2b_base64('${b64(bytes.subarray(o, o + CHUNK))}'))\n`);
+            done = start + Math.min(o + CHUNK, bytes.length);
+            report(i);
+          }
+          const size = (await run(`_f.close()\nprint(os.stat(${JSON.stringify(path)})[6])\n`)).trim();
+          ok = size === String(bytes.length);
+          if (!ok) console.warn(`writeFiles: ${path}: ${size} statt ${bytes.length} Bytes (Versuch ${versuch})`);
+        }
+        if (!ok) throw new Error(L(`Datei ${path} kam nicht vollständig an`, `File ${path} did not arrive completely`));
+      }
+    });
+  }
+
+  // Python-VM weich neu starten (leert den Modul-Cache, startet code.py).
+  // USB bleibt dabei verbunden – anders als microcontroller.reset().
+  async softReload() {
+    await this.stop();
+    await this._delay(300);
+    await this.sendLine('import supervisor; supervisor.reload()');
+  }
+
   // Code per Raw REPL auf das Board laden und ausführen.
   // Prompt-bewusst: wartet aktiv auf die Antworten des Boards, statt blinde
   // Delays zu nutzen. Zuerst wird das Board zuverlässig auf den normalen
@@ -158,41 +305,7 @@ class CircuitPythonSerial {
     this._rxBuffer = '';
     this._capturing = true;
     try {
-      // 1. Zuverlässig auf den normalen Prompt (>>>):
-      //    – Ctrl+C unterbricht ein laufendes Programm (oder zeigt den Prompt neu),
-      //    – ein einzelnes Enter erzwingt einen frischen „>>>", wenn das Board
-      //      am normalen REPL steht,
-      //    – Ctrl+B verlässt die Raw-REPL, falls sie noch aktiv ist (nach dem
-      //      vorherigen Play steht das Board nämlich in der Raw-REPL).
-      //    Weiter geht es erst, wenn „>>>" wirklich angekommen ist (max. 3
-      //    Durchgänge) – sonst läuft vielleicht noch das alte Programm und der
-      //    neue Code würde nie gestartet.
-      let ready = false;
-      for (let versuch = 1; versuch <= 3 && !ready; versuch++) {
-        this._rxBuffer = '';
-        await this._write('\x03');
-        await this._delay(80);
-        await this._write('\x03');
-        await this._write('\r');
-        if (await this._waitFor('>>>', 1500)) { ready = true; break; }
-        await this._write('\x02');
-        if (await this._waitFor('>>>', 1500)) { ready = true; break; }
-      }
-      if (!ready) {
-        throw new Error('Das Board ist noch beschäftigt – das laufende Programm konnte nicht gestoppt werden. Bitte „Stop“ drücken oder kurz warten und erneut versuchen.');
-      }
-
-      // 2. Raw REPL aktivieren (Ctrl+A) und auf dessen Banner warten.
-      this._rxBuffer = '';
-      await this._write('\x01');
-      if (!await this._waitFor('raw REPL', 1500)) {
-        // Zweiter Versuch: Raw REPL erneut anfordern.
-        this._rxBuffer = '';
-        await this._write('\x01');
-        if (!await this._waitFor('raw REPL', 1500)) {
-          throw new Error('Board reagiert nicht (Raw REPL). Bitte erneut versuchen.');
-        }
-      }
+      await this._enterRawRepl();
 
       // 3. Aufräum-Prolog (gibt Pins des vorherigen Laufs frei) + eigentlichen Code senden.
       //    Kein Soft-Reboot → code.py/main.py des Boards wird NICHT gestartet.

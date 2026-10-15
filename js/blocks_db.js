@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-09-29T11:27:14.849Z
+// Generiert: 2026-10-15T20:41:41.091Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -13,6 +13,7 @@ const BLOCKS_CATALOG = {
         "Temperatur & Feuchte",
         "Abstand & Licht",
         "Bewegung",
+        "Akku",
         "Weitere",
         "Ereignisse"
       ],
@@ -20,6 +21,7 @@ const BLOCKS_CATALOG = {
         "Temperatur & Feuchte": "Temperature & Humidity",
         "Abstand & Licht": "Distance & Light",
         "Bewegung": "Motion",
+        "Akku": "Battery",
         "Weitere": "More",
         "Ereignisse": "Events"
       }
@@ -30,12 +32,14 @@ const BLOCKS_CATALOG = {
       "label_en": "Actions",
       "colour": "#DC2626",
       "subCategories": [
+        "Fahren",
         "LED",
         "Ton",
         "Servo & Pumpe",
         "Motor"
       ],
       "subCategories_en": {
+        "Fahren": "Driving",
         "LED": "LED",
         "Ton": "Sound",
         "Servo & Pumpe": "Servo & Pump",
@@ -320,6 +324,122 @@ const BLOCKS_DB = [
     "_file": "sensors/icm20948_neigung.md",
     "doc": "# ICM20948 – Neigung (°)\n\nLiefert den Kippwinkel in Grad: „vor/zurück\" (−90…90) oder „links/rechts\" (−180…180).\n0 bedeutet waagerecht. Gut für Wasserwaagen, Balance-Spiele und Lenk-Steuerungen.\n\n> Benötigt `adafruit_icm20x.mpy` und `adafruit_register/` auf `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Anschluss über Grove-I2C-Adapter, Adresse 0x69.",
     "doc_en": "# ICM20948 – tilt (°)\n\nReturns the tilt angle in degrees: \"forward/back\" (−90…90) or \"left/right\" (−180…180).\n0 means level. Great for spirit levels, balance games and steering controls.\n\n> Needs `adafruit_icm20x.mpy` and `adafruit_register/` on `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Connect via a Grove I2C adapter, address 0x69."
+  },
+  {
+    "id": "sensor_akku_laedt",
+    "blockCategory": "Sensoren",
+    "subCategory": "Akku",
+    "requiresBoardFeature": "powerMonitor",
+    "label": "Akku lädt?",
+    "label_en": "Battery charging?",
+    "colour": "#2563EB",
+    "tooltip": "Wahr, solange Strom in den Akku fließt (USB steckt und Akku ist nicht voll)",
+    "tooltip_en": "True while current flows into the battery (USB plugged in and battery not full)",
+    "blockType": "value",
+    "output": "Boolean",
+    "inputs": [
+      {
+        "label": "Akku lädt?",
+        "label_en": "Battery charging?",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "hardware": {
+      "commonName": "Akku-Messchip INA226 (RoboBuddy-Powerboard)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/akku_laedt.md",
+    "doc": "# Akku lädt? (RoboBuddy)\n\nGibt **Wahr** zurück, solange der Akku geladen wird – also mehr als 20 mA hineinfließen. Ist der Akku voll, hört das Laden auf und der Block meldet wieder **Falsch**.\n\nIdee: Beim Laden ein schlafendes Gesicht zeigen.",
+    "doc_en": "# Battery charging? (RoboBuddy)\n\nReturns **true** while the battery is being charged – i.e. more than 20 mA flow in. When the battery is full, charging stops and the block reports **false** again.\n\nIdea: show a sleepy face while charging."
+  },
+  {
+    "id": "sensor_akku_prozent",
+    "blockCategory": "Sensoren",
+    "subCategory": "Akku",
+    "requiresBoardFeature": "powerMonitor",
+    "label": "Akkustand (%)",
+    "label_en": "Battery level (%)",
+    "colour": "#2563EB",
+    "tooltip": "Wie voll der Akku ist, in Prozent (0 = leer, 100 = voll) – grob aus der Spannung geschätzt",
+    "tooltip_en": "How full the battery is, in percent (0 = empty, 100 = full) – roughly estimated from the voltage",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Akkustand (%)",
+        "label_en": "Battery level (%)",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "hardware": {
+      "commonName": "Akku-Messchip INA226 (RoboBuddy-Powerboard)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/akku_prozent.md",
+    "doc": "# Akkustand in Prozent (RoboBuddy)\n\nSchätzt aus der Akkuspannung, wie voll der Akku ist: **0 %** = leer (3,5 V), **100 %** = voll (4,15 V).\n\nDer Wert ist nur eine Schätzung: Beim Fahren sackt die Spannung kurz ab (dann zeigt der Block weniger), beim Laden steigt sie an (dann zeigt er mehr). Am genauesten ist er, wenn der Roboter still steht und nicht lädt.",
+    "doc_en": "# Battery level in percent (RoboBuddy)\n\nEstimates from the battery voltage how full the battery is: **0 %** = empty (3.5 V), **100 %** = full (4.15 V).\n\nThe value is only an estimate: while driving the voltage briefly drops (the block shows less), while charging it rises (the block shows more). It is most accurate when the robot is standing still and not charging."
+  },
+  {
+    "id": "sensor_akku_spannung",
+    "blockCategory": "Sensoren",
+    "subCategory": "Akku",
+    "requiresBoardFeature": "powerMonitor",
+    "label": "Akkuspannung (V)",
+    "label_en": "Battery voltage (V)",
+    "colour": "#2563EB",
+    "tooltip": "Spannung des Akkus in Volt (voll ≈ 4,2 V, leer ≈ 3,5 V)",
+    "tooltip_en": "Battery voltage in volts (full ≈ 4.2 V, empty ≈ 3.5 V)",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Akkuspannung (V)",
+        "label_en": "Battery voltage (V)",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "hardware": {
+      "commonName": "Akku-Messchip INA226 (RoboBuddy-Powerboard)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/akku_spannung.md",
+    "doc": "# Akkuspannung (RoboBuddy)\n\nMisst die Spannung des Akkus in Volt, mit zwei Nachkommastellen.\n\n- **4,2 V** – voll geladen\n- **3,6 V** – fast leer, bald laden\n- **3,5 V** – leer: Der RoboBuddy schaltet die Servos ab und schläft\n\nDer Messchip (INA226) sitzt auf dem Powerboard. **Ohne Akku** (nur USB) springt der Wert wild zwischen etwa 4,1 und 4,4 V hin und her – das ist der Lader, kein Fehler.",
+    "doc_en": "# Battery voltage (RoboBuddy)\n\nMeasures the battery voltage in volts, with two decimal places.\n\n- **4.2 V** – fully charged\n- **3.6 V** – almost empty, charge soon\n- **3.5 V** – empty: the RoboBuddy switches the servos off and goes to sleep\n\nThe measuring chip (INA226) sits on the power board. **Without a battery** (USB only) the value jumps wildly between about 4.1 and 4.4 V – that's the charger, not a fault."
+  },
+  {
+    "id": "sensor_akku_strom",
+    "blockCategory": "Sensoren",
+    "subCategory": "Akku",
+    "requiresBoardFeature": "powerMonitor",
+    "label": "Akkustrom (mA)",
+    "label_en": "Battery current (mA)",
+    "colour": "#2563EB",
+    "tooltip": "Strom am Akku in Milliampere: positiv = Akku wird geladen, negativ = Roboter verbraucht Strom",
+    "tooltip_en": "Battery current in milliamps: positive = battery is charging, negative = robot is using power",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Akkustrom (mA)",
+        "label_en": "Battery current (mA)",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "hardware": {
+      "commonName": "Akku-Messchip INA226 (RoboBuddy-Powerboard)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/akku_strom.md",
+    "doc": "# Akkustrom (RoboBuddy)\n\nZeigt, wie viel Strom gerade in den Akku hinein- oder aus ihm herausfließt – in Milliampere (mA).\n\n- **positiv** (z. B. `+200`) – der Akku wird **geladen** (USB steckt)\n- **negativ** (z. B. `-450`) – der Roboter **verbraucht** Strom aus dem Akku\n- **ungefähr 0** – nichts passiert, oder der Akku ist voll\n\nProbier mal: Fahren lassen und den Wert im Serial-Monitor ausgeben. Wie viel mehr brauchen die Servos beim Anfahren?",
+    "doc_en": "# Battery current (RoboBuddy)\n\nShows how much current is flowing into or out of the battery right now – in milliamps (mA).\n\n- **positive** (e.g. `+200`) – the battery is **charging** (USB plugged in)\n- **negative** (e.g. `-450`) – the robot is **using** power from the battery\n- **about 0** – nothing is happening, or the battery is full\n\nTry it: let the robot drive and print the value in the serial monitor. How much more do the servos need when starting?"
   },
   {
     "id": "sensor_air_quality",
@@ -797,6 +917,73 @@ const BLOCKS_DB = [
     "doc_en": "# Event: when distance\n\nRuns actions when the measured distance goes above or below a threshold.\nSensor type selectable: **Grove Ranger (1 pin)** or bare **HC-SR04** (TRIG on\npin 2, ECHO on pin 1 of the Grove connector). Generators: see `js/generator.js`."
   },
   {
+    "id": "actuator_drive",
+    "blockCategory": "Aktionen",
+    "subCategory": "Fahren",
+    "requiresBoardFeature": "drive",
+    "label": "Fahren",
+    "label_en": "Drive",
+    "colour": "#DC2626",
+    "tooltip": "Lässt den RoboBuddy fahren: vorwärts, rückwärts, drehen oder anhalten. Tempo 0 bis 100 %",
+    "tooltip_en": "Makes the RoboBuddy drive: forward, backward, turn or stop. Speed 0 to 100 %",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Fahren",
+        "label_en": "Drive",
+        "name": "DIR",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "vorwärts",
+            "label_en": "forward",
+            "value": "vor"
+          },
+          {
+            "label": "rückwärts",
+            "label_en": "backward",
+            "value": "zurueck"
+          },
+          {
+            "label": "links drehen",
+            "label_en": "turn left",
+            "value": "links"
+          },
+          {
+            "label": "rechts drehen",
+            "label_en": "turn right",
+            "value": "rechts"
+          },
+          {
+            "label": "stopp",
+            "label_en": "stop",
+            "value": "stopp"
+          }
+        ]
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "SPEED",
+        "label": "Tempo",
+        "label_en": "speed",
+        "check": "Number",
+        "defaultValue": 50,
+        "suffix": "%"
+      }
+    ],
+    "hardware": {
+      "commonName": "2 Dauerdreh-Servos (RoboBuddy, S1 links / S2 rechts)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/drive.md",
+    "doc": "# Fahren (RoboBuddy)\n\nSteuert beide Räder des RoboBuddy gleichzeitig:\n\n- **vorwärts / rückwärts** – beide Räder drehen gleich schnell\n- **links drehen / rechts drehen** – die Räder drehen gegeneinander, der Roboter dreht sich auf der Stelle\n- **stopp** – beide Räder halten an\n\n**Tempo** geht von 0 bis 100 %. Der RoboBuddy fährt **sanft an und bremst sanft** (in 0,2 Sekunden) – das schont den Akku.\n\nDer Block fährt so lange, bis ein anderer Fahren-Block kommt. Typisch: `Fahren vorwärts 50 %` → `warte 2 Sekunden` → `Fahren stopp`.\n\n> Die Servos bekommen nur Strom, wenn ein **Akku** steckt – auch wenn USB angeschlossen ist. Ohne Akku läuft das Programm, aber nichts bewegt sich.\n>\n> Rechtes Rad = Servo-Anschluss **S1**, linkes Rad = **S2** (von hinten gesehen; die beiden Servos sind gespiegelt eingebaut, darum kümmert sich der Block).",
+    "doc_en": "# Drive (RoboBuddy)\n\nControls both wheels of the RoboBuddy at the same time:\n\n- **forward / backward** – both wheels turn at the same speed\n- **turn left / turn right** – the wheels turn against each other, the robot spins on the spot\n- **stop** – both wheels stop\n\n**Speed** goes from 0 to 100 %. The RoboBuddy **starts and brakes gently** (within 0.2 seconds) – this protects the battery.\n\nThe block keeps driving until another drive block comes. Typical: `drive forward 50 %` → `wait 2 seconds` → `drive stop`.\n\n> The servos only get power when a **battery** is plugged in – even with USB connected. Without a battery the program runs, but nothing moves.\n>\n> Right wheel = servo connector **S1**, left wheel = **S2** (seen from behind; the two servos are mounted mirrored, the block takes care of that)."
+  },
+  {
     "id": "actuator_led",
     "blockCategory": "Aktionen",
     "subCategory": "LED",
@@ -957,6 +1144,116 @@ const BLOCKS_DB = [
     "doc_en": "# Turn off the buzzer"
   },
   {
+    "id": "actuator_buzzer_port",
+    "blockCategory": "Aktionen",
+    "subCategory": "Ton",
+    "requiresBoardFeature": "externalBuzzer",
+    "label": "Buzzer Ton",
+    "label_en": "Buzzer tone",
+    "colour": "#DC2626",
+    "tooltip": "Spielt einen Ton mit einem passiven Buzzer am gewählten Anschluss (z.B. 440 = Kammerton A)",
+    "tooltip_en": "Plays a tone with a passive buzzer on the chosen connector (e.g. 440 = concert pitch A)",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Buzzer  Port:",
+        "label_en": "Buzzer  port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "FREQ",
+        "label": "Ton:",
+        "label_en": "tone:",
+        "check": "Number",
+        "defaultValue": 440
+      },
+      {
+        "name": "DURATION",
+        "label": "Hz  für",
+        "label_en": "Hz  for",
+        "check": "Number",
+        "defaultValue": 0.5,
+        "suffix": "Sekunden",
+        "suffix_en": "seconds"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import board",
+        "import pwmio"
+      ],
+      "defs": [
+        {
+          "key": "init_buzz_${PIN}",
+          "val": "_buzz_${PIN} = pwmio.PWMOut(board.${PIN}, duty_cycle=0, frequency=440, variable_frequency=True)"
+        }
+      ],
+      "code": "_buzz_${PIN}.frequency = ${FREQ}\n_buzz_${PIN}.duty_cycle = 32768\nawait asyncio.sleep(${DURATION})\n_buzz_${PIN}.duty_cycle = 0\n"
+    },
+    "hardware": {
+      "commonName": "Passiver Buzzer (extern)",
+      "verbrauch3j": 14,
+      "kitStandard": true
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/buzzer_port.md",
+    "doc": "# Buzzer-Ton (externer Buzzer)\n\nSpielt Töne mit einem **passiven Buzzer**, den du an einen Anschluss steckst (beim RoboBuddy: A0, A1 oder A2). Die Frequenz bestimmt die Tonhöhe: 262 = C, 440 = A.\n\n> Beim RoboBuddy sind die Ton-Ausgänge knapp: Neben den vier Servos gehen höchstens **zwei** weitere Ton-/PWM-Ausgänge gleichzeitig (Buzzer oder PWM-Block). Ein dritter bricht mit einer Fehlermeldung ab.",
+    "doc_en": "# Buzzer tone (external buzzer)\n\nPlays tones with a **passive buzzer** that you plug into a connector (on the RoboBuddy: A0, A1 or A2). The frequency sets the pitch: 262 = C, 440 = A.\n\n> On the RoboBuddy, tone outputs are scarce: besides the four servos, at most **two** more tone/PWM outputs work at the same time (buzzer or PWM block). A third one stops with an error message."
+  },
+  {
+    "id": "actuator_buzzer_port_off",
+    "blockCategory": "Aktionen",
+    "subCategory": "Ton",
+    "requiresBoardFeature": "externalBuzzer",
+    "label": "Buzzer aus",
+    "label_en": "Buzzer off",
+    "colour": "#DC2626",
+    "tooltip": "Schaltet den Buzzer am gewählten Anschluss aus",
+    "tooltip_en": "Turns off the buzzer on the chosen connector",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Buzzer  Port:",
+        "label_en": "Buzzer  port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      },
+      {
+        "label": "aus",
+        "label_en": "off",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import board",
+        "import pwmio"
+      ],
+      "defs": [
+        {
+          "key": "init_buzz_${PIN}",
+          "val": "_buzz_${PIN} = pwmio.PWMOut(board.${PIN}, duty_cycle=0, frequency=440, variable_frequency=True)"
+        }
+      ],
+      "code": "_buzz_${PIN}.duty_cycle = 0\n"
+    },
+    "hardware": {
+      "commonName": "Passiver Buzzer (extern)",
+      "verbrauch3j": 0,
+      "kitStandard": true
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/buzzer_port_off.md",
+    "doc": "# Buzzer ausschalten (externer Buzzer)\n\nSchaltet den Buzzer am gewählten Anschluss aus.",
+    "doc_en": "# Turn buzzer off (external buzzer)\n\nTurns off the buzzer on the chosen connector."
+  },
+  {
     "id": "actuator_isd1820",
     "blockCategory": "Aktionen",
     "subCategory": "Ton",
@@ -1066,6 +1363,45 @@ const BLOCKS_DB = [
     "_file": "actuators/servo.md",
     "doc": "# Servo-Motor\n\nDreht den Servo auf einen Winkel von 0–180 Grad.",
     "doc_en": "# Servo motor\n\nTurns the servo to an angle of 0–180 degrees."
+  },
+  {
+    "id": "actuator_wheel_servo",
+    "blockCategory": "Aktionen",
+    "subCategory": "Servo & Pumpe",
+    "label": "Rad-Servo",
+    "label_en": "Wheel servo",
+    "colour": "#DC2626",
+    "tooltip": "Dreht einen Dauerdreh-Servo (360°): -100 = volle Fahrt rückwärts, 0 = Stopp, 100 = volle Fahrt vorwärts",
+    "tooltip_en": "Turns a continuous-rotation servo (360°): -100 = full speed backward, 0 = stop, 100 = full speed forward",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Rad-Servo",
+        "label_en": "Wheel servo",
+        "name": "SERVO",
+        "fieldType": "servo_dropdown"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "SPEED",
+        "label": "Tempo",
+        "label_en": "speed",
+        "check": "Number",
+        "defaultValue": 50,
+        "suffix": "%  (-100 … 100)"
+      }
+    ],
+    "hardware": {
+      "commonName": "Dauerdreh-Servo (360°, z. B. FS90R)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/wheel_servo.md",
+    "doc": "# Rad-Servo (Dauerdreh-Servo)\n\nEin **Dauerdreh-Servo** (auch 360°-Servo) dreht sich endlos wie ein Motor – anders als ein normaler Servo, der nur auf einen Winkel fährt.\n\n- **100** – volle Fahrt vorwärts\n- **0** – Stopp\n- **-100** – volle Fahrt rückwärts\n\nSteht der Servo bei 0 nicht ganz still, ist er leicht verstellt – manche Servos haben dafür eine kleine Stellschraube.",
+    "doc_en": "# Wheel servo (continuous-rotation servo)\n\nA **continuous-rotation servo** (also 360° servo) turns endlessly like a motor – unlike a normal servo, which only moves to an angle.\n\n- **100** – full speed forward\n- **0** – stop\n- **-100** – full speed backward\n\nIf the servo does not stand completely still at 0, it is slightly off – some servos have a small adjustment screw for this."
   },
   {
     "id": "actuator_motor_backward",
@@ -1645,6 +1981,289 @@ const BLOCKS_DB = [
     "doc_en": "# Grove LCD – text (I2C)\n\nShows up to two lines of text (16 characters each). Does **not** change the\nbackground colour – that's what the \"📟 LCD colour\" block is for.\n> Needs `lib/grove_rgb_lcd.py` on `CIRCUITPY/lib/`. Supports the Grove LCD RGB Backlight (V4/V5)\n> **and** the Grove 16x2 LCD (monochrome variants, e.g. black on yellow) – the backlight is detected automatically."
   },
   {
+    "id": "display_clear",
+    "blockCategory": "Anzeigen",
+    "requiresBoardFeature": "display",
+    "label": "Display löschen",
+    "label_en": "Clear display",
+    "colour": "#0D9488",
+    "tooltip": "Macht das runde Display schwarz",
+    "tooltip_en": "Makes the round display black",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Display löschen",
+        "label_en": "Clear display",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import robo_display"
+      ],
+      "code": "robo_display.loeschen()\n"
+    },
+    "hardware": {
+      "commonName": "Rundes Display GC9A01 (RoboBuddy)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/display_clear.md",
+    "doc": "# Display löschen (RoboBuddy)\n\nMacht das runde Display schwarz – Gesicht und Text verschwinden.",
+    "doc_en": "# Clear display (RoboBuddy)\n\nMakes the round display black – face and text disappear."
+  },
+  {
+    "id": "display_eyes",
+    "blockCategory": "Anzeigen",
+    "requiresBoardFeature": "display",
+    "label": "Augen schauen",
+    "label_en": "Eyes look",
+    "colour": "#0D9488",
+    "tooltip": "Lässt die Augen des Gesichts in eine Richtung schauen",
+    "tooltip_en": "Makes the face's eyes look in a direction",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Augen schauen",
+        "label_en": "Eyes look",
+        "name": "DIR",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "nach links",
+            "label_en": "left",
+            "value": "links"
+          },
+          {
+            "label": "nach rechts",
+            "label_en": "right",
+            "value": "rechts"
+          },
+          {
+            "label": "nach oben",
+            "label_en": "up",
+            "value": "oben"
+          },
+          {
+            "label": "nach unten",
+            "label_en": "down",
+            "value": "unten"
+          },
+          {
+            "label": "geradeaus",
+            "label_en": "straight ahead",
+            "value": "mitte"
+          }
+        ]
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import robo_display"
+      ],
+      "code": "robo_display.augen('${DIR}')\n"
+    },
+    "hardware": {
+      "commonName": "Rundes Display GC9A01 (RoboBuddy)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/display_eyes.md",
+    "doc": "# Augen schauen (RoboBuddy)\n\nBewegt die Augen des Gesichts nach links, rechts, oben, unten oder zurück zur Mitte. Steht gerade Text auf dem Display, erscheint vorher wieder das letzte Gesicht.\n\nIdee: Beim Links-Drehen nach links schauen lassen.",
+    "doc_en": "# Eyes look (RoboBuddy)\n\nMoves the face's eyes left, right, up, down or back to the middle. If text is currently on the display, the last face appears again first.\n\nIdea: look left while turning left."
+  },
+  {
+    "id": "display_face",
+    "blockCategory": "Anzeigen",
+    "requiresBoardFeature": "display",
+    "label": "Gesicht zeigen",
+    "label_en": "Show face",
+    "colour": "#0D9488",
+    "tooltip": "Zeigt ein fertiges Gesicht auf dem runden Display",
+    "tooltip_en": "Shows a ready-made face on the round display",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Gesicht zeigen",
+        "label_en": "Show face",
+        "name": "FACE",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "fröhlich",
+            "label_en": "happy",
+            "value": "froehlich"
+          },
+          {
+            "label": "traurig",
+            "label_en": "sad",
+            "value": "traurig"
+          },
+          {
+            "label": "überrascht",
+            "label_en": "surprised",
+            "value": "ueberrascht"
+          },
+          {
+            "label": "müde",
+            "label_en": "tired",
+            "value": "muede"
+          },
+          {
+            "label": "wütend",
+            "label_en": "angry",
+            "value": "wuetend"
+          },
+          {
+            "label": "verliebt",
+            "label_en": "in love",
+            "value": "verliebt"
+          }
+        ]
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import robo_display"
+      ],
+      "code": "robo_display.gesicht('${FACE}')\n"
+    },
+    "hardware": {
+      "commonName": "Rundes Display GC9A01 (RoboBuddy)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/display_face.md",
+    "doc": "# Gesicht zeigen (RoboBuddy)\n\nZeigt ein fertiges Gesicht auf dem runden Display: fröhlich, traurig, überrascht, müde, wütend oder verliebt.\n\nMit **Augen schauen** kannst du danach die Augen bewegen.",
+    "doc_en": "# Show face (RoboBuddy)\n\nShows a ready-made face on the round display: happy, sad, surprised, tired, angry or in love.\n\nUse **eyes look** afterwards to move the eyes."
+  },
+  {
+    "id": "display_fill",
+    "blockCategory": "Anzeigen",
+    "requiresBoardFeature": "display",
+    "label": "Display füllen",
+    "label_en": "Fill display",
+    "colour": "#0D9488",
+    "tooltip": "Färbt das ganze runde Display in einer Farbe",
+    "tooltip_en": "Colours the whole round display in one colour",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "Display füllen mit",
+        "label_en": "Fill display with",
+        "name": "COLOR",
+        "fieldType": "colour_picker"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import robo_display"
+      ],
+      "code": "robo_display.fuellen('${COLOR}')\n"
+    },
+    "hardware": {
+      "commonName": "Rundes Display GC9A01 (RoboBuddy)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/display_fill.md",
+    "doc": "# Display füllen (RoboBuddy)\n\nFärbt das ganze runde Display in der gewählten Farbe. Gesicht und Text verschwinden dabei.",
+    "doc_en": "# Fill display (RoboBuddy)\n\nColours the whole round display in the chosen colour. Face and text disappear."
+  },
+  {
+    "id": "display_number",
+    "blockCategory": "Anzeigen",
+    "requiresBoardFeature": "display",
+    "label": "Zahl anzeigen",
+    "label_en": "Show number",
+    "colour": "#0D9488",
+    "tooltip": "Zeigt eine Zahl groß in der Mitte des runden Displays (z.B. Akkustand oder Abstand)",
+    "tooltip_en": "Shows a number big in the middle of the round display (e.g. battery level or distance)",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Zahl in",
+        "label_en": "Number in",
+        "name": "COLOR",
+        "fieldType": "colour_picker"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "NUM",
+        "label": "anzeigen:",
+        "label_en": "show:",
+        "check": "Number",
+        "defaultValue": 42
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import robo_display"
+      ],
+      "code": "robo_display.zahl(${NUM}, '${COLOR}')\n"
+    },
+    "hardware": {
+      "commonName": "Rundes Display GC9A01 (RoboBuddy)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/display_number.md",
+    "doc": "# Zahl anzeigen (RoboBuddy)\n\nZeigt eine Zahl groß in der Mitte des runden Displays. Kommazahlen werden auf eine Stelle gerundet.\n\nIdee: `Zahl anzeigen: Akkustand (%)` in einer Für-immer-Schleife.",
+    "doc_en": "# Show number (RoboBuddy)\n\nShows a number big in the middle of the round display. Decimal numbers are rounded to one place.\n\nIdea: `show number: battery level (%)` in a forever loop."
+  },
+  {
+    "id": "display_text",
+    "blockCategory": "Anzeigen",
+    "requiresBoardFeature": "display",
+    "label": "Text anzeigen",
+    "label_en": "Show text",
+    "colour": "#0D9488",
+    "tooltip": "Zeigt eine Zeile Text mittig auf dem runden Display – kurze Wörter werden größer",
+    "tooltip_en": "Shows one line of text in the middle of the round display – short words get bigger",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Text in",
+        "label_en": "Text in",
+        "name": "COLOR",
+        "fieldType": "colour_picker"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "TEXT",
+        "label": "anzeigen:",
+        "label_en": "show:",
+        "check": "String",
+        "defaultValue": "Hallo!",
+        "defaultValue_en": "Hello!"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import robo_display"
+      ],
+      "code": "robo_display.text(${TEXT}, '${COLOR}')\n"
+    },
+    "hardware": {
+      "commonName": "Rundes Display GC9A01 (RoboBuddy)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "actuators/display_text.md",
+    "doc": "# Text anzeigen (RoboBuddy)\n\nZeigt eine Zeile Text in der Mitte des runden Displays. Kurze Wörter werden groß, lange klein. Mehr als etwa 15 Zeichen passen nicht auf das runde Display.\n\nDas Gesicht verschwindet, solange Text angezeigt wird.",
+    "doc_en": "# Show text (RoboBuddy)\n\nShows one line of text in the middle of the round display. Short words are big, long ones small. More than about 15 characters do not fit on the round display.\n\nThe face disappears while text is shown."
+  },
+  {
     "id": "tm1637_number",
     "blockCategory": "Anzeigen",
     "subCategory": "",
@@ -1834,7 +2453,7 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": false,
     "_file": "actuators/pwm_write.md",
-    "doc": "# PWM-Ausgabe\n\nSchaltet den Port nicht nur **an oder aus**, sondern stufenlos dazwischen:\n0 % = aus, 50 % = halbe Kraft, 100 % = voll an. Dafür schaltet der Pin sehr\nschnell (1000-mal pro Sekunde) an und aus. Je länger er jedes Mal an bleibt,\ndesto heller leuchtet eine LED oder desto schneller dreht ein Lüfter.\n\n**Typischer Einsatz: MOSFET-Modul.** Der Pin selbst liefert nur wenig Strom.\nEin MOSFET-Modul schaltet damit große Lasten mit eigener Stromversorgung:\nLED-Streifen dimmen, Lüfter oder kleine Motoren langsamer und schneller laufen\nlassen. Das Signal-Kabel (gelb / SIG) des Grove-Ports kommt an den Signal-Eingang\ndes Moduls.\n\n**Gut zu wissen:**\n- Am besten **Grove 1–4** nutzen. Auf dem MAKER-PI teilen sich immer zwei Pins\n  einen Taktgeber: Grove 5 und 6 vertragen sich nicht mit Motor M2, Grove 7\n  nicht mit Servo S1/S2 – wer beides gleichzeitig nutzt, bekommt beim Start\n  einen Fehler.\n- Denselben Port im Programm nicht zusätzlich mit „🔌 Digital\" schalten.\n- Werte unter 0 % oder über 100 % werden automatisch begrenzt.",
-    "doc_en": "# PWM output\n\nSwitches the port not just **on or off**, but smoothly in between:\n0 % = off, 50 % = half power, 100 % = fully on. To do this the pin switches\non and off very quickly (1000 times per second). The longer it stays on each\ntime, the brighter an LED shines or the faster a fan spins.\n\n**Typical use: MOSFET module.** The pin itself only supplies a little current.\nA MOSFET module uses it to switch big loads with their own power supply:\ndim LED strips, make fans or small motors run slower or faster. The signal wire\n(yellow / SIG) of the Grove port goes to the signal input of the module.\n\n**Good to know:**\n- Best use **Grove 1–4**. On the MAKER-PI two pins always share one timer:\n  Grove 5 and 6 do not get along with motor M2, Grove 7 not with servo S1/S2 –\n  using both at the same time gives an error at start.\n- Do not also switch the same port with \"🔌 Digital\" in the program.\n- Values below 0 % or above 100 % are limited automatically."
+    "doc": "# PWM-Ausgabe\n\nSchaltet den Port nicht nur **an oder aus**, sondern stufenlos dazwischen:\n0 % = aus, 50 % = halbe Kraft, 100 % = voll an. Dafür schaltet der Pin sehr\nschnell (1000-mal pro Sekunde) an und aus. Je länger er jedes Mal an bleibt,\ndesto heller leuchtet eine LED oder desto schneller dreht ein Lüfter.\n\n**Typischer Einsatz: MOSFET-Modul.** Der Pin selbst liefert nur wenig Strom.\nEin MOSFET-Modul schaltet damit große Lasten mit eigener Stromversorgung:\nLED-Streifen dimmen, Lüfter oder kleine Motoren langsamer und schneller laufen\nlassen. Das Signal-Kabel (gelb / SIG) des Grove-Ports kommt an den Signal-Eingang\ndes Moduls.\n\n**Gut zu wissen:**\n- Am besten **Grove 1–4** nutzen. Auf dem MAKER-PI teilen sich immer zwei Pins\n  einen Taktgeber: Grove 5 und 6 vertragen sich nicht mit Motor M2, Grove 7\n  nicht mit Servo S1/S2 – wer beides gleichzeitig nutzt, bekommt beim Start\n  einen Fehler.\n- Auf dem **RoboBuddy** gehen neben den 4 Servos höchstens **2** PWM-/Buzzer-\n  Ausgänge gleichzeitig – ein dritter bricht beim Start mit einem Fehler ab.\n- Denselben Port im Programm nicht zusätzlich mit „🔌 Digital\" schalten.\n- Werte unter 0 % oder über 100 % werden automatisch begrenzt.",
+    "doc_en": "# PWM output\n\nSwitches the port not just **on or off**, but smoothly in between:\n0 % = off, 50 % = half power, 100 % = fully on. To do this the pin switches\non and off very quickly (1000 times per second). The longer it stays on each\ntime, the brighter an LED shines or the faster a fan spins.\n\n**Typical use: MOSFET module.** The pin itself only supplies a little current.\nA MOSFET module uses it to switch big loads with their own power supply:\ndim LED strips, make fans or small motors run slower or faster. The signal wire\n(yellow / SIG) of the Grove port goes to the signal input of the module.\n\n**Good to know:**\n- Best use **Grove 1–4**. On the MAKER-PI two pins always share one timer:\n  Grove 5 and 6 do not get along with motor M2, Grove 7 not with servo S1/S2 –\n  using both at the same time gives an error at start.\n- On the **RoboBuddy**, besides the 4 servos at most **2** PWM/buzzer outputs\n  work at the same time – a third one stops with an error at start.\n- Do not also switch the same port with \"🔌 Digital\" in the program.\n- Values below 0 % or above 100 % are limited automatically."
   }
 ];

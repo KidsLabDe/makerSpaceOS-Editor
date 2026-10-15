@@ -1,6 +1,12 @@
 // toolbox.js – Statische Toolbox-Kategorien + buildFinalToolbox()
 // Hardware-Kategorien (Sensoren, Aktionen, Lichter, Anzeigen) kommen aus block_builder.js
 
+// Ereignis-Hüte, die nur auf Boards mit bestimmter Onboard-Hardware passen
+// (Gegenstück zu requiresBoardFeature in components/*.md).
+const HAT_BOARD_FEATURES = {
+  when_battery_low: 'powerMonitor',
+};
+
 const TOOLBOX_STATIC_CONTENTS = [
   {
     kind: 'category',
@@ -29,6 +35,7 @@ const TOOLBOX_STATIC_CONTENTS = [
       { kind: 'block', type: 'when_sound' },
       { kind: 'block', type: 'when_touch' },
       { kind: 'block', type: 'when_motion' },
+      { kind: 'block', type: 'when_battery_low' },
       { kind: 'sep' },
       { kind: 'block', type: 'when_distance' },
       { kind: 'block', type: 'when_light' },
@@ -145,11 +152,19 @@ function buildFinalToolbox() {
     lichter.contents.push(...matrixContents);
   }
 
+  // Board-spezifische Ereignis-Hüte nur zeigen, wenn das Profil das Feature hat.
+  const staticCats = TOOLBOX_STATIC_CONTENTS.map(cat => {
+    if (cat.kind !== 'category' || !cat.contents) return cat;
+    return { ...cat, contents: cat.contents.filter(e =>
+      !(e.type && (hideIds.has(e.type) ||
+        (HAT_BOARD_FEATURES[e.type] && !BOARD[HAT_BOARD_FEATURES[e.type]])))) };
+  });
+
   return {
     kind: 'categoryToolbox',
     contents: [
       ...(window.AI_BLOCKS_TOOLBOX || []),
-      ...TOOLBOX_STATIC_CONTENTS,
+      ...staticCats,
       { kind: 'sep' },
       ...hwCats,
     ]

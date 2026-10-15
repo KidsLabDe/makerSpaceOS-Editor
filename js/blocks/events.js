@@ -26,7 +26,7 @@
     _NONE_OPT,
     ...Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]),
     GROVE_SEP,
-    ...BOARD.grovePorts.map(p => [p.label, p.signal]),
+    ...BOARD.digitalPorts().map(p => [p.label, p.signal]),
   ], v => v === '__SEP__' ? null : undefined);
 
   const stateField  = () => new Blockly.FieldDropdown([[L('gedrückt', 'pressed'), 'pressed'], [L('losgelassen', 'released'), 'released']]);
@@ -107,6 +107,18 @@
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald der Bewegungssensor (ICM20948) geschüttelt oder stark beschleunigt wird', 'Starts as soon as the motion sensor (ICM20948) is shaken or strongly accelerated'));
+    }
+  };
+
+  // Nur auf Boards mit Akku-Messchip (BOARD.powerMonitor, RoboBuddy) in der
+  // Toolbox – siehe HAT_BOARD_FEATURES in toolbox.js.
+  Blockly.Blocks['when_battery_low'] = {
+    init: function () {
+      this.appendDummyInput()
+          .appendField(L('Wenn Akku schwach', 'When battery low'));
+      this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
+      this.setColour(EVENT_COLOUR);
+      this.setTooltip(L('Startet einmal, sobald die Akkuspannung unter 3,6 V fällt', 'Starts once as soon as the battery voltage drops below 3.6 V'));
     }
   };
 

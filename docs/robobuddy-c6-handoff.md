@@ -1,5 +1,7 @@
 # Handoff: Robo-Buddy-Powerboard (ESP32-C6-Zero) in makerSpaceOS
 
+> **Umgesetzt** (2026-10-15) – aktueller Stand siehe `docs/robobuddy-c6.md`. Abweichungen zum Vorschlag unten: generischer Build ist der DevKitC-1-**N8** (8 MB), Pin-Namen über `from robobuddy import board`, Strom-Block positiv = Laden, 2-Pin-Geräte über Port-Paare A0+A1/A1+A2, Libs per Web Serial statt Thonny.
+
 Auftrag für Claude Code: makerSpaceOS soll den **MF26 Robo-Buddy mit der Power-Trägerplatine Rev 0.2** als Board unterstützen. Gemeint sind Servos, rundes Display, Strom-/Spannungsmessung, Ladezustand und alle GPIOs des ESP32-C6-Zero, die über die Platine erreichbar sind.
 
 Quelle: Repo `KidsLabDe/Robo-Buddy-Makerfestival26`, Branch **`powerboard`** (Stand Commit `08762d5`, Rev 0.2 bei JLCPCB im Warenkorb). Maßgeblich sind dort:

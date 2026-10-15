@@ -11,7 +11,7 @@ var _tasks     = [];                   // Task-Deskriptoren {kind, name, body, e
 var _HAT_TYPES = [
   'when_button', 'when_encoder',
   'when_distance', 'when_light', 'when_temperature', 'when_humidity',
-  'when_sound', 'when_touch', 'when_motion',
+  'when_sound', 'when_touch', 'when_motion', 'when_battery_low',
 ];
 
 Blockly.Python.workspaceToCode = function(workspace) {
@@ -73,7 +73,15 @@ function _whenTask(name, activeExpr, body, poll) {
 // finish(): erzeugt den finalen formatierten Code
 Blockly.Python.finish = function() {
   const hasSetup = !!_setupCode.trim();
-  const hasAsync = _tasks.length > 0 || /\bawait\b/.test(_setupCode);
+  // Boards mit Akku-Messchip (RoboBuddy): Jedes Programm bekommt den
+  // Tiefentladeschutz als Hintergrund-Aufgabe – und läuft deshalb immer über
+  // start(), auch wenn es nur aus BEIM START besteht.
+  const guard = !!BOARD.powerMonitor && (hasSetup || _tasks.length > 0);
+  if (guard) {
+    _akkuDefs();
+    _defs['from_robobuddy_waechter'] = 'from robobuddy import akku_waechter';
+  }
+  const hasAsync = guard || _tasks.length > 0 || /\bawait\b/.test(_setupCode);
   if (hasAsync) _defs['import_asyncio'] = 'import asyncio';
 
   // Import-Einträge aus Standard-Blockly-Blöcken übernehmen (z.B. math_random_int →
@@ -91,7 +99,9 @@ Blockly.Python.finish = function() {
   const imports = [];
   const inits   = [];
   for (const key of Object.keys(_defs).sort()) {
-    const val = _defs[key];
+    let val = _defs[key];
+    // Board-eigenes Pin-Modul (RoboBuddy: lib/robobuddy.py kennt alle GPIOs)
+    if (key === 'import_board' && BOARD.boardModule) val = `from ${BOARD.boardModule} import board`;
     if (val.startsWith('import ') || val.startsWith('from ')) imports.push(val);
     else inits.push(val);
   }
@@ -158,6 +168,7 @@ Blockly.Python.finish = function() {
         result += `wenn(lambda: ${t.expr}, ${t.fn}${poll})\n`;
       }
     });
+    if (guard) result += 'akku_waechter()\n';
     result += `start(${hasSetup ? startFn : ''})\n`;
   } else if (hasSetup) {
     result += L('\n# --- Setup (einmalig) ---\n', '\n# --- Setup (runs once) ---\n') + _dedent(_setupCode);
@@ -300,12 +311,16 @@ function _groveSonarDef(sig) {
 
 // Freier HC-SR04 am Grove-Port: TRIG = Signal-Pin, ECHO = 2. Pin (pin1) des
 // Ports. Nutzt lib/sr04.py (nach CIRCUITPY/lib/ kopieren).
+// Ports ohne zweiten Pin (RoboBuddy A0–A2): ECHO kommt dann aus dem
+// Port-Paar mit gleichem Signal-Pin (A0 → A0+A1, A1 → A1+A2).
 function _sr04SonarDef(sig) {
-  const port = (BOARD.grovePorts || []).find(p => p.signal === sig);
-  const echo = port ? port.pin1 : sig;
+  const ports = (BOARD.grovePorts || []).filter(p => p.signal === sig);
+  const port  = ports.find(p => p.pin1 && p.twoPin !== false) || ports[0];
+  const echo  = (port && port.pin1) || sig;
   _defs['import_board']            = 'import board';
   _defs['from_sr04']               = 'from sr04 import SR04';
   _defs[`init_sr04_${sig}`]        = `_sr04_${sig} = SR04(board.${sig}, board.${echo})`;
+  return echo !== sig;
 }
 
 // Sensor-Ausdruck je nach Block-Feld TYPE ('grove' | 'sr04', Default 'grove').
@@ -313,9 +328,12 @@ function _sonarExpression(block) {
   const sig  = block.getFieldValue('SIG');
   const type = block.getFieldValue('TYPE') || 'grove';
   if (type === 'sr04') {
-    _sr04SonarDef(sig);
+    const ok = _sr04SonarDef(sig);
+    block.setWarningText(ok ? null
+      : L('⚠ HC-SR04 braucht zwei Pins – bitte einen Port mit zweitem Pin wählen!', '⚠ HC-SR04 needs two pins – please choose a port with a second pin!'));
     return `_sr04_${sig}.distance`;
   }
+  block.setWarningText(null);
   _groveSonarDef(sig);
   return `_sonar_${sig}.distance`;
 }
@@ -425,19 +443,67 @@ Blockly.Python['actuator_led_blink'] = function(block) {
 
 // ── Aktoren: Servo ────────────────────────────────────────────────────────────
 
-Blockly.Python['actuator_servo'] = function(block) {
-  const s     = block.getFieldValue('SERVO');
-  const pinMap = { S1: BOARD.servos.S1, S2: BOARD.servos.S2,
-                   S3: BOARD.servos.S3, S4: BOARD.servos.S4 };
-  const pin   = pinMap[s];
-  const angle = Blockly.Python.valueToCode(block, 'ANGLE', Blockly.Python.ORDER_NONE) || '90';
+// Servo-Schiene einschalten, falls das Board sie schaltet (RoboBuddy: 5-V-Boost
+// an SERVO_EN). Key "init_0_…" → läuft vor allen PWM-Inits. Die Laufzeit
+// schaltet die Schiene nach Stopp/Absturz wieder ab (beim_beenden).
+function _servoPowerDef() {
+  if (!BOARD.servoEnable) return;
+  _defs['from_robobuddy_servo_strom'] = 'from robobuddy import servo_strom';
+  _defs['init_0_servo_strom'] = 'servo_strom(True)';
+}
+
+// PWM-Ausgang eines Servo-Anschlusses (S1…S4), geteilt von Winkel-Servo,
+// Rad-Servo und Fahren. duty_cycle=0: kein Puls bis zum ersten Befehl –
+// sonst ruckt ein Dauerdreh-Servo beim Programmstart kurz los.
+function _servoPwmDef(s) {
+  const pin = BOARD.servos[s];
+  _servoPowerDef();
   _defs['import_board']  = 'import board';
   _defs['import_pwmio']  = 'import pwmio';
+  _defs[`init_pwm_${s}`] = `_pwm_${s} = pwmio.PWMOut(board.${pin}, duty_cycle=0, frequency=50)`;
+  return `_pwm_${s}`;
+}
+
+Blockly.Python['actuator_servo'] = function(block) {
+  const s     = block.getFieldValue('SERVO');
+  const angle = Blockly.Python.valueToCode(block, 'ANGLE', Blockly.Python.ORDER_NONE) || '90';
+  const pwm   = _servoPwmDef(s);
   _defs['from_servo']    = 'from adafruit_motor import servo as _servo_mod';
-  _defs[`init_srv_${s}`] =
-    `_pwm_${s} = pwmio.PWMOut(board.${pin}, duty_cycle=2 ** 15, frequency=50)\n` +
-    `_servo_${s} = _servo_mod.Servo(_pwm_${s})`;
+  _defs[`init_srv_${s}`] = `_servo_${s} = _servo_mod.Servo(${pwm})`;
   return `_servo_${s}.angle = ${angle}\n`;
+};
+
+// ── Aktoren: Rad-Servo (Dauerdreh-Servo) + Fahren ────────────────────────────
+// Pulsbreite 1050…1950 µs wie in der Robo-Buddy-Firmware, 1500 µs = Stopp.
+
+function _wheelDef(s) {
+  const pwm = _servoPwmDef(s);
+  _defs['from_servo']    = 'from adafruit_motor import servo as _servo_mod';
+  _defs[`init_rad_${s}`] =
+    `_rad_${s} = _servo_mod.ContinuousServo(${pwm}, min_pulse=1050, max_pulse=1950)`;
+  return `_rad_${s}`;
+}
+
+Blockly.Python['actuator_wheel_servo'] = function(block) {
+  const s = block.getFieldValue('SERVO');
+  if (!s || s === '__NONE__') {
+    block.setWarningText(L('⚠ Bitte Servo auswählen!', '⚠ Please select a servo!'));
+    return L('pass  # ⚠ Kein Servo ausgewählt\n', 'pass  # ⚠ No servo selected\n');
+  }
+  block.setWarningText(null);
+  const speed = Blockly.Python.valueToCode(block, 'SPEED', Blockly.Python.ORDER_NONE) || '0';
+  return `${_wheelDef(s)}.throttle = max(-1, min(1, (${speed}) / 100))\n`;
+};
+
+Blockly.Python['actuator_drive'] = function(block) {
+  const dir   = block.getFieldValue('DIR');
+  const speed = Blockly.Python.valueToCode(block, 'SPEED', Blockly.Python.ORDER_NONE) || '50';
+  const drv   = BOARD.drive;
+  if (!drv) return '';
+  const links  = _wheelDef(drv.left);
+  const rechts = _wheelDef(drv.right);
+  _defs['from_robobuddy_fahren'] = 'from robobuddy import fahren';
+  return `await fahren(${links}, ${rechts}, '${dir}', ${dir === 'stopp' ? 0 : speed})\n`;
 };
 
 // ── Aktoren: Buzzer ───────────────────────────────────────────────────────────
@@ -766,6 +832,41 @@ Blockly.Python['sensor_dht11_humidity'] = function(block) {
   return [`_dht11_${pin}.humidity`, Blockly.Python.ORDER_MEMBER];
 };
 
+// ── Gemeinsamer I2C-Bus ───────────────────────────────────────────────────────
+// Ein busio.I2C je Pin-Paar, von allen I2C-Geräten geteilt (LCD, ICM20948,
+// Akku-Messchip …). Zwei busio.I2C auf denselben Pins → „in Benutzung".
+// Key-Präfix "init_0_" sortiert vor allen Geräte-Inits (init_grove_lcd,
+// init_imu_* …) → der Bus existiert, bevor ein Gerät ihn braucht.
+// Vor dem Anlegen wird der Bus freigetaktet: Nach einem Absturz mitten in
+// einer Übertragung hält ein Sensor SDA evtl. auf Low (Auto-Reload macht ihn
+// nicht stromlos) → busio.I2C meldet sonst „Kein Pull-up gefunden".
+// Gibt den Variablennamen des Busses zurück.
+function _i2cBusDef(port) {
+  const scl = port.signal, sda = port.pin1;
+  const bus = `_i2c_${scl}_${sda}`;
+  _defs['import_board']     = 'import board';
+  _defs['import_busio']     = 'import busio';
+  _defs['import_digitalio'] = 'import digitalio';
+  _defs['import_time']      = 'import time';
+  _defs['init_0_0_i2c_freigeben'] =
+    `def _i2c_freigeben(scl_pin, sda_pin):\n` +
+    `    _scl = digitalio.DigitalInOut(scl_pin)\n` +
+    `    _sda = digitalio.DigitalInOut(sda_pin)\n` +
+    `    _scl.switch_to_output(value=True)\n` +
+    `    _sda.switch_to_input(pull=digitalio.Pull.UP)\n` +
+    `    for _ in range(16):\n` +
+    `        _scl.value = False\n` +
+    `        time.sleep(0.001)\n` +
+    `        _scl.value = True\n` +
+    `        time.sleep(0.001)\n` +
+    `    _scl.deinit()\n` +
+    `    _sda.deinit()`;
+  _defs[`init_0_i2c_${scl}_${sda}`] =
+    `_i2c_freigeben(board.${scl}, board.${sda})\n` +
+    `${bus} = busio.I2C(board.${scl}, board.${sda})`;
+  return bus;
+}
+
 // ── BMP280-Generatoren (KY-052) ───────────────────────────────────────────────
 
 function _bmp280Defs(sda, scl) {
@@ -793,45 +894,24 @@ Blockly.Python['sensor_bmp280_pressure'] = function(block) {
 
 function _imuDefs(portId) {
   const port = BOARD.grovePortById(portId);
-  _defs['import_board']     = 'import board';
-  _defs['import_busio']     = 'import busio';
-  _defs['import_digitalio'] = 'import digitalio';
+  const bus  = _i2cBusDef(port);
   _defs['import_math']      = 'import math';
   _defs['import_time']      = 'import time';
   _defs['import_icm20x']    = 'import adafruit_icm20x';
-  // I2C + Sensor + Hilfsfunktionen in einem Eintrag (Reihenfolge garantiert).
-  // Init ist bewusst zäh: (a) Bus-Clear – nach einem Absturz mitten in einer
-  // I2C-Übertragung hält der Sensor SDA auf Low (Auto-Reload macht ihn nicht
-  // stromlos) → busio.I2C meldet sonst „Kein Pull-up gefunden". (b) Retry –
-  // der interne Kompass (AK09916) meldet sich nach dem Einschalten oft erst
-  // beim 2. Versuch. time.sleep ist hier ok – läuft einmalig vor den Tasks.
+  // Sensor + Hilfsfunktionen in einem Eintrag (der Bus kommt aus _i2cBusDef
+  // und steht durch seinen Key garantiert davor). Retry: der interne Kompass
+  // (AK09916) meldet sich nach dem Einschalten oft erst beim 2. Versuch – nur
+  // der Sensor wird neu angelegt, der (evtl. geteilte) Bus bleibt bestehen.
+  // time.sleep ist hier ok – läuft einmalig vor den Tasks.
   // Lesefehler (z.B. Wackelkontakt am Stecker beim Schütteln) dürfen das
   // Programm nicht beenden – dann gilt der letzte gültige Messwert weiter.
   _defs[`init_imu_${portId}`] =
-    `def _i2c_freigeben_${portId}():\n` +
-    `    _scl = digitalio.DigitalInOut(board.${port.signal})\n` +
-    `    _sda = digitalio.DigitalInOut(board.${port.pin1})\n` +
-    `    _scl.switch_to_output(value=True)\n` +
-    `    _sda.switch_to_input(pull=digitalio.Pull.UP)\n` +
-    `    for _ in range(16):\n` +
-    `        _scl.value = False\n` +
-    `        time.sleep(0.001)\n` +
-    `        _scl.value = True\n` +
-    `        time.sleep(0.001)\n` +
-    `    _scl.deinit()\n` +
-    `    _sda.deinit()\n` +
     `_imu_${portId} = None\n` +
     `for _imu_versuch in range(5):\n` +
     `    try:\n` +
-    `        _i2c_freigeben_${portId}()\n` +
-    `        _i2c_imu_${portId} = busio.I2C(board.${port.signal}, board.${port.pin1})\n` +
-    `        _imu_${portId} = adafruit_icm20x.ICM20948(_i2c_imu_${portId})\n` +
+    `        _imu_${portId} = adafruit_icm20x.ICM20948(${bus})\n` +
     `        break\n` +
-    `    except (OSError, RuntimeError):\n` +
-    `        try:\n` +
-    `            _i2c_imu_${portId}.deinit()\n` +
-    `        except Exception:\n` +
-    `            pass\n` +
+    `    except (OSError, RuntimeError, ValueError):\n` +
     `        time.sleep(0.3)  ` + L('# Sensor braucht nach dem Einschalten einen Moment', '# sensor needs a moment after power-on') + `\n` +
     `if _imu_${portId} is None:\n` +
     `    raise RuntimeError("` + L(`Bewegungssensor nicht gefunden - steckt er fest an ${port.label}?`, `Motion sensor not found - is it plugged firmly into ${port.label}?`) + `")\n` +
@@ -876,6 +956,37 @@ Blockly.Python['sensor_icm20948_neigung'] = function(block) {
   _imuDefs(portId);
   const fn = dir === 'roll' ? `_imu_neigung_seite_${portId}` : `_imu_neigung_vor_${portId}`;
   return [`${fn}()`, Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
+// ── Akku (RoboBuddy: INA226 @ 0x45 am geteilten I2C-Bus) ─────────────────────
+// Die Messlogik steckt in lib/robobuddy.py (akku_*). Strom: positiv = Laden.
+
+function _akkuDefs() {
+  const pm  = BOARD.powerMonitor;
+  const bus = _i2cBusDef(BOARD.grovePortById(pm.port));
+  _defs['from_robobuddy_akku'] =
+    'from robobuddy import akku_start, akku_spannung, akku_strom, akku_laedt, akku_prozent';
+  _defs['init_akku'] = `akku_start(${bus})`;
+}
+
+function _akkuValue(expr) {
+  return function(_block) {
+    if (!BOARD.powerMonitor) return ['0', Blockly.Python.ORDER_ATOMIC];
+    _akkuDefs();
+    return [expr, Blockly.Python.ORDER_FUNCTION_CALL];
+  };
+}
+Blockly.Python['sensor_akku_spannung'] = _akkuValue('akku_spannung()');
+Blockly.Python['sensor_akku_strom']    = _akkuValue('akku_strom()');
+Blockly.Python['sensor_akku_laedt']    = _akkuValue('akku_laedt()');
+Blockly.Python['sensor_akku_prozent']  = _akkuValue('akku_prozent()');
+
+Blockly.Python['when_battery_low'] = function(block) {
+  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  if (!BOARD.powerMonitor) return null;
+  _akkuDefs();
+  // > 0: ohne Messchip liefert akku_spannung() 0 – das ist kein „schwach“
+  return _whenTask(L('wenn_akku_schwach', 'when_battery_low'), '(0 < akku_spannung() < 3.6)', body, '1');
 };
 
 // ── Drehgeber-Generator (KY-040) ──────────────────────────────────────────────
@@ -951,13 +1062,9 @@ Blockly.Python['text_verbinden'] = function(block) {
 // Mono-Version → Text-Modus, set_rgb hat dann keine Wirkung).
 function _groveLcdDef(portId) {
   const port = BOARD.grovePortById(portId);
-  _defs['import_board'] = 'import board';
-  _defs['import_busio'] = 'import busio';
+  const bus  = _i2cBusDef(port);
   _defs['from_grove_rgb_lcd'] = 'from grove_rgb_lcd import GroveRgbLcd';
-  // I2C + LCD-Objekt in einem Eintrag (Reihenfolge garantiert)
-  _defs['init_grove_lcd'] =
-    `_i2c_lcd = busio.I2C(board.${port.signal}, board.${port.pin1})\n` +
-    `_lcd = GroveRgbLcd(_i2c_lcd)`;
+  _defs['init_grove_lcd'] = `_lcd = GroveRgbLcd(${bus})`;
 }
 
 // Text und Farbe sind getrennte Blöcke (gemeinsames _lcd-Objekt via _defs),
@@ -1169,6 +1276,7 @@ Blockly.Python['when_motion'] = function(block) {
 // ── 8x8 NeoPixel-Matrix (Servo-Ports S1–S4 = GP12–GP15) ──────────────────────
 
 function _matrixDefs(pin) {
+  _servoPowerDef();   // Matrix hängt am 5-V-Plus des Servo-Anschlusses
   _defs['import_board']    = 'import board';
   _defs['import_neopixel'] = 'import neopixel';
   _defs[`init_matrix_${pin}`] =

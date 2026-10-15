@@ -22,12 +22,12 @@ function _groveOptions(profile, role) {
     case 'i2c':
       return profile.grovePorts.filter(p => p.i2c).map(p => [p.label, String(p.id)]);
     case '2pin':
-      return profile.grovePorts.map(p => [p.label, String(p.id)]);
+      return _twoPinPorts(profile).map(p => [p.label, String(p.id)]);
     case '2pin_sequential': {
       // Für den Drehgeber: rotaryio (PIO) braucht benachbarte GPIO-Pins
       // (GPn + GPn±1, gleiche Pin-Gruppe) → sonst RuntimeError auf dem Board.
       const num = (n) => { const m = String(n).match(/(\d+)$/); return m ? Number(m[1]) : NaN; };
-      return profile.grovePorts
+      return _twoPinPorts(profile)
         .filter(p => !Number.isNaN(num(p.pin1)) && Math.abs(num(p.pin1) - num(p.signal)) === 1)
         .map(p => [p.label, String(p.id)]);
     }
@@ -36,11 +36,23 @@ function _groveOptions(profile, role) {
       const usedSignals = new Set(profile.grovePorts.map(p => p.signal));
       const extraPins = profile.allGrovePins.filter(p => !usedSignals.has(p));
       return [
-        ...profile.grovePorts.map(p => [p.label, p.signal]),
+        ..._digitalPorts(profile).map(p => [p.label, p.signal]),
         ...(extraPins.length ? [GROVE_SEP, ...extraPins.map(p => [p, p])] : []),
       ];
     }
   }
+}
+
+// Ports, die als einzelner Digital-Pin taugen. digital:false = reiner I2C-Port
+// (geteilter Bus, z. B. mit dem Akku-Messchip) oder virtuelles Port-Paar.
+function _digitalPorts(profile) {
+  return profile.grovePorts.filter(p => p.digital !== false);
+}
+
+// Ports mit zwei Signal-Pins (TM1637, Drehgeber, HC-SR04 …). Ports ohne
+// zweiten Pin (pin1: null) und reine I2C-Ports (twoPin:false) fallen raus.
+function _twoPinPorts(profile) {
+  return profile.grovePorts.filter(p => p.pin1 && p.twoPin !== false);
 }
 
 function _grovePortById(profile, id) {
@@ -52,6 +64,7 @@ function _grovePortById(profile, id) {
 function _attachGroveMethods(profile) {
   profile.groveOptions  = function (role) { return _groveOptions(this, role); };
   profile.grovePortById = function (id)   { return _grovePortById(this, id); };
+  profile.digitalPorts  = function ()     { return _digitalPorts(this); };
   return profile;
 }
 
@@ -244,6 +257,55 @@ const BOARD_PROFILES = {
     hideSubCategories: ['Onboard'],                            // Onboard-NeoPixel
     hideBlockIds:      ['actuator_motor_forward', 'actuator_motor_backward',
                         'actuator_motor_stop', 'sensor_battery'],
+  },
+
+  // RoboBuddy: MF26 Robo-Buddy mit Power-Trägerplatine Rev 0.2 (KidsLab) und
+  // Waveshare ESP32-C6-Zero (8 MB). Geflasht ist der generische CircuitPython-
+  // Build "ESP32-C6-DevKitC-1-N8" (board_id: espressif_esp32c6_devkitc_1_n8).
+  // Dessen board-Modul kennt GPIO14 nicht und nennt GPIO16/17 TX/RX – der
+  // generierte Code holt `board` deshalb aus lib/robobuddy.py (boardModule),
+  // dort gibt es IO0 … IO23 vollständig.
+  // Alle 15 Leisten-GPIO sind belegt. Frei nutzbar sind nur die Analog-Ports
+  // A0–A2 (IO0–IO2, 1 kΩ in Serie, Reihenfolge GND/3V3/SIG) und der I²C-Bus
+  // (IO14 = SDA, IO22 = SCL, geteilt mit dem INA226 @ 0x45).
+  // Servo-Plus = 5-V-Boost: nur an, wenn SERVO_EN (IO15) High ist UND eine
+  // Zelle steckt. PWM: 4 Servos (50 Hz) + höchstens 2 weitere Ausgänge.
+  robobuddy: {
+    name: 'RoboBuddy (ESP32-C6)',
+    boardModule: 'robobuddy',                     // from robobuddy import board
+    noMassStorage: true,                          // kein CIRCUITPY/UF2 → Libs über Web Serial
+    neopixel:  { pin: 'IO8', count: 1 },          // WS2812 auf dem C6-Zero
+    buzzer:    null,                              // kein Onboard-Summer → Summer mit Port
+    externalBuzzer: true,
+    buttons:   {},                                // BOOT (IO9) bewusst nicht freigegeben
+    motors:    {},
+    servos:    { S1: 'IO19', S2: 'IO18', S3: 'IO16', S4: 'IO17' },
+    servoEnable: 'IO15',                          // Boost der Servo-Schiene, High = an
+    // Am gebauten Roboter gemessen: S1 sitzt rechts, S2 links (Blick von hinten,
+    // Display vorne). Das rechte Rad läuft gespiegelt – robobuddy.fahren() dreht es um.
+    drive:     { left: 'S2', right: 'S1' },
+    battery:   null,                              // ersetzt durch powerMonitor
+    powerMonitor: { addr: 0x45, shuntOhm: 0.010, port: 4 },
+    display:   { sck: 'IO4', mosi: 'IO5', dc: 'IO20', cs: 'IO21', rst: 'IO3' },
+    // Port-Paare A0+A1 / A1+A2 = virtuelle 2-Pin-Ports (TM1637, Drehgeber,
+    // HC-SR04): Signal 1 = SIG der ersten, Signal 2 = SIG der zweiten Leiste.
+    // I2C: SDA = pin1, SCL = signal → busio.I2C(board.signal, board.pin1)
+    grovePorts: [
+      { id: 1, label: 'A0',    pin1: null,   signal: 'IO0',  analog: true,  i2c: false },
+      { id: 2, label: 'A1',    pin1: null,   signal: 'IO1',  analog: true,  i2c: false },
+      { id: 3, label: 'A2',    pin1: null,   signal: 'IO2',  analog: true,  i2c: false },
+      { id: 4, label: 'I2C 1', pin1: 'IO14', signal: 'IO22', analog: false, i2c: true,  digital: false, twoPin: false },
+      { id: 5, label: 'I2C 2', pin1: 'IO14', signal: 'IO22', analog: false, i2c: true,  digital: false, twoPin: false },
+      { id: 6, label: 'A0+A1', pin1: 'IO1',  signal: 'IO0',  analog: false, i2c: false, digital: false },
+      { id: 7, label: 'A1+A2', pin1: 'IO2',  signal: 'IO1',  analog: false, i2c: false, digital: false },
+    ],
+    externalPins: ['IO0', 'IO1', 'IO2'],
+    allGrovePins: ['IO0', 'IO1', 'IO2'],          // bewusst ohne Servo-/Display-/I²C-Pins
+    analogPins:   ['IO0', 'IO1', 'IO2'],
+
+    hideBlockIds: ['actuator_motor_forward', 'actuator_motor_backward',
+                   'actuator_motor_stop', 'sensor_battery', 'actuator_stepper',
+                   'actuator_buzzer', 'actuator_buzzer_off'],
   },
 };
 

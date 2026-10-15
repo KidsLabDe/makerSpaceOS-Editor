@@ -37,7 +37,7 @@
           _NONE_OPT,
           ...Object.entries(BOARD.buttons).map(([k, v]) => [`${k} (${v})`, k]),
           GROVE_SEP,
-          ...BOARD.grovePorts.map(p => [p.label, p.signal]),
+          ...BOARD.digitalPorts().map(p => [p.label, p.signal]),
         ];
       case 'lcd_version_dropdown':
         return [['Version 4', '0x62'], ['Version 5', '0x30']];
@@ -61,6 +61,9 @@
         return [[L('vor/zurück', 'forward/back'), 'pitch'], [L('links/rechts', 'left/right'), 'roll']];
       case 'rgb_color_dropdown':
         return _COLOR_OPTS;
+      case 'options_dropdown':
+        // Freie Auswahl aus der .md: options: [{label, label_en, value}, …]
+        return (inp.options || []).map(o => [LF(o, 'label'), String(o.value)]);
       default:
         return (inp.options || []);
     }
@@ -246,7 +249,10 @@
     const hideCats  = new Set(BOARD.hideCategories    || []);
     const hideSubs  = new Set(BOARD.hideSubCategories || []);
     const hideIds   = new Set(BOARD.hideBlockIds      || []);
-    const visible   = b => !hideIds.has(b.id);
+    // requiresBoardFeature: Block nur zeigen, wenn das Profil das Feature
+    // deklariert (z. B. display, powerMonitor, drive beim RoboBuddy).
+    const visible   = b => !hideIds.has(b.id) &&
+                           (!b.requiresBoardFeature || !!BOARD[b.requiresBoardFeature]);
 
     for (const catDef of BLOCKS_CATALOG.categories) {
       if (hideCats.has(catDef.id)) continue;

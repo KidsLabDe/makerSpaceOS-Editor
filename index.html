@@ -35,9 +35,9 @@
   <script src="vendor/codemirror/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202610020609">
+  <link rel="stylesheet" href="css/fonts.css?v=202610152046">
 
-  <link rel="stylesheet" href="css/style.css?v=202610020609">
+  <link rel="stylesheet" href="css/style.css?v=202610152046">
 </head>
 <body>
 <div id="app-shell">
@@ -62,6 +62,7 @@
         <option value="maker_pi_rp2040">Maker-Pi RP2040</option>
         <option value="lolin_s2_mini">Wemos S2 Mini</option>
         <option value="esp32_d1_r32">ESP32 D1 R32 (Uno)</option>
+        <option value="robobuddy">RoboBuddy (ESP32-C6)</option>
       </select>
       <div class="status-indicator">
         <span class="status-dot" id="status-dot"></span>
@@ -84,9 +85,9 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h12A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6Z"/><path d="M15 3.75v16.5"/></svg>
         <span class="btn-label" data-i18n="Code panel">Code-Bereich</span>
       </button>
-      <button id="btn-save-board" class="btn btn-ghost" title="Programm als code.py auf den RP2040 speichern" data-i18n-title="Save program as code.py on the board">
+      <button id="btn-save-board" class="btn btn-ghost" title="Programm als code.py auf dem Board speichern" data-i18n-title="Save program as code.py on the board">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/></svg>
-        <span class="btn-label" data-i18n="To board">Auf RP2040</span>
+        <span class="btn-label" data-i18n="To board">Aufs Board</span>
       </button>
       <button id="btn-board-libs" class="btn btn-ghost" title="Bibliotheken (lib/) auf dem Board prüfen" data-i18n-title="Check the board's lib/ libraries">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
@@ -312,28 +313,28 @@
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/i18n.js?v=202610020609"></script>
-  <script src="js/boards.js?v=202610020609"></script>
-  <script src="js/blocks/control.js?v=202610020609"></script>
-  <script src="js/blocks/events.js?v=202610020609"></script>
-  <script src="js/blocks/text.js?v=202610020609"></script>
-  <script src="js/blocks/variables.js?v=202610020609"></script>
-  <script src="js/blocks/lists.js?v=202610020609"></script>
-  <script src="js/blocks_db.js?v=202610020609"></script>
-  <script src="js/block_builder.js?v=202610020609"></script>
-  <script src="js/toolbox.js?v=202610020609"></script>
-  <script src="js/blocks/matrix.js?v=202610020609"></script>
-  <script src="js/generator.js?v=202610020609"></script>
-  <script src="js/serial.js?v=202610020609"></script>
-  <script src="js/storage.js?v=202610020609"></script>
-  <script src="js/lib_manifest.js?v=202610020609"></script>
-  <script src="js/board_setup.js?v=202610020609"></script>
-  <script src="js/firmware_manifest.js?v=202610020609"></script>
-  <script src="js/firmware_flash.js?v=202610020609"></script>
-  <script src="js/docs_data.js?v=202610020609"></script>
-  <script src="js/docs.js?v=202610020609"></script>
-  <script src="js/ai_chat.js?v=202610020609"></script>
-  <script src="js/app.js?v=202610020609"></script>
+  <script src="js/i18n.js?v=202610152046"></script>
+  <script src="js/boards.js?v=202610152046"></script>
+  <script src="js/blocks/control.js?v=202610152046"></script>
+  <script src="js/blocks/events.js?v=202610152046"></script>
+  <script src="js/blocks/text.js?v=202610152046"></script>
+  <script src="js/blocks/variables.js?v=202610152046"></script>
+  <script src="js/blocks/lists.js?v=202610152046"></script>
+  <script src="js/blocks_db.js?v=202610152046"></script>
+  <script src="js/block_builder.js?v=202610152046"></script>
+  <script src="js/toolbox.js?v=202610152046"></script>
+  <script src="js/blocks/matrix.js?v=202610152046"></script>
+  <script src="js/generator.js?v=202610152046"></script>
+  <script src="js/serial.js?v=202610152046"></script>
+  <script src="js/storage.js?v=202610152046"></script>
+  <script src="js/lib_manifest.js?v=202610152046"></script>
+  <script src="js/board_setup.js?v=202610152046"></script>
+  <script src="js/firmware_manifest.js?v=202610152046"></script>
+  <script src="js/firmware_flash.js?v=202610152046"></script>
+  <script src="js/docs_data.js?v=202610152046"></script>
+  <script src="js/docs.js?v=202610152046"></script>
+  <script src="js/ai_chat.js?v=202610152046"></script>
+  <script src="js/app.js?v=202610152046"></script>
   <!-- KI-Agent-Brücke (MCP): nur mit ?agent=1&token=… – siehe mcp/README.md -->
   <script>
     if (/[?&]agent=1\b/.test(location.search)) {

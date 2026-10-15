@@ -5,11 +5,12 @@
       "label": "Sensoren",
       "label_en": "Sensors",
       "colour": "#2563EB",
-      "subCategories": ["Temperatur & Feuchte", "Abstand & Licht", "Bewegung", "Weitere", "Ereignisse"],
+      "subCategories": ["Temperatur & Feuchte", "Abstand & Licht", "Bewegung", "Akku", "Weitere", "Ereignisse"],
       "subCategories_en": {
         "Temperatur & Feuchte": "Temperature & Humidity",
         "Abstand & Licht": "Distance & Light",
         "Bewegung": "Motion",
+        "Akku": "Battery",
         "Weitere": "More",
         "Ereignisse": "Events"
       }
@@ -19,8 +20,9 @@
       "label": "Aktionen",
       "label_en": "Actions",
       "colour": "#DC2626",
-      "subCategories": ["LED", "Ton", "Servo & Pumpe", "Motor"],
+      "subCategories": ["Fahren", "LED", "Ton", "Servo & Pumpe", "Motor"],
       "subCategories_en": {
+        "Fahren": "Driving",
         "LED": "LED",
         "Ton": "Sound",
         "Servo & Pumpe": "Servo & Pump",

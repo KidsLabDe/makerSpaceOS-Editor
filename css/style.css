@@ -160,6 +160,18 @@ html, body {
   font-weight: 700;
 }
 .btn-board-libs--stale:not(:disabled):hover { transform: translateY(-1px); }
+/* Übertragung läuft: gesperrt, Button füllt sich als Fortschrittsbalken */
+.btn-board-libs--busy,
+.btn-board-libs--busy:disabled {
+  cursor: progress;
+  opacity: 1;
+  color: var(--accent);
+  border-color: var(--accent);
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--accent) 30%, transparent) var(--fortschritt, 0%),
+    transparent var(--fortschritt, 0%));
+}
+.btn-board-libs--busy .btn-label { animation: ai-pulse 1.4s ease-in-out infinite; }
 
 /* Sticker-Primäraktion (Verbinden / Ausführen) */
 .btn-primary, .btn-warning {

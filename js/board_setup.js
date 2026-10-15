@@ -120,7 +120,9 @@ function setButtonState(state) {
   const btn = document.getElementById('btn-board-libs');
   if (!btn) return;
   const label = btn.querySelector('.btn-label');
-  btn.classList.remove('btn-board-libs--ok', 'btn-board-libs--stale');
+  btn.classList.remove('btn-board-libs--ok', 'btn-board-libs--stale', 'btn-board-libs--busy');
+  btn.disabled = false;
+  btn.style.removeProperty('--fortschritt');
   if (state === 'ok') {
     btn.classList.add('btn-board-libs--ok');
     if (label) label.textContent = L('Libs aktuell', 'Libs up to date');
@@ -133,6 +135,20 @@ function setButtonState(state) {
     if (label) label.textContent = L('Libs prüfen', 'Check libs');
     btn.title = L('Bibliotheken (lib/) auf dem Board prüfen', 'Check the board\'s lib/ libraries');
   }
+}
+
+// Während Prüfen/Übertragen: Button gesperrt (kein Doppelklick), Text zeigt
+// den Schritt, der Hintergrund füllt sich mit dem Fortschritt (0 … 1).
+function setButtonBusy(text, anteil) {
+  const btn = document.getElementById('btn-board-libs');
+  if (!btn) return;
+  btn.classList.remove('btn-board-libs--ok', 'btn-board-libs--stale');
+  btn.classList.add('btn-board-libs--busy');
+  btn.disabled = true;
+  btn.title = L('Bitte warten – die Bibliotheken werden übertragen', 'Please wait – the libraries are being transferred');
+  if (anteil !== undefined) btn.style.setProperty('--fortschritt', Math.round(anteil * 100) + '%');
+  const label = btn.querySelector('.btn-label');
+  if (label) label.textContent = text;
 }
 
 function _bsToastIfStale(state) {
@@ -231,6 +247,7 @@ async function _ensureSubDir(libRoot, subPath, cache) {
 
 async function onBoardLibsClick() {
   if (_bsCopying) return;
+  if (_bsSerialMode()) return _onSerialLibsClick();
   if (typeof window.showDirectoryPicker !== 'function') {
     showToast(L('Browser unterstützt die Datei-System-API nicht – bitte lib/ manuell kopieren (scripts/sync_lib.sh)',
                 'Browser does not support the File System Access API – please copy lib/ manually (scripts/sync_lib.sh)'),
@@ -434,5 +451,109 @@ async function _reconnectSerial(timeoutMs) {
 
 async function initBoardSetup() {
   setButtonState('idle');
+  if (_bsSerialMode()) {
+    // Kein UF2-Bootloader-Laufwerk → Firmware-Button hat hier keinen Sinn.
+    const fw = document.getElementById('btn-firmware');
+    if (fw) fw.style.display = 'none';
+    return;   // Prüfung erst nach dem Verbinden (serialLibCheck)
+  }
   try { await fastCheck(); } catch (e) { console.warn('board_setup: Start-Check fehlgeschlagen:', e); }
+}
+
+// ---------- Boards ohne CIRCUITPY-Laufwerk (BOARD.noMassStorage) ----------
+//
+// ESP32-C3/C6 & Co. haben nur USB-Serial-JTAG: kein CIRCUITPY-Laufwerk, kein
+// UF2. Dafür ist das Dateisystem dort aus Python beschreibbar – Prüfen und
+// Aktualisieren laufen deshalb komplett über die Raw-REPL (Web Serial):
+// Versionsdatei lesen, Dateien per serial.writeFiles() schreiben, danach
+// serial.softReload() (leert den Modul-Cache).
+
+function _bsSerialMode() {
+  return typeof BOARD !== 'undefined' && !!BOARD.noMassStorage;
+}
+
+async function _serialReadLibVersion() {
+  return serial.withRawRepl(async (exec) => {
+    const r = await exec(
+      "try:\n" +
+      " print(open('/" + BS_VERSION_FILE + "').read().strip())\n" +
+      "except OSError:\n" +
+      " print('')\n");
+    return r.out.trim() || null;
+  });
+}
+
+// Nach dem Verbinden (app.js) und beim Klick: Versionsdatei über die REPL lesen.
+async function serialLibCheck() {
+  if (!_bsSerialMode() || _bsCopying) return 'unknown';
+  if (typeof serial === 'undefined' || !serial.isConnected) { setButtonState('idle'); return 'unknown'; }
+  const expected = (typeof window.LIB_MANIFEST !== 'undefined') ? window.LIB_MANIFEST.libVersion : null;
+  let stored = null;
+  setButtonBusy(L('Prüfe …', 'Checking …'));
+  try { stored = await _serialReadLibVersion(); }
+  catch (e) { console.warn('board_setup: serielle Prüfung fehlgeschlagen:', e); setButtonState('idle'); return 'unknown'; }
+  const state = (stored && expected && stored === expected) ? 'ok' : 'stale';
+  setButtonState(state);
+  _bsToastIfStale(state);
+  return state;
+}
+
+async function _onSerialLibsClick() {
+  if (typeof serial === 'undefined' || !serial.isConnected) {
+    showToast(L('Bitte zuerst das Board verbinden – die Bibliotheken werden über USB-Seriell übertragen',
+                'Please connect the board first – the libraries are transferred over USB serial'), 'warn');
+    return;
+  }
+  try {
+    if (_bsState === 'stale') await _serialUpdateLibs();
+    else await serialLibCheck();
+  } catch (e) {
+    console.warn('board_setup: serielles Update fehlgeschlagen:', e);
+    showToast(L('Update fehlgeschlagen: ', 'Update failed: ') + e.message, 'error');
+  }
+}
+
+async function _serialUpdateLibs() {
+  if (_bsCopying) return;
+  if (typeof window.LIB_MANIFEST === 'undefined' || !Array.isArray(window.LIB_MANIFEST.files)) {
+    throw new Error(L('lib_manifest.js fehlt – bitte Build ausführen (node scripts/build_blocks.js)',
+                      'lib_manifest.js is missing – please run the build (node scripts/build_blocks.js)'));
+  }
+  _bsCopying = true;
+  const files = window.LIB_MANIFEST.files;
+  try {
+    // Erst alles laden (Netzwerkfehler sollen nicht mitten im Schreiben auftreten).
+    const data = [];
+    for (let i = 0; i < files.length; i++) {
+      setButtonBusy(L('Lade …', 'Loading …'), 0);
+      data.push({ path: files[i].path, bytes: new Uint8Array(await (await _fetchLibFile(files[i].path)).arrayBuffer()) });
+    }
+    showToast(L(`Übertrage ${files.length} Dateien aufs Board – das dauert etwa eine halbe Minute, bitte nicht trennen …`,
+                `Transferring ${files.length} files to the board – this takes about half a minute, please don't disconnect …`), 'ok');
+
+    const enc = new TextEncoder();
+    const t0 = Date.now();
+    await serial.writeFiles(
+      [...data.map((d) => ({ path: '/lib/' + d.path, bytes: d.bytes })),
+       // Versionsdatei zuletzt: steht nur da, wenn alle Libs angekommen sind
+       { path: '/' + BS_VERSION_FILE, bytes: enc.encode(window.LIB_MANIFEST.libVersion) }],
+      ({ bytes, total }) => {
+        const anteil = bytes / total;
+        const sek = Date.now() - t0;
+        // Restzeit erst schätzen, wenn genug übertragen ist (sonst springt sie wild)
+        const rest = anteil > 0.05 ? Math.max(1, Math.round(sek * (1 - anteil) / anteil / 1000)) : null;
+        setButtonBusy(`${Math.round(anteil * 100)} %` + (rest ? L(` · noch ${rest} s`, ` · ${rest} s left`) : ''), anteil);
+      });
+
+    // Modul-Cache leeren: weicher Neustart der Python-VM (USB bleibt verbunden).
+    setButtonBusy(L('Neustart …', 'Restarting …'), 1);
+    await serial.softReload();
+    await _bsSleep(1500);
+    _bsCopying = false;
+    const state = await serialLibCheck();
+    if (state === 'ok') showToast(L('Bibliotheken sind aktuell ✓', 'Libraries are up to date ✓'), 'ok');
+  } finally {
+    _bsCopying = false;
+    if (_bsState !== 'ok') setButtonState(_bsState);   // Fortschrittstext zurücksetzen
+  }
 }

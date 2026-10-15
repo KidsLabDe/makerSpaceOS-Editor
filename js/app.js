@@ -187,7 +187,11 @@ async function connectBoard(port = null) {
     showToast(L('Board getrennt', 'Board disconnected'), 'warn');
   };
   setConnected(true);
-  detectAndSwitchBoard();   // Board erkennen und ggf. Profil umschalten
+  // Board erkennen und ggf. Profil umschalten; Boards ohne CIRCUITPY-Laufwerk
+  // prüfen danach ihre Bibliotheken über die serielle Schnittstelle.
+  detectAndSwitchBoard().then(() => {
+    if (typeof serialLibCheck === 'function') serialLibCheck();
+  });
 }
 
 // Erkennt das angeschlossene Board über board.board_id und schaltet bei Bedarf
@@ -197,6 +201,8 @@ const _BOARD_ID_MAP = {
   cytron_maker_pi_rp2040: 'maker_pi_rp2040',
   // Generischer ESP32-WROOM-Build – bei uns auf dem AZ-Delivery ESP32 D1 R32.
   doit_esp32_devkit_v1:   'esp32_d1_r32',
+  // Generischer ESP32-C6-Build (8 MB) – bei uns auf dem RoboBuddy (C6-Zero).
+  espressif_esp32c6_devkitc_1_n8: 'robobuddy',
 };
 async function detectAndSwitchBoard() {
   let id = null;
@@ -233,18 +239,23 @@ async function runCode() {
 
 async function saveToBoardClick() {
   const code = generateCode();
+  const btn = document.getElementById('btn-save-board');
+  if (btn && btn.disabled) return;
+  if (btn) btn.disabled = true;   // kein Doppelklick während des Schreibens
   try {
     const res = await saveToBoard(code);
     if (res === 'failed_downloaded') {
       showToast(L('Speichern aufs Board schlug fehl (Datei blieb leer) – code.py wurde stattdessen heruntergeladen, bitte manuell aufs Laufwerk kopieren',
                   'Saving to the board failed (file stayed empty) – code.py was downloaded instead, please copy it to the drive manually'), 'error');
     } else {
-      showToast(res === 'saved' ? L('code.py auf dem RP2040 gespeichert!', 'code.py saved to the board!')
+      showToast(res === 'saved' ? L('code.py auf dem Board gespeichert!', 'code.py saved to the board!')
                                 : L('code.py heruntergeladen', 'code.py downloaded'), 'ok');
     }
   } catch (e) {
     if (e && e.name === 'AbortError') return;  // Dialog abgebrochen
     showToast(L('Speichern fehlgeschlagen: ', 'Saving failed: ') + e.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 

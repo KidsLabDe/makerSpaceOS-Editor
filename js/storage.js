@@ -186,6 +186,30 @@ let _lastBoardHandle = null;
 // Generierten Code als code.py speichern (Datei-Dialog → CIRCUITPY-Laufwerk).
 // CircuitPython lässt sein Laufwerk nicht per Serial beschreiben, daher Dateisystem-API.
 async function saveToBoard(code) {
+  // Boards ohne CIRCUITPY-Laufwerk (RoboBuddy/ESP32-C6): code.py über die
+  // serielle Schnittstelle schreiben und die VM neu starten → läuft sofort
+  // und nach jedem Einschalten.
+  if (typeof BOARD !== 'undefined' && BOARD.noMassStorage) {
+    if (typeof serial === 'undefined' || !serial.isConnected) {
+      throw new Error(L('Bitte zuerst das Board verbinden – code.py wird über USB-Seriell gespeichert',
+                        'Please connect the board first – code.py is saved over USB serial'));
+    }
+    // Fremdes code.py (nicht von makerSpaceOS, z. B. ein Testskript) nicht
+    // einfach überschreiben, sondern einmalig als code_vorher.py sichern.
+    await serial.withRawRepl((exec) => exec(
+      "import os\n" +
+      "try:\n" +
+      " _f = open('/code.py')\n" +
+      " _k = _f.readline()\n" +
+      " _f.close()\n" +
+      " if 'makerSpaceOS' not in _k and 'code_vorher.py' not in os.listdir('/'):\n" +
+      "  os.rename('/code.py', '/code_vorher.py')\n" +
+      "except OSError:\n" +
+      " pass\n"));
+    await serial.writeFiles([{ path: '/code.py', bytes: new TextEncoder().encode(code) }]);
+    await serial.softReload();
+    return 'saved';
+  }
   if (window.showSaveFilePicker) {
     showToast(L('📂 Bitte zum CIRCUITPY-Laufwerk navigieren und code.py speichern', '📂 Please navigate to the CIRCUITPY drive and save code.py'), 'ok');
     const opts = {

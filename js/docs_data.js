@@ -162,6 +162,22 @@ Funktioniert wie ein Taster – nur ohne Drücken.`,
 Works like a button – just without pressing.`,
   },
   {
+    id: 'when_battery_low', label: 'Wenn Akku schwach', label_en: 'When battery low', colour: EVENT_COLOUR, section: 'Ereignisse',
+    requiresBoardFeature: 'powerMonitor',
+    tooltip: 'Startet, sobald die Akkuspannung unter 3,6 V fällt',
+    tooltip_en: 'Starts as soon as the battery voltage drops below 3.6 V',
+    doc: `Startet einmal, sobald der Akku des RoboBuddy fast leer ist (unter 3,6 V).
+Gut für eine Warnung: traurig gucken, piepen oder langsamer fahren.
+
+> Unter 3,5 V schaltet der RoboBuddy die Servos von selbst ab und geht schlafen –
+> das schützt den Akku. Dann bitte laden.`,
+    doc_en: `Starts once as soon as the RoboBuddy's battery is almost empty (below 3.6 V).
+Good for a warning: look sad, beep or drive slower.
+
+> Below 3.5 V the RoboBuddy switches the servos off by itself and goes to sleep –
+> this protects the battery. Then please charge it.`,
+  },
+  {
     id: 'when_motion', label: 'Wenn bewegt …', label_en: 'When moved …', colour: EVENT_COLOUR, section: 'Ereignisse',
     tooltip: 'Startet, sobald der Bewegungssensor (ICM20948) geschüttelt oder stark beschleunigt wird',
     tooltip_en: 'Starts as soon as the motion sensor (ICM20948) is shaken or strongly accelerated',
@@ -844,6 +860,47 @@ Das Board hat **kein CIRCUITPY-Laufwerk** am Computer. Bibliotheken kommen per
 Thonny auf das Board – oder man flasht das fertige Komplett-Image
 \`firmware/makerSpaceOS_firmware_esp32-d1-r32.bin\` (enthält schon alles).
 Ausführliche Anleitung mit Fotos: \`docs/esp32-d1-r32.md\` im Projekt.`,
+
+  robobuddy: `Der **MF26 Robo-Buddy** mit der Power-Platine (Rev 0.2) und einem
+ESP32-C6-Zero: zwei Rad-Servos, rundes Display mit Gesicht, Akku mit
+Strom- und Spannungsmessung.
+
+## Eingebaut
+
+- **Fahren**-Block für die zwei Rad-Servos (S2 = links, S1 = rechts)
+- **4 Servo-Anschlüsse** S1 bis S4 (5 V, nur mit Akku!)
+- **Rundes Display** (240 × 240) – Gesichter, Augen, Text und Zahlen
+- **Akku-Messung**: Spannung, Strom, Ladezustand, „lädt gerade?"
+- **1 NeoPixel** auf dem ESP-Board (im Gehäuse meist nicht sichtbar)
+
+## ⚠️ Wichtig: Servos laufen nur mit Akku
+
+Die Servos bekommen ihren Strom aus dem Akku – **auch wenn USB steckt**. Ohne
+Akku läuft dein Programm, aber nichts bewegt sich.
+
+Der RoboBuddy passt selbst auf den Akku auf: Unter **3,5 V** schaltet er die
+Servos ab und schläft. Dann bitte laden. **Schalter auf AUS**, wenn du fertig
+bist!
+
+## Anschlüsse
+
+- **A0, A1, A2** – für Sensoren, LEDs und Buzzer (analog und digital).
+  Reihenfolge der Stifte: **GND, 3V3, SIG** – nicht wie bei Grove! Grove-Module
+  brauchen ein Grove-auf-Dupont-Kabel.
+- **A0+A1, A1+A2** – für Geräte mit zwei Signalen (7-Segment-Anzeige,
+  Drehgeber, HC-SR04): Signal 1 an SIG der ersten, Signal 2 an SIG der zweiten
+  Leiste. Belegt zwei der drei Anschlüsse.
+- **I2C 1, I2C 2** – für LCD, Bewegungssensor … (Reihenfolge GND, 3V3, SDA,
+  SCL). Beide hängen am selben Bus wie der Akku-Messchip.
+
+## Gut zu wissen
+
+- Neben den 4 Servos gehen höchstens **2** weitere Ton-/PWM-Ausgänge (Buzzer,
+  PWM-Block) gleichzeitig.
+- Es gibt **kein CIRCUITPY-Laufwerk**. Die Bibliotheken überträgt der Button
+  **„Libs prüfen"** über das USB-Kabel, sobald das Board verbunden ist.
+- Für externe Sensoren bleiben etwa 300 mA an 3,3 V – ein NeoPixel-Streifen
+  sollte höchstens ~8 LEDs bei geringer Helligkeit haben.`,
 };
 
 const BOARD_DOCS_EN = {
@@ -914,6 +971,47 @@ The board has **no CIRCUITPY drive** on the computer. Libraries are copied to
 the board via Thonny – or you flash the ready-made complete image
 \`firmware/makerSpaceOS_firmware_esp32-d1-r32.bin\` (contains everything).
 Detailed guide with photos: \`docs/esp32-d1-r32.md\` in the project.`,
+
+  robobuddy: `The **MF26 Robo-Buddy** with the power board (Rev 0.2) and an
+ESP32-C6-Zero: two wheel servos, a round display with a face, and a battery
+with current and voltage measurement.
+
+## Built in
+
+- **Drive** block for the two wheel servos (S2 = left, S1 = right)
+- **4 servo connectors** S1 to S4 (5 V, battery only!)
+- **Round display** (240 × 240) – faces, eyes, text and numbers
+- **Battery measurement**: voltage, current, level, "charging?"
+- **1 NeoPixel** on the ESP board (usually not visible inside the case)
+
+## ⚠️ Important: servos only run with a battery
+
+The servos get their power from the battery – **even when USB is plugged in**.
+Without a battery your program runs, but nothing moves.
+
+The RoboBuddy looks after its battery itself: below **3.5 V** it switches the
+servos off and goes to sleep. Then please charge it. **Switch OFF** when you
+are done!
+
+## Connectors
+
+- **A0, A1, A2** – for sensors, LEDs and buzzers (analog and digital).
+  Pin order: **GND, 3V3, SIG** – not like Grove! Grove modules need a
+  Grove-to-Dupont cable.
+- **A0+A1, A1+A2** – for devices with two signals (7-segment display, rotary
+  encoder, HC-SR04): signal 1 to SIG of the first, signal 2 to SIG of the
+  second header. Uses two of the three connectors.
+- **I2C 1, I2C 2** – for LCD, motion sensor … (order GND, 3V3, SDA, SCL).
+  Both are on the same bus as the battery chip.
+
+## Good to know
+
+- Besides the 4 servos, at most **2** more tone/PWM outputs (buzzer, PWM
+  block) work at the same time.
+- There is **no CIRCUITPY drive**. The **"Check libs"** button transfers the
+  libraries over the USB cable once the board is connected.
+- About 300 mA at 3.3 V remain for external sensors – a NeoPixel strip should
+  have at most ~8 LEDs at low brightness.`,
 };
 
 // ── Feld-/Sprachauswahl ohne globalen i18n-State (Nachbau von LF() aus i18n.js) ──
@@ -1063,6 +1161,7 @@ function docsBuildEntries(isEn) {
   // 2. Kern- und Standard-Blöcke
   for (const c of CORE_DOCS) {
     if (hideIds.has(c.id)) continue;
+    if (c.requiresBoardFeature && typeof BOARD !== 'undefined' && !BOARD[c.requiresBoardFeature]) continue;
     entries.set('block:' + c.id, {
       key: 'block:' + c.id, kind: 'core', blockType: c.id,
       label: docsPick(c, 'label', isEn), colour: c.colour, section: c.section,
@@ -1073,6 +1172,7 @@ function docsBuildEntries(isEn) {
   // 3. Hardware-Blöcke aus BLOCKS_DB
   for (const def of (typeof BLOCKS_DB !== 'undefined' ? BLOCKS_DB : [])) {
     if (hideIds.has(def.id)) continue;
+    if (def.requiresBoardFeature && typeof BOARD !== 'undefined' && !BOARD[def.requiresBoardFeature]) continue;
     const catDef = (typeof BLOCKS_CATALOG !== 'undefined' ? BLOCKS_CATALOG.categories : [])
       .find(c => c.id === def.blockCategory);
     const dir = def._file ? 'components/' + def._file.split('/').slice(0, -1).join('/') : 'components';
@@ -1157,13 +1257,17 @@ function boardPortTable(boardId, isEn) {
   const p = BOARD_PROFILES[boardId];
   if (!p || !p.grovePorts || !p.grovePorts.length) return '';
   const rows = p.grovePorts.map(port => {
+    const twoPin = port.pin1 && port.twoPin !== false;
     const kann = [
-      'digital',
+      port.digital !== false ? 'digital' : null,
       port.analog ? 'analog' : null,
       port.i2c ? 'I2C' : null,
+      twoPin && port.digital === false && !port.i2c ? (isEn ? '2-pin devices' : '2-Pin-Geräte') : null,
     ].filter(Boolean).join(', ');
-    return `<tr><td>${escHtml(port.label)}</td><td><code>${escHtml(port.signal)}</code>`
-      + ` + <code>${escHtml(port.pin1)}</code></td><td>${kann}</td></tr>`;
+    const pins = port.pin1
+      ? `<code>${escHtml(port.signal)}</code> + <code>${escHtml(port.pin1)}</code>`
+      : `<code>${escHtml(port.signal)}</code>`;
+    return `<tr><td>${escHtml(port.label)}</td><td>${pins}</td><td>${kann}</td></tr>`;
   }).join('');
   return `<h3>${isEn ? 'Connectors (ports)' : 'Anschlüsse (Ports)'}</h3>
     <table class="lib-table">

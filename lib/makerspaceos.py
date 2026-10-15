@@ -22,6 +22,15 @@
 import asyncio
 
 _tasks = []   # alle registrierten Dauer-Aufgaben (Schleifen + Ereignisse)
+_ende = []    # Aufräum-Funktionen, laufen nach Programmende/Stopp/Absturz
+
+
+def beim_beenden(fn):
+    """Registriert eine Funktion, die nach dem Programm läuft – auch nach
+    Stopp (Ctrl-C) oder Absturz. Board-Libs nutzen das, um z. B. Motoren
+    stromlos zu schalten (RoboBuddy: Servo-Schiene aus)."""
+    if fn not in _ende:
+        _ende.append(fn)
 
 
 def immer(fn):
@@ -65,6 +74,8 @@ def start(setup=None):
     """
     tasks = list(_tasks)
     _tasks.clear()
+    ende = list(_ende)
+    _ende.clear()
 
     async def _main():
         if setup is not None:
@@ -77,3 +88,9 @@ def start(setup=None):
         asyncio.run(_main())
     except KeyboardInterrupt:
         pass
+    finally:
+        for fn in ende:
+            try:
+                fn()
+            except Exception:
+                pass

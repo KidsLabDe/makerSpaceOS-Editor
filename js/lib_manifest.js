@@ -1,8 +1,8 @@
 // GENERIERT von scripts/build_lib_manifest.js – NICHT MANUELL BEARBEITEN!
-// Generiert am 2026-09-29T11:27:14.863Z aus lib/ (30 Dateien).
+// Generiert am 2026-10-15T20:41:41.099Z aus lib/ (41 Dateien).
 window.LIB_MANIFEST = {
-  generatedAt: "2026-09-29T11:27:14.863Z",
-  libVersion: "702d70c8f54a546ed39232e1dce38fff4182ade544edeb33fcdb8d0e68b81b36",
+  generatedAt: "2026-10-15T20:41:41.099Z",
+  libVersion: "2eb6f0c5713c1766d372d58c4e8a37ad074cd1900fee4c63bd9ae3f6f4285c46",
   files: [
     {
       "path": "adafruit_bus_device/__init__.py",
@@ -25,9 +25,44 @@ window.LIB_MANIFEST = {
       "sha256": "679d082f96c5ddd7f6532d7570dc59fe48b2df21751b79116ad5889d3eff131a"
     },
     {
+      "path": "adafruit_display_text/__init__.mpy",
+      "size": 4459,
+      "sha256": "9fcebaf053c7ea6f5beb05ec5d017485f601a6374c1877cba5153b007847382c"
+    },
+    {
+      "path": "adafruit_display_text/bitmap_label.mpy",
+      "size": 7996,
+      "sha256": "ad583ffba8f9c6abec8bb7b16850e3a5f5bc52a8324bc21039d0d312b504d73f"
+    },
+    {
+      "path": "adafruit_display_text/label.mpy",
+      "size": 3666,
+      "sha256": "624a05bf33e3408eec459b4d524c3e8a5f0b1d506f994101a58007d2923714f4"
+    },
+    {
       "path": "adafruit_icm20x.mpy",
       "size": 8361,
       "sha256": "48b35e9caea575ad43cf1aa83133c8f22299e61ef6c9f7e03cf348dbcdf7bae6"
+    },
+    {
+      "path": "adafruit_motor/__init__.mpy",
+      "size": 41,
+      "sha256": "f9f3e4109c3f0ed8705ca4f6bb91e7213b693fe0d128a7f44367e7c7ac9c7f47"
+    },
+    {
+      "path": "adafruit_motor/motor.mpy",
+      "size": 1115,
+      "sha256": "d6be3682aecb568ceeb5846f1d1c1bc39ae85f2a327d4cbf8de8ac964a5b5eb1"
+    },
+    {
+      "path": "adafruit_motor/servo.mpy",
+      "size": 1404,
+      "sha256": "097463a3adaa56fd95f2b21139297d1466f3f834b7e38bef3aabe20f0d53a3b6"
+    },
+    {
+      "path": "adafruit_motor/stepper.mpy",
+      "size": 1808,
+      "sha256": "cc4dc2a306f6f042fcc0189e9d9befb2124736073e07bda3429595eb691e32d3"
     },
     {
       "path": "adafruit_register/__init__.py",
@@ -125,6 +160,11 @@ window.LIB_MANIFEST = {
       "sha256": "84029f2102545a0b3098b36a3e9ca1302a89edc92b54fc2aabd1b82aa57d5043"
     },
     {
+      "path": "gc9a01.py",
+      "size": 2511,
+      "sha256": "e79480ddef93f92e8152d8082042a16157a779e9e6805fc77e9d762ce5607d47"
+    },
+    {
       "path": "grove_rgb_lcd.py",
       "size": 5061,
       "sha256": "a05e886c0770ea7826760a4fe658074b126fb6b89266ff1f5f3906ab4f9193c6"
@@ -135,14 +175,29 @@ window.LIB_MANIFEST = {
       "sha256": "57dc0e890286abc31b70c52b77e208cc13090c1891e6cdf083aa4d092ca5e26c"
     },
     {
+      "path": "ina226.py",
+      "size": 2284,
+      "sha256": "ba074d22fe06033886afccc5f64a9d167fdbec4f7059415883413a28f2608294"
+    },
+    {
       "path": "makerspaceos.py",
-      "size": 2690,
-      "sha256": "54a12d61e6ac0715dd48f4af786aaeaeaa4bf5bd615d613edd6c9a08376e88d6"
+      "size": 3216,
+      "sha256": "139297fcaba967b83ff029d46f007744176edaab6b37b81df4c3d6215cf8ddc0"
     },
     {
       "path": "neopixel.py",
       "size": 5021,
       "sha256": "ecd9c8bc70675b65fd708f61c9c938590e4e83af2f937bbd01e4b313fe554e1f"
+    },
+    {
+      "path": "robo_display.py",
+      "size": 6550,
+      "sha256": "49c5a667936ba9f288af8d782a2875c85ef0234e205a881948be03d8f7eb94bd"
+    },
+    {
+      "path": "robobuddy.py",
+      "size": 8082,
+      "sha256": "4d073774292a332a11ca533f89ba8efa772922e246475cfe3c8bcb31e147a238"
     },
     {
       "path": "sr04.py",

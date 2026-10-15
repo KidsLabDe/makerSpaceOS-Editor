@@ -51,6 +51,8 @@ des Moduls.
   einen Taktgeber: Grove 5 und 6 vertragen sich nicht mit Motor M2, Grove 7
   nicht mit Servo S1/S2 – wer beides gleichzeitig nutzt, bekommt beim Start
   einen Fehler.
+- Auf dem **RoboBuddy** gehen neben den 4 Servos höchstens **2** PWM-/Buzzer-
+  Ausgänge gleichzeitig – ein dritter bricht beim Start mit einem Fehler ab.
 - Denselben Port im Programm nicht zusätzlich mit „🔌 Digital" schalten.
 - Werte unter 0 % oder über 100 % werden automatisch begrenzt.
 
@@ -72,5 +74,7 @@ dim LED strips, make fans or small motors run slower or faster. The signal wire
 - Best use **Grove 1–4**. On the MAKER-PI two pins always share one timer:
   Grove 5 and 6 do not get along with motor M2, Grove 7 not with servo S1/S2 –
   using both at the same time gives an error at start.
+- On the **RoboBuddy**, besides the 4 servos at most **2** PWM/buzzer outputs
+  work at the same time – a third one stops with an error at start.
 - Do not also switch the same port with "🔌 Digital" in the program.
 - Values below 0 % or above 100 % are limited automatically.
