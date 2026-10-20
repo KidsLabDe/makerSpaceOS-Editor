@@ -195,6 +195,32 @@ Good for a warning: look sad, beep or drive slower.
 > Needs \`adafruit_icm20x.mpy\` and \`adafruit_register/\` on \`CIRCUITPY/lib/\`.`,
   },
   {
+    id: 'when_touch_pad', label: 'Wenn Pfeil … berührt', label_en: 'When arrow … touched', colour: EVENT_COLOUR, section: 'Ereignisse',
+    requiresBoardFeature: 'touchPins',
+    tooltip: 'Startet, sobald du das Pfeil-Feld auf der Platine berührst',
+    tooltip_en: 'Starts as soon as you touch the arrow pad on the board',
+    doc: `Startet, sobald du einen der vier Pfeile auf dem GamePadPico mit dem Finger
+berührst. Die Pfeile sind Berührungsfelder – drücken muss man nicht.
+
+> Beim Programmstart stellt sich die Messung ein – dann die Felder nicht berühren.`,
+    doc_en: `Starts as soon as you touch one of the four arrows on the GamePadPico with
+your finger. The arrows are touch pads – no pressing needed.
+
+> The sensor calibrates itself when the program starts – don't touch the pads then.`,
+  },
+  {
+    id: 'when_shake', label: 'Wenn geschüttelt', label_en: 'When shaken', colour: EVENT_COLOUR, section: 'Ereignisse',
+    requiresBoardFeature: 'imu',
+    tooltip: 'Startet, sobald die Platine kräftig geschüttelt wird',
+    tooltip_en: 'Starts as soon as the board is shaken hard',
+    doc: `Startet, sobald die Platine kräftig geschüttelt wird (mehr als 2 g).
+Der Bewegungssensor ist fest eingebaut. Gut für Würfel, Zauberstäbe oder
+„Weck mich auf"-Spiele.`,
+    doc_en: `Starts as soon as the board is shaken hard (more than 2 g).
+The motion sensor is built in. Great for dice, magic wands or
+"wake me up" games.`,
+  },
+  {
     id: 'when_distance', label: 'Wenn Abstand …', label_en: 'When distance …', colour: EVENT_COLOUR, section: 'Ereignisse',
     tooltip: 'Startet, sobald der gemessene Abstand die Bedingung erfüllt',
     tooltip_en: 'Starts as soon as the measured distance meets the condition',
@@ -497,6 +523,42 @@ plus the colour. This lets you draw or animate dot by dot.`,
 die leuchten sollen, und eine Farbe wählen.`,
     doc_en: `Paint your own picture: click the dots in the 8×8 grid on the block
 that should light up, and choose a colour.`,
+  },
+
+  // ── 5×5 Matrix, eingebaut (Lichter) ──
+  {
+    id: 'matrix5_symbol', label: 'zeige Symbol (5×5)', label_en: 'show symbol (5×5)', colour: MATRIX_COLOUR, section: 'Lichter',
+    requiresBoardFeature: 'matrix5',
+    doc: `Zeigt ein fertiges Symbol (Herz, Smiley, Pfeil …) auf der eingebauten
+5×5-Matrix – Symbol und Farbe im Block wählen.`,
+    doc_en: `Shows a ready-made symbol (heart, smiley, arrow …) on the built-in
+5×5 matrix – choose symbol and colour in the block.`,
+  },
+  {
+    id: 'matrix5_draw', label: 'zeige LEDs (5×5 malen)', label_en: 'show LEDs (paint 5×5)', colour: MATRIX_COLOUR, section: 'Lichter',
+    requiresBoardFeature: 'matrix5',
+    doc: `Male dein eigenes Bild: Auf die Vorschau im Block klicken und die Punkte
+anmalen, die leuchten sollen. Alle anderen gehen aus.`,
+    doc_en: `Paint your own picture: click the preview in the block and paint the dots
+that should light up. All others turn off.`,
+  },
+  {
+    id: 'matrix5_digit', label: 'zeige Ziffer', label_en: 'show digit', colour: MATRIX_COLOUR, section: 'Lichter',
+    requiresBoardFeature: 'matrix5',
+    doc: `Zeigt eine Ziffer von 0 bis 9 – zum Beispiel einen Punktestand oder einen
+Countdown. Bei größeren Zahlen erscheint die letzte Stelle.`,
+    doc_en: `Shows a digit from 0 to 9 – for example a score or a countdown.
+For bigger numbers the last digit is shown.`,
+  },
+  {
+    id: 'matrix5_set_pixel', label: 'Punkt setzen (5×5)', label_en: 'set dot (5×5)', colour: MATRIX_COLOUR, section: 'Lichter',
+    requiresBoardFeature: 'matrix5',
+    doc: `Schaltet **einen einzelnen Punkt** an: Spalte 1–5 (von links) und Zeile 1–5
+(von oben), dazu die Farbe. Die anderen Punkte bleiben, wie sie sind – zum
+Löschen „NeoPixel aus" benutzen. Mit Variablen lassen sich Figuren bewegen.`,
+    doc_en: `Turns on **a single dot**: column 1–5 (from the left) and row 1–5
+(from the top), plus the colour. The other dots stay as they are – use
+"NeoPixel off" to clear. With variables you can move figures around.`,
   },
   {
     id: 'faq_robo_esp32', label: 'Robo ESP32: Anschlüsse und Bauteile', colour: FAQ_COLOUR, section: 'FAQ',
@@ -819,6 +881,29 @@ oder ein LiPo-Akku (3,7 V).
 - Analoge Sensoren (Lichtsensor, Drehregler, Luftqualität …) gehören an die
   **Analog-Ports Grove 5, 6 oder 7**.`,
 
+  gamepad_pico: `Der **GamePadPico** (KidsLab „nerdYcontroller") – eine Platine mit
+eingebautem RP2040, gemacht als Gamecontroller zum Selbstprogrammieren.
+
+## Eingebaut
+
+- **5×5-Matrix** aus 25 bunten LEDs – Symbole, Ziffern, eigene Bilder
+- **4 Touch-Pfeile** (links, oben, rechts, unten) – nur berühren, nicht drücken
+- **Bewegungssensor** für Neigung und Schütteln
+- **Mikrofon** für die Lautstärke
+- **Summer** für Töne und eine **rote LED**
+- **4 Servo-Anschlüsse** S1–S4 und **1 Grove-Port** (auch für I2C)
+- **USB-Tastatur**: Das Board kann am Computer Tasten drücken
+- Pads für **Krokodilklemmen** an GP0–GP3, GP19 und GP22
+
+## Gut zu wissen
+
+- Summer und Servo **S3/S4** teilen sich einen Taktgeber – nicht beides
+  gleichzeitig benutzen. S1 und S2 gehen immer.
+- Die LEDs werden vom Board selbst versorgt – deshalb sind sie gedimmt
+  (Helligkeit 100 % ist bewusst begrenzt).
+- Geflasht wird die CircuitPython-Firmware für den **Raspberry Pi Pico**.
+  Bibliotheken wie beim Maker-Pi über „Libs prüfen" aufs Board.`,
+
   lolin_s2_mini: `Ein kleines, günstiges ESP32-S2-Board – ohne eingebaute Extras.
 Taster, Motoren und NeoPixel vom Maker-Pi gibt es hier nicht, dafür viele
 frei nutzbare Pins.
@@ -929,6 +1014,29 @@ or a LiPo battery (3.7 V).
   5 V and stays blank at 3.3 V – version **V5** works right away.
 - Analog sensors (light sensor, rotary knob, air quality …) belong on the
   **analog ports Grove 5, 6 or 7**.`,
+
+  gamepad_pico: `The **GamePadPico** (KidsLab "nerdYcontroller") – a board with a
+built-in RP2040, made as a game controller you program yourself.
+
+## Built in
+
+- **5×5 matrix** of 25 colourful LEDs – symbols, digits, your own pictures
+- **4 touch arrows** (left, up, right, down) – just touch, no pressing
+- **Motion sensor** for tilting and shaking
+- **Microphone** for loudness
+- **Buzzer** for tones and a **red LED**
+- **4 servo connectors** S1–S4 and **1 Grove port** (also for I2C)
+- **USB keyboard**: the board can press keys on the computer
+- Pads for **crocodile clips** on GP0–GP3, GP19 and GP22
+
+## Good to know
+
+- Buzzer and servo **S3/S4** share one timer – don't use both at the same
+  time. S1 and S2 always work.
+- The LEDs are powered by the board itself – that's why they are dimmed
+  (100 % brightness is deliberately limited).
+- Flash the CircuitPython firmware for the **Raspberry Pi Pico**. Copy the
+  libraries to the board with "Check libs", as for the Maker-Pi.`,
 
   lolin_s2_mini: `A small, inexpensive ESP32-S2 board – without built-in extras.
 The Maker-Pi's buttons, motors and NeoPixels are not available here, but there

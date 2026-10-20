@@ -5,6 +5,8 @@
 // (Gegenstück zu requiresBoardFeature in components/*.md).
 const HAT_BOARD_FEATURES = {
   when_battery_low: 'powerMonitor',
+  when_touch_pad:   'touchPins',
+  when_shake:       'imu',
 };
 
 const TOOLBOX_STATIC_CONTENTS = [
@@ -36,6 +38,8 @@ const TOOLBOX_STATIC_CONTENTS = [
       { kind: 'block', type: 'when_touch' },
       { kind: 'block', type: 'when_motion' },
       { kind: 'block', type: 'when_battery_low' },
+      { kind: 'block', type: 'when_touch_pad' },
+      { kind: 'block', type: 'when_shake' },
       { kind: 'sep' },
       { kind: 'block', type: 'when_distance' },
       { kind: 'block', type: 'when_light' },
@@ -147,6 +151,12 @@ function buildFinalToolbox() {
   const hideIds = new Set(BOARD.hideBlockIds || []);
   const matrixContents = (window.MATRIX_TOOLBOX_CONTENTS || [])
     .filter(e => !(e.type && hideIds.has(e.type)));
+  // Fest eingebaute 5×5-Matrix (matrix5.js) nur auf Boards mit BOARD.matrix5
+  const matrix5Contents = BOARD.matrix5 ? (window.MATRIX5_TOOLBOX_CONTENTS || []) : [];
+  if (lichter && matrix5Contents.length) {
+    lichter.contents.push({ kind: 'label', text: L('── 5×5 Matrix (eingebaut) ──', '── 5×5 matrix (built-in) ──') });
+    lichter.contents.push(...matrix5Contents);
+  }
   if (lichter && matrixContents.length) {
     lichter.contents.push({ kind: 'label', text: '── 8×8 Matrix ──' });
     lichter.contents.push(...matrixContents);

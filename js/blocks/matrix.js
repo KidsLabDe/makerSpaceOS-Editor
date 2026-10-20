@@ -232,38 +232,46 @@
   // ── Vorschaugröße im Block (klein) ────────────────────────────────────────
   const PV = 5;   // px pro Zelle (Vorschau)
   const PVG = 1;  // Abstand
-  const PV_TOTAL = 8 * PV + 7 * PVG + 4; // ≈ 51 px
+  const pvTotal = (n) => n * PV + (n - 1) * PVG + 4; // 8×8 ≈ 51 px
 
   // ── FieldMatrix8x8 ────────────────────────────────────────────────────────
   // Zeigt eine kleine Vorschau im Block; Klick öffnet Modal zum Malen.
+  // Rastergröße = static N (Unterklassen wie FieldMatrix5x5 überschreiben sie);
+  // der Wert ist eine N×N-Zeichen-Maske aus 0/1, zeilenweise von oben links.
 
   class FieldMatrix8x8 extends Blockly.Field {
+    static N = 8;
+
     constructor(value, validator, config) {
-      super(value || DEFAULT_MASK, validator, config);
+      super(value || '0'.repeat(new.target.N * new.target.N), validator, config);
       this.SERIALIZABLE = true;
       this.CURSOR = 'pointer';
       // Größe gleich im Konstruktor setzen, damit Blockly Platz reserviert
-      this.size_.width  = PV_TOTAL;
-      this.size_.height = PV_TOTAL;
+      this.size_.width  = pvTotal(this.constructor.N);
+      this.size_.height = pvTotal(this.constructor.N);
     }
 
     static fromJson(options) {
-      return new FieldMatrix8x8(options['value']);
+      return new this(options['value']);
     }
+
+    get n_()     { return this.constructor.N; }
+    get cells_() { return this.n_ * this.n_; }
+    get emptyMask_() { return '0'.repeat(this.cells_); }
 
     initView() {
       this.prevGroup_ = Blockly.utils.dom.createSvgElement('g', {}, this.fieldGroup_);
 
       // Hintergrund
       Blockly.utils.dom.createSvgElement('rect', {
-        x: 0, y: 0, width: PV_TOTAL, height: PV_TOTAL,
+        x: 0, y: 0, width: pvTotal(this.n_), height: pvTotal(this.n_),
         fill: '#0d1f2d', rx: 3,
       }, this.prevGroup_);
 
       this.prevCells_ = [];
-      for (let i = 0; i < 64; i++) {
-        const row = Math.floor(i / 8);
-        const col = i % 8;
+      for (let i = 0; i < this.cells_; i++) {
+        const row = Math.floor(i / this.n_);
+        const col = i % this.n_;
         const rect = Blockly.utils.dom.createSvgElement('rect', {
           x: 2 + col * (PV + PVG),
           y: 2 + row * (PV + PVG),
@@ -279,13 +287,13 @@
     }
 
     updateSize_() {
-      this.size_.width  = PV_TOTAL;
-      this.size_.height = PV_TOTAL;
+      this.size_.width  = pvTotal(this.n_);
+      this.size_.height = pvTotal(this.n_);
     }
 
     doValueUpdate_(newValue) {
-      this.value_ = (typeof newValue === 'string' && newValue.length === 64 && /^[01]+$/.test(newValue))
-        ? newValue : DEFAULT_MASK;
+      this.value_ = (typeof newValue === 'string' && newValue.length === this.cells_ && /^[01]+$/.test(newValue))
+        ? newValue : this.emptyMask_;
       return this.value_;
     }
 
@@ -293,10 +301,10 @@
 
     renderCells_() {
       if (!this.prevCells_) return;
-      const mask = this.value_ || DEFAULT_MASK;
+      const mask = this.value_ || this.emptyMask_;
       const colorField = this.sourceBlock_ && this.sourceBlock_.getField('COLOR');
       const onColor = colorField ? colorField.getValue() : '#FFFFFF';
-      for (let i = 0; i < 64; i++) {
+      for (let i = 0; i < this.cells_; i++) {
         if (this.prevCells_[i]) {
           this.prevCells_[i].setAttribute('fill', mask[i] === '1' ? onColor : '#1a3a4a');
         }
@@ -308,7 +316,8 @@
     }
 
     _openModal() {
-      const currentMask = Array.from(this.getValue() || DEFAULT_MASK);
+      const currentMask = Array.from(this.getValue() || this.emptyMask_);
+      const N = this.n_, CELLS = this.cells_;
       const colorField  = this.sourceBlock_ && this.sourceBlock_.getField('COLOR');
       const onColor     = colorField ? colorField.getValue() : DEFAULT_COLOR;
 
@@ -335,7 +344,7 @@
       const CELL = 18, GAP = 2;
       const grid = document.createElement('div');
       grid.style.cssText =
-        `display:grid;grid-template-columns:repeat(8,${CELL}px);` +
+        `display:grid;grid-template-columns:repeat(${N},${CELL}px);` +
         `gap:${GAP}px;cursor:crosshair;background:#0d1f2d;` +
         `padding:4px;border-radius:6px;touch-action:none;`;
 
@@ -352,7 +361,7 @@
         return t && t.hasAttribute('data-idx') ? parseInt(t.getAttribute('data-idx'), 10) : -1;
       }
 
-      for (let i = 0; i < 64; i++) {
+      for (let i = 0; i < CELLS; i++) {
         const cell = document.createElement('div');
         cell.setAttribute('data-idx', i);
         cell.style.cssText =
@@ -390,14 +399,14 @@
       btnClear.textContent = L('🔳 Löschen', '🔳 Clear');
       btnClear.style.cssText = btnStyle + 'background:#444;';
       btnClear.onclick = () => {
-        for (let i = 0; i < 64; i++) setCell(i, false);
+        for (let i = 0; i < CELLS; i++) setCell(i, false);
       };
 
       const btnFill = document.createElement('button');
       btnFill.textContent = L('💡 Alles an', '💡 All on');
       btnFill.style.cssText = btnStyle + 'background:#444;';
       btnFill.onclick = () => {
-        for (let i = 0; i < 64; i++) setCell(i, true);
+        for (let i = 0; i < CELLS; i++) setCell(i, true);
       };
 
       const btnDone = document.createElement('button');
@@ -433,14 +442,20 @@
 
   // ── FieldSymbolPicker ─────────────────────────────────────────────────────
 
-  const SP = 3;          // px pro Zelle in der Vorschau
-  const SP_TOTAL = 8 * SP + 2; // 26 px Breite
-  const SP_H     = 8 * SP + 2; // 26 px Höhe
+  // Symbolsatz + Rastergröße als static-Felder – FieldSymbolPicker5x5
+  // (blocks/matrix5.js) überschreibt sie. Vorschau immer ≈ 26 px groß.
+  const SP_TOTAL = 26;         // px Breite/Höhe der Vorschau
+  const SP_H     = 26;
   const SP_ARR   = 12;         // Breite des Pfeils
 
   class FieldSymbolPicker extends Blockly.Field {
+    static N       = 8;
+    static MASKS   = SYMBOL_MASKS;
+    static LABELS  = SYMBOL_LABELS;
+    static DEFAULT = DEFAULT_SYMBOL;
+
     constructor(value, validator, config) {
-      super(value || DEFAULT_SYMBOL, validator, config);
+      super(value || new.target.DEFAULT, validator, config);
       this.SERIALIZABLE = true;
       this.CURSOR = 'pointer';
       this.size_.width  = SP_TOTAL + SP_ARR;
@@ -448,10 +463,12 @@
     }
 
     static fromJson(options) {
-      return new FieldSymbolPicker(options['value']);
+      return new this(options['value']);
     }
 
     initView() {
+      const N = this.constructor.N;
+      const SP = (SP_TOTAL - 2) / N;   // px pro Zelle in der Vorschau
       // Hintergrund
       Blockly.utils.dom.createSvgElement('rect', {
         x: 0, y: 0, width: SP_TOTAL + SP_ARR, height: SP_H,
@@ -460,9 +477,9 @@
 
       // Vorschau-Zellen
       this.prevCells_ = [];
-      for (let i = 0; i < 64; i++) {
-        const r = Math.floor(i / 8);
-        const c = i % 8;
+      for (let i = 0; i < N * N; i++) {
+        const r = Math.floor(i / N);
+        const c = i % N;
         const rect = Blockly.utils.dom.createSvgElement('rect', {
           x: 1 + c * SP,
           y: 1 + r * SP,
@@ -492,7 +509,8 @@
     }
 
     doValueUpdate_(newValue) {
-      this.value_ = (newValue && SYMBOL_MASKS[newValue]) ? newValue : DEFAULT_SYMBOL;
+      const masks = this.constructor.MASKS;
+      this.value_ = (newValue && masks[newValue]) ? newValue : this.constructor.DEFAULT;
       return this.value_;
     }
 
@@ -500,8 +518,8 @@
 
     renderPreview_() {
       if (!this.prevCells_) return;
-      const mask = SYMBOL_MASKS[this.value_] || DEFAULT_MASK;
-      for (let i = 0; i < 64; i++) {
+      const mask = this.constructor.MASKS[this.value_] || '';
+      for (let i = 0; i < this.prevCells_.length; i++) {
         if (this.prevCells_[i]) {
           this.prevCells_[i].setAttribute('fill', mask[i] === '1' ? '#FFFFFF' : '#005566');
         }
@@ -517,9 +535,10 @@
 
       const currentKey = this.getValue();
 
-      for (const [key, mask] of Object.entries(SYMBOL_MASKS)) {
+      const N = this.constructor.N;
+      for (const [key, mask] of Object.entries(this.constructor.MASKS)) {
         const btn = document.createElement('button');
-        btn.title = SYMBOL_LABELS[key] || key;
+        btn.title = this.constructor.LABELS[key] || key;
         btn.style.cssText =
           'background:#005566;border:2px solid ' +
           (key === currentKey ? '#a855f7' : 'transparent') +
@@ -538,9 +557,9 @@
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('width', 32);
         svg.setAttribute('height', 32);
-        const C = 3.5;
-        for (let i = 0; i < 64; i++) {
-          const rr = Math.floor(i / 8), cc = i % 8;
+        const C = 28 / N;
+        for (let i = 0; i < N * N; i++) {
+          const rr = Math.floor(i / N), cc = i % N;
           const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
           rect.setAttribute('x',      cc * C + 0.5);
           rect.setAttribute('y',      rr * C + 0.5);
@@ -560,6 +579,9 @@
   }
 
   Blockly.fieldRegistry.register('field_symbolpicker', FieldSymbolPicker);
+
+  // Für blocks/matrix5.js (5×5-Onboard-Matrix des GamePadPico)
+  window.MATRIX_FIELDS = { FieldMatrix8x8, FieldSymbolPicker, COLOR_OPTS, MATRIX_COLOR, gridToMask };
 
   // ── Servo-Dropdown-Optionen ───────────────────────────────────────────────
   function matrixServoOptions() {

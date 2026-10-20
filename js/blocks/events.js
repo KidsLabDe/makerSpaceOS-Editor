@@ -122,6 +122,40 @@
     }
   };
 
+  // ── Onboard-Hüte (GamePadPico) – Toolbox nur bei passendem BOARD-Feature,
+  //    siehe HAT_BOARD_FEATURES in toolbox.js.
+
+  const PFEIL_LABELS = {
+    links:  L('links', 'left'),
+    oben:   L('oben', 'up'),
+    rechts: L('rechts', 'right'),
+    unten:  L('unten', 'down'),
+  };
+  const pfeilField = () => new Blockly.FieldDropdown(
+    Object.entries(BOARD.touchPins || { links: 'GP14' }).map(([k, v]) => [PFEIL_LABELS[k] || k, v]));
+
+  Blockly.Blocks['when_touch_pad'] = {
+    init: function () {
+      this.appendDummyInput()
+          .appendField(L('Wenn Pfeil', 'When arrow'))
+          .appendField(pfeilField(), 'PIN')
+          .appendField(L('berührt', 'touched'));
+      this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
+      this.setColour(EVENT_COLOUR);
+      this.setTooltip(L('Startet, sobald du das Pfeil-Feld auf der Platine mit dem Finger berührst', 'Starts as soon as you touch the arrow pad on the board with your finger'));
+    }
+  };
+
+  Blockly.Blocks['when_shake'] = {
+    init: function () {
+      this.appendDummyInput()
+          .appendField(L('Wenn geschüttelt', 'When shaken'));
+      this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
+      this.setColour(EVENT_COLOUR);
+      this.setTooltip(L('Startet, sobald die Platine kräftig geschüttelt wird', 'Starts as soon as the board is shaken hard'));
+    }
+  };
+
   // ── Schwellwert-Hüte (Vergleich mit Zahl) ───────────────────────────────────
 
   Blockly.Blocks['when_distance'] = {

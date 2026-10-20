@@ -12,6 +12,7 @@ var _HAT_TYPES = [
   'when_button', 'when_encoder',
   'when_distance', 'when_light', 'when_temperature', 'when_humidity',
   'when_sound', 'when_touch', 'when_motion', 'when_battery_low',
+  'when_touch_pad', 'when_shake',
 ];
 
 Blockly.Python.workspaceToCode = function(workspace) {
@@ -464,7 +465,29 @@ function _servoPwmDef(s) {
   return `_pwm_${s}`;
 }
 
+// Warnung, wenn ein anderer Block im Programm einen Pin mit demselben
+// PWM-Taktgeber belegt (BOARD.pwmShared, z. B. GamePadPico: Summer + S3/S4).
+function _pwmPinOf(b) {
+  if (b.type === 'actuator_buzzer' || b.type === 'actuator_buzzer_off') return BOARD.buzzer;
+  if (b.type === 'actuator_servo' || b.type === 'actuator_wheel_servo') return BOARD.servos[b.getFieldValue('SERVO')];
+  return null;
+}
+
+function _pwmSharedWarning(block) {
+  const pin = _pwmPinOf(block);
+  if (!pin || !block.workspace) return;
+  for (const g of (BOARD.pwmShared || [])) {
+    if (!g.pins.includes(pin)) continue;
+    const clash = block.workspace.getAllBlocks(false).some(b => {
+      const p = _pwmPinOf(b);
+      return p && p !== pin && g.pins.includes(p) && !b.isShadow() && b.isEnabled();
+    });
+    if (clash) { block.setWarningText('⚠ ' + L(g.hint[0], g.hint[1])); return; }
+  }
+}
+
 Blockly.Python['actuator_servo'] = function(block) {
+  _pwmSharedWarning(block);
   const s     = block.getFieldValue('SERVO');
   const angle = Blockly.Python.valueToCode(block, 'ANGLE', Blockly.Python.ORDER_NONE) || '90';
   const pwm   = _servoPwmDef(s);
@@ -491,6 +514,7 @@ Blockly.Python['actuator_wheel_servo'] = function(block) {
     return L('pass  # ⚠ Kein Servo ausgewählt\n', 'pass  # ⚠ No servo selected\n');
   }
   block.setWarningText(null);
+  _pwmSharedWarning(block);
   const speed = Blockly.Python.valueToCode(block, 'SPEED', Blockly.Python.ORDER_NONE) || '0';
   return `${_wheelDef(s)}.throttle = max(-1, min(1, (${speed}) / 100))\n`;
 };
@@ -509,6 +533,7 @@ Blockly.Python['actuator_drive'] = function(block) {
 // ── Aktoren: Buzzer ───────────────────────────────────────────────────────────
 
 Blockly.Python['actuator_buzzer'] = function(block) {
+  _pwmSharedWarning(block);
   const pin  = BOARD.buzzer;
   const freq = Blockly.Python.valueToCode(block, 'FREQ',     Blockly.Python.ORDER_NONE) || '440';
   const dur  = Blockly.Python.valueToCode(block, 'DURATION', Blockly.Python.ORDER_NONE) || '0.5';
@@ -519,7 +544,8 @@ Blockly.Python['actuator_buzzer'] = function(block) {
   return `_buzz.frequency = ${freq}\n_buzz.duty_cycle = 32768\nawait asyncio.sleep(${dur})\n_buzz.duty_cycle = 0\n`;
 };
 
-Blockly.Python['actuator_buzzer_off'] = function(_block) {
+Blockly.Python['actuator_buzzer_off'] = function(block) {
+  _pwmSharedWarning(block);
   _defs['import_board']  = 'import board';
   _defs['import_pwmio']  = 'import pwmio';
   _defs['init_buzzer']   =
@@ -606,7 +632,7 @@ function _neopixelDefs() {
   _defs['import_board']    = 'import board';
   _defs['import_neopixel'] = 'import neopixel';
   _defs['init_pixels']     =
-    `_pixels = neopixel.NeoPixel(board.${BOARD.neopixel.pin}, ${BOARD.neopixel.count}, brightness=0.3, auto_write=False)`;
+    `_pixels = neopixel.NeoPixel(board.${BOARD.neopixel.pin}, ${BOARD.neopixel.count}, brightness=${BOARD.neopixel.brightness ?? 0.3}, auto_write=False)`;
 }
 
 Blockly.Python['neopixel_set'] = function(block) {
@@ -659,7 +685,9 @@ Blockly.Python['neopixel_ext_off'] = function(block) {
 Blockly.Python['neopixel_brightness'] = function(block) {
   _neopixelDefs();
   const pct = Blockly.Python.valueToCode(block, 'PERCENT', Blockly.Python.ORDER_NONE) || '50';
-  return `_pixels.brightness = (${pct}) / 100\n_pixels.show()\n`;
+  // maxBrightness (z. B. GamePadPico: 25 LEDs am 3,3-V-Regler): 100 % = dieser Wert
+  const max = BOARD.neopixel.maxBrightness;
+  return `_pixels.brightness = (${pct}) / 100${max ? ` * ${max}` : ''}\n_pixels.show()\n`;
 };
 
 Blockly.Python['neopixel_ext_brightness'] = function(block) {
@@ -956,6 +984,121 @@ Blockly.Python['sensor_icm20948_neigung'] = function(block) {
   _imuDefs(portId);
   const fn = dir === 'roll' ? `_imu_neigung_seite_${portId}` : `_imu_neigung_vor_${portId}`;
   return [`${fn}()`, Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
+// ── Onboard-Neigungssensor (GamePadPico: LSM6DS3TR-C, BOARD.imu) ─────────────
+// Treiber lib/lsm6ds3.py. Bus über _i2cBusDef wie bei den Grove-Geräten.
+
+function _imuOnboardDefs() {
+  const imu = BOARD.imu;
+  const bus = _i2cBusDef({ signal: imu.scl, pin1: imu.sda });
+  _defs['import_math']    = 'import math';
+  _defs['from_lsm6ds3']   = 'from lsm6ds3 import LSM6DS3';
+  _defs['init_imu_board'] =
+    `_imu_board = LSM6DS3(${bus}, 0x${imu.addr.toString(16)})\n` +
+    `def _imu_board_g():\n` +
+    `    _ax, _ay, _az = _imu_board.acceleration\n` +
+    `    return round(math.sqrt(_ax*_ax + _ay*_ay + _az*_az) / 9.81, 2)\n` +
+    `def _imu_board_neigung_vor():\n` +
+    `    _ax, _ay, _az = _imu_board.acceleration\n` +
+    `    return round(math.degrees(math.atan2(-_ax, math.sqrt(_ay*_ay + _az*_az))))\n` +
+    `def _imu_board_neigung_seite():\n` +
+    `    _ax, _ay, _az = _imu_board.acceleration\n` +
+    `    return round(math.degrees(math.atan2(_ay, _az)))`;
+}
+
+Blockly.Python['sensor_imu_g'] = function(_block) {
+  if (!BOARD.imu) return ['0', Blockly.Python.ORDER_ATOMIC];
+  _imuOnboardDefs();
+  return ['_imu_board_g()', Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Python['sensor_imu_neigung'] = function(block) {
+  if (!BOARD.imu) return ['0', Blockly.Python.ORDER_ATOMIC];
+  _imuOnboardDefs();
+  const fn = block.getFieldValue('DIR') === 'roll' ? '_imu_board_neigung_seite' : '_imu_board_neigung_vor';
+  return [`${fn}()`, Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Python['when_shake'] = function(block) {
+  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  if (!BOARD.imu) return null;
+  _imuOnboardDefs();
+  // wie when_motion „geschüttelt": Gesamt-g über 2 (in Ruhe ≈ 1)
+  return _whenTask(L('wenn_geschuettelt', 'when_shaken'), '(_imu_board_g() > 2)', body, '0.02');
+};
+
+// ── Onboard-Mikrofon (GamePadPico: GP29 = board.A3, BOARD.mic) ───────────────
+// Lautstärke = Spitze-Spitze über ~50 Messwerte, logarithmisch auf 0–100.
+// Der Ruhepegel liegt bei ≈ 0,1 V (Teiler 33k/1k) – gemessen wird nur der
+// Ausschlag. Am Gerät gemessen (Rohwerte Spitze-Spitze): still 32–48,
+// Sprechen 64–160, Klatschen in 30 cm 2400–5700 → 48 = 0, ~6000 = 100.
+
+function _micDefs() {
+  _defs['import_board']    = 'import board';
+  _defs['import_analogio'] = 'import analogio';
+  _defs['import_math']     = 'import math';
+  _defs['init_mic'] =
+    `_mic = analogio.AnalogIn(board.${BOARD.mic})\n` +
+    `def _lautstaerke():\n` +
+    `    _lo = _hi = _mic.value\n` +
+    `    for _ in range(50):\n` +
+    `        _v = _mic.value\n` +
+    `        if _v < _lo:\n` +
+    `            _lo = _v\n` +
+    `        elif _v > _hi:\n` +
+    `            _hi = _v\n` +
+    `    _p = _hi - _lo\n` +
+    `    return 0 if _p <= 48 else min(100, round(math.log(_p / 48) * 20.7))`;
+}
+
+Blockly.Python['sensor_lautstaerke'] = function(_block) {
+  if (!BOARD.mic) return ['0', Blockly.Python.ORDER_ATOMIC];
+  _micDefs();
+  return ['_lautstaerke()', Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
+// ── Onboard-Touch-Pfeile (GamePadPico: BOARD.touchPins, 1 MΩ nach GND) ───────
+// Der Wert-Block sensor_touch_pad ist markdown-getrieben (touch_pad.md) und
+// legt dasselbe _touch_<PIN>-Objekt an.
+
+Blockly.Python['when_touch_pad'] = function(block) {
+  const pin  = block.getFieldValue('PIN');
+  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  if (!BOARD.touchPins) return null;
+  _defs['import_board']   = 'import board';
+  _defs['import_touchio'] = 'import touchio';
+  _defs[`init_touch_${pin}`] = `_touch_${pin} = touchio.TouchIn(board.${pin})`;
+  const name = Object.keys(BOARD.touchPins).find(k => BOARD.touchPins[k] === pin) || pin.toLowerCase();
+  const en   = { links: 'left', oben: 'up', rechts: 'right', unten: 'down' };
+  return _whenTask(`${L('wenn_pfeil', 'when_arrow')}_${L(name, en[name] || name)}`, `_touch_${pin}.value`, body, '0.02');
+};
+
+// ── USB-Tastatur (BOARD.usbHid) ──────────────────────────────────────────────
+// Ohne adafruit_hid: direkt 8-Byte-Reports an das Tastatur-Gerät von usb_hid
+// (Modifier, 0, bis zu 6 Tasten). Gehaltene Tasten stehen in _tasten.
+
+Blockly.Python['actuator_taste'] = function(block) {
+  if (!BOARD.usbHid) return '';
+  const code = block.getFieldValue('KEY');
+  const mode = block.getFieldValue('MODE');
+  _defs['import_usb_hid'] = 'import usb_hid';
+  _defs['init_tastatur'] =
+    `_tastatur = None\n` +
+    `for _d in usb_hid.devices:\n` +
+    `    if _d.usage_page == 0x01 and _d.usage == 0x06:\n` +
+    `        _tastatur = _d\n` +
+    `if _tastatur is None:\n` +
+    `    raise RuntimeError("` + L('USB-Tastatur ist auf diesem Board ausgeschaltet', 'USB keyboard is disabled on this board') + `")\n` +
+    `_tasten = []\n` +
+    `def _taste(code, modus):\n` +
+    `    if modus != 'los' and code not in _tasten and len(_tasten) < 6:\n` +
+    `        _tasten.append(code)\n` +
+    `    _tastatur.send_report(bytes([0, 0] + _tasten + [0] * (6 - len(_tasten))))\n` +
+    `    if modus != 'halten' and code in _tasten:\n` +
+    `        _tasten.remove(code)\n` +
+    `        _tastatur.send_report(bytes([0, 0] + _tasten + [0] * (6 - len(_tasten))))`;
+  return `_taste(${code}, '${mode}')\n`;
 };
 
 // ── Akku (RoboBuddy: INA226 @ 0x45 am geteilten I2C-Bus) ─────────────────────
@@ -1349,6 +1492,88 @@ Blockly.Python['matrix_draw'] = function(block) {
   const varN = `_matrix_${pin}`;
   const pixels = _maskToPixelLines(mask, rgb, varN);
   return `${varN}.fill((0, 0, 0))\n${pixels ? pixels + '\n' : ''}${varN}.show()\n`;
+};
+
+// ── 5×5-Onboard-Matrix (GamePadPico: BOARD.matrix5 auf den Onboard-NeoPixeln) ─
+// Masken zählen zeilenweise von oben links; die Verdrahtung ist ein Zickzack,
+// dessen erste LED je nach Platine oben links oder oben rechts sitzt (origin).
+
+// LED-Index für Spalte/Zeile (0-basiert, von oben links)
+function _m5Index(col, row) {
+  const m = BOARD.matrix5;
+  const fromRight = (m.origin === 'top-right') !== (m.serpentine && row % 2 === 1);
+  return row * m.width + (fromRight ? m.width - 1 - col : col);
+}
+
+function _m5MaskLines(mask, rgb) {
+  const m = BOARD.matrix5, lines = ['_pixels.fill((0, 0, 0))'];
+  for (let i = 0; i < m.width * m.height; i++)
+    if (mask[i] === '1') lines.push(`_pixels[${_m5Index(i % m.width, Math.floor(i / m.width))}] = ${rgb}`);
+  lines.push('_pixels.show()');
+  return lines.join('\n') + '\n';
+}
+
+// Python-Helfer: Punkt an Spalte x / Zeile y (ab 1, auf den Rand begrenzt)
+function _m5PixelDef() {
+  const m = BOARD.matrix5, w = m.width;
+  // Gleiche Regel wie _m5Index, nur zur Laufzeit
+  const rightRows = m.serpentine
+    ? `_y % 2 == ${m.origin === 'top-right' ? 0 : 1}`
+    : (m.origin === 'top-right' ? 'True' : 'False');
+  _neopixelDefs();
+  _defs['init_pixels_m5'] =
+    `def _m5_punkt(x, y, farbe):\n` +
+    `    _x = min(max(int(x), 1), ${w}) - 1\n` +
+    `    _y = min(max(int(y), 1), ${m.height}) - 1\n` +
+    `    _pixels[_y * ${w} + (${w - 1} - _x if ${rightRows} else _x)] = farbe`;
+}
+
+// 3×5-Ziffern, mittig in den Spalten 2–4
+const _M5_DIGITS = [
+  ['111', '101', '101', '101', '111'], ['010', '110', '010', '010', '111'],
+  ['111', '001', '111', '100', '111'], ['111', '001', '111', '001', '111'],
+  ['101', '101', '111', '001', '001'], ['111', '100', '111', '001', '111'],
+  ['111', '100', '111', '101', '111'], ['111', '001', '010', '010', '010'],
+  ['111', '101', '111', '101', '111'], ['111', '101', '111', '001', '111'],
+];
+
+Blockly.Python['matrix5_symbol'] = function(block) {
+  if (!BOARD.matrix5) return '';
+  _neopixelDefs();
+  const mask = (window.MATRIX5_SYMBOL_MASKS || {})[block.getFieldValue('SYMBOL')] || '';
+  return _m5MaskLines(mask, hexToRgbTuple(block.getFieldValue('COLOR')));
+};
+
+Blockly.Python['matrix5_draw'] = function(block) {
+  if (!BOARD.matrix5) return '';
+  _neopixelDefs();
+  return _m5MaskLines(block.getFieldValue('PIXELS') || '', hexToRgbTuple(block.getFieldValue('COLOR')));
+};
+
+Blockly.Python['matrix5_set_pixel'] = function(block) {
+  if (!BOARD.matrix5) return '';
+  _m5PixelDef();
+  const x = Blockly.Python.valueToCode(block, 'X', Blockly.Python.ORDER_NONE) || '1';
+  const y = Blockly.Python.valueToCode(block, 'Y', Blockly.Python.ORDER_NONE) || '1';
+  return `_m5_punkt(${x}, ${y}, ${hexToRgbTuple(block.getFieldValue('COLOR'))})\n_pixels.show()\n`;
+};
+
+Blockly.Python['matrix5_digit'] = function(block) {
+  if (!BOARD.matrix5) return '';
+  _m5PixelDef();
+  const num = Blockly.Python.valueToCode(block, 'NUM', Blockly.Python.ORDER_NONE) || '0';
+  // Ziffern als Liste von Zeilen-Bitmustern (Bit 2 = linke Spalte)
+  const font = _M5_DIGITS.map(rows => '(' + rows.map(r => parseInt(r, 2)).join(', ') + ')').join(', ');
+  _defs['init_pixels_m5_ziffern'] =
+    `_M5_ZIFFERN = (${font})\n` +
+    `def _m5_ziffer(n, farbe):\n` +
+    `    _pixels.fill((0, 0, 0))\n` +
+    `    for _y, _bits in enumerate(_M5_ZIFFERN[abs(int(n)) % 10]):\n` +
+    `        for _x in range(3):\n` +
+    `            if _bits & (4 >> _x):\n` +
+    `                _m5_punkt(_x + 2, _y + 1, farbe)\n` +
+    `    _pixels.show()`;
+  return `_m5_ziffer(${num}, ${hexToRgbTuple(block.getFieldValue('COLOR'))})\n`;
 };
 
 // ── "Bitte auswählen"-Schutz: blockToCode-Wrapper ────────────────────────────

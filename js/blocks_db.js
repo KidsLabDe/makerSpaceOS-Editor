@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-10-15T20:41:41.091Z
+// Generiert: 2026-10-20T11:10:18.026Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -36,14 +36,16 @@ const BLOCKS_CATALOG = {
         "LED",
         "Ton",
         "Servo & Pumpe",
-        "Motor"
+        "Motor",
+        "Tastatur"
       ],
       "subCategories_en": {
         "Fahren": "Driving",
         "LED": "LED",
         "Ton": "Sound",
         "Servo & Pumpe": "Servo & Pump",
-        "Motor": "Motor"
+        "Motor": "Motor",
+        "Tastatur": "Keyboard"
       }
     },
     {
@@ -326,6 +328,64 @@ const BLOCKS_DB = [
     "doc_en": "# ICM20948 – tilt (°)\n\nReturns the tilt angle in degrees: \"forward/back\" (−90…90) or \"left/right\" (−180…180).\n0 means level. Great for spirit levels, balance games and steering controls.\n\n> Needs `adafruit_icm20x.mpy` and `adafruit_register/` on `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Connect via a Grove I2C adapter, address 0x69."
   },
   {
+    "id": "sensor_imu_g",
+    "blockCategory": "Sensoren",
+    "subCategory": "Bewegung",
+    "requiresBoardFeature": "imu",
+    "label": "Bewegungsstärke (g)",
+    "label_en": "Motion strength (g)",
+    "colour": "#2563EB",
+    "tooltip": "Wie stark die Platine bewegt wird: in Ruhe 1, beim Schütteln mehr",
+    "tooltip_en": "How strongly the board is moved: 1 at rest, more when shaken",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Bewegungsstärke (g)",
+        "label_en": "Motion strength (g)"
+      }
+    ],
+    "hardware": {
+      "commonName": "Neigungssensor LSM6DS3TR-C (eingebaut)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/imu_g.md",
+    "doc": "# Bewegungsstärke (g) – eingebauter Sensor\n\nMisst die gesamte Beschleunigung in g. Liegt die Platine still, ist der Wert\netwa **1** (das ist die Erdanziehung). Beim Schütteln oder Stoßen steigt er –\nbis höchstens 4. Gut für Schüttel-Würfel oder Schrittzähler.\n\n> Braucht `lsm6ds3.py` auf `CIRCUITPY/lib/` („Libs prüfen\").",
+    "doc_en": "# Motion strength (g) – built-in sensor\n\nMeasures the total acceleration in g. When the board lies still the value is\nabout **1** (that is gravity). Shaking or bumping makes it rise – up to 4 at most.\nGreat for a shake dice or a step counter.\n\n> Needs `lsm6ds3.py` on `CIRCUITPY/lib/` (\"Check libs\")."
+  },
+  {
+    "id": "sensor_imu_neigung",
+    "blockCategory": "Sensoren",
+    "subCategory": "Bewegung",
+    "requiresBoardFeature": "imu",
+    "label": "Neigung (°)",
+    "label_en": "Tilt (°)",
+    "colour": "#2563EB",
+    "tooltip": "Misst, wie weit die Platine gekippt ist – in Grad (0 = waagerecht)",
+    "tooltip_en": "Measures how far the board is tilted – in degrees (0 = level)",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Neigung (°)",
+        "label_en": "Tilt (°)",
+        "name": "DIR",
+        "fieldType": "tilt_dropdown"
+      }
+    ],
+    "hardware": {
+      "commonName": "Neigungssensor LSM6DS3TR-C (eingebaut)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/imu_neigung.md",
+    "doc": "# Neigung (°) – eingebauter Sensor\n\nLiefert, wie weit die Platine gekippt ist, in Grad: „vor/zurück\" (−90…90) oder\n„links/rechts\" (−180…180). 0 bedeutet waagerecht. Gut für Wasserwaagen,\nBalance-Spiele und zum Lenken durch Kippen.\n\n> Der Sensor (LSM6DS3TR-C) ist fest eingebaut, es muss nichts angesteckt werden.\n> Braucht `lsm6ds3.py` auf `CIRCUITPY/lib/` („Libs prüfen\").",
+    "doc_en": "# Tilt (°) – built-in sensor\n\nReturns how far the board is tilted, in degrees: \"forward/back\" (−90…90) or\n\"left/right\" (−180…180). 0 means level. Great for spirit levels, balance games\nand steering by tilting.\n\n> The sensor (LSM6DS3TR-C) is built in, nothing needs to be plugged in.\n> Needs `lsm6ds3.py` on `CIRCUITPY/lib/` (\"Check libs\")."
+  },
+  {
     "id": "sensor_akku_laedt",
     "blockCategory": "Sensoren",
     "subCategory": "Akku",
@@ -603,6 +663,34 @@ const BLOCKS_DB = [
     "doc_en": "# Rotary encoder (Grove)\n\nCounts rotations (unlimited). Positive value = clockwise, negative value = counter-clockwise.\nUses both pins of the Grove port (pin 1 = CLK, pin 2 = DT). Generator: see `js/generator.js`.\n\n**Important:** CircuitPython reads the encoder via PIO – the two pins must be\n**adjacent GPIOs** (e.g. GP0/GP1). The port dropdown therefore only lists suitable\nports (on the MAKER-PI: Grove 1, 2, 3, 4, 6 – **not** Grove 5 and 7)."
   },
   {
+    "id": "sensor_lautstaerke",
+    "blockCategory": "Sensoren",
+    "subCategory": "Weitere",
+    "requiresBoardFeature": "mic",
+    "label": "Lautstärke (0–100)",
+    "label_en": "Loudness (0–100)",
+    "colour": "#2563EB",
+    "tooltip": "Misst, wie laut es gerade ist (0 = still, 100 = sehr laut)",
+    "tooltip_en": "Measures how loud it is right now (0 = quiet, 100 = very loud)",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Lautstärke (0–100)",
+        "label_en": "Loudness (0–100)"
+      }
+    ],
+    "hardware": {
+      "commonName": "Mikrofon (eingebaut, GP29)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "sensors/lautstaerke.md",
+    "doc": "# Lautstärke – eingebautes Mikrofon\n\nHört kurz zu und sagt, wie laut es ist: **0** = ganz still, **100** = sehr laut.\nProbier es mit Klatschen, Pfeifen oder Rufen aus – und lass zum Beispiel die\nMatrix umso mehr leuchten, je lauter es ist.\n\nUngefähre Werte: still **0**, Sprechen **15–25**, Klatschen **80–100**.\n\n> Tipp: Erst im Monitor ausgeben, welche Werte in deinem Raum vorkommen, und\n> dann eine passende Grenze wählen.",
+    "doc_en": "# Loudness – built-in microphone\n\nListens briefly and tells you how loud it is: **0** = completely quiet,\n**100** = very loud. Try clapping, whistling or shouting – and for example let the\nmatrix light up more the louder it gets.\n\nRough values: quiet **0**, talking **15–25**, clapping **80–100**.\n\n> Tip: first print the values in the monitor to see what occurs in your room,\n> then choose a suitable threshold."
+  },
+  {
     "id": "sensor_taster",
     "blockCategory": "Sensoren",
     "subCategory": "Weitere",
@@ -635,6 +723,76 @@ const BLOCKS_DB = [
     "_file": "sensors/taster.md",
     "doc": "# Taster gedrückt? (B1/B2 + externer Taster)\n\nGibt `Wahr` zurück wenn der ausgewählte Taster gedrückt ist.\n\n- **B1 (GP20) / B2 (GP21)**: Onboard-Taster des MAKER-PI-RP2040\n- **Grove 1–7**: Externer Taster (KY-004) am Signal-Pin des Grove-Ports",
     "doc_en": "# Button pressed? (B1/B2 + external button)\n\nReturns `true` if the selected button is pressed.\n\n- **B1 (GP20) / B2 (GP21)**: onboard buttons of the MAKER-PI-RP2040\n- **Grove 1–7**: external button (KY-004) on the signal pin of the Grove port"
+  },
+  {
+    "id": "sensor_touch_pad",
+    "blockCategory": "Sensoren",
+    "subCategory": "Weitere",
+    "requiresBoardFeature": "touchPins",
+    "label": "Pfeil berührt?",
+    "label_en": "Arrow touched?",
+    "colour": "#2563EB",
+    "tooltip": "Wahr, solange du das Pfeil-Feld auf der Platine mit dem Finger berührst",
+    "tooltip_en": "True while you touch the arrow pad on the board with your finger",
+    "blockType": "value",
+    "output": "Boolean",
+    "inputs": [
+      {
+        "label": "Pfeil",
+        "label_en": "arrow",
+        "name": "PIN",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "links",
+            "label_en": "left",
+            "value": "GP14"
+          },
+          {
+            "label": "oben",
+            "label_en": "up",
+            "value": "GP15"
+          },
+          {
+            "label": "rechts",
+            "label_en": "right",
+            "value": "GP16"
+          },
+          {
+            "label": "unten",
+            "label_en": "down",
+            "value": "GP17"
+          }
+        ]
+      },
+      {
+        "label": "berührt?",
+        "label_en": "touched?"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import board",
+        "import touchio"
+      ],
+      "defs": [
+        {
+          "key": "init_touch_${PIN}",
+          "val": "_touch_${PIN} = touchio.TouchIn(board.${PIN})"
+        }
+      ],
+      "expression": "_touch_${PIN}.value",
+      "order": "MEMBER"
+    },
+    "hardware": {
+      "commonName": "Touch-Pfeile (GamePadPico, GP14–GP17)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": false,
+    "_file": "sensors/touch_pad.md",
+    "doc": "# Pfeil berührt? (GamePadPico)\n\nDie vier Pfeile auf dem GamePadPico sind **Berührungsfelder** – einfach mit dem\nFinger antippen, drücken muss man nicht. Der Block ist **wahr**, solange du das\ngewählte Feld berührst. Gut für Spielsteuerungen: „wenn Pfeil links berührt,\ndann bewege die Figur nach links\".\n\n> Die Messung stellt sich beim Programmstart ein – dann die Felder nicht berühren.",
+    "doc_en": "# Arrow touched? (GamePadPico)\n\nThe four arrows on the GamePadPico are **touch pads** – just touch them with your\nfinger, no pressing needed. The block is **true** while you touch the chosen\npad. Great for game controls: \"if arrow left is touched, move the figure left\".\n\n> The sensor calibrates itself when the program starts – don't touch the pads then."
   },
   {
     "id": "event_air_quality",
@@ -1575,6 +1733,105 @@ const BLOCKS_DB = [
     "_file": "actuators/stepper.md",
     "doc": "# Schrittmotor (28BYJ-48 + ULN2003)\n\nDreht einen 28BYJ-48 Schrittmotor präzise um einen Winkel. Eine volle Umdrehung\nentspricht 4096 Halbschritten (Motor mit 1:64-Getriebe).\n\n## Verdrahtung\n\nDer ULN2003-Treiber hat vier Eingänge **IN1–IN4**, angesteuert über zwei Grove-Ports:\n\n- **Anschluss 1** → IN1 (Pin 1) und IN2 (Signalpin)\n- **Anschluss 2** → IN3 (Pin 1) und IN4 (Signalpin)\n\n> **5 V Versorgung:** Die Grove-Ports liefern nur ein 3,3-V-Signal. Die\n> Stromversorgung (**5 V + GND**) des ULN2003 wird extern vom **Servo-Header**\n> des Boards abgegriffen. Generator: siehe `js/generator.js`.\n\n## Foto-Anleitung\n\nSo sieht das komplette Set aus Treiberboard und 28BYJ-48-Schrittmotor aus:\n\n![Treiberboard und 28BYJ-48-Schrittmotor mit Verbindungskabel](../images/stepper_uebersicht.jpg)\n\nDie beiden Grove-Kabel (Anschluss 1 und Anschluss 2) werden an zwei benachbarte Grove-Ports des Boards angeschlossen:\n\n![Zwei Grove-Kabel an benachbarten Grove-Ports des Boards](../images/stepper_verkabelung_1.jpg)\n\nDie Kabel führen gemeinsam zum Eingangsstecker des ULN2003-Treiberboards. Die Motorspannung (5–12 V) kommt separat über die Schraubklemme:\n\n![Grove-Kabel am Eingangsstecker des ULN2003-Treiberboards](../images/stepper_verkabelung_2.jpg)\n\nAuf der anderen Seite des Treiberboards führt die Leitung weiter zum Schrittmotor:\n\n![Ausgangsseite des Treiberboards zum Schrittmotor](../images/stepper_verkabelung_3.jpg)",
     "doc_en": "# Stepper motor (28BYJ-48 + ULN2003)\n\nTurns a 28BYJ-48 stepper motor precisely by an angle. One full revolution\nequals 4096 half steps (motor with 1:64 gearbox).\n\n## Wiring\n\nThe ULN2003 driver has four inputs **IN1–IN4**, driven via two Grove ports:\n\n- **Connector 1** → IN1 (pin 1) and IN2 (signal pin)\n- **Connector 2** → IN3 (pin 1) and IN4 (signal pin)\n\n> **5 V supply:** the Grove ports only provide a 3.3 V signal. The power\n> supply (**5 V + GND**) of the ULN2003 is taken externally from the board's\n> **servo header**. Generator: see `js/generator.js`.\n\n## Photo guide\n\nThis is the complete set of driver board and 28BYJ-48 stepper motor:\n\n![Driver board and 28BYJ-48 stepper motor with connecting cable](../images/stepper_uebersicht.jpg)\n\nBoth Grove cables (connector 1 and connector 2) are plugged into two neighboring Grove ports on the board:\n\n![Two Grove cables on neighboring Grove ports of the board](../images/stepper_verkabelung_1.jpg)\n\nThe cables lead together to the input connector of the ULN2003 driver board. The motor voltage (5–12 V) comes in separately via the screw terminal:\n\n![Grove cables at the input connector of the ULN2003 driver board](../images/stepper_verkabelung_2.jpg)\n\nOn the other side of the driver board, the wiring continues to the stepper motor:\n\n![Output side of the driver board to the stepper motor](../images/stepper_verkabelung_3.jpg)"
+  },
+  {
+    "id": "actuator_taste",
+    "blockCategory": "Aktionen",
+    "subCategory": "Tastatur",
+    "requiresBoardFeature": "usbHid",
+    "label": "Taste",
+    "label_en": "Key",
+    "colour": "#DC2626",
+    "tooltip": "Das Board tut so, als wäre es eine Tastatur, und drückt eine Taste am Computer",
+    "tooltip_en": "The board pretends to be a keyboard and presses a key on the computer",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Taste",
+        "label_en": "Key",
+        "name": "KEY",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "Pfeil hoch",
+            "label_en": "arrow up",
+            "value": "0x52"
+          },
+          {
+            "label": "Pfeil runter",
+            "label_en": "arrow down",
+            "value": "0x51"
+          },
+          {
+            "label": "Pfeil links",
+            "label_en": "arrow left",
+            "value": "0x50"
+          },
+          {
+            "label": "Pfeil rechts",
+            "label_en": "arrow right",
+            "value": "0x4F"
+          },
+          {
+            "label": "␣ Leertaste",
+            "label_en": "␣ space",
+            "value": "0x2C"
+          },
+          {
+            "label": "↵ Enter",
+            "label_en": "↵ Enter",
+            "value": "0x28"
+          },
+          {
+            "label": "W",
+            "value": "0x1A"
+          },
+          {
+            "label": "A",
+            "value": "0x04"
+          },
+          {
+            "label": "S",
+            "value": "0x16"
+          },
+          {
+            "label": "D",
+            "value": "0x07"
+          }
+        ]
+      },
+      {
+        "name": "MODE",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "kurz drücken",
+            "label_en": "tap",
+            "value": "tippen"
+          },
+          {
+            "label": "gedrückt halten",
+            "label_en": "hold down",
+            "value": "halten"
+          },
+          {
+            "label": "loslassen",
+            "label_en": "release",
+            "value": "los"
+          }
+        ]
+      }
+    ],
+    "hardware": {
+      "commonName": "USB-Tastatur (eingebaut, über das USB-Kabel)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/taste.md",
+    "doc": "# Taste drücken (USB-Tastatur)\n\nDas Board meldet sich am Computer auch als **Tastatur**. Mit diesem Block drückt\nes eine Taste – so wird der GamePadPico zum Gamecontroller für Spiele im Browser\noder Minecraft.\n\n- **kurz drücken** – einmal tippen\n- **gedrückt halten** – Taste bleibt unten (z. B. zum Laufen), bis „loslassen\" kommt\n- **loslassen** – gehaltene Taste wieder lösen\n\nBeispiel: „Wenn Pfeil links berührt → Taste ⬅️ gedrückt halten\", und in einer\nSchleife loslassen, sobald das Feld nicht mehr berührt wird.\n\n> Vorsicht: Die Tasten landen in dem Fenster, das gerade vorne ist – auch im Editor!",
+    "doc_en": "# Press key (USB keyboard)\n\nThe board also shows up on the computer as a **keyboard**. With this block it\npresses a key – turning the GamePadPico into a game controller for browser games\nor Minecraft.\n\n- **tap** – press once\n- **hold down** – the key stays down (e.g. for walking) until \"release\"\n- **release** – let go of a held key\n\nExample: \"When arrow left touched → hold down ⬅️\", and in a loop release it as\nsoon as the pad is no longer touched.\n\n> Careful: the keys go to whichever window is in front – including the editor!"
   },
   {
     "id": "neopixel_brightness",

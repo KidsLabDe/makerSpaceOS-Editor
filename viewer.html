@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>makerSpaceOS – Bibliothek</title>
-<link rel="stylesheet" href="css/fonts.css?v=202610152046">
-<link rel="stylesheet" href="css/style.css?v=202610152046">
+<link rel="stylesheet" href="css/fonts.css?v=202610201110">
+<link rel="stylesheet" href="css/style.css?v=202610201110">
 <style>
   /* Eigenständige Seite (kein Editor-Overlay) – nutzt die Design-Variablen
      und .lib-*-Klassen aus css/style.css (dieselbe Optik wie das
@@ -126,9 +126,9 @@
   </div>
 </div>
 
-<script src="js/boards.js?v=202610152046"></script>
-<script src="js/blocks_db.js?v=202610152046"></script>
-<script src="js/docs_data.js?v=202610152046"></script>
+<script src="js/boards.js?v=202610201110"></script>
+<script src="js/blocks_db.js?v=202610201110"></script>
+<script src="js/docs_data.js?v=202610201110"></script>
 <script>
 (function () {
   'use strict';
@@ -258,7 +258,9 @@
     // CORE_DOCS (section:'Lichter'), nicht in BLOCKS_DB – gehören inhaltlich
     // aber hierher (steuern eine Hardware-Komponente an), nicht zu
     // "Boards & Grundlagen".
-    const matrixKeys = CORE_DOCS.filter(c => c.section === 'Lichter').map(c => 'block:' + c.id);
+    const lichtKeys  = (pre) => CORE_DOCS.filter(c => c.section === 'Lichter' && c.id.startsWith(pre)).map(c => 'block:' + c.id);
+    const matrixKeys  = lichtKeys('matrix_');
+    const matrix5Keys = lichtKeys('matrix5_');
 
     for (const catDef of BLOCKS_CATALOG.categories) {
       const catBlocks = BLOCKS_DB.filter(b => b.blockCategory === catDef.id);
@@ -273,6 +275,7 @@
         }
       }
       if (catDef.id === 'Lichter' && matrixKeys.length) groups.push({ sub: '8×8 Matrix', keys: matrixKeys });
+      if (catDef.id === 'Lichter' && matrix5Keys.length) groups.push({ sub: '5×5 Matrix (GamePadPico)', keys: matrix5Keys });
       if (!groups.length) continue;
       sections.push({ label: catDef.label, colour: catDef.colour, groups });
     }

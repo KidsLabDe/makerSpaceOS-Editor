@@ -20,13 +20,14 @@
       "label": "Aktionen",
       "label_en": "Actions",
       "colour": "#DC2626",
-      "subCategories": ["Fahren", "LED", "Ton", "Servo & Pumpe", "Motor"],
+      "subCategories": ["Fahren", "LED", "Ton", "Servo & Pumpe", "Motor", "Tastatur"],
       "subCategories_en": {
         "Fahren": "Driving",
         "LED": "LED",
         "Ton": "Sound",
         "Servo & Pumpe": "Servo & Pump",
-        "Motor": "Motor"
+        "Motor": "Motor",
+        "Tastatur": "Keyboard"
       }
     },
     {

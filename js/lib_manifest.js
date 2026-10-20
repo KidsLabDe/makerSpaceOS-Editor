@@ -1,8 +1,8 @@
 // GENERIERT von scripts/build_lib_manifest.js – NICHT MANUELL BEARBEITEN!
-// Generiert am 2026-10-15T20:41:41.099Z aus lib/ (41 Dateien).
+// Generiert am 2026-10-20T11:10:18.034Z aus lib/ (42 Dateien).
 window.LIB_MANIFEST = {
-  generatedAt: "2026-10-15T20:41:41.099Z",
-  libVersion: "2eb6f0c5713c1766d372d58c4e8a37ad074cd1900fee4c63bd9ae3f6f4285c46",
+  generatedAt: "2026-10-20T11:10:18.034Z",
+  libVersion: "7e771744d4000b6e86453e67e9e8af14f080dd0dda20ad0acc0c78659c2c9798",
   files: [
     {
       "path": "adafruit_bus_device/__init__.py",
@@ -178,6 +178,11 @@ window.LIB_MANIFEST = {
       "path": "ina226.py",
       "size": 2284,
       "sha256": "ba074d22fe06033886afccc5f64a9d167fdbec4f7059415883413a28f2608294"
+    },
+    {
+      "path": "lsm6ds3.py",
+      "size": 2752,
+      "sha256": "d3ca29df6c36a5ed58beb8fafef32e5205aba6395d27a64579eb63b4ac39f5ce"
     },
     {
       "path": "makerspaceos.py",
