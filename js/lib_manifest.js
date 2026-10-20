@@ -1,8 +1,8 @@
 // GENERIERT von scripts/build_lib_manifest.js – NICHT MANUELL BEARBEITEN!
-// Generiert am 2026-10-20T11:10:18.034Z aus lib/ (42 Dateien).
+// Generiert am 2026-10-20T14:19:46.324Z aus lib/ (42 Dateien).
 window.LIB_MANIFEST = {
-  generatedAt: "2026-10-20T11:10:18.034Z",
-  libVersion: "7e771744d4000b6e86453e67e9e8af14f080dd0dda20ad0acc0c78659c2c9798",
+  generatedAt: "2026-10-20T14:19:46.324Z",
+  libVersion: "c8e8d5bf611d0bfd39d40ac82cc3ed3d42569e03dc73a940dcff62ed219c4b80",
   files: [
     {
       "path": "adafruit_bus_device/__init__.py",
@@ -206,8 +206,8 @@ window.LIB_MANIFEST = {
     },
     {
       "path": "sr04.py",
-      "size": 1459,
-      "sha256": "dd6d3c95e504e48a0f37a0ed8afe07e2628fffc163edcced9758775f37eb5e91"
+      "size": 3196,
+      "sha256": "95b77d57185542a18e906af12dd9717fd37d1f5d6ca4dee2259565c68e7a99c9"
     },
     {
       "path": "tm1637_display.mpy",
