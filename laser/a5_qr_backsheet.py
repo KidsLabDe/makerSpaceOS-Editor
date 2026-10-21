@@ -10,7 +10,7 @@ passende QR-Code + Bauteilname durch.
 
 Jeder QR-Code verlinkt auf einen Deep-Link in viewer.html (die
 Bauteil-/Block-Bibliothek, siehe js/docs_data.js + viewer.html):
-  https://mos.kidslab.de/viewer.html?id=comp:<hardware.commonName>
+  https://mos.kidslab.de/editor/viewer.html?id=comp:<hardware.commonName>
 Der Maker-Pi RP2040 hat kein eigenes hardware.commonName in BLOCKS_DB (reines
 Board-Doku-MD mit block:false) und verlinkt daher auf die Board-Seite
 (?id=board:maker_pi_rp2040) statt auf einen Bauteil-Eintrag.
@@ -34,7 +34,7 @@ from reportlab.pdfgen import canvas
 
 import a5_layout as L
 
-VIEWER_BASE_URL = "https://mos.kidslab.de/viewer.html"
+VIEWER_BASE_URL = "https://mos.kidslab.de/editor/viewer.html"
 
 # COMPONENTS-Name (a5_layout.py) -> viewer.html Deep-Link-Key.
 # "comp:<hardware.commonName>" fuer echte Bauteile (BLOCKS_DB), "board:<id>"
