@@ -143,4 +143,7 @@ firmware/            – UF2-Images (Pico) + ESP32 .bin (nicht per UF2 flashbar)
 
 ## Lizenz
 
-Dieses Projekt ist für den Einsatz in Bildung und Maker-Communities gedacht. Lizenz folgt.
+- **Quellcode:** [MIT-Lizenz](LICENSE)
+- **Inhalte** (Doku, Beispiele, Bilder, Laser-/Druckvorlagen): [CC BY 4.0](LICENSE-CONTENT.md)
+- **Name und Logo** sind ausgenommen, siehe [LICENSE-CONTENT.md](LICENSE-CONTENT.md)
+- **Fremde Bestandteile** (Blockly, CodeMirror, CircuitPython, Adafruit-Bibliotheken, Schriften): siehe [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)
