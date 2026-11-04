@@ -315,9 +315,14 @@ const BOARD_PROFILES = {
       { id: 6, label: 'A0+A1', pin1: 'IO1',  signal: 'IO0',  analog: false, i2c: false, digital: false },
       { id: 7, label: 'A1+A2', pin1: 'IO2',  signal: 'IO1',  analog: false, i2c: false, digital: false },
     ],
-    externalPins: ['IO0', 'IO1', 'IO2'],
-    allGrovePins: ['IO0', 'IO1', 'IO2'],          // bewusst ohne Servo-/Display-/I²C-Pins
-    analogPins:   ['IO0', 'IO1', 'IO2'],
+    // Freie C6-Zero-Pins: A0–A2 auf den Leisten, dazu IO6/IO7/IO23 als Lötpads
+    // auf der Unterseite (alle PWM-fähig, ADC nur IO0–IO6). Bewusst nicht
+    // angeboten: IO3–5/20/21 (Display), IO14/22 (I²C), IO15–19 (Servos),
+    // IO8 (Onboard-NeoPixel), IO9 (BOOT), IO12/13 (USB – sonst bricht die
+    // serielle Verbindung ab).
+    externalPins: ['IO0', 'IO1', 'IO2', 'IO6', 'IO7', 'IO23'],
+    allGrovePins: ['IO0', 'IO1', 'IO2', 'IO6', 'IO7', 'IO23'],
+    analogPins:   ['IO0', 'IO1', 'IO2', 'IO6'],
 
     hideBlockIds: ['actuator_motor_forward', 'actuator_motor_backward',
                    'actuator_motor_stop', 'sensor_battery', 'actuator_stepper',

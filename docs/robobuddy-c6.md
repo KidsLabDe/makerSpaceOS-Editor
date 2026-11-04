@@ -35,6 +35,10 @@ Das `board`-Modul des DevKitC-Builds kennt **GPIO14 nicht** (I²C-SDA des Powerb
 | A0+A1 / A1+A2 | zwei SIG-Leitungen | – | 2-Pin-Geräte: TM1637, Drehgeber, HC-SR04 (3,3-V-Variante) |
 | I2C 1 / I2C 2 | SDA IO14, SCL IO22 | GND, 3V3, SDA, SCL | LCD, ICM20948 – derselbe Bus wie der INA226 |
 | S1 … S4 | IO19, IO18, IO16, IO17 | S, +, − (5 V) | Servos; **S1 = rechtes, S2 = linkes Rad** (Blick von hinten) |
+| Lötpads (Unterseite C6-Zero) | IO6, IO7, IO23 | – | freie Pins im Pin-Dropdown unter dem Trenner: alle digital + PWM, **IO6 auch analog** |
+| Onboard-RGB | IO8 (WS2812) | – | NeoPixel-Blöcke „Onboard" (1 LED) |
+
+Nicht frei: IO3–5/20/21 (Display), IO9 (BOOT), IO12/13 (USB D−/D+ – benutzen trennt die serielle Verbindung), IO15 (SERVO_EN). Analog (ADC) kann der C6 nur an IO0–IO6.
 
 Die Leisten sind **keine Grove-Buchsen**: Grove-Module brauchen ein Grove-auf-Dupont-Kabel, und bei A0–A2 ist die Reihenfolge anders als bei Grove.
 
