@@ -1,0 +1,365 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="BNCJYJS)0gCr6Eu.Y8]e">CountDown</variable>
+  </variables>
+  <block type="control_setup" id="[Nt`J~A-]`]AH3o-zHa2" deletable="false" x="55" y="55">
+    <statement name="DO">
+      <block type="variables_set" id="kcR($R6#*|LBtTOA:h(-">
+        <field name="VAR" id="BNCJYJS)0gCr6Eu.Y8]e">CountDown</field>
+        <value name="VALUE">
+          <block type="math_number" id="szuKp!rIy3T-Dc/ME6x!">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+        <next>
+          <block type="actuator_lcd_text" id="hH:hNo[OX|WQw?]!4;C:">
+            <field name="PORT">3</field>
+            <value name="LINE1">
+              <shadow type="text" id="8qKB2xDrpGk4)VV3MVp1">
+                <field name="TEXT">Willkommen zu </field>
+              </shadow>
+            </value>
+            <value name="LINE2">
+              <shadow type="text" id="oEe#6d+R_t9znUz5}CZg">
+                <field name="TEXT">makerSpaceOS</field>
+              </shadow>
+            </value>
+            <next>
+              <block type="control_while" id="zcSM+:W_$ByK=DHs!;C{">
+                <value name="COND">
+                  <block type="logic_compare" id="$5~]Vbumklqtw~wi,N`]">
+                    <field name="OP">GT</field>
+                    <value name="A">
+                      <block type="variables_get" id="q+0@_2KM+kLBM;#z~,Y*">
+                        <field name="VAR" id="BNCJYJS)0gCr6Eu.Y8]e">CountDown</field>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="math_number" id="O/C-j6CX]pV7MlXg-U^o">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <statement name="DO">
+                  <block type="var_decrease" id="6TN_cau?/y_t/)kM0U/r">
+                    <field name="VAR" id="BNCJYJS)0gCr6Eu.Y8]e">CountDown</field>
+                    <value name="DELTA">
+                      <shadow type="math_number" id="D=DI##ktalwi(lNR{eGX">
+                        <field name="NUM">1</field>
+                      </shadow>
+                    </value>
+                    <next>
+                      <block type="tm1637_number" id="KJ{jiv.=|0@Sd0xCd]DW">
+                        <field name="PORT">4</field>
+                        <value name="VALUE">
+                          <shadow type="math_number" id="dK,IVbj=}NIqF3jlyZju">
+                            <field name="NUM">1234</field>
+                          </shadow>
+                          <block type="variables_get" id="hth=|fg?UoVrtNS*%ha=">
+                            <field name="VAR" id="BNCJYJS)0gCr6Eu.Y8]e">CountDown</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="control_wait" id="^MEr]*%_3WJcn)c:RsAh">
+                            <value name="SECONDS">
+                              <shadow type="math_number" id="wy}{KbNsC;fr)):%`iD|">
+                                <field name="NUM">0.5</field>
+                              </shadow>
+                            </value>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </statement>
+                <next>
+                  <block type="actuator_lcd_text" id="6tN,6c!/_7$9H{RR|/0*">
+                    <field name="PORT">3</field>
+                    <value name="LINE1">
+                      <shadow type="text" id="J}=5Y[~n2j/:lFWj^7Ff">
+                        <field name="TEXT">Drehen sie am </field>
+                      </shadow>
+                    </value>
+                    <value name="LINE2">
+                      <shadow type="text" id="oS/=w|%8;1i9.F?tvAlF">
+                        <field name="TEXT">Drehgeber bis 23!</field>
+                      </shadow>
+                    </value>
+                    <next>
+                      <block type="control_while" id=":Ax2$PR4~h2H9p,tFd?v">
+                        <value name="COND">
+                          <block type="logic_compare" id="Es*VqRB~{o|N^@wdJ~24">
+                            <field name="OP">LT</field>
+                            <value name="A">
+                              <block type="sensor_encoder" id="%1aiuT`XyPPl?qCTS0dt">
+                                <field name="PORT">6</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_number" id="X6eJ*;C[Lna}#L:B($FX">
+                                <field name="NUM">24</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO">
+                          <block type="tm1637_number" id="}Nc{Wh4$bJQmUNPC3IvO">
+                            <field name="PORT">4</field>
+                            <value name="VALUE">
+                              <shadow type="math_number" id="dK,IVbj=}NIqF3jlyZju">
+                                <field name="NUM">1234</field>
+                              </shadow>
+                              <block type="sensor_encoder" id="Ap3#y-3u@#Xc_TIwPxdA">
+                                <field name="PORT">6</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="control_wait" id="pCnITR1b?]^5dq,kO9o_">
+                                <value name="SECONDS">
+                                  <shadow type="math_number" id="k!?Jiw8P^4~%VO]jgU`S">
+                                    <field name="NUM">0.1</field>
+                                  </shadow>
+                                </value>
+                              </block>
+                            </next>
+                          </block>
+                        </statement>
+                        <next>
+                          <block type="neopixel_fill" id="7s@JW9Um2K/_VjAM]96M">
+                            <field name="COLOR">#FF0000</field>
+                            <next>
+                              <block type="control_wait" id="Z4gxIR2GjJ[Q)UEWW3}:">
+                                <value name="SECONDS">
+                                  <shadow type="math_number" id="gTHn9uwZ(H@d.#CFb~+_">
+                                    <field name="NUM">1</field>
+                                  </shadow>
+                                </value>
+                                <next>
+                                  <block type="neopixel_fill" id=":3^wJ2R$9NFeHu#!#feS">
+                                    <field name="COLOR">#FF6600</field>
+                                    <next>
+                                      <block type="control_wait" id="|$-*T!$:ezqDpy;1qQiQ">
+                                        <value name="SECONDS">
+                                          <shadow type="math_number" id="n@JAF(4O.B^E3dhz=8N.">
+                                            <field name="NUM">1</field>
+                                          </shadow>
+                                        </value>
+                                        <next>
+                                          <block type="neopixel_fill" id="Yl0WUD(cF3ed)GE;2${W">
+                                            <field name="COLOR">#00FF00</field>
+                                            <next>
+                                              <block type="control_wait" id="oXJUKyKBaZg/e(cPN4M|">
+                                                <value name="SECONDS">
+                                                  <shadow type="math_number" id="BGLCr]~.Uz_dZTEDV4;g">
+                                                    <field name="NUM">1</field>
+                                                  </shadow>
+                                                </value>
+                                                <next>
+                                                  <block type="control_while" id="k.V_!tfd]~OeFhwqGAq}">
+                                                    <value name="COND">
+                                                      <block type="logic_compare" id="]lE3t_uwlyvVyB#5?{n#">
+                                                        <field name="OP">LT</field>
+                                                        <value name="A">
+                                                          <block type="sensor_dht11_temperature" id=";g/WXzzXtBbggZJw.rZW">
+                                                            <field name="PIN">GP3</field>
+                                                          </block>
+                                                        </value>
+                                                        <value name="B">
+                                                          <block type="math_number" id="D@aB]dJsgSS@S:Nc{EiQ">
+                                                            <field name="NUM">23</field>
+                                                          </block>
+                                                        </value>
+                                                      </block>
+                                                    </value>
+                                                    <statement name="DO">
+                                                      <block type="actuator_lcd_text" id="cq3XDHGV}|!CP6zT%C+(">
+                                                        <field name="PORT">3</field>
+                                                        <value name="LINE1">
+                                                          <shadow type="text" id="kp}O0PPJ~;~8%/_,*kG}">
+                                                            <field name="TEXT">DHT über 23 Grad!</field>
+                                                          </shadow>
+                                                        </value>
+                                                        <value name="LINE2">
+                                                          <shadow type="text" id="zfU9t`IJf8EoaXHyZn(y">
+                                                            <field name="TEXT"></field>
+                                                          </shadow>
+                                                          <block type="text_verbinden" id="jUmLzqktfNk2~5O$?+tW">
+                                                            <value name="A">
+                                                              <block type="sensor_dht11_temperature" id="#E8Y[d+2~atT-W)7`@H+">
+                                                                <field name="PIN">GP3</field>
+                                                              </block>
+                                                            </value>
+                                                            <value name="B">
+                                                              <block type="text" id="1Egkv3i)DC9lFa?@PFB9">
+                                                                <field name="TEXT"> Grade Celsius</field>
+                                                              </block>
+                                                            </value>
+                                                          </block>
+                                                        </value>
+                                                        <next>
+                                                          <block type="tm1637_number" id="Ki?qcutS?}nb^v9A`1T:">
+                                                            <field name="PORT">4</field>
+                                                            <value name="VALUE">
+                                                              <shadow type="math_number" id="dK,IVbj=}NIqF3jlyZju">
+                                                                <field name="NUM">1234</field>
+                                                              </shadow>
+                                                              <block type="sensor_dht11_temperature" id="NAlY-U,y7pZOhT*Xt9vO">
+                                                                <field name="PIN">GP3</field>
+                                                              </block>
+                                                            </value>
+                                                            <next>
+                                                              <block type="control_wait" id="abq`sQX;HZGpndY(.n[4">
+                                                                <value name="SECONDS">
+                                                                  <shadow type="math_number" id="2;JEA#!6]6=3M#gX$[0B">
+                                                                    <field name="NUM">0.1</field>
+                                                                  </shadow>
+                                                                </value>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </statement>
+                                                    <next>
+                                                      <block type="actuator_lcd_text" id="6)_xuw-S(Z-qN2NOGt;H">
+                                                        <field name="PORT">3</field>
+                                                        <value name="LINE1">
+                                                          <shadow type="text" id="7MqhUe-%2]cZ]Z~LJT@V">
+                                                            <field name="TEXT">Ultraschnell!</field>
+                                                          </shadow>
+                                                        </value>
+                                                        <value name="LINE2">
+                                                          <shadow type="text" id=".J2AY*OI:lGGw8GSl}sh">
+                                                            <field name="TEXT">Hand über den Sensor!</field>
+                                                          </shadow>
+                                                        </value>
+                                                        <next>
+                                                          <block type="control_wait" id="_usS4_.0/DO/O^Dj7rkw">
+                                                            <value name="SECONDS">
+                                                              <shadow type="math_number" id="dlM~H|AvmEacNx7$!%Mo">
+                                                                <field name="NUM">5</field>
+                                                              </shadow>
+                                                            </value>
+                                                            <next>
+                                                              <block type="controls_repeat_ext" id="O]%6ac|MM,[lL:qFl~$/">
+                                                                <value name="TIMES">
+                                                                  <shadow type="math_number" id="*mH7SYp_M@nh.!F%)i=6">
+                                                                    <field name="NUM">99999</field>
+                                                                  </shadow>
+                                                                </value>
+                                                                <statement name="DO">
+                                                                  <block type="actuator_lcd_text" id="R/RvwgKf4f7,!)k`x29;">
+                                                                    <field name="PORT">3</field>
+                                                                    <value name="LINE1">
+                                                                      <shadow type="text" id="ISVCGas!B(GM2-;vTrLI">
+                                                                        <field name="TEXT">Ultraschnell!</field>
+                                                                      </shadow>
+                                                                    </value>
+                                                                    <value name="LINE2">
+                                                                      <shadow type="text" id="l-xf-+7zjvp4sXO!s:5$">
+                                                                        <field name="TEXT">Hand über den Sensor!</field>
+                                                                      </shadow>
+                                                                      <block type="text_verbinden" id="y/PYNh}s9jw7sBF`)nBD">
+                                                                        <value name="A">
+                                                                          <block type="sensor_ultrasonic" id="nh*qi*-V$`JErpvCT{q[">
+                                                                            <field name="SIG">GP1</field>
+                                                                            <field name="TYPE">sr04</field>
+                                                                          </block>
+                                                                        </value>
+                                                                        <value name="B">
+                                                                          <block type="text" id="^ed[Qx$iFKG$1)|ha6QE">
+                                                                            <field name="TEXT"> cm</field>
+                                                                          </block>
+                                                                        </value>
+                                                                      </block>
+                                                                    </value>
+                                                                    <next>
+                                                                      <block type="tm1637_number" id="#}e`[ez5=90ImtKO}!|i">
+                                                                        <field name="PORT">4</field>
+                                                                        <value name="VALUE">
+                                                                          <shadow type="math_number" id="dK,IVbj=}NIqF3jlyZju">
+                                                                            <field name="NUM">1234</field>
+                                                                          </shadow>
+                                                                          <block type="sensor_ultrasonic" id="vigt1vT*{64kGX81mS-d">
+                                                                            <field name="SIG">GP1</field>
+                                                                            <field name="TYPE">sr04</field>
+                                                                          </block>
+                                                                        </value>
+                                                                        <next>
+                                                                          <block type="actuator_servo" id="[Hc^ieY/3Viq?XFM|NL5">
+                                                                            <field name="SERVO">S1</field>
+                                                                            <value name="ANGLE">
+                                                                              <shadow type="math_number" id="sO5f$Q~(+i#ei$fnGbQr">
+                                                                                <field name="NUM">90</field>
+                                                                              </shadow>
+                                                                              <block type="math_constrain" id="nz=+#45^CU-^/@x;A}/2">
+                                                                                <value name="VALUE">
+                                                                                  <block type="sensor_ultrasonic" id="q6%lnVWD*LDxBZ=Mv-jp">
+                                                                                    <field name="SIG">GP1</field>
+                                                                                    <field name="TYPE">sr04</field>
+                                                                                  </block>
+                                                                                </value>
+                                                                                <value name="LOW">
+                                                                                  <shadow type="math_number" id="StELfOWtHPIScF8kp]fp">
+                                                                                    <field name="NUM">5</field>
+                                                                                  </shadow>
+                                                                                </value>
+                                                                                <value name="HIGH">
+                                                                                  <shadow type="math_number" id="zdJO.GmM|4Fw6P0F~QaY">
+                                                                                    <field name="NUM">175</field>
+                                                                                  </shadow>
+                                                                                </value>
+                                                                              </block>
+                                                                            </value>
+                                                                            <next>
+                                                                              <block type="control_wait" id="$xhBMZ@]v|/b*6#(L5Eh">
+                                                                                <value name="SECONDS">
+                                                                                  <shadow type="math_number" id="AX]PY|FciOZ{8P$.%W|}">
+                                                                                    <field name="NUM">0.1</field>
+                                                                                  </shadow>
+                                                                                </value>
+                                                                              </block>
+                                                                            </next>
+                                                                          </block>
+                                                                        </next>
+                                                                      </block>
+                                                                    </next>
+                                                                  </block>
+                                                                </statement>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="control_forever" id="*f;w!*B5^Q{[J]3O.{-;" deletable="false" x="605" y="77"></block>
+  <block type="sensor_encoder" id=",y,s%q,|cZ0EN5Pb!DFK" x="239" y="1247">
+    <field name="PORT">6</field>
+  </block>
+</xml>
