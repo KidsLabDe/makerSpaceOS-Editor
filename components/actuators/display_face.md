@@ -1,6 +1,7 @@
 ---
 id: display_face
 blockCategory: Anzeigen
+component: round_display
 requiresBoardFeature: display
 label: "🙂 Gesicht zeigen"
 label_en: "🙂 Show face"

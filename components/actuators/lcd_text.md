@@ -1,6 +1,7 @@
 ---
 id: actuator_lcd_text
 blockCategory: Anzeigen
+component: lcd
 subCategory: ""
 label: "📟 LCD Text"
 label_en: "📟 LCD text"
@@ -10,8 +11,8 @@ tooltip_en: "Shows two lines of text on the Grove LCD – without changing the c
 blockType: statement
 inline: false
 inputs:
-  - label: "📟 LCD Text  Port:"
-    label_en: "📟 LCD text  port:"
+  - label: "Text  Port:"
+    label_en: "text  port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: i2c

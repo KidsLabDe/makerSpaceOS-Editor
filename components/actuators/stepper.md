@@ -1,6 +1,7 @@
 ---
 id: actuator_stepper
 blockCategory: Aktionen
+component: stepper
 subCategory: "Motor"
 label: "🔄 Schrittmotor"
 label_en: "🔄 Stepper motor"
@@ -10,8 +11,8 @@ tooltip_en: "Turns a 28BYJ-48 stepper motor by an angle to the right or left"
 blockType: statement
 inline: false
 inputs:
-  - label: "🔄 Schrittmotor  Anschluss 1:"
-    label_en: "🔄 Stepper motor  connector 1:"
+  - label: "Anschluss 1:"
+    label_en: "connector 1:"
     name: PORTA
     fieldType: grove_dropdown
     groveRole: 2pin

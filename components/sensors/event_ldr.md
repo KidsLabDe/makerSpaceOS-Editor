@@ -1,6 +1,7 @@
 ---
 id: event_ldr
 blockCategory: Sensoren
+component: ldr
 subCategory: Ereignisse
 label: "☀️ Wenn Helligkeit"
 label_en: "☀️ When brightness"

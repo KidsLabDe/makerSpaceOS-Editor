@@ -1,6 +1,7 @@
 ---
 id: tm1637_off
 blockCategory: Anzeigen
+component: seg7
 subCategory: ""
 label: "⬛ 7-Seg ausschalten"
 label_en: "⬛ 7-seg off"
@@ -10,8 +11,8 @@ tooltip_en: "Clears all digits on the 7-segment display (display stays dark)"
 blockType: statement
 inline: true
 inputs:
-  - label: "⬛ 7-Seg ausschalten  Port:"
-    label_en: "⬛ 7-seg off  port:"
+  - label: "ausschalten  Port:"
+    label_en: "off  port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: 2pin

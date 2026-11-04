@@ -1,6 +1,7 @@
 ---
 id: sensor_imu_neigung
 blockCategory: Sensoren
+component: imu_onboard
 subCategory: Bewegung
 requiresBoardFeature: imu
 label: "🎢 Neigung (°)"

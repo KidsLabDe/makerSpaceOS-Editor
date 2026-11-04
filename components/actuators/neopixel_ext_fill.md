@@ -1,6 +1,7 @@
 ---
 id: neopixel_ext_fill
 blockCategory: Lichter
+component: neopixel_strip
 subCategory: "Streifen"
 label: "🌈 Streifen ganz füllen"
 label_en: "🌈 Fill whole strip"
@@ -10,8 +11,8 @@ tooltip_en: "Sets all LEDs of an external NeoPixel strip on a Grove port to one 
 blockType: statement
 inline: true
 inputs:
-  - label: "🌈 Streifen füllen (Grove)  Port:"
-    label_en: "🌈 Fill strip (Grove)  port:"
+  - label: "füllen  Port:"
+    label_en: "fill  port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: digital

@@ -593,7 +593,7 @@
   Blockly.Blocks['matrix_on'] = {
     init() {
       this.appendDummyInput()
-          .appendField(L('💡 Matrix anschalten  Port:', '💡 Matrix on  port:'))
+          .appendField(L('anschalten  Port:', 'on  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField(L('  Farbe:', '  colour:'))
           .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
@@ -601,6 +601,7 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix8');
       this.setTooltip(L('Schaltet alle 64 LEDs der 8×8 Matrix in einer Farbe an', 'Turns on all 64 LEDs of the 8×8 matrix in one colour'));
     },
   };
@@ -608,12 +609,13 @@
   Blockly.Blocks['matrix_off'] = {
     init() {
       this.appendDummyInput()
-          .appendField(L('🔳 Matrix ausschalten  Port:', '🔳 Matrix off  port:'))
+          .appendField(L('ausschalten  Port:', 'off  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix8');
       this.setTooltip(L('Schaltet alle LEDs der Matrix aus', 'Turns off all LEDs of the matrix'));
     },
   };
@@ -622,7 +624,7 @@
   Blockly.Blocks['matrix_brightness'] = {
     init() {
       this.appendDummyInput()
-          .appendField(L('☀️ Helligkeit  Port:', '☀️ Brightness  port:'))
+          .appendField(L('Helligkeit  Port:', 'brightness  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField('  ')
           .appendField(new Blockly.FieldNumber(50, 0, 100, 1), 'PCT')
@@ -631,6 +633,7 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix8');
       this.setTooltip(L('Helligkeit in % (0 = aus, 100 % = max. 0,3 Brightness, sicherer Maximalwert)', 'Brightness in % (0 = off, 100 % = max. 0.3 brightness, safe maximum)'));
     },
   };
@@ -638,7 +641,7 @@
   Blockly.Blocks['matrix_symbol'] = {
     init() {
       this.appendDummyInput()
-          .appendField(L('🔣 zeige Symbol  Port:', '🔣 show symbol  port:'))
+          .appendField(L('zeige Symbol  Port:', 'show symbol  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField('  ')
           .appendField(new FieldSymbolPicker(DEFAULT_SYMBOL), 'SYMBOL')
@@ -648,6 +651,7 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix8');
       this.setTooltip(L('Zeigt ein vordefiniertes Symbol auf der Matrix an', 'Shows a predefined symbol on the matrix'));
     },
   };
@@ -657,7 +661,7 @@
   Blockly.Blocks['matrix_set_pixel'] = {
     init() {
       this.appendDummyInput()
-          .appendField(L('🟦 Pixel setzen  Port:', '🟦 set pixel  port:'))
+          .appendField(L('Pixel setzen  Port:', 'set pixel  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField(L('  Farbe:', '  colour:'))
           .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
@@ -667,6 +671,7 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix8');
       this.setTooltip(L('Setzt einen einzelnen Pixel (Spalte X, Zeile Y – jeweils 0–7) auf eine Farbe', 'Sets a single pixel (column X, row Y – each 0–7) to a colour'));
     },
   };
@@ -674,7 +679,7 @@
   Blockly.Blocks['matrix_draw'] = {
     init() {
       this.appendDummyInput()
-          .appendField(L('🖊️ zeige LEDs  Port:', '🖊️ show LEDs  port:'))
+          .appendField(L('zeige LEDs  Port:', 'show LEDs  port:'))
           .appendField(new Blockly.FieldDropdown(matrixServoOptions), 'SERVO')
           .appendField(L('  Farbe:', '  colour:'))
           .appendField(new Blockly.FieldDropdown(COLOR_OPTS), 'COLOR');
@@ -684,13 +689,14 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix8');
       this.setTooltip(L('Klicke auf die Vorschau, um den Editor zu öffnen und Pixel zu malen', 'Click the preview to open the editor and paint pixels'));
     },
   };
 
   // ── Toolbox ───────────────────────────────────────────────────────────────
   // Nur Block-Einträge (kein category-Wrapper) – werden in buildFinalToolbox()
-  // an die "Lichter"-Kategorie angehängt.
+  // als Gruppe „Matrix 8×8“ in die "Anzeigen"-Kategorie gehängt.
   window.MATRIX_TOOLBOX_CONTENTS = [
     { kind: 'block', type: 'matrix_on' },
     { kind: 'block', type: 'matrix_off' },

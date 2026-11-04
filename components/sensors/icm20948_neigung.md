@@ -1,6 +1,7 @@
 ---
 id: sensor_icm20948_neigung
 blockCategory: Sensoren
+component: imu_ext
 subCategory: Bewegung
 label: "🎢 Neigung (°)"
 label_en: "🎢 Tilt (°)"

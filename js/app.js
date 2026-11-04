@@ -30,6 +30,35 @@ function initBlockly() {
     KidsLabToolboxCategory,
     true   // Default-Kategorie überschreiben
   );
+  // Ausklappbare Kategorie (hat Bauteil-Unterkategorien, z. B. Anzeigen):
+  // Das Icon ist hier der Auf/Zu-Pfeil, das Farbquadrat kommt vor das Label.
+  class KidsLabCollapsibleCategory extends Blockly.CollapsibleToolboxCategory {
+    constructor(def, toolbox, parent) {
+      super(def, toolbox, parent);
+      // Blockly startet mit expanded_=false, init() → setExpanded(false) wäre
+      // dann ein No-op: Unterkategorien sichtbar, Pfeil zeigt aber „zu“.
+      this.expanded_ = null;
+    }
+    addColourBorder_() {}
+    createLabelDom_(name) {
+      const label = super.createLabelDom_(name);
+      const sq = document.createElement('span');
+      sq.className = 'cb-cat-square';
+      sq.style.backgroundColor = this.colour_;
+      const wrap = document.createElement('span');
+      wrap.className = 'cb-cat-labelwrap';
+      wrap.id = label.id;          // aria-labelledby zeigt auf den Wrapper
+      label.removeAttribute('id');
+      wrap.append(sq, label);
+      return wrap;
+    }
+  }
+  Blockly.registry.register(
+    Blockly.registry.Type.TOOLBOX_ITEM,
+    Blockly.CollapsibleToolboxCategory.registrationName,
+    KidsLabCollapsibleCategory,
+    true
+  );
 
   const cbTheme = Blockly.Theme.defineTheme('makerspaceos', {
     base: Blockly.Themes.Classic,

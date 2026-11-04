@@ -1,6 +1,7 @@
 ---
 id: actuator_taste
 blockCategory: Aktionen
+component: keyboard
 subCategory: Tastatur
 requiresBoardFeature: usbHid
 label: "⌨️ Taste"

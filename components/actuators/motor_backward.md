@@ -1,6 +1,7 @@
 ---
 id: actuator_motor_backward
 blockCategory: Aktionen
+component: motor
 subCategory: "Motor"
 label: "🚗 Motor rückwärts"
 label_en: "🚗 Motor backward"
@@ -10,9 +11,7 @@ tooltip_en: "Drives a DC motor backward (0–100 % speed)"
 blockType: statement
 inline: true
 inputs:
-  - label: "🚗 Motor"
-    label_en: "🚗 Motor"
-    name: MOTOR
+  - name: MOTOR
     fieldType: motor_dropdown
   - label: "rückwärts"
     label_en: "backward"

@@ -1,6 +1,7 @@
 ---
 id: display_fill
 blockCategory: Anzeigen
+component: round_display
 requiresBoardFeature: display
 label: "🎨 Display füllen"
 label_en: "🎨 Fill display"
@@ -9,8 +10,8 @@ tooltip: "Färbt das ganze runde Display in einer Farbe"
 tooltip_en: "Colours the whole round display in one colour"
 blockType: statement
 inputs:
-  - label: "🎨 Display füllen mit"
-    label_en: "🎨 Fill display with"
+  - label: "füllen mit"
+    label_en: "fill with"
     name: COLOR
     fieldType: colour_picker
 generator:

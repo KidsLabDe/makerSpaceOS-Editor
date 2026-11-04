@@ -1,6 +1,7 @@
 ---
 id: sensor_battery
 blockCategory: Sensoren
+component: battery
 subCategory: "Weitere"
 label: "🔋 Batteriespannung (V)"
 label_en: "🔋 Battery voltage (V)"
@@ -10,8 +11,8 @@ tooltip_en: "Measures the supply voltage (VBAT) in volts via GP29"
 blockType: value
 output: Number
 inputs:
-  - label: "🔋 Batteriespannung (V)"
-    label_en: "🔋 Battery voltage (V)"
+  - label: "Spannung (V)"
+    label_en: "voltage (V)"
     fieldType: fixed_label
 generator:
   imports:

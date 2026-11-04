@@ -1,6 +1,7 @@
 ---
 id: event_temperature
 blockCategory: Sensoren
+component: dht22
 subCategory: Ereignisse
 label: "🌡️ Wenn Temperatur"
 label_en: "🌡️ When temperature"
@@ -10,8 +11,8 @@ tooltip_en: "Runs code when the temperature goes above/below a value"
 blockType: event
 inline: true
 inputs:
-  - label: "🌡️ Wenn Temperatur  Port:"
-    label_en: "🌡️ When temperature  port:"
+  - label: "Wenn Temperatur  Port:"
+    label_en: "When temperature  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital

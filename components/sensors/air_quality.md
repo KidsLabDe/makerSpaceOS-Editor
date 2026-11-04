@@ -1,6 +1,7 @@
 ---
 id: sensor_air_quality
 blockCategory: Sensoren
+component: air_quality
 subCategory: Weitere
 label: "🌫️ Luftqualität (0–100%)"
 label_en: "🌫️ Air quality (0–100%)"
@@ -10,8 +11,8 @@ tooltip_en: "Reads the air pollution in percent (0 = fresh air, 100 = very bad a
 blockType: value
 output: Number
 inputs:
-  - label: "🌫️ Luftqualität (0–100%)  Port:"
-    label_en: "🌫️ Air quality (0–100%)  port:"
+  - label: "Wert (0–100%)  Port:"
+    label_en: "value (0–100%)  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: analog

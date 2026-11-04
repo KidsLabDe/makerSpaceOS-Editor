@@ -1,6 +1,7 @@
 ---
 id: tm1637_number
 blockCategory: Anzeigen
+component: seg7
 subCategory: ""
 label: "🔢 7-Seg Zahl anzeigen"
 label_en: "🔢 7-seg show number"
@@ -10,8 +11,8 @@ tooltip_en: "Shows a number (integer, −999 to 9999) on the 4-digit 7-segment d
 blockType: statement
 inline: true
 inputs:
-  - label: "🔢 7-Seg  Port:"
-    label_en: "🔢 7-seg  port:"
+  - label: "Port:"
+    label_en: "port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: 2pin

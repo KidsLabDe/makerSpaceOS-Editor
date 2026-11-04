@@ -1,6 +1,7 @@
 ---
 id: event_air_quality
 blockCategory: Sensoren
+component: air_quality
 subCategory: Ereignisse
 label: "🌫️ Wenn Luftqualität"
 label_en: "🌫️ When air quality"
@@ -10,8 +11,8 @@ tooltip_en: "Runs code when the air pollution goes above/below a value (0 = fres
 blockType: event
 inline: true
 inputs:
-  - label: "🌫️ Wenn Luftqualität  Port:"
-    label_en: "🌫️ When air quality  port:"
+  - label: "Wenn Wert  Port:"
+    label_en: "When value  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: analog

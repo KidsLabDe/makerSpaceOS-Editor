@@ -1,6 +1,7 @@
 ---
 id: actuator_drive
 blockCategory: Aktionen
+component: drive
 subCategory: Fahren
 requiresBoardFeature: drive
 label: "🚗 Fahren"

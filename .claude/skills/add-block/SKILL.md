@@ -24,6 +24,8 @@ Lege `components/<sensors|actuators>/<id>.md` an. Das YAML-Frontmatter ist die B
 id: mein_block
 blockCategory: Aktoren          # muss in components/catalog.json existieren
 subCategory: LED
+component: round_display        # optional: Bauteil-Kennzeichen vorn am Block (Register: catalog.json → components);
+                                # bei jedem Bauteil-Block setzen, Label nennt dann nur die Aktion
 label: "💡 Mein Block"
 label_en: "💡 My block"         # englische Variante (Editor ist zweisprachig, DE = Default)
 colour: "#E65100"               # #1565C0 Sensor-Wert, #0D47A1 Ereignis, #E65100 Aktor

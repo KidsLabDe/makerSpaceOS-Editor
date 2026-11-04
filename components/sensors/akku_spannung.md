@@ -1,6 +1,7 @@
 ---
 id: sensor_akku_spannung
 blockCategory: Sensoren
+component: akku
 subCategory: Akku
 requiresBoardFeature: powerMonitor
 label: "🔋 Akkuspannung (V)"
@@ -11,8 +12,8 @@ tooltip_en: "Battery voltage in volts (full ≈ 4.2 V, empty ≈ 3.5 V)"
 blockType: value
 output: Number
 inputs:
-  - label: "🔋 Akkuspannung (V)"
-    label_en: "🔋 Battery voltage (V)"
+  - label: "Spannung (V)"
+    label_en: "voltage (V)"
     fieldType: fixed_label
 hardware:
   commonName: "Akku-Messchip INA226 (RoboBuddy-Powerboard)"

@@ -1,6 +1,7 @@
 ---
 id: sensor_akku_strom
 blockCategory: Sensoren
+component: akku
 subCategory: Akku
 requiresBoardFeature: powerMonitor
 label: "⚡ Akkustrom (mA)"
@@ -11,8 +12,8 @@ tooltip_en: "Battery current in milliamps: positive = battery is charging, negat
 blockType: value
 output: Number
 inputs:
-  - label: "⚡ Akkustrom (mA)"
-    label_en: "⚡ Battery current (mA)"
+  - label: "Strom (mA)"
+    label_en: "current (mA)"
     fieldType: fixed_label
 hardware:
   commonName: "Akku-Messchip INA226 (RoboBuddy-Powerboard)"

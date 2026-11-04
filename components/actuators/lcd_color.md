@@ -1,6 +1,7 @@
 ---
 id: actuator_lcd_color
 blockCategory: Anzeigen
+component: lcd
 subCategory: ""
 label: "📟 LCD Farbe"
 label_en: "📟 LCD colour"
@@ -10,8 +11,8 @@ tooltip_en: "Sets the background colour of the Grove LCD – without changing th
 blockType: statement
 inline: false
 inputs:
-  - label: "📟 LCD Farbe  Port:"
-    label_en: "📟 LCD colour  port:"
+  - label: "Port:"
+    label_en: "port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: i2c

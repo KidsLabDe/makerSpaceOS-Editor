@@ -1,6 +1,7 @@
 ---
 id: sensor_dht11_humidity
 blockCategory: Sensoren
+component: dht11
 subCategory: Temperatur & Feuchte
 label: "💧 DHT11 Luftfeuchte (%)"
 label_en: "💧 DHT11 humidity (%)"
@@ -10,8 +11,8 @@ tooltip_en: "Reads the humidity in % from the DHT11 sensor (KY-015)"
 blockType: value
 output: Number
 inputs:
-  - label: "💧 DHT11 Luftfeuchte (%)  Port:"
-    label_en: "💧 DHT11 humidity (%)  port:"
+  - label: "Luftfeuchte (%)  Port:"
+    label_en: "humidity (%)  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital

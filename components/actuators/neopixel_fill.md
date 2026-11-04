@@ -1,6 +1,7 @@
 ---
 id: neopixel_fill
 blockCategory: Lichter
+component: neopixel
 subCategory: "Onboard"
 label: "🌈 NeoPixel alle"
 label_en: "🌈 NeoPixel all"
@@ -9,8 +10,8 @@ tooltip: "Setzt alle NeoPixel-LEDs auf die gleiche Farbe"
 tooltip_en: "Sets all NeoPixel LEDs to the same colour"
 blockType: statement
 inputs:
-  - label: "🌈 NeoPixel  alle  Farbe:"
-    label_en: "🌈 NeoPixel  all  colour:"
+  - label: "alle  Farbe:"
+    label_en: "all  colour:"
     name: COLOR
     fieldType: colour_picker
     default: "#ff0000"

@@ -1,6 +1,7 @@
 ---
 id: neopixel_set
 blockCategory: Lichter
+component: neopixel
 subCategory: "Onboard"
 label: "🌈 NeoPixel LED Nr."
 label_en: "🌈 NeoPixel LED no."
@@ -10,8 +11,8 @@ tooltip_en: "Sets a single NeoPixel LED to a specific colour (1–13)"
 blockType: statement
 inline: true
 inputs:
-  - label: "🌈 NeoPixel  Farbe:"
-    label_en: "🌈 NeoPixel  colour:"
+  - label: "Farbe:"
+    label_en: "colour:"
     name: COLOR
     fieldType: colour_picker
     default: "#ff0000"

@@ -1,6 +1,7 @@
 ---
 id: actuator_isd1820_record
 blockCategory: Aktionen
+component: isd1820
 subCategory: Ton
 label: "⏺ Aufnehmen"
 label_en: "⏺ Record"

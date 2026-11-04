@@ -1,6 +1,7 @@
 ---
 id: sensor_taster
 blockCategory: Sensoren
+component: button
 subCategory: "Weitere"
 label: "🔘 Taster gedrückt?"
 label_en: "🔘 Button pressed?"
@@ -10,9 +11,7 @@ tooltip_en: "Returns true if the button is pressed (board buttons B1/B2 or an ex
 blockType: value
 output: Boolean
 inputs:
-  - label: "🔘 Taster"
-    label_en: "🔘 Button"
-    name: BTN
+  - name: BTN
     fieldType: taster_dropdown
   - label: "gedrückt?"
     label_en: "pressed?"

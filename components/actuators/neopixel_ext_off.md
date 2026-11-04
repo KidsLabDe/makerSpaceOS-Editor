@@ -1,6 +1,7 @@
 ---
 id: neopixel_ext_off
 blockCategory: Lichter
+component: neopixel_strip
 subCategory: "Streifen"
 label: "🌈 Streifen aus"
 label_en: "🌈 Strip off"
@@ -10,8 +11,8 @@ tooltip_en: "Turns off all LEDs of an external NeoPixel strip on a Grove port"
 blockType: statement
 inline: true
 inputs:
-  - label: "🌈 Streifen aus (Grove)  Port:"
-    label_en: "🌈 Strip off (Grove)  port:"
+  - label: "aus  Port:"
+    label_en: "off  port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: digital

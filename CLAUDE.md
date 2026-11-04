@@ -78,12 +78,15 @@ generator:
   code: "_x_${PIN}.value = ${SPEED}\n"   # oder: expression + order (für value-Blöcke)
 legacyGenerator: false        # true ⇒ Generator bleibt handgeschrieben in generator.js
 requiresBoardFeature: display # optional: Block nur, wenn das Board-Profil dieses Feld hat
+component: round_display       # optional: Bauteil-Kennzeichen (siehe unten)
 ---
 ```
 
 Danach **`node scripts/build_blocks.js`** ausführen → `js/blocks_db.js` wird neu erzeugt; `block_builder.js` registriert Block, Generator und Toolbox-Eintrag automatisch.
 
 - **`legacyGenerator: true`** ist der Ausweg für Generatoren, die JS-Logik brauchen (z.B. Zugriff auf `BOARD.buttons`/`BOARD.servos`, Farb-Mappings). Dann liefert die `.md` nur die `inputs` (zum Rendern), und der Generator bleibt handgeschrieben in `js/generator.js`. **Wichtig:** `generator.js` lädt nach `block_builder.js` und überschreibt dort registrierte Generatoren – bei `legacyGenerator: false` darf es daher keinen gleichnamigen Generator in `generator.js` geben.
+- **Bauteil-Kennzeichen (`component:`)** – Register in `components/catalog.json` → `components` (`emoji`, `label`, `label_en`; Emoji hier bewusst erlaubt, Aktions-Labels bleiben emoji-frei). `addComponentBadge(block, id)` (block_builder.js, global) setzt „⭕ Rund-Display ·“ als namenloses Feld vor den Block – das Label nennt dann nur noch die Aktion („füllen mit“), nicht nochmal das Bauteil. **Jeder Block, der zu einem Bauteil gehört, bekommt eins** (nur die Pin-Blöcke nicht); neues Bauteil ⇒ Eintrag im Register. Handgeschriebene Blöcke rufen den Helfer selbst in `init` auf (`matrix*.js`, Ereignis-Hüte in `events.js`, `digitalHat(…, component)`).
+- **Ausklappbare Unterkategorien** – Kategorien mit ≥ 2 Gruppen werden in der Bausteine-Leiste zu `CollapsibleToolboxCategory` (Renderer `KidsLabCollapsibleCategory` in app.js, startet zugeklappt). Die Eltern-Kategorie zeigt alle Blöcke mit `── Gruppe ──`-Überschriften, jede Unterkategorie nur ihre eigenen. Gruppiert wird mit `"groupBy": "component"` (Sensoren, Aktionen, Lichter, Anzeigen) nach Bauteil in Register-Reihenfolge – die Unterkategorie heißt dann wie das Bauteil (mit Emoji); sonst nach `subCategories`. `subCategory` im Frontmatter bleibt trotzdem relevant für `hideSubCategories` (z. B. „Onboard“ beim S2 Mini). `buildFinalToolbox` hängt die Matrix-Gruppen (8×8, 5×5) an „Anzeigen“ an (`buildToolboxCategory`).
 - **Kern-Blöcke** (SETUP, FÜR IMMER, Ereignis-Hüte) sind handgeschrieben in `js/blocks/control.js` / `events.js` + `generator.js` + Toolbox-Eintrag in `js/toolbox.js`.
 
 ## Generator-Regeln (`generator.js`)

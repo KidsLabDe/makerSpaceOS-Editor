@@ -1,6 +1,7 @@
 ---
 id: display_clear
 blockCategory: Anzeigen
+component: round_display
 requiresBoardFeature: display
 label: "⬛ Display löschen"
 label_en: "⬛ Clear display"
@@ -9,8 +10,8 @@ tooltip: "Macht das runde Display schwarz"
 tooltip_en: "Makes the round display black"
 blockType: statement
 inputs:
-  - label: "⬛ Display löschen"
-    label_en: "⬛ Clear display"
+  - label: "löschen"
+    label_en: "clear"
     fieldType: fixed_label
 generator:
   imports:

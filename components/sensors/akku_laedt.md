@@ -1,6 +1,7 @@
 ---
 id: sensor_akku_laedt
 blockCategory: Sensoren
+component: akku
 subCategory: Akku
 requiresBoardFeature: powerMonitor
 label: "🔌 Akku lädt?"
@@ -11,8 +12,8 @@ tooltip_en: "True while current flows into the battery (USB plugged in and batte
 blockType: value
 output: Boolean
 inputs:
-  - label: "🔌 Akku lädt?"
-    label_en: "🔌 Battery charging?"
+  - label: "lädt?"
+    label_en: "charging?"
     fieldType: fixed_label
 hardware:
   commonName: "Akku-Messchip INA226 (RoboBuddy-Powerboard)"

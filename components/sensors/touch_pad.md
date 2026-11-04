@@ -1,6 +1,7 @@
 ---
 id: sensor_touch_pad
 blockCategory: Sensoren
+component: touch_pad
 subCategory: Weitere
 requiresBoardFeature: touchPins
 label: "👆 Pfeil berührt?"

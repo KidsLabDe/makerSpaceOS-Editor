@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-10-20T14:19:46.302Z
+// Generiert: 2026-11-04T14:11:10.367Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -24,7 +24,8 @@ const BLOCKS_CATALOG = {
         "Akku": "Battery",
         "Weitere": "More",
         "Ereignisse": "Events"
-      }
+      },
+      "groupBy": "component"
     },
     {
       "id": "Aktionen",
@@ -46,7 +47,8 @@ const BLOCKS_CATALOG = {
         "Servo & Pumpe": "Servo & Pump",
         "Motor": "Motor",
         "Tastatur": "Keyboard"
-      }
+      },
+      "groupBy": "component"
     },
     {
       "id": "Lichter",
@@ -60,14 +62,16 @@ const BLOCKS_CATALOG = {
       "subCategories_en": {
         "Onboard": "Onboard",
         "Streifen": "Strips"
-      }
+      },
+      "groupBy": "component"
     },
     {
       "id": "Anzeigen",
       "label": "Anzeigen",
       "label_en": "Displays",
       "colour": "#0D9488",
-      "subCategories": []
+      "subCategories": [],
+      "groupBy": "component"
     },
     {
       "id": "Pins",
@@ -76,13 +80,181 @@ const BLOCKS_CATALOG = {
       "colour": "#64748B",
       "subCategories": []
     }
-  ]
+  ],
+  "components": {
+    "dht11": {
+      "emoji": "🌡️",
+      "label": "DHT11",
+      "label_en": "DHT11"
+    },
+    "dht22": {
+      "emoji": "🌡️",
+      "label": "DHT22",
+      "label_en": "DHT22"
+    },
+    "ultrasonic": {
+      "emoji": "📡",
+      "label": "Ultraschall",
+      "label_en": "Ultrasonic"
+    },
+    "ldr": {
+      "emoji": "☀️",
+      "label": "Lichtsensor",
+      "label_en": "Light sensor"
+    },
+    "air_quality": {
+      "emoji": "🌫️",
+      "label": "Luftqualität",
+      "label_en": "Air quality"
+    },
+    "soil": {
+      "emoji": "🌱",
+      "label": "Bodenfeuchte",
+      "label_en": "Soil moisture"
+    },
+    "imu_onboard": {
+      "emoji": "🧭",
+      "label": "Bewegungssensor (eingebaut)",
+      "label_en": "Motion sensor (built-in)"
+    },
+    "imu_ext": {
+      "emoji": "🧭",
+      "label": "Bewegungssensor (Grove)",
+      "label_en": "Motion sensor (Grove)"
+    },
+    "encoder": {
+      "emoji": "🎛️",
+      "label": "Drehgeber",
+      "label_en": "Rotary encoder"
+    },
+    "button": {
+      "emoji": "🔘",
+      "label": "Taster",
+      "label_en": "Button"
+    },
+    "mic": {
+      "emoji": "🎤",
+      "label": "Mikrofon",
+      "label_en": "Microphone"
+    },
+    "touch_pad": {
+      "emoji": "👆",
+      "label": "Touch-Pfeile",
+      "label_en": "Touch arrows"
+    },
+    "sound_sensor": {
+      "emoji": "👂",
+      "label": "Geräuschsensor",
+      "label_en": "Sound sensor"
+    },
+    "touch_sensor": {
+      "emoji": "✋",
+      "label": "Berührungssensor",
+      "label_en": "Touch sensor"
+    },
+    "akku": {
+      "emoji": "🔋",
+      "label": "Akku",
+      "label_en": "Battery"
+    },
+    "battery": {
+      "emoji": "🔋",
+      "label": "Batterie",
+      "label_en": "Battery"
+    },
+    "drive": {
+      "emoji": "🚗",
+      "label": "Fahrwerk",
+      "label_en": "Drive base"
+    },
+    "led": {
+      "emoji": "💡",
+      "label": "LED",
+      "label_en": "LED"
+    },
+    "buzzer": {
+      "emoji": "🔔",
+      "label": "Piepser (eingebaut)",
+      "label_en": "Beeper (built-in)"
+    },
+    "buzzer_ext": {
+      "emoji": "🔔",
+      "label": "Piepser (extern)",
+      "label_en": "Beeper (external)"
+    },
+    "isd1820": {
+      "emoji": "🔊",
+      "label": "Sprachmodul",
+      "label_en": "Voice module"
+    },
+    "servo": {
+      "emoji": "⚙️",
+      "label": "Servo",
+      "label_en": "Servo"
+    },
+    "wheel_servo": {
+      "emoji": "🛞",
+      "label": "Rad-Servo",
+      "label_en": "Wheel servo"
+    },
+    "motor": {
+      "emoji": "🌀",
+      "label": "Motor",
+      "label_en": "Motor"
+    },
+    "stepper": {
+      "emoji": "🔄",
+      "label": "Schrittmotor",
+      "label_en": "Stepper motor"
+    },
+    "keyboard": {
+      "emoji": "⌨️",
+      "label": "Tastatur",
+      "label_en": "Keyboard"
+    },
+    "neopixel": {
+      "emoji": "🌈",
+      "label": "NeoPixel (eingebaut)",
+      "label_en": "NeoPixel (built-in)"
+    },
+    "neopixel_strip": {
+      "emoji": "🌈",
+      "label": "LED-Streifen",
+      "label_en": "LED strip"
+    },
+    "round_display": {
+      "emoji": "⭕",
+      "label": "Rund-Display",
+      "label_en": "Round display"
+    },
+    "lcd": {
+      "emoji": "📟",
+      "label": "LCD",
+      "label_en": "LCD"
+    },
+    "seg7": {
+      "emoji": "🔢",
+      "label": "7-Segment",
+      "label_en": "7-segment"
+    },
+    "matrix8": {
+      "emoji": "🟩",
+      "label": "Matrix 8×8",
+      "label_en": "Matrix 8×8"
+    },
+    "matrix5": {
+      "emoji": "🟩",
+      "label": "Matrix 5×5",
+      "label_en": "Matrix 5×5"
+    }
+  }
 };
 
 const BLOCKS_DB = [
   {
     "id": "sensor_dht11_humidity",
     "blockCategory": "Sensoren",
+    "component": "dht11",
     "subCategory": "Temperatur & Feuchte",
     "label": "DHT11 Luftfeuchte (%)",
     "label_en": "DHT11 humidity (%)",
@@ -93,8 +265,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "DHT11 Luftfeuchte (%)  Port:",
-        "label_en": "DHT11 humidity (%)  port:",
+        "label": "Luftfeuchte (%)  Port:",
+        "label_en": "humidity (%)  port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -130,6 +302,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_dht11_temperature",
     "blockCategory": "Sensoren",
+    "component": "dht11",
     "subCategory": "Temperatur & Feuchte",
     "label": "DHT11 Temperatur (°C)",
     "label_en": "DHT11 temperature (°C)",
@@ -140,8 +313,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "DHT11 Temperatur (°C)  Port:",
-        "label_en": "DHT11 temperature (°C)  port:",
+        "label": "Temperatur (°C)  Port:",
+        "label_en": "temperature (°C)  port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -177,6 +350,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_ldr",
     "blockCategory": "Sensoren",
+    "component": "ldr",
     "subCategory": "Abstand & Licht",
     "label": "Helligkeit (0–100%)",
     "label_en": "Brightness (0–100%)",
@@ -222,6 +396,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_ultrasonic",
     "blockCategory": "Sensoren",
+    "component": "ultrasonic",
     "subCategory": "Abstand & Licht",
     "label": "Abstand (cm)",
     "label_en": "Distance (cm)",
@@ -260,6 +435,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_icm20948_g",
     "blockCategory": "Sensoren",
+    "component": "imu_ext",
     "subCategory": "Bewegung",
     "label": "Beschleunigung (g)",
     "label_en": "Acceleration (g)",
@@ -292,6 +468,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_icm20948_neigung",
     "blockCategory": "Sensoren",
+    "component": "imu_ext",
     "subCategory": "Bewegung",
     "label": "Neigung (°)",
     "label_en": "Tilt (°)",
@@ -330,6 +507,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_imu_g",
     "blockCategory": "Sensoren",
+    "component": "imu_onboard",
     "subCategory": "Bewegung",
     "requiresBoardFeature": "imu",
     "label": "Bewegungsstärke (g)",
@@ -358,6 +536,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_imu_neigung",
     "blockCategory": "Sensoren",
+    "component": "imu_onboard",
     "subCategory": "Bewegung",
     "requiresBoardFeature": "imu",
     "label": "Neigung (°)",
@@ -388,6 +567,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_akku_laedt",
     "blockCategory": "Sensoren",
+    "component": "akku",
     "subCategory": "Akku",
     "requiresBoardFeature": "powerMonitor",
     "label": "Akku lädt?",
@@ -399,8 +579,8 @@ const BLOCKS_DB = [
     "output": "Boolean",
     "inputs": [
       {
-        "label": "Akku lädt?",
-        "label_en": "Battery charging?",
+        "label": "lädt?",
+        "label_en": "charging?",
         "fieldType": "fixed_label"
       }
     ],
@@ -417,6 +597,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_akku_prozent",
     "blockCategory": "Sensoren",
+    "component": "akku",
     "subCategory": "Akku",
     "requiresBoardFeature": "powerMonitor",
     "label": "Akkustand (%)",
@@ -428,8 +609,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "Akkustand (%)",
-        "label_en": "Battery level (%)",
+        "label": "Stand (%)",
+        "label_en": "level (%)",
         "fieldType": "fixed_label"
       }
     ],
@@ -446,6 +627,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_akku_spannung",
     "blockCategory": "Sensoren",
+    "component": "akku",
     "subCategory": "Akku",
     "requiresBoardFeature": "powerMonitor",
     "label": "Akkuspannung (V)",
@@ -457,8 +639,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "Akkuspannung (V)",
-        "label_en": "Battery voltage (V)",
+        "label": "Spannung (V)",
+        "label_en": "voltage (V)",
         "fieldType": "fixed_label"
       }
     ],
@@ -475,6 +657,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_akku_strom",
     "blockCategory": "Sensoren",
+    "component": "akku",
     "subCategory": "Akku",
     "requiresBoardFeature": "powerMonitor",
     "label": "Akkustrom (mA)",
@@ -486,8 +669,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "Akkustrom (mA)",
-        "label_en": "Battery current (mA)",
+        "label": "Strom (mA)",
+        "label_en": "current (mA)",
         "fieldType": "fixed_label"
       }
     ],
@@ -504,6 +687,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_air_quality",
     "blockCategory": "Sensoren",
+    "component": "air_quality",
     "subCategory": "Weitere",
     "label": "Luftqualität (0–100%)",
     "label_en": "Air quality (0–100%)",
@@ -514,8 +698,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "Luftqualität (0–100%)  Port:",
-        "label_en": "Air quality (0–100%)  port:",
+        "label": "Wert (0–100%)  Port:",
+        "label_en": "value (0–100%)  port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "analog"
@@ -547,6 +731,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_battery",
     "blockCategory": "Sensoren",
+    "component": "battery",
     "subCategory": "Weitere",
     "label": "Batteriespannung (V)",
     "label_en": "Battery voltage (V)",
@@ -557,8 +742,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "Batteriespannung (V)",
-        "label_en": "Battery voltage (V)",
+        "label": "Spannung (V)",
+        "label_en": "voltage (V)",
         "fieldType": "fixed_label"
       }
     ],
@@ -589,6 +774,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_bodenfeuchte",
     "blockCategory": "Sensoren",
+    "component": "soil",
     "subCategory": "Weitere",
     "label": "Bodenfeuchte (0–100%)",
     "label_en": "Soil moisture (0–100%)",
@@ -599,8 +785,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "Bodenfeuchte (0–100%)  Port:",
-        "label_en": "Soil moisture (0–100%)  port:",
+        "label": "Wert (0–100%)  Port:",
+        "label_en": "value (0–100%)  port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "analog"
@@ -633,6 +819,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_encoder",
     "blockCategory": "Sensoren",
+    "component": "encoder",
     "subCategory": "Weitere",
     "label": "Drehgeber Position",
     "label_en": "Encoder position",
@@ -643,8 +830,8 @@ const BLOCKS_DB = [
     "output": "Number",
     "inputs": [
       {
-        "label": "Drehgeber Position  Port:",
-        "label_en": "Encoder position  port:",
+        "label": "Position  Port:",
+        "label_en": "position  port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "2pin_sequential"
@@ -665,6 +852,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_lautstaerke",
     "blockCategory": "Sensoren",
+    "component": "mic",
     "subCategory": "Weitere",
     "requiresBoardFeature": "mic",
     "label": "Lautstärke (0–100)",
@@ -693,6 +881,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_taster",
     "blockCategory": "Sensoren",
+    "component": "button",
     "subCategory": "Weitere",
     "label": "Taster gedrückt?",
     "label_en": "Button pressed?",
@@ -703,8 +892,6 @@ const BLOCKS_DB = [
     "output": "Boolean",
     "inputs": [
       {
-        "label": "Taster",
-        "label_en": "Button",
         "name": "BTN",
         "fieldType": "taster_dropdown"
       },
@@ -727,6 +914,7 @@ const BLOCKS_DB = [
   {
     "id": "sensor_touch_pad",
     "blockCategory": "Sensoren",
+    "component": "touch_pad",
     "subCategory": "Weitere",
     "requiresBoardFeature": "touchPins",
     "label": "Pfeil berührt?",
@@ -797,6 +985,7 @@ const BLOCKS_DB = [
   {
     "id": "event_air_quality",
     "blockCategory": "Sensoren",
+    "component": "air_quality",
     "subCategory": "Ereignisse",
     "label": "Wenn Luftqualität",
     "label_en": "When air quality",
@@ -807,8 +996,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Wenn Luftqualität  Port:",
-        "label_en": "When air quality  port:",
+        "label": "Wenn Wert  Port:",
+        "label_en": "When value  port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "analog"
@@ -859,6 +1048,7 @@ const BLOCKS_DB = [
   {
     "id": "event_button",
     "blockCategory": "Sensoren",
+    "component": "button",
     "subCategory": "Ereignisse",
     "label": "Wenn Taster",
     "label_en": "When button",
@@ -868,8 +1058,8 @@ const BLOCKS_DB = [
     "blockType": "event_simple",
     "inputs": [
       {
-        "label": "Wenn Taster",
-        "label_en": "When button",
+        "label": "Wenn",
+        "label_en": "When",
         "name": "BTN",
         "fieldType": "taster_dropdown"
       },
@@ -896,6 +1086,7 @@ const BLOCKS_DB = [
   {
     "id": "event_ldr",
     "blockCategory": "Sensoren",
+    "component": "ldr",
     "subCategory": "Ereignisse",
     "label": "Wenn Helligkeit",
     "label_en": "When brightness",
@@ -960,6 +1151,7 @@ const BLOCKS_DB = [
   {
     "id": "event_temperature",
     "blockCategory": "Sensoren",
+    "component": "dht22",
     "subCategory": "Ereignisse",
     "label": "Wenn Temperatur",
     "label_en": "When temperature",
@@ -1019,6 +1211,7 @@ const BLOCKS_DB = [
   {
     "id": "event_ultrasonic",
     "blockCategory": "Sensoren",
+    "component": "ultrasonic",
     "subCategory": "Ereignisse",
     "label": "Wenn Abstand",
     "label_en": "When distance",
@@ -1077,6 +1270,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_drive",
     "blockCategory": "Aktionen",
+    "component": "drive",
     "subCategory": "Fahren",
     "requiresBoardFeature": "drive",
     "label": "Fahren",
@@ -1144,6 +1338,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_led",
     "blockCategory": "Aktionen",
+    "component": "led",
     "subCategory": "LED",
     "label": "LED",
     "label_en": "LED",
@@ -1153,8 +1348,8 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "LED  Port:",
-        "label_en": "LED  port:",
+        "label": "Port:",
+        "label_en": "port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -1190,6 +1385,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_led_blink",
     "blockCategory": "Aktionen",
+    "component": "led",
     "subCategory": "LED",
     "label": "LED blinken",
     "label_en": "LED blink",
@@ -1200,8 +1396,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "LED  Port:",
-        "label_en": "LED  port:",
+        "label": "Port:",
+        "label_en": "port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -1238,6 +1434,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_buzzer",
     "blockCategory": "Aktionen",
+    "component": "buzzer",
     "subCategory": "Ton",
     "label": "Buzzer Ton",
     "label_en": "Buzzer tone",
@@ -1249,8 +1446,8 @@ const BLOCKS_DB = [
     "valueInputs": [
       {
         "name": "FREQ",
-        "label": "Buzzer  Ton:",
-        "label_en": "Buzzer  tone:",
+        "label": "Ton:",
+        "label_en": "tone:",
         "check": "Number",
         "defaultValue": 440
       },
@@ -1277,6 +1474,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_buzzer_off",
     "blockCategory": "Aktionen",
+    "component": "buzzer",
     "subCategory": "Ton",
     "label": "Buzzer aus",
     "label_en": "Buzzer off",
@@ -1286,8 +1484,8 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "Buzzer  aus",
-        "label_en": "Buzzer  off",
+        "label": "aus",
+        "label_en": "off",
         "fieldType": "fixed_label"
       }
     ],
@@ -1304,6 +1502,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_buzzer_port",
     "blockCategory": "Aktionen",
+    "component": "buzzer_ext",
     "subCategory": "Ton",
     "requiresBoardFeature": "externalBuzzer",
     "label": "Buzzer Ton",
@@ -1315,8 +1514,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Buzzer  Port:",
-        "label_en": "Buzzer  port:",
+        "label": "Port:",
+        "label_en": "port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -1366,6 +1565,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_buzzer_port_off",
     "blockCategory": "Aktionen",
+    "component": "buzzer_ext",
     "subCategory": "Ton",
     "requiresBoardFeature": "externalBuzzer",
     "label": "Buzzer aus",
@@ -1376,8 +1576,8 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "Buzzer  Port:",
-        "label_en": "Buzzer  port:",
+        "label": "Port:",
+        "label_en": "port:",
         "name": "PIN",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -1414,6 +1614,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_isd1820",
     "blockCategory": "Aktionen",
+    "component": "isd1820",
     "subCategory": "Ton",
     "label": "Ton abspielen",
     "label_en": "Play sound",
@@ -1443,6 +1644,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_isd1820_record",
     "blockCategory": "Aktionen",
+    "component": "isd1820",
     "subCategory": "Ton",
     "label": "Aufnehmen",
     "label_en": "Record",
@@ -1481,6 +1683,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_servo",
     "blockCategory": "Aktionen",
+    "component": "servo",
     "subCategory": "Servo & Pumpe",
     "label": "Servo",
     "label_en": "Servo",
@@ -1491,7 +1694,6 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Servo",
         "name": "SERVO",
         "fieldType": "servo_dropdown"
       },
@@ -1525,6 +1727,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_wheel_servo",
     "blockCategory": "Aktionen",
+    "component": "wheel_servo",
     "subCategory": "Servo & Pumpe",
     "label": "Rad-Servo",
     "label_en": "Wheel servo",
@@ -1535,8 +1738,6 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Rad-Servo",
-        "label_en": "Wheel servo",
         "name": "SERVO",
         "fieldType": "servo_dropdown"
       }
@@ -1564,6 +1765,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_motor_backward",
     "blockCategory": "Aktionen",
+    "component": "motor",
     "subCategory": "Motor",
     "label": "Motor rückwärts",
     "label_en": "Motor backward",
@@ -1574,8 +1776,6 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Motor",
-        "label_en": "Motor",
         "name": "MOTOR",
         "fieldType": "motor_dropdown"
       },
@@ -1607,6 +1807,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_motor_forward",
     "blockCategory": "Aktionen",
+    "component": "motor",
     "subCategory": "Motor",
     "label": "Motor vorwärts",
     "label_en": "Motor forward",
@@ -1617,8 +1818,6 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Motor",
-        "label_en": "Motor",
         "name": "MOTOR",
         "fieldType": "motor_dropdown"
       },
@@ -1650,6 +1849,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_motor_stop",
     "blockCategory": "Aktionen",
+    "component": "motor",
     "subCategory": "Motor",
     "label": "Motor stopp",
     "label_en": "Motor stop",
@@ -1659,8 +1859,6 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "Motor",
-        "label_en": "Motor",
         "name": "MOTOR",
         "fieldType": "motor_dropdown"
       },
@@ -1683,6 +1881,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_stepper",
     "blockCategory": "Aktionen",
+    "component": "stepper",
     "subCategory": "Motor",
     "label": "Schrittmotor",
     "label_en": "Stepper motor",
@@ -1693,8 +1892,8 @@ const BLOCKS_DB = [
     "inline": false,
     "inputs": [
       {
-        "label": "Schrittmotor  Anschluss 1:",
-        "label_en": "Stepper motor  connector 1:",
+        "label": "Anschluss 1:",
+        "label_en": "connector 1:",
         "name": "PORTA",
         "fieldType": "grove_dropdown",
         "groveRole": "2pin"
@@ -1737,6 +1936,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_taste",
     "blockCategory": "Aktionen",
+    "component": "keyboard",
     "subCategory": "Tastatur",
     "requiresBoardFeature": "usbHid",
     "label": "Taste",
@@ -1836,6 +2036,7 @@ const BLOCKS_DB = [
   {
     "id": "neopixel_brightness",
     "blockCategory": "Lichter",
+    "component": "neopixel",
     "subCategory": "Onboard",
     "label": "NeoPixel Helligkeit",
     "label_en": "NeoPixel brightness",
@@ -1846,8 +2047,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "NeoPixel  Helligkeit",
-        "label_en": "NeoPixel  brightness",
+        "label": "Helligkeit",
+        "label_en": "brightness",
         "fieldType": "fixed_label"
       }
     ],
@@ -1872,6 +2073,7 @@ const BLOCKS_DB = [
   {
     "id": "neopixel_fill",
     "blockCategory": "Lichter",
+    "component": "neopixel",
     "subCategory": "Onboard",
     "label": "NeoPixel alle",
     "label_en": "NeoPixel all",
@@ -1881,8 +2083,8 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "NeoPixel  alle  Farbe:",
-        "label_en": "NeoPixel  all  colour:",
+        "label": "alle  Farbe:",
+        "label_en": "all  colour:",
         "name": "COLOR",
         "fieldType": "colour_picker",
         "default": "#ff0000"
@@ -1901,6 +2103,7 @@ const BLOCKS_DB = [
   {
     "id": "neopixel_off",
     "blockCategory": "Lichter",
+    "component": "neopixel",
     "subCategory": "Onboard",
     "label": "NeoPixel alle aus",
     "label_en": "NeoPixel all off",
@@ -1910,8 +2113,8 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "NeoPixel  alle aus",
-        "label_en": "NeoPixel  all off",
+        "label": "alle aus",
+        "label_en": "all off",
         "fieldType": "fixed_label"
       }
     ],
@@ -1928,6 +2131,7 @@ const BLOCKS_DB = [
   {
     "id": "neopixel_set",
     "blockCategory": "Lichter",
+    "component": "neopixel",
     "subCategory": "Onboard",
     "label": "NeoPixel LED Nr.",
     "label_en": "NeoPixel LED no.",
@@ -1938,8 +2142,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "NeoPixel  Farbe:",
-        "label_en": "NeoPixel  colour:",
+        "label": "Farbe:",
+        "label_en": "colour:",
         "name": "COLOR",
         "fieldType": "colour_picker",
         "default": "#ff0000"
@@ -1967,6 +2171,7 @@ const BLOCKS_DB = [
   {
     "id": "neopixel_ext_brightness",
     "blockCategory": "Lichter",
+    "component": "neopixel_strip",
     "subCategory": "Streifen",
     "label": "Streifen Helligkeit",
     "label_en": "Strip brightness",
@@ -1977,8 +2182,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Streifen Helligkeit (Grove)  Port:",
-        "label_en": "Strip brightness (Grove)  port:",
+        "label": "Helligkeit  Port:",
+        "label_en": "brightness  port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -2014,6 +2219,7 @@ const BLOCKS_DB = [
   {
     "id": "neopixel_ext_fill",
     "blockCategory": "Lichter",
+    "component": "neopixel_strip",
     "subCategory": "Streifen",
     "label": "Streifen ganz füllen",
     "label_en": "Fill whole strip",
@@ -2024,8 +2230,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Streifen füllen (Grove)  Port:",
-        "label_en": "Fill strip (Grove)  port:",
+        "label": "füllen  Port:",
+        "label_en": "fill  port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -2060,6 +2266,7 @@ const BLOCKS_DB = [
   {
     "id": "neopixel_ext_off",
     "blockCategory": "Lichter",
+    "component": "neopixel_strip",
     "subCategory": "Streifen",
     "label": "Streifen aus",
     "label_en": "Strip off",
@@ -2070,8 +2277,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Streifen aus (Grove)  Port:",
-        "label_en": "Strip off (Grove)  port:",
+        "label": "aus  Port:",
+        "label_en": "off  port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -2099,6 +2306,7 @@ const BLOCKS_DB = [
   {
     "id": "neopixel_ext_set",
     "blockCategory": "Lichter",
+    "component": "neopixel_strip",
     "subCategory": "Streifen",
     "label": "Streifen LED setzen",
     "label_en": "Set strip LED",
@@ -2109,8 +2317,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "Streifen (Grove)  Port:",
-        "label_en": "Strip (Grove)  port:",
+        "label": "Port:",
+        "label_en": "port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "digital"
@@ -2152,6 +2360,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_lcd_color",
     "blockCategory": "Anzeigen",
+    "component": "lcd",
     "subCategory": "",
     "label": "LCD Farbe",
     "label_en": "LCD colour",
@@ -2162,8 +2371,8 @@ const BLOCKS_DB = [
     "inline": false,
     "inputs": [
       {
-        "label": "LCD Farbe  Port:",
-        "label_en": "LCD colour  port:",
+        "label": "Port:",
+        "label_en": "port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "i2c"
@@ -2190,6 +2399,7 @@ const BLOCKS_DB = [
   {
     "id": "actuator_lcd_text",
     "blockCategory": "Anzeigen",
+    "component": "lcd",
     "subCategory": "",
     "label": "LCD Text",
     "label_en": "LCD text",
@@ -2200,8 +2410,8 @@ const BLOCKS_DB = [
     "inline": false,
     "inputs": [
       {
-        "label": "LCD Text  Port:",
-        "label_en": "LCD text  port:",
+        "label": "Text  Port:",
+        "label_en": "text  port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "i2c"
@@ -2240,6 +2450,7 @@ const BLOCKS_DB = [
   {
     "id": "display_clear",
     "blockCategory": "Anzeigen",
+    "component": "round_display",
     "requiresBoardFeature": "display",
     "label": "Display löschen",
     "label_en": "Clear display",
@@ -2249,8 +2460,8 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "Display löschen",
-        "label_en": "Clear display",
+        "label": "löschen",
+        "label_en": "clear",
         "fieldType": "fixed_label"
       }
     ],
@@ -2273,6 +2484,7 @@ const BLOCKS_DB = [
   {
     "id": "display_eyes",
     "blockCategory": "Anzeigen",
+    "component": "round_display",
     "requiresBoardFeature": "display",
     "label": "Augen schauen",
     "label_en": "Eyes look",
@@ -2334,6 +2546,7 @@ const BLOCKS_DB = [
   {
     "id": "display_face",
     "blockCategory": "Anzeigen",
+    "component": "round_display",
     "requiresBoardFeature": "display",
     "label": "Gesicht zeigen",
     "label_en": "Show face",
@@ -2400,6 +2613,7 @@ const BLOCKS_DB = [
   {
     "id": "display_fill",
     "blockCategory": "Anzeigen",
+    "component": "round_display",
     "requiresBoardFeature": "display",
     "label": "Display füllen",
     "label_en": "Fill display",
@@ -2409,8 +2623,8 @@ const BLOCKS_DB = [
     "blockType": "statement",
     "inputs": [
       {
-        "label": "Display füllen mit",
-        "label_en": "Fill display with",
+        "label": "füllen mit",
+        "label_en": "fill with",
         "name": "COLOR",
         "fieldType": "colour_picker"
       }
@@ -2434,6 +2648,7 @@ const BLOCKS_DB = [
   {
     "id": "display_number",
     "blockCategory": "Anzeigen",
+    "component": "round_display",
     "requiresBoardFeature": "display",
     "label": "Zahl anzeigen",
     "label_en": "Show number",
@@ -2478,6 +2693,7 @@ const BLOCKS_DB = [
   {
     "id": "display_text",
     "blockCategory": "Anzeigen",
+    "component": "round_display",
     "requiresBoardFeature": "display",
     "label": "Text anzeigen",
     "label_en": "Show text",
@@ -2523,6 +2739,7 @@ const BLOCKS_DB = [
   {
     "id": "tm1637_number",
     "blockCategory": "Anzeigen",
+    "component": "seg7",
     "subCategory": "",
     "label": "7-Seg Zahl anzeigen",
     "label_en": "7-seg show number",
@@ -2533,8 +2750,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "7-Seg  Port:",
-        "label_en": "7-seg  port:",
+        "label": "Port:",
+        "label_en": "port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "2pin"
@@ -2564,6 +2781,7 @@ const BLOCKS_DB = [
   {
     "id": "tm1637_off",
     "blockCategory": "Anzeigen",
+    "component": "seg7",
     "subCategory": "",
     "label": "7-Seg ausschalten",
     "label_en": "7-seg off",
@@ -2574,8 +2792,8 @@ const BLOCKS_DB = [
     "inline": true,
     "inputs": [
       {
-        "label": "7-Seg ausschalten  Port:",
-        "label_en": "7-seg off  port:",
+        "label": "ausschalten  Port:",
+        "label_en": "off  port:",
         "name": "PORT",
         "fieldType": "grove_dropdown",
         "groveRole": "2pin"

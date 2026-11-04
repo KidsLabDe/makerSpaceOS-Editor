@@ -1,6 +1,7 @@
 ---
 id: display_eyes
 blockCategory: Anzeigen
+component: round_display
 requiresBoardFeature: display
 label: "👀 Augen schauen"
 label_en: "👀 Eyes look"

@@ -1,6 +1,7 @@
 ---
 id: sensor_ultrasonic
 blockCategory: Sensoren
+component: ultrasonic
 subCategory: Abstand & Licht
 label: "📡 Abstand (cm)"
 label_en: "📡 Distance (cm)"

@@ -1,6 +1,7 @@
 ---
 id: actuator_motor_stop
 blockCategory: Aktionen
+component: motor
 subCategory: "Motor"
 label: "🛑 Motor stopp"
 label_en: "🛑 Motor stop"
@@ -9,9 +10,7 @@ tooltip: "Stoppt einen DC-Motor"
 tooltip_en: "Stops a DC motor"
 blockType: statement
 inputs:
-  - label: "🛑 Motor"
-    label_en: "🛑 Motor"
-    name: MOTOR
+  - name: MOTOR
     fieldType: motor_dropdown
   - label: "stopp"
     label_en: "stop"

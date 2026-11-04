@@ -1,6 +1,7 @@
 ---
 id: neopixel_ext_brightness
 blockCategory: Lichter
+component: neopixel_strip
 subCategory: "Streifen"
 label: "☀️ Streifen Helligkeit"
 label_en: "☀️ Strip brightness"
@@ -10,8 +11,8 @@ tooltip_en: "Sets the brightness of an external NeoPixel strip on a Grove port (
 blockType: statement
 inline: true
 inputs:
-  - label: "☀️ Streifen Helligkeit (Grove)  Port:"
-    label_en: "☀️ Strip brightness (Grove)  port:"
+  - label: "Helligkeit  Port:"
+    label_en: "brightness  port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: digital

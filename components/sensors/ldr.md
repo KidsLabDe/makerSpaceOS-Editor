@@ -1,6 +1,7 @@
 ---
 id: sensor_ldr
 blockCategory: Sensoren
+component: ldr
 subCategory: Abstand & Licht
 label: "☀️ Helligkeit (0–100%)"
 label_en: "☀️ Brightness (0–100%)"

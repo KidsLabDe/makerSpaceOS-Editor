@@ -1,6 +1,7 @@
 ---
 id: sensor_akku_prozent
 blockCategory: Sensoren
+component: akku
 subCategory: Akku
 requiresBoardFeature: powerMonitor
 label: "🔋 Akkustand (%)"
@@ -11,8 +12,8 @@ tooltip_en: "How full the battery is, in percent (0 = empty, 100 = full) – rou
 blockType: value
 output: Number
 inputs:
-  - label: "🔋 Akkustand (%)"
-    label_en: "🔋 Battery level (%)"
+  - label: "Stand (%)"
+    label_en: "level (%)"
     fieldType: fixed_label
 hardware:
   commonName: "Akku-Messchip INA226 (RoboBuddy-Powerboard)"

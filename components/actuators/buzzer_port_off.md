@@ -1,6 +1,7 @@
 ---
 id: actuator_buzzer_port_off
 blockCategory: Aktionen
+component: buzzer_ext
 subCategory: Ton
 requiresBoardFeature: externalBuzzer
 label: "🔔 Buzzer aus"
@@ -10,8 +11,8 @@ tooltip: "Schaltet den Buzzer am gewählten Anschluss aus"
 tooltip_en: "Turns off the buzzer on the chosen connector"
 blockType: statement
 inputs:
-  - label: "🔔 Buzzer  Port:"
-    label_en: "🔔 Buzzer  port:"
+  - label: "Port:"
+    label_en: "port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital

@@ -1,6 +1,7 @@
 ---
 id: sensor_lautstaerke
 blockCategory: Sensoren
+component: mic
 subCategory: Weitere
 requiresBoardFeature: mic
 label: "🎤 Lautstärke (0–100)"

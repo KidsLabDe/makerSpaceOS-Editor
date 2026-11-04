@@ -1,6 +1,7 @@
 ---
 id: sensor_encoder
 blockCategory: Sensoren
+component: encoder
 subCategory: "Weitere"
 label: "🔄 Drehgeber Position"
 label_en: "🔄 Encoder position"
@@ -10,8 +11,8 @@ tooltip_en: "Reads the position of the rotary encoder (positive = right, negativ
 blockType: value
 output: Number
 inputs:
-  - label: "🔄 Drehgeber Position  Port:"
-    label_en: "🔄 Encoder position  port:"
+  - label: "Position  Port:"
+    label_en: "position  port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: 2pin_sequential

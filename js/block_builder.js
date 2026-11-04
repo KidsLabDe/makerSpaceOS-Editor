@@ -156,8 +156,30 @@
       block.setColour(def.colour || '#2563EB');
       if (def.tooltip) block.setTooltip(LF(def, 'tooltip'));
       if (def.inline) block.setInputsInline(true);
+      if (def.component) addComponentBadge(block, def.component);
     };
   }
+
+  // ── Bauteil-Kennzeichen ───────────────────────────────────────────────────
+  // Setzt „⭕ Rund-Display ·“ vor das erste Feld, damit man auch im fertigen
+  // Programm sieht, zu welchem Bauteil ein Block gehört. Register der Bauteile:
+  // components/catalog.json → "components". Feld ohne Namen ⇒ gespeicherte
+  // Projekte bleiben kompatibel. Auch für handgeschriebene Blöcke (matrix*.js).
+
+  function componentLabel(compId) {
+    const c = (BLOCKS_CATALOG.components || {})[compId];
+    return c ? `${c.emoji ? c.emoji + ' ' : ''}${LF(c, 'label')}` : null;
+  }
+
+  function addComponentBadge(block, compId) {
+    const text = componentLabel(compId);
+    const input = block.inputList[0];
+    if (!text || !input) return;
+    input.insertFieldAt(0, new Blockly.FieldLabel(`${text}  ·`));
+  }
+
+  window.addComponentBadge = addComponentBadge;
+  window.componentLabel    = componentLabel;
 
   // ── Template-Engine: ${FIELD} → Wert ─────────────────────────────────────
 
@@ -251,7 +273,7 @@
     const hideIds   = new Set(BOARD.hideBlockIds      || []);
     // requiresBoardFeature: Block nur zeigen, wenn das Profil das Feature
     // deklariert (z. B. display, powerMonitor, drive beim RoboBuddy).
-    const visible   = b => !hideIds.has(b.id) &&
+    const visible   = b => !hideIds.has(b.id) && !hideSubs.has(b.subCategory) &&
                            (!b.requiresBoardFeature || !!BOARD[b.requiresBoardFeature]);
 
     for (const catDef of BLOCKS_CATALOG.categories) {
@@ -259,36 +281,58 @@
       const catBlocks = db.filter(b => b.blockCategory === catDef.id && visible(b));
       if (!catBlocks.length) continue;
 
-      const contents = [];
-
-      if (catDef.subCategories && catDef.subCategories.length) {
-        for (const sc of catDef.subCategories) {
-          if (hideSubs.has(sc)) continue;
-          const scBlocks = catBlocks.filter(b => b.subCategory === sc);
-          if (!scBlocks.length) continue;
-          const scLabel = (IS_EN && catDef.subCategories_en && catDef.subCategories_en[sc]) || sc;
-          contents.push({ kind: 'label', text: `── ${scLabel} ──` });
-          for (const b of scBlocks) contents.push(toolboxEntry(b));
+      // Gruppen bilden: nach Bauteil (groupBy: component, Reihenfolge wie im
+      // Register) oder nach den subCategories des Katalogs.
+      const groups = [];
+      let rest;
+      if (catDef.groupBy === 'component') {
+        for (const compId of Object.keys(BLOCKS_CATALOG.components || {})) {
+          const gBlocks = catBlocks.filter(b => b.component === compId);
+          if (gBlocks.length) groups.push({ name: componentLabel(compId), blocks: gBlocks });
         }
-        // blocks without a subCategory
-        const noSc = catBlocks.filter(b => !b.subCategory || !catDef.subCategories.includes(b.subCategory));
-        for (const b of noSc) contents.push(toolboxEntry(b));
+        rest = catBlocks.filter(b => !groups.some(g => g.blocks.includes(b)));
       } else {
-        for (const b of catBlocks) contents.push(toolboxEntry(b));
+        for (const sc of (catDef.subCategories || [])) {
+          const gBlocks = catBlocks.filter(b => b.subCategory === sc);
+          const name = (IS_EN && catDef.subCategories_en && catDef.subCategories_en[sc]) || sc;
+          if (gBlocks.length) groups.push({ name, blocks: gBlocks });
+        }
+        rest = catBlocks.filter(b => !b.subCategory || !(catDef.subCategories || []).includes(b.subCategory));
       }
+      if (!groups.length && !rest.length) continue;
 
-      if (!contents.length) continue;
-
-      categories.push({
-        kind:     'category',
-        name:     LF(catDef, 'label'),
-        colour:   catDef.colour,
-        contents,
-      });
+      // groups/rest bleiben am Eintrag, damit toolbox.js Gruppen ergänzen kann.
+      categories.push({ ...buildCategory(LF(catDef, 'label'), catDef.colour, groups, rest, catDef.id),
+                        groups, rest });
     }
 
     return categories;
   }
+
+  // Kategorie mit Gesamtansicht (alle Blöcke mit ── Gruppe ──-Überschriften)
+  // und – ab zwei Gruppen – ausklappbaren Unterkategorien je Gruppe.
+  // toolbox.js baut damit „Anzeigen“ inkl. handgeschriebener Matrix-Gruppen neu.
+  function buildCategory(name, colour, groups, rest, id) {
+    const contents = [];
+    for (const g of groups) {
+      contents.push({ kind: 'label', text: `── ${g.name} ──` });
+      contents.push(...g.blocks.map(entryOf));
+    }
+    contents.push(...(rest || []).map(entryOf));
+    if (groups.length > 1) {
+      for (const g of groups) {
+        contents.push({ kind: 'category', name: g.name, colour, contents: g.blocks.map(entryOf) });
+      }
+    }
+    return { kind: 'category', name, colour, contents, catId: id };
+  }
+
+  // Gruppen-Blöcke sind BLOCKS_DB-Definitionen oder fertige Toolbox-Einträge.
+  function entryOf(b) {
+    return b.kind ? b : toolboxEntry(b);
+  }
+
+  window.buildToolboxCategory = buildCategory;
 
   function toolboxEntry(def) {
     const entry = { kind: 'block', type: def.id };

@@ -1,6 +1,7 @@
 ---
 id: event_button
 blockCategory: Sensoren
+component: button
 subCategory: Ereignisse
 label: "🔘 Wenn Taster"
 label_en: "🔘 When button"
@@ -9,8 +10,8 @@ tooltip: "Führt Code aus, wenn der Taster gedrückt oder losgelassen wird"
 tooltip_en: "Runs code when the button is pressed or released"
 blockType: event_simple
 inputs:
-  - label: "🔘 Wenn Taster"
-    label_en: "🔘 When button"
+  - label: "Wenn"
+    label_en: "When"
     name: BTN
     fieldType: taster_dropdown
   - name: STATE

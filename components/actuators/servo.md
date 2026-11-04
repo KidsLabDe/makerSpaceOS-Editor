@@ -1,6 +1,7 @@
 ---
 id: actuator_servo
 blockCategory: Aktionen
+component: servo
 subCategory: "Servo & Pumpe"
 label: "⚙️ Servo"
 label_en: "⚙️ Servo"
@@ -10,8 +11,7 @@ tooltip_en: "Turns a servo motor to a specific angle (0 to 180 degrees)"
 blockType: statement
 inline: true
 inputs:
-  - label: "⚙️ Servo"
-    name: SERVO
+  - name: SERVO
     fieldType: servo_dropdown
   - label: "auf"
     label_en: "to"

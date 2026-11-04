@@ -1000,6 +1000,26 @@ html, body {
 }
 .blocklyTreeLabel { color: #1e293b !important; font-size: 13.5px !important; font-weight: 600 !important; }
 
+/* Ausklappbare Kategorien (Bauteil-Unterkategorien, z. B. Anzeigen) */
+.cb-cat-labelwrap { display: inline-flex; align-items: center; }
+.blocklyToolboxDiv .blocklyTreeIcon {
+  background: none; width: 12px; height: auto; margin-right: 4px;
+  font-size: 10px; line-height: 1; color: #94a3b8; text-align: center;
+}
+.blocklyToolboxDiv .blocklyTreeIconClosed::before { content: '▸'; }
+.blocklyToolboxDiv .blocklyTreeIconOpen::before   { content: '▾'; }
+/* Unterkategorien: eingerückt, kleiner (Blocklys nestedPadding wird von
+   .blocklyTreeRow oben per !important überschrieben) */
+.blocklyToolboxCategory .blocklyToolboxContents .blocklyTreeRow {
+  padding: 5px 10px 5px 30px !important;
+}
+.blocklyToolboxCategory .blocklyToolboxContents .blocklyTreeLabel {
+  font-size: 12.5px !important; font-weight: 500 !important;
+}
+.blocklyToolboxCategory .blocklyToolboxContents .cb-cat-square {
+  width: 9px; height: 9px; margin-right: 8px; border-radius: 3px;
+}
+
 /* Zelos: Flyout-Panel */
 .blocklyFlyout           { filter: drop-shadow(2px 0 8px rgba(17,17,17,.12)); }
 .blocklyFlyoutBackground { fill: var(--bg-alt) !important; }

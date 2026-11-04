@@ -1,6 +1,7 @@
 ---
 id: sensor_bodenfeuchte
 blockCategory: Sensoren
+component: soil
 subCategory: "Weitere"
 label: "🌱 Bodenfeuchte (0–100%)"
 label_en: "🌱 Soil moisture (0–100%)"
@@ -10,8 +11,8 @@ tooltip_en: "Reads the soil moisture in percent (0 = dry, 100 = wet). Capacitive
 blockType: value
 output: Number
 inputs:
-  - label: "🌱 Bodenfeuchte (0–100%)  Port:"
-    label_en: "🌱 Soil moisture (0–100%)  port:"
+  - label: "Wert (0–100%)  Port:"
+    label_en: "value (0–100%)  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: analog

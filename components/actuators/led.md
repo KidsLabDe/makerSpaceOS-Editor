@@ -1,6 +1,7 @@
 ---
 id: actuator_led
 blockCategory: Aktionen
+component: led
 subCategory: LED
 label: "💡 LED"
 label_en: "💡 LED"
@@ -9,8 +10,8 @@ tooltip: "Schaltet eine LED ein oder aus"
 tooltip_en: "Turns an LED on or off"
 blockType: statement
 inputs:
-  - label: "💡 LED  Port:"
-    label_en: "💡 LED  port:"
+  - label: "Port:"
+    label_en: "port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital

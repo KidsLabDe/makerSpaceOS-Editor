@@ -1,6 +1,7 @@
 ---
 id: neopixel_ext_set
 blockCategory: Lichter
+component: neopixel_strip
 subCategory: "Streifen"
 label: "🌈 Streifen LED setzen"
 label_en: "🌈 Set strip LED"
@@ -10,8 +11,8 @@ tooltip_en: "Sets a single LED of an external NeoPixel strip on a Grove port"
 blockType: statement
 inline: true
 inputs:
-  - label: "🌈 Streifen (Grove)  Port:"
-    label_en: "🌈 Strip (Grove)  port:"
+  - label: "Port:"
+    label_en: "port:"
     name: PORT
     fieldType: grove_dropdown
     groveRole: digital

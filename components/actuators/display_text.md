@@ -1,6 +1,7 @@
 ---
 id: display_text
 blockCategory: Anzeigen
+component: round_display
 requiresBoardFeature: display
 label: "💬 Text anzeigen"
 label_en: "💬 Show text"

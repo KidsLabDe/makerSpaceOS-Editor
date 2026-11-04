@@ -1,6 +1,7 @@
 ---
 id: display_number
 blockCategory: Anzeigen
+component: round_display
 requiresBoardFeature: display
 label: "🔢 Zahl anzeigen"
 label_en: "🔢 Show number"

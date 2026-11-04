@@ -143,6 +143,7 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix5');
       this.setTooltip(L('Zeigt ein fertiges Symbol auf der 5×5-Matrix', 'Shows a ready-made symbol on the 5×5 matrix'));
     },
   };
@@ -158,6 +159,7 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix5');
       this.setTooltip(L('Klicke auf die Vorschau, um die leuchtenden Punkte zu malen', 'Click the preview to paint the dots that should light up'));
     },
   };
@@ -174,6 +176,7 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix5');
       this.setTooltip(L('Schaltet einen Punkt an: Spalte 1–5 (von links), Zeile 1–5 (von oben)', 'Turns on one dot: column 1–5 (from the left), row 1–5 (from the top)'));
     },
   };
@@ -189,12 +192,13 @@
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(MATRIX_COLOR);
+      addComponentBadge(this, 'matrix5');
       this.setTooltip(L('Zeigt eine Ziffer von 0 bis 9 (bei größeren Zahlen die letzte Stelle)', 'Shows a digit from 0 to 9 (for bigger numbers the last digit)'));
     },
   };
 
   // ── Toolbox ───────────────────────────────────────────────────────────────
-  // Wird in buildFinalToolbox() an "Lichter" angehängt, nur bei BOARD.matrix5.
+  // Wird in buildFinalToolbox() als Gruppe nach "Anzeigen" gehängt, nur bei BOARD.matrix5.
   window.MATRIX5_TOOLBOX_CONTENTS = [
     { kind: 'block', type: 'matrix5_symbol' },
     { kind: 'block', type: 'matrix5_draw' },

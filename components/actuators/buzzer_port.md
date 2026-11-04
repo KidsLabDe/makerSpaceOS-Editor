@@ -1,6 +1,7 @@
 ---
 id: actuator_buzzer_port
 blockCategory: Aktionen
+component: buzzer_ext
 subCategory: Ton
 requiresBoardFeature: externalBuzzer
 label: "🔔 Buzzer Ton"
@@ -11,8 +12,8 @@ tooltip_en: "Plays a tone with a passive buzzer on the chosen connector (e.g. 44
 blockType: statement
 inline: true
 inputs:
-  - label: "🔔 Buzzer  Port:"
-    label_en: "🔔 Buzzer  port:"
+  - label: "Port:"
+    label_en: "port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital

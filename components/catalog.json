@@ -13,7 +13,8 @@
         "Akku": "Battery",
         "Weitere": "More",
         "Ereignisse": "Events"
-      }
+      },
+      "groupBy": "component"
     },
     {
       "id": "Aktionen",
@@ -28,7 +29,8 @@
         "Servo & Pumpe": "Servo & Pump",
         "Motor": "Motor",
         "Tastatur": "Keyboard"
-      }
+      },
+      "groupBy": "component"
     },
     {
       "id": "Lichter",
@@ -39,14 +41,16 @@
       "subCategories_en": {
         "Onboard": "Onboard",
         "Streifen": "Strips"
-      }
+      },
+      "groupBy": "component"
     },
     {
       "id": "Anzeigen",
       "label": "Anzeigen",
       "label_en": "Displays",
       "colour": "#0D9488",
-      "subCategories": []
+      "subCategories": [],
+      "groupBy": "component"
     },
     {
       "id": "Pins",
@@ -55,5 +59,172 @@
       "colour": "#64748B",
       "subCategories": []
     }
-  ]
+  ],
+  "components": {
+    "dht11": {
+      "emoji": "🌡️",
+      "label": "DHT11",
+      "label_en": "DHT11"
+    },
+    "dht22": {
+      "emoji": "🌡️",
+      "label": "DHT22",
+      "label_en": "DHT22"
+    },
+    "ultrasonic": {
+      "emoji": "📡",
+      "label": "Ultraschall",
+      "label_en": "Ultrasonic"
+    },
+    "ldr": {
+      "emoji": "☀️",
+      "label": "Lichtsensor",
+      "label_en": "Light sensor"
+    },
+    "air_quality": {
+      "emoji": "🌫️",
+      "label": "Luftqualität",
+      "label_en": "Air quality"
+    },
+    "soil": {
+      "emoji": "🌱",
+      "label": "Bodenfeuchte",
+      "label_en": "Soil moisture"
+    },
+    "imu_onboard": {
+      "emoji": "🧭",
+      "label": "Bewegungssensor (eingebaut)",
+      "label_en": "Motion sensor (built-in)"
+    },
+    "imu_ext": {
+      "emoji": "🧭",
+      "label": "Bewegungssensor (Grove)",
+      "label_en": "Motion sensor (Grove)"
+    },
+    "encoder": {
+      "emoji": "🎛️",
+      "label": "Drehgeber",
+      "label_en": "Rotary encoder"
+    },
+    "button": {
+      "emoji": "🔘",
+      "label": "Taster",
+      "label_en": "Button"
+    },
+    "mic": {
+      "emoji": "🎤",
+      "label": "Mikrofon",
+      "label_en": "Microphone"
+    },
+    "touch_pad": {
+      "emoji": "👆",
+      "label": "Touch-Pfeile",
+      "label_en": "Touch arrows"
+    },
+    "sound_sensor": {
+      "emoji": "👂",
+      "label": "Geräuschsensor",
+      "label_en": "Sound sensor"
+    },
+    "touch_sensor": {
+      "emoji": "✋",
+      "label": "Berührungssensor",
+      "label_en": "Touch sensor"
+    },
+    "akku": {
+      "emoji": "🔋",
+      "label": "Akku",
+      "label_en": "Battery"
+    },
+    "battery": {
+      "emoji": "🔋",
+      "label": "Batterie",
+      "label_en": "Battery"
+    },
+    "drive": {
+      "emoji": "🚗",
+      "label": "Fahrwerk",
+      "label_en": "Drive base"
+    },
+    "led": {
+      "emoji": "💡",
+      "label": "LED",
+      "label_en": "LED"
+    },
+    "buzzer": {
+      "emoji": "🔔",
+      "label": "Piepser (eingebaut)",
+      "label_en": "Beeper (built-in)"
+    },
+    "buzzer_ext": {
+      "emoji": "🔔",
+      "label": "Piepser (extern)",
+      "label_en": "Beeper (external)"
+    },
+    "isd1820": {
+      "emoji": "🔊",
+      "label": "Sprachmodul",
+      "label_en": "Voice module"
+    },
+    "servo": {
+      "emoji": "⚙️",
+      "label": "Servo",
+      "label_en": "Servo"
+    },
+    "wheel_servo": {
+      "emoji": "🛞",
+      "label": "Rad-Servo",
+      "label_en": "Wheel servo"
+    },
+    "motor": {
+      "emoji": "🌀",
+      "label": "Motor",
+      "label_en": "Motor"
+    },
+    "stepper": {
+      "emoji": "🔄",
+      "label": "Schrittmotor",
+      "label_en": "Stepper motor"
+    },
+    "keyboard": {
+      "emoji": "⌨️",
+      "label": "Tastatur",
+      "label_en": "Keyboard"
+    },
+    "neopixel": {
+      "emoji": "🌈",
+      "label": "NeoPixel (eingebaut)",
+      "label_en": "NeoPixel (built-in)"
+    },
+    "neopixel_strip": {
+      "emoji": "🌈",
+      "label": "LED-Streifen",
+      "label_en": "LED strip"
+    },
+    "round_display": {
+      "emoji": "⭕",
+      "label": "Rund-Display",
+      "label_en": "Round display"
+    },
+    "lcd": {
+      "emoji": "📟",
+      "label": "LCD",
+      "label_en": "LCD"
+    },
+    "seg7": {
+      "emoji": "🔢",
+      "label": "7-Segment",
+      "label_en": "7-segment"
+    },
+    "matrix8": {
+      "emoji": "🟩",
+      "label": "Matrix 8×8",
+      "label_en": "Matrix 8×8"
+    },
+    "matrix5": {
+      "emoji": "🟩",
+      "label": "Matrix 5×5",
+      "label_en": "Matrix 5×5"
+    }
+  }
 }

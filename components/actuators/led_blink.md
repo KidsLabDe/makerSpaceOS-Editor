@@ -1,6 +1,7 @@
 ---
 id: actuator_led_blink
 blockCategory: Aktionen
+component: led
 subCategory: LED
 label: "💡 LED blinken"
 label_en: "💡 LED blink"
@@ -10,8 +11,8 @@ tooltip_en: "Makes an LED blink several times"
 blockType: statement
 inline: true
 inputs:
-  - label: "💡 LED  Port:"
-    label_en: "💡 LED  port:"
+  - label: "Port:"
+    label_en: "port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital

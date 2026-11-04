@@ -1,6 +1,7 @@
 ---
 id: actuator_wheel_servo
 blockCategory: Aktionen
+component: wheel_servo
 subCategory: "Servo & Pumpe"
 label: "⚙️ Rad-Servo"
 label_en: "⚙️ Wheel servo"
@@ -10,9 +11,7 @@ tooltip_en: "Turns a continuous-rotation servo (360°): -100 = full speed backwa
 blockType: statement
 inline: true
 inputs:
-  - label: "⚙️ Rad-Servo"
-    label_en: "⚙️ Wheel servo"
-    name: SERVO
+  - name: SERVO
     fieldType: servo_dropdown
 valueInputs:
   - name: SPEED

@@ -1,6 +1,7 @@
 ---
 id: actuator_motor_forward
 blockCategory: Aktionen
+component: motor
 subCategory: "Motor"
 label: "🚗 Motor vorwärts"
 label_en: "🚗 Motor forward"
@@ -10,9 +11,7 @@ tooltip_en: "Drives a DC motor forward (0–100 % speed)"
 blockType: statement
 inline: true
 inputs:
-  - label: "🚗 Motor"
-    label_en: "🚗 Motor"
-    name: MOTOR
+  - name: MOTOR
     fieldType: motor_dropdown
   - label: "vorwärts"
     label_en: "forward"

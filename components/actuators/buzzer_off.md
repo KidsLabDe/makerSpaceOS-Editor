@@ -1,6 +1,7 @@
 ---
 id: actuator_buzzer_off
 blockCategory: Aktionen
+component: buzzer
 subCategory: Ton
 label: "🔔 Buzzer aus"
 label_en: "🔔 Buzzer off"
@@ -9,8 +10,8 @@ tooltip: "Schaltet den Buzzer aus"
 tooltip_en: "Turns the buzzer off"
 blockType: statement
 inputs:
-  - label: "🔔 Buzzer  aus"
-    label_en: "🔔 Buzzer  off"
+  - label: "aus"
+    label_en: "off"
     fieldType: fixed_label
 hardware:
   commonName: "Buzzer aus"

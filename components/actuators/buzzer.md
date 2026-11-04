@@ -1,6 +1,7 @@
 ---
 id: actuator_buzzer
 blockCategory: Aktionen
+component: buzzer
 subCategory: Ton
 label: "🔔 Buzzer Ton"
 label_en: "🔔 Buzzer tone"
@@ -11,8 +12,8 @@ blockType: statement
 inline: true
 valueInputs:
   - name: FREQ
-    label: "🔔 Buzzer  Ton:"
-    label_en: "🔔 Buzzer  tone:"
+    label: "Ton:"
+    label_en: "tone:"
     check: Number
     defaultValue: 440
   - name: DURATION

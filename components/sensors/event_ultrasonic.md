@@ -1,6 +1,7 @@
 ---
 id: event_ultrasonic
 blockCategory: Sensoren
+component: ultrasonic
 subCategory: Ereignisse
 label: "📡 Wenn Abstand"
 label_en: "📡 When distance"

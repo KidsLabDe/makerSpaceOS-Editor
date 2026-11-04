@@ -1,6 +1,7 @@
 ---
 id: neopixel_brightness
 blockCategory: Lichter
+component: neopixel
 subCategory: "Onboard"
 label: "☀️ NeoPixel Helligkeit"
 label_en: "☀️ NeoPixel brightness"
@@ -10,8 +11,8 @@ tooltip_en: "Sets the brightness of the onboard NeoPixels (0–100 %)"
 blockType: statement
 inline: true
 inputs:
-  - label: "☀️ NeoPixel  Helligkeit"
-    label_en: "☀️ NeoPixel  brightness"
+  - label: "Helligkeit"
+    label_en: "brightness"
     fieldType: fixed_label
 valueInputs:
   - name: PERCENT

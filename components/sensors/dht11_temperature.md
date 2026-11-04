@@ -1,6 +1,7 @@
 ---
 id: sensor_dht11_temperature
 blockCategory: Sensoren
+component: dht11
 subCategory: Temperatur & Feuchte
 label: "🌡️ DHT11 Temperatur (°C)"
 label_en: "🌡️ DHT11 temperature (°C)"
@@ -10,8 +11,8 @@ tooltip_en: "Reads the temperature in degrees Celsius from the DHT11 sensor (KY-
 blockType: value
 output: Number
 inputs:
-  - label: "🌡️ DHT11 Temperatur (°C)  Port:"
-    label_en: "🌡️ DHT11 temperature (°C)  port:"
+  - label: "Temperatur (°C)  Port:"
+    label_en: "temperature (°C)  port:"
     name: PIN
     fieldType: grove_dropdown
     groveRole: digital

@@ -138,28 +138,40 @@ const TOOLBOX_STATIC_CONTENTS = [
 ];
 
 // Baut die vollständige Toolbox: statische Kategorien + Hardware-Kategorien.
-// Matrix-Blöcke (aus matrix.js) werden als Unterkategorie in "Lichter" gemergt.
+// Matrix-Blöcke (aus matrix*.js) kommen als eigene Bauteil-Gruppen nach "Anzeigen".
 function buildFinalToolbox() {
-  // Hardware-Kategorien flach kopieren, Lichter-Contents duplizieren
+  // Hardware-Kategorien flach kopieren (Contents duplizieren)
   const hwCats = (window.BLOCKS_DB_TOOLBOX || []).map(cat => {
     if (cat.kind !== 'category') return cat;
     return { ...cat, contents: cat.contents ? [...cat.contents] : [] };
   });
 
-  // Matrix-Inhalte an Lichter-Kategorie anhängen (board-abhängig ausblendbar)
-  const lichter = hwCats.find(c => c.kind === 'category' && c.name === L('Lichter', 'Lights'));
+  // Matrix-Gruppen (board-abhängig ausblendbar)
   const hideIds = new Set(BOARD.hideBlockIds || []);
   const matrixContents = (window.MATRIX_TOOLBOX_CONTENTS || [])
     .filter(e => !(e.type && hideIds.has(e.type)));
   // Fest eingebaute 5×5-Matrix (matrix5.js) nur auf Boards mit BOARD.matrix5
   const matrix5Contents = BOARD.matrix5 ? (window.MATRIX5_TOOLBOX_CONTENTS || []) : [];
-  if (lichter && matrix5Contents.length) {
-    lichter.contents.push({ kind: 'label', text: L('── 5×5 Matrix (eingebaut) ──', '── 5×5 matrix (built-in) ──') });
-    lichter.contents.push(...matrix5Contents);
-  }
-  if (lichter && matrixContents.length) {
-    lichter.contents.push({ kind: 'label', text: '── 8×8 Matrix ──' });
-    lichter.contents.push(...matrixContents);
+  const matrixGroups = [];
+  if (matrix5Contents.length) matrixGroups.push({ name: componentLabel('matrix5'), blocks: matrix5Contents });
+  if (matrixContents.some(e => e.type)) matrixGroups.push({ name: componentLabel('matrix8'), blocks: matrixContents });
+
+  if (matrixGroups.length) {
+    const catDef = BLOCKS_CATALOG.categories.find(c => c.id === 'Anzeigen');
+    let idx = hwCats.findIndex(c => c.catId === 'Anzeigen');
+    const old = idx >= 0 ? hwCats[idx] : { groups: [], rest: [] };
+    const cat = { ...buildToolboxCategory(LF(catDef, 'label'), catDef.colour,
+                    [...old.groups, ...matrixGroups], old.rest, 'Anzeigen'),
+                  groups: [...old.groups, ...matrixGroups], rest: old.rest };
+    if (idx < 0) {
+      // Board ohne Display-Blöcke aus den .md: Kategorie an Katalog-Position einfügen
+      const order = BLOCKS_CATALOG.categories.map(c => c.id);
+      idx = hwCats.findIndex(c => order.indexOf(c.catId) > order.indexOf('Anzeigen'));
+      if (idx < 0) idx = hwCats.length;
+      hwCats.splice(idx, 0, cat);
+    } else {
+      hwCats[idx] = cat;
+    }
   }
 
   // Board-spezifische Ereignis-Hüte nur zeigen, wenn das Profil das Feature hat.
@@ -176,7 +188,7 @@ function buildFinalToolbox() {
       ...(window.AI_BLOCKS_TOOLBOX || []),
       ...staticCats,
       { kind: 'sep' },
-      ...hwCats,
+      ...hwCats.map(({ groups, rest, ...c }) => c),
     ]
   };
 }

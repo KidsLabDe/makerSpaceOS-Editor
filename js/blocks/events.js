@@ -46,7 +46,7 @@
 
   // ── Digitale Trigger-Hüte (verbleibende) ────────────────────────────────────
 
-  function digitalHat(type, label, tooltip) {
+  function digitalHat(type, label, tooltip, component) {
     Blockly.Blocks[type] = {
       init: function () {
         this.appendDummyInput()
@@ -56,24 +56,26 @@
         this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
         this.setColour(EVENT_COLOUR);
         this.setTooltip(tooltip);
+        addComponentBadge(this, component);
       }
     };
   }
 
-  digitalHat('when_sound', L('Wenn Geräusch erkannt', 'When sound detected'), L('Startet, sobald ein Geräusch erkannt wird', 'Starts as soon as a sound is detected'));
-  digitalHat('when_touch', L('Wenn berührt', 'When touched'),          L('Startet, sobald der Sensor berührt wird', 'Starts as soon as the sensor is touched'));
+  digitalHat('when_sound', L('Wenn Geräusch erkannt', 'When sound detected'), L('Startet, sobald ein Geräusch erkannt wird', 'Starts as soon as a sound is detected'), 'sound_sensor');
+  digitalHat('when_touch', L('Wenn berührt', 'When touched'),          L('Startet, sobald der Sensor berührt wird', 'Starts as soon as the sensor is touched'), 'touch_sensor');
 
   // ── Taster-Hut (mit gedrückt/losgelassen) ───────────────────────────────────
 
   Blockly.Blocks['when_button'] = {
     init: function () {
       this.appendDummyInput()
-          .appendField(L('Wenn Taster', 'When button'))
+          .appendField(L('Wenn', 'When'))
           .appendField(tasterField(), 'BTN')
           .appendField(stateField(), 'STATE');
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald der Taster gedrückt bzw. losgelassen wird', 'Starts as soon as the button is pressed or released'));
+      addComponentBadge(this, 'button');
     }
   };
 
@@ -82,12 +84,13 @@
   Blockly.Blocks['when_encoder'] = {
     init: function () {
       this.appendDummyInput()
-          .appendField(L('Wenn Drehgeber', 'When rotary encoder'))
+          .appendField(L('Wenn gedreht', 'When turned'))
           .appendField(encPortField(), 'PORT')
           .appendField(dirField(), 'DIR');
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald der Drehgeber in die gewählte Richtung gedreht wird', 'Starts as soon as the encoder is turned in the chosen direction'));
+      addComponentBadge(this, 'encoder');
     }
   };
 
@@ -107,6 +110,7 @@
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald der Bewegungssensor (ICM20948) geschüttelt oder stark beschleunigt wird', 'Starts as soon as the motion sensor (ICM20948) is shaken or strongly accelerated'));
+      addComponentBadge(this, 'imu_ext');
     }
   };
 
@@ -115,10 +119,11 @@
   Blockly.Blocks['when_battery_low'] = {
     init: function () {
       this.appendDummyInput()
-          .appendField(L('Wenn Akku schwach', 'When battery low'));
+          .appendField(L('Wenn schwach', 'When low'));
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet einmal, sobald die Akkuspannung unter 3,6 V fällt', 'Starts once as soon as the battery voltage drops below 3.6 V'));
+      addComponentBadge(this, 'akku');
     }
   };
 
@@ -143,6 +148,7 @@
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald du das Pfeil-Feld auf der Platine mit dem Finger berührst', 'Starts as soon as you touch the arrow pad on the board with your finger'));
+      addComponentBadge(this, 'touch_pad');
     }
   };
 
@@ -153,6 +159,7 @@
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald die Platine kräftig geschüttelt wird', 'Starts as soon as the board is shaken hard'));
+      addComponentBadge(this, 'imu_onboard');
     }
   };
 
@@ -169,6 +176,7 @@
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald der gemessene Abstand die Bedingung erfüllt', 'Starts as soon as the measured distance meets the condition'));
+      addComponentBadge(this, 'ultrasonic');
     }
   };
 
@@ -183,6 +191,7 @@
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald die Helligkeit (0–100 %) die Bedingung erfüllt', 'Starts as soon as the brightness (0–100 %) meets the condition'));
+      addComponentBadge(this, 'ldr');
     }
   };
 
@@ -197,6 +206,7 @@
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald die Temperatur (DHT11) die Bedingung erfüllt', 'Starts as soon as the temperature (DHT11) meets the condition'));
+      addComponentBadge(this, 'dht11');
     }
   };
 
@@ -211,6 +221,7 @@
       this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
       this.setColour(EVENT_COLOUR);
       this.setTooltip(L('Startet, sobald die Luftfeuchtigkeit (DHT11) die Bedingung erfüllt', 'Starts as soon as the humidity (DHT11) meets the condition'));
+      addComponentBadge(this, 'dht11');
     }
   };
 
