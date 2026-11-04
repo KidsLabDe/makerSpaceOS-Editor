@@ -1,6 +1,8 @@
 # makerSpaceOS – TODO & Ideen
 
 
+- [ ] Visuelle anzeige am Butten: läuft das Programm gerade oder nicht?
+
 
 - Layout - nur bi 110% bricht er um... da stimmt was noch nicht
 - Magic Installer
