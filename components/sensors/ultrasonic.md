@@ -40,6 +40,12 @@ Misst Abstände von ca. 2 cm bis 400 cm. Wähle im Block den passenden **Sensor-
   Datenkabel (Pin 1). Der Generator nimmt automatisch die beiden Pins des
   gewählten Ports.
 
+So steckst du den HC-SR04 an: **Gnd** schwarz, **Echo** weiß, **Trig** gelb, **Vcc** rot.
+
+![HC-SR04 von vorne mit angestecktem Grove-Kabel](../images/anschluss-ultraschall-vorne.jpg)
+
+![Rückseite des HC-SR04: Gnd schwarz, Echo weiß, Trig gelb, Vcc rot](../images/anschluss-ultraschall-hinten.jpg)
+
 Achtung: Am Grove-Port hat der Sensor nur 3,3 V statt 5 V – er funktioniert,
 aber die maximale Reichweite wird kleiner. Generatoren: siehe `js/generator.js`.
 
@@ -56,6 +62,12 @@ in the block:
   the power wires, **TRIG** to the signal wire (pin 2), **ECHO** to the second
   data wire (pin 1). The generator picks both pins of the chosen port
   automatically.
+
+How to plug in the HC-SR04: **Gnd** black, **Echo** white, **Trig** yellow, **Vcc** red.
+
+![HC-SR04 from the front with the Grove cable plugged in](../images/anschluss-ultraschall-vorne.jpg)
+
+![Back of the HC-SR04: Gnd black, Echo white, Trig yellow, Vcc red](../images/anschluss-ultraschall-hinten.jpg)
 
 Note: On a Grove port the sensor only gets 3.3 V instead of 5 V – it works,
 but the maximum range is reduced. Generators: see `js/generator.js`.

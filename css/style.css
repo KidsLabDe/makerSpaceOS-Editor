@@ -1256,10 +1256,10 @@ html, body {
   #library-title { display: none; }
 }
 
-/* ── Erklärungs-Panel (Rechtsklick-Hilfe, angedockt wie der Code-Bereich) ── */
+/* ── Erklärungs-Leiste (Anleitung, angedockt wie der Code-Bereich) ──────── */
 
 #docs-panel {
-  width: 380px;
+  width: 340px;
   flex-shrink: 0;
   display: none;
   flex-direction: column;
@@ -1281,7 +1281,26 @@ html, body {
   letter-spacing: .7px;
   color: var(--text-muted);
   flex-shrink: 0;
+  gap: 8px;
 }
+#docs-panel-header > span { flex: 1; }
+#docs-panel-home {
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+}
+#docs-panel-home:hover { background: var(--bg-alt); }
+#docs-panel-home[hidden] { display: none; }
+.docs-home-link { margin: 14px 2px 0; font-weight: 600; }
+.docs-home-link a { color: var(--brand-blue); text-decoration: none; }
+.docs-home-link a:hover { text-decoration: underline; }
 #docs-panel-close {
   display: grid;
   place-items: center;

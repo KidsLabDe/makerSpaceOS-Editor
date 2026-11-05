@@ -109,6 +109,8 @@ function initBlockly() {
 
   // Live Code-Generierung + Auto-Speichern bei jeder Änderung
   workspace.addChangeListener(onWorkspaceChange);
+  // Erklärungs-Leiste folgt dem ausgewählten Block (docs.js)
+  if (window.docsAttachWorkspace) docsAttachWorkspace(workspace);
 }
 
 function onWorkspaceChange(_e) {

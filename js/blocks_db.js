@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-11-04T14:11:10.367Z
+// Generiert: 2026-11-04T17:14:52.317Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -429,8 +429,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/ultrasonic.md",
-    "doc": "# Ultraschall-Abstandssensor\n\nMisst Abstände von ca. 2 cm bis 400 cm. Wähle im Block den passenden **Sensor-Typ**:\n\n- **Grove Ranger (1 Pin)**: Das Grove-Ultraschall-Modul misst mit nur einem\n  Signal-Kabel (Trigger und Echo teilen sich Pin 2 des Grove-Steckers).\n- **HC-SR04 (TRIG + ECHO)**: Freier SR04 am Grove-Port verkabelt: VCC und GND\n  an die Stromkabel, **TRIG** an das Signal-Kabel (Pin 2), **ECHO** an das 2.\n  Datenkabel (Pin 1). Der Generator nimmt automatisch die beiden Pins des\n  gewählten Ports.\n\nAchtung: Am Grove-Port hat der Sensor nur 3,3 V statt 5 V – er funktioniert,\naber die maximale Reichweite wird kleiner. Generatoren: siehe `js/generator.js`.",
-    "doc_en": "# Ultrasonic distance sensor\n\nMeasures distances from about 2 cm to 4 m. Choose the matching **sensor type**\nin the block:\n\n- **Grove Ranger (1 pin)**: The Grove ultrasonic module measures with a single\n  signal wire (trigger and echo share pin 2 of the Grove connector).\n- **HC-SR04 (TRIG + ECHO)**: Bare SR04 wired to a Grove port: VCC and GND to\n  the power wires, **TRIG** to the signal wire (pin 2), **ECHO** to the second\n  data wire (pin 1). The generator picks both pins of the chosen port\n  automatically.\n\nNote: On a Grove port the sensor only gets 3.3 V instead of 5 V – it works,\nbut the maximum range is reduced. Generators: see `js/generator.js`."
+    "doc": "# Ultraschall-Abstandssensor\n\nMisst Abstände von ca. 2 cm bis 400 cm. Wähle im Block den passenden **Sensor-Typ**:\n\n- **Grove Ranger (1 Pin)**: Das Grove-Ultraschall-Modul misst mit nur einem\n  Signal-Kabel (Trigger und Echo teilen sich Pin 2 des Grove-Steckers).\n- **HC-SR04 (TRIG + ECHO)**: Freier SR04 am Grove-Port verkabelt: VCC und GND\n  an die Stromkabel, **TRIG** an das Signal-Kabel (Pin 2), **ECHO** an das 2.\n  Datenkabel (Pin 1). Der Generator nimmt automatisch die beiden Pins des\n  gewählten Ports.\n\nSo steckst du den HC-SR04 an: **Gnd** schwarz, **Echo** weiß, **Trig** gelb, **Vcc** rot.\n\n![HC-SR04 von vorne mit angestecktem Grove-Kabel](../images/anschluss-ultraschall-vorne.jpg)\n\n![Rückseite des HC-SR04: Gnd schwarz, Echo weiß, Trig gelb, Vcc rot](../images/anschluss-ultraschall-hinten.jpg)\n\nAchtung: Am Grove-Port hat der Sensor nur 3,3 V statt 5 V – er funktioniert,\naber die maximale Reichweite wird kleiner. Generatoren: siehe `js/generator.js`.",
+    "doc_en": "# Ultrasonic distance sensor\n\nMeasures distances from about 2 cm to 4 m. Choose the matching **sensor type**\nin the block:\n\n- **Grove Ranger (1 pin)**: The Grove ultrasonic module measures with a single\n  signal wire (trigger and echo share pin 2 of the Grove connector).\n- **HC-SR04 (TRIG + ECHO)**: Bare SR04 wired to a Grove port: VCC and GND to\n  the power wires, **TRIG** to the signal wire (pin 2), **ECHO** to the second\n  data wire (pin 1). The generator picks both pins of the chosen port\n  automatically.\n\nHow to plug in the HC-SR04: **Gnd** black, **Echo** white, **Trig** yellow, **Vcc** red.\n\n![HC-SR04 from the front with the Grove cable plugged in](../images/anschluss-ultraschall-vorne.jpg)\n\n![Back of the HC-SR04: Gnd black, Echo white, Trig yellow, Vcc red](../images/anschluss-ultraschall-hinten.jpg)\n\nNote: On a Grove port the sensor only gets 3.3 V instead of 5 V – it works,\nbut the maximum range is reduced. Generators: see `js/generator.js`."
   },
   {
     "id": "sensor_icm20948_g",
@@ -846,8 +846,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/encoder.md",
-    "doc": "# Drehgeber / Rotary Encoder (Grove)\n\nZählt Drehbewegungen (unbegrenzt). Positiver Wert = Rechtsdrehung, negativer Wert = Linksdrehung.\nNutzt beide Pins des Grove-Ports (Pin1 = CLK, Pin2 = DT). Generator: siehe `js/generator.js`.\n\n**Wichtiger Hinweis:** CircuitPython liest den Drehgeber per PIO – die beiden Pins müssen\n**benachbarte GPIOs** sein (z. B. GP0/GP1). Deshalb bietet der Port-Auswahlbereich nur\ngeeignete Ports an (beim MAKER-PI: Grove 1, 2, 3, 4, 6 – **nicht** Grove 5 und 7).",
-    "doc_en": "# Rotary encoder (Grove)\n\nCounts rotations (unlimited). Positive value = clockwise, negative value = counter-clockwise.\nUses both pins of the Grove port (pin 1 = CLK, pin 2 = DT). Generator: see `js/generator.js`.\n\n**Important:** CircuitPython reads the encoder via PIO – the two pins must be\n**adjacent GPIOs** (e.g. GP0/GP1). The port dropdown therefore only lists suitable\nports (on the MAKER-PI: Grove 1, 2, 3, 4, 6 – **not** Grove 5 and 7)."
+    "doc": "# Drehgeber / Rotary Encoder (Grove)\n\nZählt Drehbewegungen (unbegrenzt). Positiver Wert = Rechtsdrehung, negativer Wert = Linksdrehung.\nNutzt beide Pins des Grove-Ports (Pin1 = CLK, Pin2 = DT). Generator: siehe `js/generator.js`.\n\n**Wichtiger Hinweis:** CircuitPython liest den Drehgeber per PIO – die beiden Pins müssen\n**benachbarte GPIOs** sein (z. B. GP0/GP1). Deshalb bietet der Port-Auswahlbereich nur\ngeeignete Ports an (beim MAKER-PI: Grove 1, 2, 3, 4, 6 – **nicht** Grove 5 und 7).\n\nSo steckst du den Drehgeber an: **CLK** gelb, **DT** weiß, **+** rot, **GND** schwarz – **SW** bleibt frei.\nZählt er falsch herum, tausch einfach Gelb und Weiß.\n\n![Drehgeber mit Grove-Kabel: CLK gelb, DT weiß, + rot, GND schwarz](../images/anschluss-drehgeber.jpg)",
+    "doc_en": "# Rotary encoder (Grove)\n\nCounts rotations (unlimited). Positive value = clockwise, negative value = counter-clockwise.\nUses both pins of the Grove port (pin 1 = CLK, pin 2 = DT). Generator: see `js/generator.js`.\n\n**Important:** CircuitPython reads the encoder via PIO – the two pins must be\n**adjacent GPIOs** (e.g. GP0/GP1). The port dropdown therefore only lists suitable\nports (on the MAKER-PI: Grove 1, 2, 3, 4, 6 – **not** Grove 5 and 7).\n\nHow to plug in the encoder: **CLK** yellow, **DT** white, **+** red, **GND** black – **SW** stays free.\nIf it counts the wrong way round, just swap yellow and white.\n\n![Rotary encoder with Grove cable: CLK yellow, DT white, + red, GND black](../images/anschluss-drehgeber.jpg)"
   },
   {
     "id": "sensor_lautstaerke",
@@ -1721,8 +1721,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/servo.md",
-    "doc": "# Servo-Motor\n\nDreht den Servo auf einen Winkel von 0–180 Grad.",
-    "doc_en": "# Servo motor\n\nTurns the servo to an angle of 0–180 degrees."
+    "doc": "# Servo-Motor\n\nDreht den Servo auf einen Winkel von 0–180 Grad.\n\nSo steckst du den Servo an: Das **orange** Kabel kommt an **S**, **rot** an **+**, **braun** an **−**.\nAuf dem MAKER-PI steht neben jeder Reihe der Pin: **GP12 = S1**, GP13 = S2, GP14 = S3, GP15 = S4.\n\n![Servo-Stecker am MAKER-PI auf S1 (GP12): orange an S, rot an +, braun an −](../images/anschluss-servo.jpg)",
+    "doc_en": "# Servo motor\n\nTurns the servo to an angle of 0–180 degrees.\n\nHow to plug in the servo: the **orange** wire goes to **S**, **red** to **+**, **brown** to **−**.\nOn the MAKER-PI each row is labelled with its pin: **GP12 = S1**, GP13 = S2, GP14 = S3, GP15 = S4.\n\n![Servo plug on the MAKER-PI at S1 (GP12): orange to S, red to +, brown to −](../images/anschluss-servo.jpg)"
   },
   {
     "id": "actuator_wheel_servo",
@@ -2775,8 +2775,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/tm1637_number.md",
-    "doc": "# TM1637 4-stelliges 7-Segment-Display – Zahl anzeigen\n\nZeigt eine ganze Zahl (−999 bis 9999) auf dem Display an.\n\n**Verdrahtung (Grove-Port):**\n- CLK → Grove Pin 1 (weiß, z. B. GP2 bei Grove 2)\n- DIO → Grove Signal (gelb, z. B. GP3 bei Grove 2)\n- VCC / GND → Grove VCC / GND\n\n**Lib:** `adafruit_tm1637` aus dem Adafruit CircuitPython Bundle → nach `CIRCUITPY/lib/` kopieren.",
-    "doc_en": "# TM1637 4-digit 7-segment display – show number\n\nShows an integer (−999 to 9999) on the display.\n\n**Wiring (Grove port):**\n- CLK → Grove pin 1 (white, e.g. GP2 on Grove 2)\n- DIO → Grove signal (yellow, e.g. GP3 on Grove 2)\n- VCC / GND → Grove VCC / GND\n\n**Lib:** `adafruit_tm1637` from the Adafruit CircuitPython Bundle → copy to `CIRCUITPY/lib/`."
+    "doc": "# TM1637 4-stelliges 7-Segment-Display – Zahl anzeigen\n\nZeigt eine ganze Zahl (−999 bis 9999) auf dem Display an.\n\n**Verdrahtung (Grove-Port):**\n- CLK → Grove Pin 1 (weiß, z. B. GP2 bei Grove 2)\n- DIO → Grove Signal (gelb, z. B. GP3 bei Grove 2)\n- VCC / GND → Grove VCC / GND\n\n![7-Segment-Display von vorne mit angestecktem Grove-Kabel](../images/anschluss-7segment-vorne.jpg)\n\n![Rückseite: GND schwarz, VCC rot, DIO gelb, CLK weiß](../images/anschluss-7segment-hinten.jpg)\n\n**Lib:** `adafruit_tm1637` aus dem Adafruit CircuitPython Bundle → nach `CIRCUITPY/lib/` kopieren.",
+    "doc_en": "# TM1637 4-digit 7-segment display – show number\n\nShows an integer (−999 to 9999) on the display.\n\n**Wiring (Grove port):**\n- CLK → Grove pin 1 (white, e.g. GP2 on Grove 2)\n- DIO → Grove signal (yellow, e.g. GP3 on Grove 2)\n- VCC / GND → Grove VCC / GND\n\n![7-segment display from the front with the Grove cable plugged in](../images/anschluss-7segment-vorne.jpg)\n\n![Back side: GND black, VCC red, DIO yellow, CLK white](../images/anschluss-7segment-hinten.jpg)\n\n**Lib:** `adafruit_tm1637` from the Adafruit CircuitPython Bundle → copy to `CIRCUITPY/lib/`."
   },
   {
     "id": "tm1637_off",

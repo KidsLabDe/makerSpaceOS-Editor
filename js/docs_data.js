@@ -852,6 +852,30 @@ My parts and my task:
   },
 ];
 
+// ── Erste Schritte: Startinhalt der Erklärungs-Leiste im Editor (docs.js) ──
+
+const GETTING_STARTED = `So bringst du dein erstes Programm aufs Board:
+
+1. **Board anstecken** – mit dem USB-Kabel an den Computer.
+2. **Verbinden** – oben auf „Verbinden“ klicken und das Board auswählen.
+3. **Blöcke ziehen** – links eine Kategorie öffnen und Blöcke in **FÜR IMMER** schieben. Was nur einmal passieren soll, kommt in **SETUP**.
+4. **Ausführen** – auf ▶ „Ausführen“ klicken. Mit ■ „Stopp“ hältst du das Programm an.
+
+> **Tipp:** Klick auf einen Block – dann steht hier, was er macht und wie du ihn anschließt.
+
+Den Python-Code und Meldungen vom Board siehst du über „Code-Bereich“ oben.`;
+
+const GETTING_STARTED_EN = `How to get your first program onto the board:
+
+1. **Plug in the board** – with the USB cable to your computer.
+2. **Connect** – click “Connect” at the top and choose the board.
+3. **Drag blocks** – open a category on the left and drop blocks into **FOREVER**. Things that should happen only once go into **SETUP**.
+4. **Run** – click ▶ “Run”. ■ “Stop” halts the program.
+
+> **Tip:** Click a block – this panel then explains what it does and how to connect it.
+
+You can see the Python code and messages from the board via “Code panel” at the top.`;
+
 // ── Doku pro Board-Profil (Port-Tabelle wird dynamisch angehängt) ──────────
 
 const BOARD_DOCS = {

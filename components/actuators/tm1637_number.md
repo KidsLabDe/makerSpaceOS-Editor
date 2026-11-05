@@ -40,6 +40,10 @@ Zeigt eine ganze Zahl (−999 bis 9999) auf dem Display an.
 - DIO → Grove Signal (gelb, z. B. GP3 bei Grove 2)
 - VCC / GND → Grove VCC / GND
 
+![7-Segment-Display von vorne mit angestecktem Grove-Kabel](../images/anschluss-7segment-vorne.jpg)
+
+![Rückseite: GND schwarz, VCC rot, DIO gelb, CLK weiß](../images/anschluss-7segment-hinten.jpg)
+
 **Lib:** `adafruit_tm1637` aus dem Adafruit CircuitPython Bundle → nach `CIRCUITPY/lib/` kopieren.
 
 <!-- lang:en -->
@@ -52,5 +56,9 @@ Shows an integer (−999 to 9999) on the display.
 - CLK → Grove pin 1 (white, e.g. GP2 on Grove 2)
 - DIO → Grove signal (yellow, e.g. GP3 on Grove 2)
 - VCC / GND → Grove VCC / GND
+
+![7-segment display from the front with the Grove cable plugged in](../images/anschluss-7segment-vorne.jpg)
+
+![Back side: GND black, VCC red, DIO yellow, CLK white](../images/anschluss-7segment-hinten.jpg)
 
 **Lib:** `adafruit_tm1637` from the Adafruit CircuitPython Bundle → copy to `CIRCUITPY/lib/`.

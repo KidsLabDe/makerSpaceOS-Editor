@@ -34,6 +34,11 @@ Nutzt beide Pins des Grove-Ports (Pin1 = CLK, Pin2 = DT). Generator: siehe `js/g
 **benachbarte GPIOs** sein (z. B. GP0/GP1). Deshalb bietet der Port-Auswahlbereich nur
 geeignete Ports an (beim MAKER-PI: Grove 1, 2, 3, 4, 6 – **nicht** Grove 5 und 7).
 
+So steckst du den Drehgeber an: **CLK** gelb, **DT** weiß, **+** rot, **GND** schwarz – **SW** bleibt frei.
+Zählt er falsch herum, tausch einfach Gelb und Weiß.
+
+![Drehgeber mit Grove-Kabel: CLK gelb, DT weiß, + rot, GND schwarz](../images/anschluss-drehgeber.jpg)
+
 <!-- lang:en -->
 
 # Rotary encoder (Grove)
@@ -44,3 +49,8 @@ Uses both pins of the Grove port (pin 1 = CLK, pin 2 = DT). Generator: see `js/g
 **Important:** CircuitPython reads the encoder via PIO – the two pins must be
 **adjacent GPIOs** (e.g. GP0/GP1). The port dropdown therefore only lists suitable
 ports (on the MAKER-PI: Grove 1, 2, 3, 4, 6 – **not** Grove 5 and 7).
+
+How to plug in the encoder: **CLK** yellow, **DT** white, **+** red, **GND** black – **SW** stays free.
+If it counts the wrong way round, just swap yellow and white.
+
+![Rotary encoder with Grove cable: CLK yellow, DT white, + red, GND black](../images/anschluss-drehgeber.jpg)

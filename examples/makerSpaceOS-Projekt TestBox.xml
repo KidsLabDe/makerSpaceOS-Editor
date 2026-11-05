@@ -13,7 +13,7 @@
         </value>
         <next>
           <block type="actuator_lcd_text" id="hH:hNo[OX|WQw?]!4;C:">
-            <field name="PORT">3</field>
+            <field name="PORT">6</field>
             <value name="LINE1">
               <shadow type="text" id="8qKB2xDrpGk4)VV3MVp1">
                 <field name="TEXT">Willkommen zu </field>
@@ -75,7 +75,7 @@
                 </statement>
                 <next>
                   <block type="actuator_lcd_text" id="6tN,6c!/_7$9H{RR|/0*">
-                    <field name="PORT">3</field>
+                    <field name="PORT">6</field>
                     <value name="LINE1">
                       <shadow type="text" id="J}=5Y[~n2j/:lFWj^7Ff">
                         <field name="TEXT">Drehen sie am </field>
@@ -93,7 +93,7 @@
                             <field name="OP">LT</field>
                             <value name="A">
                               <block type="sensor_encoder" id="%1aiuT`XyPPl?qCTS0dt">
-                                <field name="PORT">6</field>
+                                <field name="PORT">3</field>
                               </block>
                             </value>
                             <value name="B">
@@ -111,7 +111,7 @@
                                 <field name="NUM">1234</field>
                               </shadow>
                               <block type="sensor_encoder" id="Ap3#y-3u@#Xc_TIwPxdA">
-                                <field name="PORT">6</field>
+                                <field name="PORT">3</field>
                               </block>
                             </value>
                             <next>
@@ -174,7 +174,7 @@
                                                     </value>
                                                     <statement name="DO">
                                                       <block type="actuator_lcd_text" id="cq3XDHGV}|!CP6zT%C+(">
-                                                        <field name="PORT">3</field>
+                                                        <field name="PORT">6</field>
                                                         <value name="LINE1">
                                                           <shadow type="text" id="kp}O0PPJ~;~8%/_,*kG}">
                                                             <field name="TEXT">DHT über 23 Grad!</field>
@@ -223,7 +223,7 @@
                                                     </statement>
                                                     <next>
                                                       <block type="actuator_lcd_text" id="6)_xuw-S(Z-qN2NOGt;H">
-                                                        <field name="PORT">3</field>
+                                                        <field name="PORT">6</field>
                                                         <value name="LINE1">
                                                           <shadow type="text" id="7MqhUe-%2]cZ]Z~LJT@V">
                                                             <field name="TEXT">Ultraschnell!</field>
@@ -250,7 +250,7 @@
                                                                 </value>
                                                                 <statement name="DO">
                                                                   <block type="actuator_lcd_text" id="R/RvwgKf4f7,!)k`x29;">
-                                                                    <field name="PORT">3</field>
+                                                                    <field name="PORT">6</field>
                                                                     <value name="LINE1">
                                                                       <shadow type="text" id="ISVCGas!B(GM2-;vTrLI">
                                                                         <field name="TEXT">Ultraschnell!</field>
@@ -359,7 +359,4 @@
     </statement>
   </block>
   <block type="control_forever" id="*f;w!*B5^Q{[J]3O.{-;" deletable="false" x="605" y="77"></block>
-  <block type="sensor_encoder" id=",y,s%q,|cZ0EN5Pb!DFK" x="239" y="1247">
-    <field name="PORT">6</field>
-  </block>
 </xml>
