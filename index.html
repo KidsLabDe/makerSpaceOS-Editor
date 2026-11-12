@@ -35,9 +35,9 @@
   <script src="vendor/codemirror/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202611041714">
+  <link rel="stylesheet" href="css/fonts.css?v=202611121818">
 
-  <link rel="stylesheet" href="css/style.css?v=202611041714">
+  <link rel="stylesheet" href="css/style.css?v=202611121818">
 </head>
 <body>
 <div id="app-shell">
@@ -86,9 +86,9 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h12A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6Z"/><path d="M15 3.75v16.5"/></svg>
         <span class="btn-label" data-i18n="Code panel">Code-Bereich</span>
       </button>
-      <button id="btn-docs" class="btn btn-ghost" title="Erklärungs-Leiste ein-/ausblenden" data-i18n-title="Show/hide the explanation panel">
+      <button id="btn-docs" class="btn btn-ghost" title="Hilfe-Leiste ein-/ausblenden" data-i18n-title="Show/hide the help panel">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg>
-        <span class="btn-label" data-i18n="Guide">Anleitung</span>
+        <span class="btn-label" data-i18n="Help">Hilfe</span>
       </button>
       <button id="btn-save-board" class="btn btn-ghost" title="Programm als code.py auf dem Board speichern" data-i18n-title="Save program as code.py on the board">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/></svg>
@@ -102,13 +102,9 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         <span class="btn-label" data-i18n="Firmware">Firmware</span>
       </button>
-      <button id="btn-history" class="btn btn-ghost" title="Gespeicherte Versionen anzeigen" data-i18n-title="Show saved versions">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-        <span class="btn-label" data-i18n="History">Verlauf</span>
-      </button>
-      <button id="btn-library" class="btn btn-ghost" title="Bauteil-Bibliothek: Erklärungen zu Boards, Sensoren und Aktoren" data-i18n-title="Component library: explanations for boards, sensors and actuators">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
-        <span class="btn-label" data-i18n="Library">Bibliothek</span>
+      <button id="btn-history" class="btn btn-ghost" title="Projekt: neu, Beispiele, speichern, teilen, Verlauf" data-i18n-title="Project: new, examples, save, share, history">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"/></svg>
+        <span class="btn-label" data-i18n="Project">Projekt</span>
       </button>
       <!-- KI-Block Generator noch nicht fertig – Button vorerst ausgeblendet -->
       <button onclick="aiOpen()" class="btn btn-ai" title="KI-Block Generator öffnen" style="display:none" data-i18n-title="Open AI block generator">
@@ -182,6 +178,7 @@
   <div id="toast" class="toast"></div>
   <div id="error-banner" class="error-banner" hidden>
     <span data-i18n="⚠️ Your program has an error">⚠️ Dein Programm hat einen Fehler</span>
+    <p id="error-hint" class="error-hint" hidden></p>
     <small data-i18n="Click the box and the box and arrow disappear.">Klicke auf die Box, dann verschwinden Box und Pfeil.</small>
   </div>
   <!-- Pfeil vom Fehler-Banner zum seriellen Monitor (Pfad wird in app.js berechnet) -->
@@ -303,44 +300,67 @@
   <!-- Verlauf-Drawer -->
   <div id="history-drawer">
     <div class="panel-header">
-      <span data-i18n="History">Verlauf</span>
+      <span data-i18n="📁 Project">📁 Projekt</span>
       <button onclick="closeHistory()" class="btn-icon" title="Schließen" data-i18n-title="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
-    <div class="history-io-bar">
-      <button class="btn btn-ghost btn-sm" onclick="exportProject()" data-i18n="⬇ Export project">⬇ Projekt exportieren</button>
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()" data-i18n="⬆ Import project">⬆ Projekt importieren</button>
-      <input type="file" id="import-file" accept=".xml" style="display:none" onchange="importProject(event)">
+    <div class="project-body">
+      <section class="project-section">
+        <h3 data-i18n="New">Neu</h3>
+        <div class="project-btn-row">
+          <button class="btn btn-ghost btn-sm" onclick="clearProject()" data-i18n="🗑 Delete everything">🗑 Alles löschen</button>
+        </div>
+      </section>
+      <section class="project-section">
+        <h3 data-i18n="Examples">Beispiele</h3>
+        <div id="example-list"></div>
+      </section>
+      <section class="project-section">
+        <h3 data-i18n="Save &amp; share">Speichern &amp; Teilen</h3>
+        <div class="project-btn-row">
+          <button class="btn btn-ghost btn-sm" onclick="saveToBoardClick()" data-i18n="💾 To board">💾 Aufs Board</button>
+          <button class="btn btn-ghost btn-sm" onclick="copyShareLink()" data-i18n="🔗 Copy link">🔗 Link kopieren</button>
+        </div>
+        <div class="project-btn-row">
+          <button class="btn btn-ghost btn-sm" onclick="exportProject()" data-i18n="⬇ Export file">⬇ Datei exportieren</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()" data-i18n="⬆ Import file">⬆ Datei importieren</button>
+          <input type="file" id="import-file" accept=".xml" style="display:none" onchange="importProject(event)">
+        </div>
+      </section>
+      <section class="project-section">
+        <h3 data-i18n="History">Verlauf</h3>
+        <div id="history-list"></div>
+      </section>
     </div>
-    <div id="history-list"></div>
   </div>
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/i18n.js?v=202611041714"></script>
-  <script src="js/boards.js?v=202611041714"></script>
-  <script src="js/blocks/control.js?v=202611041714"></script>
-  <script src="js/blocks/events.js?v=202611041714"></script>
-  <script src="js/blocks/text.js?v=202611041714"></script>
-  <script src="js/blocks/variables.js?v=202611041714"></script>
-  <script src="js/blocks/lists.js?v=202611041714"></script>
-  <script src="js/blocks_db.js?v=202611041714"></script>
-  <script src="js/block_builder.js?v=202611041714"></script>
-  <script src="js/toolbox.js?v=202611041714"></script>
-  <script src="js/blocks/matrix.js?v=202611041714"></script>
-  <script src="js/blocks/matrix5.js?v=202611041714"></script>
-  <script src="js/generator.js?v=202611041714"></script>
-  <script src="js/serial.js?v=202611041714"></script>
-  <script src="js/storage.js?v=202611041714"></script>
-  <script src="js/lib_manifest.js?v=202611041714"></script>
-  <script src="js/board_setup.js?v=202611041714"></script>
-  <script src="js/firmware_manifest.js?v=202611041714"></script>
-  <script src="js/firmware_flash.js?v=202611041714"></script>
-  <script src="js/docs_data.js?v=202611041714"></script>
-  <script src="js/docs.js?v=202611041714"></script>
-  <script src="js/ai_chat.js?v=202611041714"></script>
-  <script src="js/app.js?v=202611041714"></script>
+  <script src="js/i18n.js?v=202611121818"></script>
+  <script src="js/boards.js?v=202611121818"></script>
+  <script src="js/blocks/control.js?v=202611121818"></script>
+  <script src="js/blocks/events.js?v=202611121818"></script>
+  <script src="js/blocks/text.js?v=202611121818"></script>
+  <script src="js/blocks/variables.js?v=202611121818"></script>
+  <script src="js/blocks/lists.js?v=202611121818"></script>
+  <script src="js/blocks_db.js?v=202611121818"></script>
+  <script src="js/block_builder.js?v=202611121818"></script>
+  <script src="js/toolbox.js?v=202611121818"></script>
+  <script src="js/blocks/matrix.js?v=202611121818"></script>
+  <script src="js/blocks/matrix5.js?v=202611121818"></script>
+  <script src="js/generator.js?v=202611121818"></script>
+  <script src="js/serial.js?v=202611121818"></script>
+  <script src="js/storage.js?v=202611121818"></script>
+  <script src="js/examples_db.js?v=202611121818"></script>
+  <script src="js/lib_manifest.js?v=202611121818"></script>
+  <script src="js/board_setup.js?v=202611121818"></script>
+  <script src="js/firmware_manifest.js?v=202611121818"></script>
+  <script src="js/firmware_flash.js?v=202611121818"></script>
+  <script src="js/docs_data.js?v=202611121818"></script>
+  <script src="js/docs.js?v=202611121818"></script>
+  <script src="js/ai_chat.js?v=202611121818"></script>
+  <script src="js/app.js?v=202611121818"></script>
   <!-- KI-Agent-Brücke (MCP): nur mit ?agent=1&token=… – siehe mcp/README.md -->
   <script>
     if (/[?&]agent=1\b/.test(location.search)) {

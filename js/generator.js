@@ -191,6 +191,17 @@ Blockly.Python['math_change'] = function(block) {
   return `${varName} = (${varName} if isinstance(${varName}, (int, float)) else 0) + ${delta}\n`;
 };
 
+// Betrag: Blockly erzeugt math.fabs() → liefert immer eine Kommazahl (|-3| = 3.0).
+// abs() behält Ganzzahlen bei. Alle anderen Operationen bleiben beim Original.
+(function () {
+  const orig = Blockly.Python['math_single'];
+  Blockly.Python['math_single'] = function (block) {
+    if (block.getFieldValue('OP') !== 'ABS') return orig.call(this, block);
+    const arg = Blockly.Python.valueToCode(block, 'NUM', Blockly.Python.ORDER_NONE) || '0';
+    return [`abs(${arg})`, Blockly.Python.ORDER_FUNCTION_CALL];
+  };
+})();
+
 // "erhöhe"/"verringere VARIABLE um X" (siehe js/blocks/variables.js)
 function _varDelta(block, op) {
   let varName;
@@ -325,9 +336,19 @@ function _sr04SonarDef(sig) {
 }
 
 // Sensor-Ausdruck je nach Block-Feld TYPE ('grove' | 'sr04', Default 'grove').
+// Liefert den Messausdruck oder null, wenn Port oder Typ noch fehlen
+// (dann Warnung am Block; die Prüfung vor dem Start springt hierher).
 function _sonarExpression(block) {
   const sig  = block.getFieldValue('SIG');
   const type = block.getFieldValue('TYPE') || 'grove';
+  if (!sig || sig === '__NONE__') {
+    block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!'));
+    return null;
+  }
+  if (type === '__NONE__') {
+    block.setWarningText(L('⚠ Bitte den Sensor-Typ auswählen: Grove oder HC-SR04?', '⚠ Please choose the sensor type: Grove or HC-SR04?'));
+    return null;
+  }
   if (type === 'sr04') {
     const ok = _sr04SonarDef(sig);
     block.setWarningText(ok ? null
@@ -340,7 +361,8 @@ function _sonarExpression(block) {
 }
 
 Blockly.Python['sensor_ultrasonic'] = function(block) {
-  return [_sonarExpression(block), Blockly.Python.ORDER_MEMBER];
+  const expr = _sonarExpression(block);
+  return expr ? [expr, Blockly.Python.ORDER_MEMBER] : ['0', Blockly.Python.ORDER_ATOMIC];
 };
 
 Blockly.Python['sensor_ldr'] = function(block) {
@@ -385,6 +407,7 @@ Blockly.Python['event_temperature'] = function(block) {
 
 Blockly.Python['event_ultrasonic'] = function(block) {
   const expr = _sonarExpression(block);
+  if (!expr) return L('pass  # ⚠ Ultraschall nicht fertig eingestellt\n', 'pass  # ⚠ Ultrasonic not set up yet\n');
   const op   = block.getFieldValue('OP');
   const val  = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
@@ -1210,6 +1233,22 @@ function _groveLcdDef(portId) {
   _defs['init_grove_lcd'] = `_lcd = GroveRgbLcd(${bus})`;
 }
 
+// Wandelt alles in Text um, bevor es angezeigt/gekürzt wird – sonst scheitert
+// z. B. eine Zahl vom Ultraschall mit „'float' Objekt ist nicht abonnierbar“.
+// Kommazahlen auf eine Nachkommastelle runden (23.456789 → 23.5, 12.0 → 12).
+function _txtDef() {
+  _defs['def_txt'] =
+    'def _txt(x):\n' +
+    '    if isinstance(x, float):\n' +
+    '        try:\n' +
+    '            x = round(x, 1)\n' +
+    '            if x == int(x):\n' +
+    '                x = int(x)\n' +
+    '        except (OverflowError, ValueError):\n' +
+    '            pass\n' +
+    '    return str(x)';
+}
+
 // Text und Farbe sind getrennte Blöcke (gemeinsames _lcd-Objekt via _defs),
 // damit man die Farbe ändern kann, ohne den Text zu überschreiben – und umgekehrt.
 Blockly.Python['actuator_lcd_text'] = function(block) {
@@ -1219,7 +1258,8 @@ Blockly.Python['actuator_lcd_text'] = function(block) {
   const line1 = Blockly.Python.valueToCode(block, 'LINE1', Blockly.Python.ORDER_NONE) || '""';
   const line2 = Blockly.Python.valueToCode(block, 'LINE2', Blockly.Python.ORDER_NONE) || '""';
   _groveLcdDef(portId);
-  return `_lcd.set_text((${line1})[:16] + "\\n" + (${line2})[:16])\n`;
+  _txtDef();
+  return `_lcd.set_text(_txt(${line1})[:16] + "\\n" + _txt(${line2})[:16])\n`;
 };
 
 Blockly.Python['actuator_lcd_color'] = function(block) {
@@ -1352,14 +1392,12 @@ Blockly.Python['when_encoder'] = function(block) {
 };
 
 Blockly.Python['when_distance'] = function(block) {
-  const sig = block.getFieldValue('SIG');
-  if (!sig || sig === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
-  block.setWarningText(null);
+  const expr = _sonarExpression(block);   // Port + Typ (Grove / HC-SR04)
+  if (!expr) return null;
   const op   = block.getFieldValue('OP');
   const val  = block.getFieldValue('VALUE') || '20';
   const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
-  _groveSonarDef(sig);
-  return _whenTask(L('wenn_abstand', 'when_distance'), `(_sonar_${sig}.distance ${op} ${val})`, body, '0.05');
+  return _whenTask(L('wenn_abstand', 'when_distance'), `(${expr} ${op} ${val})`, body, '0.05');
 };
 
 Blockly.Python['when_light'] = function(block) {

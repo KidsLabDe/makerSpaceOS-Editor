@@ -1,10 +1,10 @@
-// docs.js – Erklärungs-Leiste im Editor ("❓ Anleitung")
+// docs.js – Hilfe-Leiste im Editor ("❓ Hilfe")
 //
 // Angedocktes Panel rechts (wie der Code-Bereich), standardmäßig offen mit
 // "Erste Schritte"; Klick auf einen Block bzw. Rechtsklick "❓ Wie
 // funktioniert das?" zeigt dessen Erklärung. Workspace bleibt daneben bedienbar. Für den vollständigen Katalog (alle Bauteile,
-// Programmier-Blöcke, Boards) verlinkt der Header-Button "Bibliothek" sowie
-// der Panel-Footer auf viewer.html (eigene Seite, per QR-Code/Link auch
+// Programmier-Blöcke, Boards) verlinkt nur der Button „📚 Ganze Anleitung
+// öffnen“ im Panel-Footer auf viewer.html (eigene Seite, per QR-Code/Link auch
 // außerhalb des Editors nutzbar).
 //
 // Daten (CORE_DOCS, BOARD_DOCS, Markdown-Rendering, Karten-HTML) kommen aus
@@ -43,7 +43,7 @@
     _drawer.id = 'docs-panel';
     _drawer.innerHTML = `
       <div id="docs-panel-header">
-        <span>${L('❓ Anleitung', '❓ Guide')}</span>
+        <span>${L('❓ Hilfe', '❓ Help')}</span>
         <button id="docs-panel-home" hidden>${L('← Erste Schritte', '← Getting started')}</button>
         <button id="docs-panel-close" title="${L('Erklärung schließen (Esc)', 'Close explanation (Esc)')}">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
@@ -51,7 +51,8 @@
       </div>
       <div id="docs-panel-body"></div>
       <div id="docs-panel-footer">
-        <button id="docs-panel-library" class="btn btn-ghost">${L('📚 Mehr in der Bibliothek', '📚 More in the library')}</button>
+        <button id="docs-panel-library" class="btn btn-ghost">${L('📚 Ganze Anleitung öffnen', '📚 Open the full guide')}</button>
+        <button id="docs-panel-shop" class="btn btn-ghost" style="margin-top:6px">${L('🛒 Bauteile bestellen', '🛒 Order parts')}</button>
       </div>`;
     // Ins Haupt-Layout einhängen (ganz rechts, neben Code-Panel) –
     // Fallback body, falls #main fehlt (z.B. in Tests).
@@ -62,6 +63,8 @@
     _drawer.querySelector('#docs-panel-library').addEventListener('click', () => {
       window.open(_drawerKey ? 'viewer.html?id=' + encodeURIComponent(_drawerKey) : 'viewer.html', '_blank');
     });
+    // „Hier bestellen“: alle Bauteile + Boards mit Bezugsquellen (shop.html)
+    _drawer.querySelector('#docs-panel-shop').addEventListener('click', () => window.open('shop.html', '_blank'));
     // Links im Erste-Schritte-Text (z. B. zur Board-Doku)
     _drawer.querySelector('#docs-panel-body').addEventListener('click', e => {
       const a = e.target.closest('[data-docs-key]');
@@ -173,15 +176,12 @@
     });
   }
 
-  // ── Header-Buttons + Startzustand ──────────────────────────────────────────
+  // ── Header-Button + Startzustand ───────────────────────────────────────────
   //
-  // "Bibliothek" öffnet den vollständigen Katalog in neuem Tab, "Anleitung"
-  // blendet die Leiste ein/aus. Der Listener hängt vor dem aus app.js, damit
+  // "Hilfe" blendet die Leiste ein/aus. Der Listener hängt vor dem aus app.js, damit
   // die Leiste schon steht, wenn Blockly die Workspace-Größe misst.
 
   document.addEventListener('DOMContentLoaded', () => {
-    const lib = document.getElementById('btn-library');
-    if (lib) lib.addEventListener('click', () => window.open('viewer.html', '_blank'));
     const btn = document.getElementById('btn-docs');
     if (btn) btn.addEventListener('click', toggleDocsDrawer);
 

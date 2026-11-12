@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>makerSpaceOS – Hier bestellen</title>
+<link rel="stylesheet" href="css/fonts.css?v=202611121818">
+<link rel="stylesheet" href="css/style.css?v=202611121818">
+<style>
+  /* Eigenständige Seite „Hier bestellen“: alle Bauteile + Boards mit
+     Bezugsquellen. Daten: components/catalog.json (→ BLOCKS_CATALOG in
+     js/blocks_db.js), Feld `shops` pro Bauteil bzw. unter `boards`.
+     Nutzt nur die Design-Variablen aus css/style.css. */
+  body {
+    min-height: 100vh; background: var(--bg); color: var(--text);
+    font-family: var(--font-body);
+  }
+  #s-header {
+    position: sticky; top: 0; z-index: 2;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    min-height: var(--header-h); padding: 8px 18px;
+    background: var(--surface); border-bottom: 3px solid var(--line-strong);
+  }
+  #s-header h1 { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+  #s-header .sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  #s-tools { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  #s-tools label { font-size: 13px; display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  .s-lang { display: inline-flex; border: 1.5px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .s-lang button {
+    border: 0; background: var(--surface); padding: 7px 10px; cursor: pointer;
+    font: 600 12px var(--font-body); color: var(--text-muted);
+  }
+  .s-lang button.active { background: var(--accent); color: #fff; }
+  a.btn { text-decoration: none; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 22px 20px 60px; }
+  .s-intro {
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-lg);
+    padding: 14px 18px; font-size: 14px; line-height: 1.55; margin-bottom: 8px;
+  }
+  .s-intro small { color: var(--text-muted); }
+  .s-total {
+    margin-top: 10px; padding: 10px 16px; font-size: 15px;
+    background: rgba(247,217,76,.25); border: 1.5px solid var(--line-strong); border-radius: var(--radius-lg);
+  }
+  .s-total small { color: var(--text-muted); font-size: 12px; }
+  .s-stats { font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 10px 2px 0; }
+
+  .s-section { margin-top: 30px; }
+  .s-section h2 {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-size: 19px; font-weight: 600; margin-bottom: 12px;
+  }
+  .s-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 1.5px solid var(--line-strong); }
+  .s-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+
+  .s-card {
+    display: flex; flex-direction: column;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .s-visual {
+    height: 120px; display: flex; align-items: center; justify-content: center;
+    background: var(--bg-alt); font-size: 52px; border-bottom: 1.5px solid var(--line);
+  }
+  .s-visual img { width: 100%; height: 100%; object-fit: cover; }
+  .s-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .s-name { font-weight: 700; font-size: 15px; }
+  .s-product { font-size: 12.5px; color: var(--text-muted); line-height: 1.4; }
+  .s-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+  .s-badge {
+    font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-pill);
+    background: rgba(74,184,166,.14); color: #1f7a6b;
+  }
+  .s-shops { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
+  .s-shops li { font-size: 13px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+  .s-shops a {
+    font-weight: 700; color: var(--brand-blue); text-decoration: none;
+    border: 1.5px solid var(--brand-blue); border-radius: 8px; padding: 3px 9px;
+  }
+  .s-shops a:hover { background: var(--brand-blue); color: #fff; }
+  .s-price { font-weight: 600; }
+  .s-note { font-size: 12px; color: var(--text-muted); width: 100%; }
+  .s-open {
+    margin-top: auto; font-size: 12.5px; color: var(--text-muted);
+    border: 1.5px dashed var(--line); border-radius: 8px; padding: 6px 9px;
+  }
+
+  .s-builtin { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .s-builtin li {
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-pill);
+    padding: 5px 12px; font-size: 13px;
+  }
+  .s-builtin li span { color: var(--text-muted); font-size: 12px; }
+  [hidden] { display: none !important; }
+
+  @media print {
+    #s-header { position: static; border-bottom-width: 1px; }
+    #s-tools { display: none; }
+    .s-card { break-inside: avoid; }
+    .s-visual { height: 70px; font-size: 34px; }
+    .s-shops a { border: 0; padding: 0; }
+    .s-shops a::after { content: " (" attr(href) ")"; font-weight: 400; font-size: 10px; color: #555; }
+  }
+</style>
+</head>
+<body>
+
+<header id="s-header">
+  <span style="font-size:26px">🛒</span>
+  <div>
+    <h1 id="s-title">Hier bestellen</h1>
+    <div class="sub" id="s-sub">makerSpaceOS – Bauteile &amp; Boards nachkaufen</div>
+  </div>
+  <div id="s-tools">
+    <label><input type="checkbox" id="s-kit-only"> <span id="s-kit-label">Nur Testbox-Bauteile</span></label>
+    <button class="btn btn-ghost" id="s-print">🖨️ <span>Drucken</span></button>
+    <a class="btn btn-ghost" id="s-back" href="index.html">← <span>Zum Editor</span></a>
+    <div class="s-lang"><button data-lang="de">DE</button><button data-lang="en">EN</button></div>
+  </div>
+</header>
+
+<main>
+  <div class="s-intro" id="s-intro"></div>
+  <div class="s-stats" id="s-stats"></div>
+  <div class="s-total" id="s-total" hidden></div>
+  <div id="s-content"></div>
+</main>
+
+<script src="js/i18n.js?v=202611121818"></script>
+<script src="js/boards.js?v=202611121818"></script>
+<script src="js/blocks_db.js?v=202611121818"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── Hilfen ──────────────────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  // Nur http(s)-Links zulassen (Daten kommen aus dem Repo, trotzdem defensiv).
+  function safeUrl(u) { return /^https?:\/\//i.test(u || '') ? u : ''; }
+  // Preise stehen als Zahl (EUR inkl. MwSt.) im Register → lokal formatieren.
+  function eur(n) {
+    return n.toLocaleString(IS_EN ? 'en-GB' : 'de-DE', { style: 'currency', currency: 'EUR' });
+  }
+  // Günstigster Shop mit Preis (für die Gesamtsumme: je ein Paket)
+  function cheapest(shops) {
+    return (shops || []).filter(s => safeUrl(s.url) && typeof s.price === 'number')
+      .sort((a, b) => a.price - b.price)[0] || null;
+  }
+
+  const CAT  = BLOCKS_CATALOG;
+  const COMP = CAT.components || {};
+  const BRDS = CAT.boards || {};
+
+  // Statische Texte
+  document.title = 'makerSpaceOS – ' + L('Hier bestellen', 'Order here');
+  if (IS_EN) document.documentElement.lang = 'en';
+  document.getElementById('s-title').textContent = L('Hier bestellen', 'Order here');
+  document.getElementById('s-sub').textContent = L('makerSpaceOS – Bauteile & Boards nachkaufen', 'makerSpaceOS – buy parts & boards');
+  document.getElementById('s-kit-label').textContent = L('Nur Testbox-Bauteile', 'Test box parts only');
+  document.querySelector('#s-print span').textContent = L('Drucken', 'Print');
+  document.querySelector('#s-back span').textContent = L('Zum Editor', 'Back to editor');
+  document.getElementById('s-intro').innerHTML = L(
+    'Hier findest du alle Bauteile und Boards, die der Editor kennt – mit Links zu Shops, in denen du sie nachkaufen kannst. ' +
+    'Bauteile mit dem Abzeichen <b>Testbox</b> stecken in der makerSpaceOS-Testbox.<br><small>Preise und Lieferbarkeit ohne Gewähr – bitte im Shop prüfen.</small>',
+    'Here you find every part and board the editor knows – with links to shops where you can buy them. ' +
+    'Parts marked <b>Test box</b> are included in the makerSpaceOS test box.<br><small>Prices and availability without guarantee – please check in the shop.</small>');
+
+  for (const b of document.querySelectorAll('.s-lang button')) {
+    b.classList.toggle('active', b.dataset.lang === LANG);
+    b.addEventListener('click', () => setLang(b.dataset.lang));
+  }
+  document.getElementById('s-print').addEventListener('click', () => window.print());
+
+  // ── Daten zusammenstellen ──────────────────────────────────────────────────
+  // Bauteil → Kategorie, Produktname und Testbox-Kennzeichen aus den Blöcken
+  // (BLOCKS_DB, Feld component + hardware), Bezugsquellen aus dem Register.
+  function boardName(id) {
+    return (BOARD_PROFILES[id] && BOARD_PROFILES[id].name) || id;
+  }
+
+  const items = Object.entries(COMP).map(([id, c]) => {
+    const blocks = BLOCKS_DB.filter(b => b.component === id);
+    const hw = blocks.map(b => b.hardware).filter(Boolean);
+    return {
+      id, c,
+      category: (blocks[0] && blocks[0].blockCategory) || c.category || 'Weitere',
+      name: LF(c, 'label'),
+      product: LF(c, 'product') || LF(hw.find(h => h.commonName), 'commonName') || '',
+      kit: hw.some(h => h.kitStandard === true),
+    };
+  });
+
+  // ── Rendern ────────────────────────────────────────────────────────────────
+  function shopsHtml(shops) {
+    const list = (shops || []).filter(s => safeUrl(s.url));
+    if (!list.length) {
+      return `<div class="s-open">⏳ ${esc(L('Bezugsquelle folgt', 'Shop link coming soon'))}</div>`;
+    }
+    return '<ul class="s-shops">' + list.map(s => {
+      const pack  = s.pack > 1 ? ` · ${esc(L(s.pack + 'er-Pack', 'pack of ' + s.pack))} (${esc(eur(s.price / s.pack))}${esc(L('/Stück', '/piece'))})` : '';
+      const price = typeof s.price === 'number' ? `<span class="s-price">${esc(eur(s.price))}${pack}</span>` : '';
+      const sku   = s.sku ? `<span class="s-note" style="width:auto">${esc(L('Art.-Nr.', 'SKU'))} ${esc(s.sku)}</span>` : '';
+      const note  = LF(s, 'note') ? `<span class="s-note">${esc(LF(s, 'note'))}</span>` : '';
+      return `<li><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener">🛒 ${esc(s.name)}</a>${price}${sku}${note}</li>`;
+    }).join('') + '</ul>';
+  }
+
+  function cardHtml({ emoji, image, name, product, badges, shops, note }) {
+    const visual = image
+      ? `<img src="${esc(image)}" alt="${esc(name)}" loading="lazy">`
+      : esc(emoji || '📦');
+    return `<div class="s-card">
+      <div class="s-visual">${visual}</div>
+      <div class="s-body">
+        <div class="s-name">${image ? esc(emoji || '') + ' ' : ''}${esc(name)}</div>
+        ${product && product !== name ? `<div class="s-product">${esc(product)}</div>` : ''}
+        ${badges.length ? `<div class="s-badges">${badges.map(b => `<span class="s-badge">${esc(b)}</span>`).join('')}</div>` : ''}
+        ${note ? `<div class="s-product">${esc(note)}</div>` : ''}
+        ${shopsHtml(shops)}
+      </div>
+    </div>`;
+  }
+
+  function render() {
+    const kitOnly = document.getElementById('s-kit-only').checked;
+    const out = [];
+    let total = 0, withShop = 0;
+    let sum = 0, priced = 0, latest = '';
+    const countShop = shops => {
+      total++;
+      if ((shops || []).some(s => safeUrl(s.url))) withShop++;
+      const c = cheapest(shops);
+      if (c) { sum += c.price; priced++; if ((c.checked || '') > latest) latest = c.checked; }
+    };
+
+    // Boards (Testbox-Filter gilt nur für Bauteile)
+    if (!kitOnly) {
+      const cards = Object.keys(BOARD_PROFILES).map(id => {
+        const b = BRDS[id] || {};
+        countShop(b.shops);
+        return cardHtml({
+          emoji: b.emoji || '🔌', image: b.image ? 'components/' + b.image : '',
+          name: boardName(id), product: LF(b, 'product'), badges: [],
+          shops: b.shops, note: LF(b, 'note'),
+        });
+      });
+      out.push(`<section class="s-section"><h2><span class="s-dot" style="background:var(--brand-yellow)"></span>🔌 ${esc(L('Boards', 'Boards'))}</h2><div class="s-grid">${cards.join('')}</div></section>`);
+    }
+
+    // Bauteile, gruppiert wie die Toolbox-Kategorien
+    const cats = CAT.categories.map(c => c.id);
+    for (const it of items) if (!cats.includes(it.category)) cats.push(it.category);
+    for (const catId of cats) {
+      const catDef = CAT.categories.find(c => c.id === catId) || { id: catId, label: catId, label_en: L(catId, 'More'), colour: '#94a3b8' };
+      const list = items.filter(it => it.category === catId && !it.c.builtinOn && (!kitOnly || it.kit));
+      if (!list.length) continue;
+      const cards = list.map(it => {
+        countShop(it.c.shops);
+        return cardHtml({
+          emoji: it.c.emoji, image: it.c.image ? 'components/' + it.c.image : '',
+          name: it.name, product: it.product,
+          badges: it.kit ? [L('Testbox', 'Test box')] : [],
+          shops: it.c.shops, note: LF(it.c, 'note'),
+        });
+      });
+      out.push(`<section class="s-section"><h2><span class="s-dot" style="background:${esc(catDef.colour)}"></span>${esc(LF(catDef, 'label'))}</h2><div class="s-grid">${cards.join('')}</div></section>`);
+    }
+
+    // Eingebaute Bauteile: nichts zu kaufen, kommt mit dem Board
+    const built = items.filter(it => it.c.builtinOn && (!kitOnly || it.kit));
+    if (built.length) {
+      out.push(`<section class="s-section"><h2><span class="s-dot" style="background:var(--bg-alt)"></span>✅ ${esc(L('Schon eingebaut – nichts zu kaufen', 'Already built in – nothing to buy'))}</h2>
+        <ul class="s-builtin">${built.map(it =>
+          `<li>${esc(it.c.emoji || '')} ${esc(it.name)} <span>– ${esc(L('auf', 'on'))} ${esc(it.c.builtinOn.map(boardName).join(', '))}</span></li>`).join('')}</ul></section>`);
+    }
+
+    document.getElementById('s-content').innerHTML = out.join('');
+    document.getElementById('s-stats').textContent = L(
+      `${total} Einträge · ${withShop} mit Bezugsquelle · ${total - withShop} noch offen`,
+      `${total} entries · ${withShop} with shop link · ${total - withShop} still open`);
+
+    // Gesamtkosten: je Eintrag ein Paket beim günstigsten Shop
+    const dateTxt = latest ? new Date(latest).toLocaleDateString(IS_EN ? 'en-GB' : 'de-DE') : '';
+    document.getElementById('s-total').innerHTML = priced ? L(
+      `💶 Zusammen: <b>${esc(eur(sum))}</b> <small>für ${priced} von ${total} Einträgen mit Preis – je ein Paket beim günstigsten Shop, inkl. MwSt., zzgl. Versand${dateTxt ? ', Preisstand ' + esc(dateTxt) : ''}</small>`,
+      `💶 Total: <b>${esc(eur(sum))}</b> <small>for ${priced} of ${total} entries with a price – one pack each from the cheapest shop, incl. VAT, plus shipping${dateTxt ? ', prices as of ' + esc(dateTxt) : ''}</small>`) : '';
+    document.getElementById('s-total').hidden = !priced;
+  }
+
+  document.getElementById('s-kit-only').addEventListener('change', render);
+  render();
+})();
+</script>
+</body>
+</html>

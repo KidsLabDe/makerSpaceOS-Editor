@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-11-04T17:14:52.317Z
+// Generiert: 2026-11-12T18:18:42.966Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -85,167 +85,346 @@ const BLOCKS_CATALOG = {
     "dht11": {
       "emoji": "🌡️",
       "label": "DHT11",
-      "label_en": "DHT11"
+      "label_en": "DHT11",
+      "shops": [
+        {
+          "name": "BerryBase",
+          "url": "https://www.berrybase.de/seeed-grove-temperatur-luftfeuchte-sensor-dht11",
+          "price": 4.9,
+          "pack": 1,
+          "sku": "SE-101020011",
+          "checked": "2026-11-12",
+          "note": "Mit Grove-Kabel",
+          "note_en": "Grove cable included"
+        }
+      ]
     },
     "dht22": {
       "emoji": "🌡️",
       "label": "DHT22",
-      "label_en": "DHT22"
+      "label_en": "DHT22",
+      "shops": []
     },
     "ultrasonic": {
       "emoji": "📡",
       "label": "Ultraschall",
-      "label_en": "Ultrasonic"
+      "label_en": "Ultrasonic",
+      "image": "images/anschluss-ultraschall-vorne.jpg",
+      "shops": [
+        {
+          "name": "Roboter-Bausatz",
+          "url": "https://www.roboter-bausatz.de/p/hc-sr04-ultraschallsensor",
+          "price": 0.99,
+          "pack": 1,
+          "sku": "RBS10001",
+          "checked": "2026-11-12",
+          "note": "HC-SR04 (4 Pins): im Block Typ „HC-SR04“ wählen, mit Grove-auf-Jumper-Kabel anschließen",
+          "note_en": "HC-SR04 (4 pins): choose type “HC-SR04” in the block, connect with a Grove-to-jumper cable"
+        }
+      ]
     },
     "ldr": {
       "emoji": "☀️",
       "label": "Lichtsensor",
-      "label_en": "Light sensor"
+      "label_en": "Light sensor",
+      "shops": []
     },
     "air_quality": {
       "emoji": "🌫️",
       "label": "Luftqualität",
-      "label_en": "Air quality"
+      "label_en": "Air quality",
+      "shops": []
     },
     "soil": {
       "emoji": "🌱",
       "label": "Bodenfeuchte",
-      "label_en": "Soil moisture"
+      "label_en": "Soil moisture",
+      "shops": []
     },
     "imu_onboard": {
       "emoji": "🧭",
       "label": "Bewegungssensor (eingebaut)",
-      "label_en": "Motion sensor (built-in)"
+      "label_en": "Motion sensor (built-in)",
+      "builtinOn": [
+        "gamepad_pico"
+      ]
     },
     "imu_ext": {
       "emoji": "🧭",
       "label": "Bewegungssensor (Grove)",
-      "label_en": "Motion sensor (Grove)"
+      "label_en": "Motion sensor (Grove)",
+      "image": "images/icm20948_beispiel.png",
+      "shops": []
     },
     "encoder": {
       "emoji": "🎛️",
       "label": "Drehgeber",
-      "label_en": "Rotary encoder"
+      "label_en": "Rotary encoder",
+      "image": "images/anschluss-drehgeber.jpg",
+      "shops": [
+        {
+          "name": "Roboter-Bausatz",
+          "url": "https://www.roboter-bausatz.de/p/drehencoder-drehgeber-modul-ky-040-3-stueck",
+          "price": 2.95,
+          "pack": 3,
+          "sku": "RBS10069",
+          "checked": "2026-11-12",
+          "note": "KY-040 ohne Grove-Stecker – mit Grove-auf-Jumper-Kabel anschließen",
+          "note_en": "KY-040 without Grove plug – connect with a Grove-to-jumper cable"
+        }
+      ]
     },
     "button": {
       "emoji": "🔘",
       "label": "Taster",
-      "label_en": "Button"
+      "label_en": "Button",
+      "shops": []
     },
     "mic": {
       "emoji": "🎤",
       "label": "Mikrofon",
-      "label_en": "Microphone"
+      "label_en": "Microphone",
+      "builtinOn": [
+        "gamepad_pico"
+      ]
     },
     "touch_pad": {
       "emoji": "👆",
       "label": "Touch-Pfeile",
-      "label_en": "Touch arrows"
+      "label_en": "Touch arrows",
+      "builtinOn": [
+        "gamepad_pico"
+      ]
     },
     "sound_sensor": {
       "emoji": "👂",
       "label": "Geräuschsensor",
-      "label_en": "Sound sensor"
+      "label_en": "Sound sensor",
+      "category": "Sensoren",
+      "product": "Grove-Geräuschsensor",
+      "product_en": "Grove sound sensor",
+      "shops": []
     },
     "touch_sensor": {
       "emoji": "✋",
       "label": "Berührungssensor",
-      "label_en": "Touch sensor"
+      "label_en": "Touch sensor",
+      "category": "Sensoren",
+      "product": "Grove-Berührungssensor",
+      "product_en": "Grove touch sensor",
+      "shops": []
     },
     "akku": {
       "emoji": "🔋",
       "label": "Akku",
-      "label_en": "Battery"
+      "label_en": "Battery",
+      "builtinOn": [
+        "robobuddy"
+      ]
     },
     "battery": {
       "emoji": "🔋",
       "label": "Batterie",
-      "label_en": "Battery"
+      "label_en": "Battery",
+      "builtinOn": [
+        "maker_pi_rp2040"
+      ]
     },
     "drive": {
       "emoji": "🚗",
       "label": "Fahrwerk",
-      "label_en": "Drive base"
+      "label_en": "Drive base",
+      "builtinOn": [
+        "robobuddy"
+      ]
     },
     "led": {
       "emoji": "💡",
       "label": "LED",
-      "label_en": "LED"
+      "label_en": "LED",
+      "shops": []
     },
     "buzzer": {
       "emoji": "🔔",
       "label": "Piepser (eingebaut)",
-      "label_en": "Beeper (built-in)"
+      "label_en": "Beeper (built-in)",
+      "builtinOn": [
+        "maker_pi_rp2040",
+        "gamepad_pico"
+      ]
     },
     "buzzer_ext": {
       "emoji": "🔔",
       "label": "Piepser (extern)",
-      "label_en": "Beeper (external)"
+      "label_en": "Beeper (external)",
+      "shops": []
     },
     "isd1820": {
       "emoji": "🔊",
       "label": "Sprachmodul",
-      "label_en": "Voice module"
+      "label_en": "Voice module",
+      "shops": []
     },
     "servo": {
       "emoji": "⚙️",
       "label": "Servo",
-      "label_en": "Servo"
+      "label_en": "Servo",
+      "image": "images/anschluss-servo.jpg",
+      "shops": [
+        {
+          "name": "Roboter-Bausatz",
+          "url": "https://www.roboter-bausatz.de/p/5x-sg90-9g-servo",
+          "price": 9.79,
+          "pack": 5,
+          "sku": "RBS10047",
+          "checked": "2026-11-12"
+        }
+      ]
     },
     "wheel_servo": {
       "emoji": "🛞",
       "label": "Rad-Servo",
-      "label_en": "Wheel servo"
+      "label_en": "Wheel servo",
+      "shops": []
     },
     "motor": {
       "emoji": "🌀",
       "label": "Motor",
-      "label_en": "Motor"
+      "label_en": "Motor",
+      "shops": []
     },
     "stepper": {
       "emoji": "🔄",
       "label": "Schrittmotor",
-      "label_en": "Stepper motor"
+      "label_en": "Stepper motor",
+      "image": "images/stepper_uebersicht.jpg",
+      "shops": []
     },
     "keyboard": {
       "emoji": "⌨️",
       "label": "Tastatur",
-      "label_en": "Keyboard"
+      "label_en": "Keyboard",
+      "builtinOn": [
+        "gamepad_pico"
+      ]
     },
     "neopixel": {
       "emoji": "🌈",
       "label": "NeoPixel (eingebaut)",
-      "label_en": "NeoPixel (built-in)"
+      "label_en": "NeoPixel (built-in)",
+      "builtinOn": [
+        "maker_pi_rp2040",
+        "gamepad_pico",
+        "robobuddy"
+      ]
     },
     "neopixel_strip": {
       "emoji": "🌈",
       "label": "LED-Streifen",
-      "label_en": "LED strip"
+      "label_en": "LED strip",
+      "shops": []
     },
     "round_display": {
       "emoji": "⭕",
       "label": "Rund-Display",
-      "label_en": "Round display"
+      "label_en": "Round display",
+      "builtinOn": [
+        "robobuddy"
+      ]
     },
     "lcd": {
       "emoji": "📟",
       "label": "LCD",
-      "label_en": "LCD"
+      "label_en": "LCD",
+      "shops": [
+        {
+          "name": "BerryBase",
+          "url": "https://www.berrybase.de/seeed-grove-16x2-lcd-weiss-auf-blau",
+          "price": 6.5,
+          "pack": 1,
+          "sku": "SE-104020111",
+          "checked": "2026-11-12",
+          "note": "Grove 16x2 LCD weiß auf blau (ohne Farb-Beleuchtung). Läuft an den 3,3-V-Grove-Ports – getestet",
+          "note_en": "Grove 16x2 LCD white on blue (no colour backlight). Works on the 3.3 V Grove ports – tested"
+        }
+      ]
     },
     "seg7": {
       "emoji": "🔢",
       "label": "7-Segment",
-      "label_en": "7-segment"
+      "label_en": "7-segment",
+      "image": "images/anschluss-7segment-vorne.jpg",
+      "shops": [
+        {
+          "name": "Roboter-Bausatz",
+          "url": "https://www.roboter-bausatz.de/p/tm1637-4-digit-7-segment-display-modul",
+          "price": 1.49,
+          "pack": 1,
+          "sku": "RBS10247",
+          "checked": "2026-11-12",
+          "note": "Ohne Grove-Stecker – mit Grove-auf-Jumper-Kabel anschließen",
+          "note_en": "No Grove plug – connect with a Grove-to-jumper cable"
+        }
+      ]
     },
     "matrix8": {
       "emoji": "🟩",
       "label": "Matrix 8×8",
-      "label_en": "Matrix 8×8"
+      "label_en": "Matrix 8×8",
+      "category": "Anzeigen",
+      "product": "8×8 NeoPixel-Matrix (WS2812B)",
+      "product_en": "8×8 NeoPixel matrix (WS2812B)",
+      "shops": []
     },
     "matrix5": {
       "emoji": "🟩",
       "label": "Matrix 5×5",
-      "label_en": "Matrix 5×5"
+      "label_en": "Matrix 5×5",
+      "category": "Anzeigen",
+      "builtinOn": [
+        "gamepad_pico"
+      ]
+    }
+  },
+  "boards": {
+    "maker_pi_rp2040": {
+      "emoji": "🟦",
+      "product": "Cytron MAKER-PI-RP2040",
+      "shops": [
+        {
+          "name": "DigiKey",
+          "url": "https://www.digikey.de/de/products/detail/cytron-technologies-sdn-bhd/MAKER-PI-RP2040/14557836",
+          "price": 14.26,
+          "pack": 1,
+          "sku": "3614-MAKER-PI-RP2040-ND",
+          "checked": "2026-11-12"
+        },
+        {
+          "name": "Cytron",
+          "url": "https://www.cytron.io/p-maker-pi-rp2040"
+        }
+      ]
+    },
+    "gamepad_pico": {
+      "emoji": "🎮",
+      "product": "KidsLab nerdYcontroller (GamePadPico)",
+      "shops": []
+    },
+    "lolin_s2_mini": {
+      "emoji": "📶",
+      "product": "Wemos/LOLIN S2 Mini (ESP32-S2)",
+      "shops": []
+    },
+    "esp32_d1_r32": {
+      "emoji": "🟩",
+      "product": "AZ-Delivery ESP32 D1 R32 + Grove Base Shield",
+      "product_en": "AZ-Delivery ESP32 D1 R32 + Grove Base Shield",
+      "shops": []
+    },
+    "robobuddy": {
+      "emoji": "🤖",
+      "product": "MF26 Robo-Buddy (Powerboard + Waveshare ESP32-C6-Zero)",
+      "shops": []
     }
   }
 };

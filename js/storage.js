@@ -30,6 +30,23 @@ const VERSIONS_MAX     = 15;
   } catch (e) { /* localStorage evtl. nicht verfügbar – ignorieren */ }
 })();
 
+const _SONAR_TYPES = ['sensor_ultrasonic', 'event_ultrasonic', 'when_distance'];
+
+// Gegenstück zu migrateState für XML (Datei-Import, Beispiele): fehlende
+// Felder ergänzen, bevor Blockly die Blöcke mit ihren Defaults anlegt.
+function migrateXmlDom(dom) {
+  for (const b of dom.getElementsByTagName('block')) {
+    if (!_SONAR_TYPES.includes(b.getAttribute('type'))) continue;
+    const has = [...b.children].some(c => c.tagName.toLowerCase() === 'field' && c.getAttribute('name') === 'TYPE');
+    if (has) continue;
+    const f = (dom.ownerDocument || document).createElementNS(b.namespaceURI, 'field');
+    f.setAttribute('name', 'TYPE');
+    f.textContent = 'grove';
+    b.insertBefore(f, b.firstChild);
+  }
+  return dom;
+}
+
 // Migriert veraltete Block-Zustände auf aktuelle Feldnamen.
 function migrateState(state) {
   if (!state || !state.blocks || !state.blocks.blocks) return state;
@@ -59,6 +76,12 @@ function migrateState(state) {
         if (b.fields.VALUE === undefined) b.fields.VALUE = num;
       }
       delete b.inputs.VALUE;
+    }
+    // Ultraschall: Typ hat keine Vorauswahl mehr – alte Projekte (ohne TYPE)
+    // waren immer der Grove-Sensor.
+    if (_SONAR_TYPES.includes(b.type)) {
+      b.fields = b.fields || {};
+      if (b.fields.TYPE === undefined) b.fields.TYPE = 'grove';
     }
     // Verschachtelte Blöcke rekursiv patchen
     for (const inp of Object.values(b.inputs || {})) {

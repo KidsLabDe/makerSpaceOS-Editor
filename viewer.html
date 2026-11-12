@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>makerSpaceOS – Bibliothek</title>
-<link rel="stylesheet" href="css/fonts.css?v=202611041714">
-<link rel="stylesheet" href="css/style.css?v=202611041714">
+<title>makerSpaceOS – Anleitung</title>
+<link rel="stylesheet" href="css/fonts.css?v=202611121818">
+<link rel="stylesheet" href="css/style.css?v=202611121818">
 <style>
   /* Eigenständige Seite (kein Editor-Overlay) – nutzt die Design-Variablen
      und .lib-*-Klassen aus css/style.css (dieselbe Optik wie das
@@ -95,6 +95,13 @@
     text-decoration: none; font-size: 13.5px;
   }
   .v-comp-uses a:hover { text-decoration: underline; }
+  /* Bezugsquellen (Daten: components/catalog.json → shops, siehe shop.html) */
+  .v-shops { margin-top: 18px; }
+  .v-shop-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 5px 0; font-size: 13.5px; }
+  .v-shop-row a { font-weight: 700; color: var(--brand-blue); text-decoration: none; }
+  .v-shop-row a:hover { text-decoration: underline; }
+  .v-shop-note { width: 100%; font-size: 12px; color: var(--text-muted); }
+  .v-shop-all { display: inline-block; margin-top: 6px; font-size: 13px; color: var(--brand-blue); }
 
   @media (max-width: 768px) {
     #v-tree { width: 220px; }
@@ -108,11 +115,12 @@
 <header id="v-header">
   <span style="font-size:26px">📚</span>
   <div>
-    <h1>Bibliothek</h1>
+    <h1>Anleitung</h1>
     <div class="sub">makerSpaceOS – Bauteile, Blöcke &amp; Boards</div>
   </div>
   <input id="v-search" type="search" placeholder="🔍 Suchen… (z.B. Taster, LED, Abstand)" autocomplete="off">
   <span id="v-count"></span>
+  <a class="btn btn-ghost" href="shop.html" style="text-decoration:none">🛒 Hier bestellen</a>
 </header>
 
 <div id="v-main">
@@ -126,9 +134,9 @@
   </div>
 </div>
 
-<script src="js/boards.js?v=202611041714"></script>
-<script src="js/blocks_db.js?v=202611041714"></script>
-<script src="js/docs_data.js?v=202611041714"></script>
+<script src="js/boards.js?v=202611121818"></script>
+<script src="js/blocks_db.js?v=202611121818"></script>
+<script src="js/docs_data.js?v=202611121818"></script>
 <script>
 (function () {
   'use strict';
@@ -174,6 +182,39 @@
 
   // ── 2) Karten-HTML ─────────────────────────────────────────────────────────
 
+  // „Hier bestellen“-Abschnitt für Bauteil-/Board-Karten. Leere Liste →
+  // Hinweis „Bezugsquelle folgt“; der Link auf shop.html steht immer da.
+  function shopSectionHtml(shops, builtinOn) {
+    let rows;
+    if (builtinOn && builtinOn.length) {
+      const names = builtinOn.map(id => (BOARD_PROFILES[id] && BOARD_PROFILES[id].name) || id).join(', ');
+      rows = `<div class="v-shop-row">✅ Schon eingebaut auf: ${escHtml(names)} – nichts zu kaufen</div>`;
+    } else {
+      const list = (shops || []).filter(sh => /^https?:\/\//i.test(sh.url || ''));
+      rows = list.length ? list.map(sh => {
+        const price = typeof sh.price === 'number'
+          ? sh.price.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' }) + (sh.pack > 1 ? ` (${sh.pack}er-Pack)` : '')
+          : '';
+        return `<div class="v-shop-row"><a href="${escAttr(sh.url)}" target="_blank" rel="noopener">🛒 ${escHtml(sh.name)}</a>` +
+          (price ? `<span>${escHtml(price)}</span>` : '') +
+          (sh.note ? `<span class="v-shop-note">${escHtml(sh.note)}</span>` : '') + `</div>`;
+      }).join('') : `<div class="v-shop-row" style="color:var(--text-muted)">⏳ Bezugsquelle folgt</div>`;
+    }
+    return `<div class="v-shops"><div class="v-tech-title">Hier bestellen</div>${rows}` +
+      `<a class="v-shop-all" href="shop.html">→ Alle Bauteile &amp; Boards bestellen</a></div>`;
+  }
+
+  function componentShopHtml(g) {
+    const compId = (g.defs.find(d => d.component) || {}).component;
+    const comp = compId && (BLOCKS_CATALOG.components || {})[compId];
+    return comp ? shopSectionHtml(comp.shops, comp.builtinOn) : '';
+  }
+
+  function boardShopHtml(boardId) {
+    const b = (BLOCKS_CATALOG.boards || {})[boardId];
+    return b ? shopSectionHtml(b.shops) : '';
+  }
+
   function componentCardHtml(g, catDef) {
     const entry = {
       key: 'comp:' + g.name, kind: 'component', label: g.name,
@@ -190,6 +231,7 @@
       `<a href="?id=block:${encodeURIComponent(def.id)}" data-goto="block:${escAttr(def.id)}">${escHtml(def.label || def.id)}</a>`
     ).join('');
     html += `<div class="v-comp-uses"><div class="v-tech-title">Verwendet in diesen Programmier-Blöcken</div>${links}</div>`;
+    html += componentShopHtml(g);
     return html;
   }
 
@@ -234,7 +276,8 @@
     ITEMS.set(key, {
       key, label: entry.label, colour: entry.colour,
       searchText: (entry.label + ' ' + entry.tooltip + ' ' + entry.doc + ' ' + hwName).toLowerCase(),
-      render: () => (entry.kind === 'block' && entry.def) ? blockCardHtml(entry) : cardHtml(entry, false),
+      render: () => (entry.kind === 'block' && entry.def) ? blockCardHtml(entry)
+        : cardHtml(entry, false) + (entry.kind === 'board' ? boardShopHtml(entry.boardId) : ''),
     });
   }
 

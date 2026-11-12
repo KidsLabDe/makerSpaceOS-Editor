@@ -74,6 +74,9 @@ const TOOLBOX_STATIC_CONTENTS = [
       { kind: 'block', type: 'math_number' },
       { kind: 'block', type: 'math_arithmetic' },
       { kind: 'block', type: 'math_single' },
+      // Betrag (abs) als eigener, vorbelegter Eintrag – im √-Dropdown fand ihn niemand
+      { kind: 'block', type: 'math_single', fields: { OP: 'ABS' },
+        inputs: { NUM: { shadow: { type: 'math_number', fields: { NUM: -5 } } } } },
       { kind: 'block', type: 'math_constrain',
         inputs: {
           LOW:  { shadow: { type: 'math_number', fields: { NUM: 0 } } },

@@ -3,6 +3,16 @@
 // Trenner-Eintrag im Pin-Dropdown (Wert wird im Validator in block_builder.js abgefangen)
 const GROVE_SEP = ['────────────', '__SEP__'];
 
+// Ultraschall-Sensortypen (sensor_ultrasonic, event_ultrasonic, when_distance).
+// Funktion statt Konstante, damit L() erst nach dem Laden von i18n.js greift.
+// Labels beschreiben das Aussehen – Kinder erkennen den Sensor so am Bauteil.
+function SONAR_TYPE_OPTIONS() {
+  return [
+    [L('Grove (weißer Stecker, 1 Kabel)', 'Grove (white plug, 1 cable)'), 'grove'],
+    [L('HC-SR04 (4 Stifte, 4 Einzelkabel)', 'HC-SR04 (4 pins, 4 single wires)'), 'sr04'],
+  ];
+}
+
 // ── Geteilte Helfer (nehmen das Profil als 1. Argument) ─────────────────────
 // Dropdown-Optionen [Anzeige, Wert] je nach Rolle.
 // digital/analog → Wert = Signal-Pin (GPxx/IOxx); i2c/2pin → Wert = Port-ID (String).

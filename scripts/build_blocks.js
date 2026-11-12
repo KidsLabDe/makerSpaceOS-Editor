@@ -322,4 +322,5 @@ console.log(`✅ ${blocks.length} Blöcke → ${path.relative(process.cwd(), OUT
 // über alle HTML-Dateien (deckt auch die neuen Script-Tags ab).
 require('./build_lib_manifest.js');
 require('./build_firmware_manifest.js');
+require('./build_examples.js');
 require('./bump_cache.js');

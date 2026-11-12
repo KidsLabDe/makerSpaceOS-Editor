@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const HTML_FILES = ['index.html', 'viewer.html', 'admin.html'];
+const HTML_FILES = ['index.html', 'viewer.html', 'admin.html', 'shop.html'];
 
 function bump() {
   const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12); // JJJJMMTThhmm

@@ -170,6 +170,8 @@
       this.appendDummyInput()
           .appendField(L('Wenn Abstand  Port:', 'When distance  port:'))
           .appendField(groveField('digital'), 'SIG')
+          .appendField(L('Typ:', 'type:'))
+          .appendField(new Blockly.FieldDropdown([_NONE_OPT, ...SONAR_TYPE_OPTIONS()]), 'TYPE')
           .appendField(opField(), 'OP')
           .appendField(new Blockly.FieldNumber(20, 0, 400, 0), 'VALUE')
           .appendField('cm');

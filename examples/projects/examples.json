@@ -1,0 +1,10 @@
+[
+  {
+    "file": "testbox.xml",
+    "board": "maker_pi_rp2040",
+    "title": "TestBox – alle Bauteile ausprobieren",
+    "title_en": "TestBox – try out all parts",
+    "desc": "Ultraschall, Temperatur, Drehgeber, LCD, 7-Segment-Anzeige, Servo und Lichter der makerSpaceOS-Testbox.",
+    "desc_en": "Ultrasonic, temperature, rotary encoder, LCD, 7-segment display, servo and lights of the makerSpaceOS test box."
+  }
+]

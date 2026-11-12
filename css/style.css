@@ -417,6 +417,17 @@ html, body {
   font-weight: 400;
   opacity: .9;
 }
+.error-hint {
+  margin: 10px auto 0;
+  max-width: 420px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,.16);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.error-hint[hidden] { display: none; }
 .error-arrow {
   position: fixed;
   inset: 0;
@@ -756,9 +767,38 @@ html, body {
 }
 #ai-overlay.show, #history-overlay.show { display: block; }
 
-#history-list { padding: 12px 14px; overflow-y: auto; flex: 1; }
-.history-io-bar { display: flex; gap: 8px; padding: 10px 16px 4px; border-bottom: 1px solid var(--line); }
-.history-io-bar .btn { flex: 1; justify-content: center; }
+/* Projekt-Drawer (ehem. „Verlauf“): Neu · Beispiele · Speichern & Teilen · Verlauf */
+.project-body { flex: 1; overflow-y: auto; }
+.project-section { padding: 10px 16px 12px; border-bottom: 1px solid var(--line); }
+.project-section:last-child { border-bottom: none; }
+.project-section h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.project-btn-row { display: flex; gap: 8px; margin-bottom: 6px; }
+.project-btn-row:last-child { margin-bottom: 0; }
+.project-btn-row .btn { flex: 1; justify-content: center; }
+.example-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--bg-alt);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+}
+.example-item:hover { border-color: var(--accent); }
+.example-title { display: block; font-size: 13px; font-weight: 700; }
+.example-desc  { display: block; margin-top: 2px; font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+.example-board { display: inline-block; margin-top: 4px; font-size: 11px; color: var(--text-muted); }
 .history-empty { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
 .history-item {
   background: var(--bg-alt);

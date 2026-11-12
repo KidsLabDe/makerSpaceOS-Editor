@@ -52,11 +52,10 @@
       case 'state_dropdown':
         return [[L('gedrückt', 'pressed'), 'pressed'], [L('losgelassen', 'released'), 'released']];
       case 'sensor_type_dropdown':
-        // Erste Option = Default (alte Projekte ohne TYPE-Feld bleiben "grove")
-        return [
-          [L('Grove Ranger (1 Pin)', 'Grove Ranger (1 pin)'), 'grove'],
-          [L('HC-SR04 (TRIG + ECHO)', 'HC-SR04 (TRIG + ECHO)'), 'sr04'],
-        ];
+        // Bewusst ohne Vorauswahl: Grove- und HC-SR04-Sensor sehen sich ähnlich,
+        // ein falscher Default misst still nichts. Alte Projekte ohne TYPE-Feld
+        // bekommen beim Laden 'grove' (migrateState / migrateXmlDom in storage.js).
+        return [_NONE_OPT, ...SONAR_TYPE_OPTIONS()];
       case 'tilt_dropdown':
         return [[L('vor/zurück', 'forward/back'), 'pitch'], [L('links/rechts', 'left/right'), 'roll']];
       case 'rgb_color_dropdown':
@@ -172,6 +171,9 @@
   }
 
   function addComponentBadge(block, compId) {
+    // Bauteil am Block merken – die Port-Übernahme (app.js, initPortMemory)
+    // erkennt darüber „gleiches Bauteil“ auch über verschiedene Block-Typen hinweg.
+    block.componentId_ = compId;
     const text = componentLabel(compId);
     const input = block.inputList[0];
     if (!text || !input) return;

@@ -1,7 +1,7 @@
 // GENERIERT von scripts/build_firmware_manifest.js – NICHT MANUELL BEARBEITEN!
-// Generiert am 2026-11-04T17:14:52.343Z aus firmware/ (1 UF2-Dateien).
+// Generiert am 2026-11-12T18:18:42.994Z aus firmware/ (1 UF2-Dateien).
 window.FIRMWARE_MANIFEST = {
-  generatedAt: "2026-11-04T17:14:52.343Z",
+  generatedAt: "2026-11-12T18:18:42.994Z",
   files: [
     {
       "name": "makerSpaceOS_firmware.uf2",
