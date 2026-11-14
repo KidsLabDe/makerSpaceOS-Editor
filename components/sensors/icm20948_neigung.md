@@ -21,7 +21,7 @@ inputs:
     fieldType: grove_dropdown
     groveRole: i2c
 hardware:
-  commonName: "Adafruit ICM20948 (9-Achsen-IMU)"
+  commonName: "Grove IMU 9DOF (MPU-9250) / ICM20948"
   verbrauch3j: 0
   kitStandard: false
   width_mm: 26
@@ -29,20 +29,22 @@ hardware:
 legacyGenerator: true
 ---
 
-# ICM20948 – Neigung (°)
+# Bewegungssensor – Neigung (°)
 
 Liefert den Kippwinkel in Grad: „vor/zurück" (−90…90) oder „links/rechts" (−180…180).
 0 bedeutet waagerecht. Gut für Wasserwaagen, Balance-Spiele und Lenk-Steuerungen.
 
-> Benötigt `adafruit_icm20x.mpy` und `adafruit_register/` auf `CIRCUITPY/lib/`
-> (Adafruit CircuitPython Bundle). Anschluss über Grove-I2C-Adapter, Adresse 0x69.
+> Passende Sensoren werden automatisch erkannt: Seeed **Grove IMU 9DOF** (MPU-9250
+> oder ICM-20600), MPU-6050 und Adafruit ICM20948. Treiber: `grove_imu.py` auf
+> `CIRCUITPY/lib/` (beim ICM20948 zusätzlich `adafruit_icm20x.mpy` + `adafruit_register/`).
 
 <!-- lang:en -->
 
-# ICM20948 – tilt (°)
+# Motion sensor – tilt (°)
 
 Returns the tilt angle in degrees: "forward/back" (−90…90) or "left/right" (−180…180).
 0 means level. Great for spirit levels, balance games and steering controls.
 
-> Needs `adafruit_icm20x.mpy` and `adafruit_register/` on `CIRCUITPY/lib/`
-> (Adafruit CircuitPython Bundle). Connect via a Grove I2C adapter, address 0x69.
+> Supported sensors are detected automatically: Seeed **Grove IMU 9DOF** (MPU-9250
+> or ICM-20600), MPU-6050 and Adafruit ICM20948. Driver: `grove_imu.py` on
+> `CIRCUITPY/lib/` (for the ICM20948 also `adafruit_icm20x.mpy` + `adafruit_register/`).

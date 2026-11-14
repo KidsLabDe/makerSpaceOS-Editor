@@ -1,8 +1,8 @@
 // GENERIERT von scripts/build_lib_manifest.js – NICHT MANUELL BEARBEITEN!
-// Generiert am 2026-11-12T18:18:42.990Z aus lib/ (42 Dateien).
+// Generiert am 2026-11-14T18:00:36.397Z aus lib/ (43 Dateien).
 window.LIB_MANIFEST = {
-  generatedAt: "2026-11-12T18:18:42.990Z",
-  libVersion: "c8e8d5bf611d0bfd39d40ac82cc3ed3d42569e03dc73a940dcff62ed219c4b80",
+  generatedAt: "2026-11-14T18:00:36.397Z",
+  libVersion: "44d4dbc9a9d62dd038e681346a9067a4711e296c3d479c9dcf3d0b0be34d0294",
   files: [
     {
       "path": "adafruit_bus_device/__init__.py",
@@ -163,6 +163,11 @@ window.LIB_MANIFEST = {
       "path": "gc9a01.py",
       "size": 2511,
       "sha256": "e79480ddef93f92e8152d8082042a16157a779e9e6805fc77e9d762ce5607d47"
+    },
+    {
+      "path": "grove_imu.py",
+      "size": 5548,
+      "sha256": "5ebdd444b720b2b9e022783216a16e7b0b32604343918b3571f5ec12fc3da131"
     },
     {
       "path": "grove_rgb_lcd.py",

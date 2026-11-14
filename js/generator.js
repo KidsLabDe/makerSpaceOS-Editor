@@ -884,7 +884,7 @@ Blockly.Python['sensor_dht11_humidity'] = function(block) {
 };
 
 // ── Gemeinsamer I2C-Bus ───────────────────────────────────────────────────────
-// Ein busio.I2C je Pin-Paar, von allen I2C-Geräten geteilt (LCD, ICM20948,
+// Ein busio.I2C je Pin-Paar, von allen I2C-Geräten geteilt (LCD, IMU,
 // Akku-Messchip …). Zwei busio.I2C auf denselben Pins → „in Benutzung".
 // Key-Präfix "init_0_" sortiert vor allen Geräte-Inits (init_grove_lcd,
 // init_imu_* …) → der Bus existiert, bevor ein Gerät ihn braucht.
@@ -940,40 +940,37 @@ Blockly.Python['sensor_bmp280_pressure'] = function(block) {
   return ['round(_bmp280.pressure, 1)', Blockly.Python.ORDER_FUNCTION_CALL];
 };
 
-// ── ICM20948-Generatoren (9-Achsen-IMU, Grove-I2C) ───────────────────────────
-// ±16g-Bereich, damit auch das 9g-Ereignis auslösen kann (Standard wäre ±8g).
+// ── IMU-Generatoren (Bewegungssensor, Grove-I2C) ─────────────────────────────
+// Treiber lib/grove_imu.py erkennt den Chip selbst: MPU-9250 (Seeed Grove IMU
+// 9DOF v2.0, 0x68), MPU-6050, ICM-20600 (neuerer Seeed 9DOF) oder ICM20948
+// (Adafruit, 0x69 → adafruit_icm20x). Messbereich ±16g, damit auch das
+// 9g-Ereignis auslösen kann.
 
 function _imuDefs(portId) {
   const port = BOARD.grovePortById(portId);
   const bus  = _i2cBusDef(port);
   _defs['import_math']      = 'import math';
   _defs['import_time']      = 'import time';
-  _defs['import_icm20x']    = 'import adafruit_icm20x';
+  _defs['from_grove_imu']   = 'from grove_imu import GroveIMU';
   // Sensor + Hilfsfunktionen in einem Eintrag (der Bus kommt aus _i2cBusDef
   // und steht durch seinen Key garantiert davor). Retry: der interne Kompass
-  // (AK09916) meldet sich nach dem Einschalten oft erst beim 2. Versuch – nur
+  // meldet sich nach dem Einschalten oft erst beim 2. Versuch – nur
   // der Sensor wird neu angelegt, der (evtl. geteilte) Bus bleibt bestehen.
   // time.sleep ist hier ok – läuft einmalig vor den Tasks.
-  // Lesefehler (z.B. Wackelkontakt am Stecker beim Schütteln) dürfen das
-  // Programm nicht beenden – dann gilt der letzte gültige Messwert weiter.
+  // Lesefehler (z.B. Wackelkontakt am Stecker beim Schütteln) fängt der
+  // Treiber ab – dann gilt der letzte gültige Messwert weiter.
   _defs[`init_imu_${portId}`] =
     `_imu_${portId} = None\n` +
     `for _imu_versuch in range(5):\n` +
     `    try:\n` +
-    `        _imu_${portId} = adafruit_icm20x.ICM20948(${bus})\n` +
+    `        _imu_${portId} = GroveIMU(${bus})\n` +
     `        break\n` +
     `    except (OSError, RuntimeError, ValueError):\n` +
     `        time.sleep(0.3)  ` + L('# Sensor braucht nach dem Einschalten einen Moment', '# sensor needs a moment after power-on') + `\n` +
     `if _imu_${portId} is None:\n` +
     `    raise RuntimeError("` + L(`Bewegungssensor nicht gefunden - steckt er fest an ${port.label}?`, `Motion sensor not found - is it plugged firmly into ${port.label}?`) + `")\n` +
-    `_imu_${portId}.accelerometer_range = adafruit_icm20x.AccelRange.RANGE_16G\n` +
-    `_imu_${portId}_last = [0.0, 0.0, 9.81]\n` +
     `def _imu_accel_${portId}():\n` +
-    `    try:\n` +
-    `        _imu_${portId}_last[0], _imu_${portId}_last[1], _imu_${portId}_last[2] = _imu_${portId}.acceleration\n` +
-    `    except OSError:\n` +
-    `        pass  ` + L('# kurzer Kontakt-Aussetzer: letzten Wert behalten', '# brief contact dropout: keep last value') + `\n` +
-    `    return _imu_${portId}_last\n` +
+    `    return _imu_${portId}.acceleration\n` +
     `def _imu_g_${portId}():\n` +
     `    _ax, _ay, _az = _imu_accel_${portId}()\n` +
     `    return round(math.sqrt(_ax*_ax + _ay*_ay + _az*_az) / 9.81, 2)\n` +
@@ -1439,7 +1436,7 @@ Blockly.Python['when_humidity'] = function(block) {
   return _whenTask(L('wenn_feuchte', 'when_humidity'), `(_dht11_${pin}.humidity ${op} ${val})`, body, '1');
 };
 
-// ── Bewegungs-Ereignis (ICM20948, geschüttelt / 3g / 6g / 9g) ────────────────
+// ── Bewegungs-Ereignis (Grove-IMU, geschüttelt / 3g / 6g / 9g) ────────────────
 
 Blockly.Python['when_motion'] = function(block) {
   const portId = block.getFieldValue('PORT');

@@ -179,20 +179,20 @@ Good for a warning: look sad, beep or drive slower.
   },
   {
     id: 'when_motion', label: 'Wenn bewegt …', label_en: 'When moved …', colour: EVENT_COLOUR, section: 'Ereignisse',
-    tooltip: 'Startet, sobald der Bewegungssensor (ICM20948) geschüttelt oder stark beschleunigt wird',
-    tooltip_en: 'Starts as soon as the motion sensor (ICM20948) is shaken or strongly accelerated',
-    doc: `Startet, wenn der Bewegungssensor (ICM20948, am I2C-Port) bewegt wird:
+    tooltip: 'Startet, sobald der Bewegungssensor (Grove IMU 9DOF / ICM20948) geschüttelt oder stark beschleunigt wird',
+    tooltip_en: 'Starts as soon as the motion sensor (Grove IMU 9DOF / ICM20948) is shaken or strongly accelerated',
+    doc: `Startet, wenn der Bewegungssensor (z. B. Grove IMU 9DOF, am I2C-Port) bewegt wird:
 
 - **geschüttelt** – reagiert schon auf kräftiges Schütteln (mehr als 2 g)
 - **3g / 6g / 9g** – reagiert erst bei stärkeren Stößen (z.B. Aufprall)
 
-> Braucht \`adafruit_icm20x.mpy\` und \`adafruit_register/\` auf \`CIRCUITPY/lib/\`.`,
-    doc_en: `Starts when the motion sensor (ICM20948, on the I2C port) is moved:
+> Braucht \`grove_imu.py\` auf \`CIRCUITPY/lib/\` (beim ICM20948 zusätzlich \`adafruit_icm20x.mpy\` + \`adafruit_register/\`).`,
+    doc_en: `Starts when the motion sensor (e.g. Grove IMU 9DOF, on the I2C port) is moved:
 
 - **shaken** – already reacts to vigorous shaking (more than 2 g)
 - **3g / 6g / 9g** – only reacts to stronger impacts (e.g. a crash)
 
-> Needs \`adafruit_icm20x.mpy\` and \`adafruit_register/\` on \`CIRCUITPY/lib/\`.`,
+> Needs \`grove_imu.py\` on \`CIRCUITPY/lib/\` (for the ICM20948 also \`adafruit_icm20x.mpy\` + \`adafruit_register/\`).`,
   },
   {
     id: 'when_touch_pad', label: 'Wenn Pfeil … berührt', label_en: 'When arrow … touched', colour: EVENT_COLOUR, section: 'Ereignisse',

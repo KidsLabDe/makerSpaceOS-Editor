@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-11-12T18:18:42.966Z
+// Generiert: 2026-11-14T18:00:36.370Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -633,7 +633,7 @@ const BLOCKS_DB = [
       }
     ],
     "hardware": {
-      "commonName": "Adafruit ICM20948 (9-Achsen-IMU)",
+      "commonName": "Grove IMU 9DOF (MPU-9250) / ICM20948",
       "verbrauch3j": 0,
       "kitStandard": false,
       "width_mm": 26,
@@ -641,8 +641,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/icm20948_g.md",
-    "doc": "# ICM20948 – Beschleunigung (g)\n\nLiefert die Gesamt-Beschleunigung als Zahl in g. In Ruhe zeigt der Sensor ≈ 1,0\n(Erdanziehung), beim Schütteln oder Aufprall deutlich mehr. Messbereich: bis ±16 g.\n\n## Beispiel\n\nBeim Schütteln leuchten die NeoPixel kurz rot, parallel wird der g-Wert jede Sekunde ausgegeben:\n\n![Beispielprogramm: Wenn bewegt (geschüttelt) + Beschleunigung ausgeben](../images/icm20948_beispiel.png)\n\n> Benötigt `adafruit_icm20x.mpy` und `adafruit_register/` auf `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Anschluss über Grove-I2C-Adapter, Adresse 0x69.",
-    "doc_en": "# ICM20948 – acceleration (g)\n\nReturns the total acceleration as a number in g. At rest the sensor shows ≈ 1.0\n(gravity); when shaken or on impact considerably more. Measuring range: up to ±16 g.\n\n## Example\n\nWhen shaken, the NeoPixels briefly light up red while the g value is printed every second:\n\n![Example program: when moved (shaken) + print acceleration](../images/icm20948_beispiel.png)\n\n> Needs `adafruit_icm20x.mpy` and `adafruit_register/` on `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Connect via a Grove I2C adapter, address 0x69."
+    "doc": "# Bewegungssensor – Beschleunigung (g)\n\nLiefert die Gesamt-Beschleunigung als Zahl in g. In Ruhe zeigt der Sensor ≈ 1,0\n(Erdanziehung), beim Schütteln oder Aufprall deutlich mehr. Messbereich: bis ±16 g.\n\n## Beispiel\n\nBeim Schütteln leuchten die NeoPixel kurz rot, parallel wird der g-Wert jede Sekunde ausgegeben:\n\n![Beispielprogramm: Wenn bewegt (geschüttelt) + Beschleunigung ausgeben](../images/icm20948_beispiel.png)\n\n> Passende Sensoren werden automatisch erkannt: Seeed **Grove IMU 9DOF** (MPU-9250\n> oder ICM-20600), MPU-6050 und Adafruit ICM20948. Treiber: `grove_imu.py` auf\n> `CIRCUITPY/lib/` (beim ICM20948 zusätzlich `adafruit_icm20x.mpy` + `adafruit_register/`).",
+    "doc_en": "# Motion sensor – acceleration (g)\n\nReturns the total acceleration as a number in g. At rest the sensor shows ≈ 1.0\n(gravity); when shaken or on impact considerably more. Measuring range: up to ±16 g.\n\n## Example\n\nWhen shaken, the NeoPixels briefly light up red while the g value is printed every second:\n\n![Example program: when moved (shaken) + print acceleration](../images/icm20948_beispiel.png)\n\n> Supported sensors are detected automatically: Seeed **Grove IMU 9DOF** (MPU-9250\n> or ICM-20600), MPU-6050 and Adafruit ICM20948. Driver: `grove_imu.py` on\n> `CIRCUITPY/lib/` (for the ICM20948 also `adafruit_icm20x.mpy` + `adafruit_register/`)."
   },
   {
     "id": "sensor_icm20948_neigung",
@@ -672,7 +672,7 @@ const BLOCKS_DB = [
       }
     ],
     "hardware": {
-      "commonName": "Adafruit ICM20948 (9-Achsen-IMU)",
+      "commonName": "Grove IMU 9DOF (MPU-9250) / ICM20948",
       "verbrauch3j": 0,
       "kitStandard": false,
       "width_mm": 26,
@@ -680,8 +680,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "sensors/icm20948_neigung.md",
-    "doc": "# ICM20948 – Neigung (°)\n\nLiefert den Kippwinkel in Grad: „vor/zurück\" (−90…90) oder „links/rechts\" (−180…180).\n0 bedeutet waagerecht. Gut für Wasserwaagen, Balance-Spiele und Lenk-Steuerungen.\n\n> Benötigt `adafruit_icm20x.mpy` und `adafruit_register/` auf `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Anschluss über Grove-I2C-Adapter, Adresse 0x69.",
-    "doc_en": "# ICM20948 – tilt (°)\n\nReturns the tilt angle in degrees: \"forward/back\" (−90…90) or \"left/right\" (−180…180).\n0 means level. Great for spirit levels, balance games and steering controls.\n\n> Needs `adafruit_icm20x.mpy` and `adafruit_register/` on `CIRCUITPY/lib/`\n> (Adafruit CircuitPython Bundle). Connect via a Grove I2C adapter, address 0x69."
+    "doc": "# Bewegungssensor – Neigung (°)\n\nLiefert den Kippwinkel in Grad: „vor/zurück\" (−90…90) oder „links/rechts\" (−180…180).\n0 bedeutet waagerecht. Gut für Wasserwaagen, Balance-Spiele und Lenk-Steuerungen.\n\n> Passende Sensoren werden automatisch erkannt: Seeed **Grove IMU 9DOF** (MPU-9250\n> oder ICM-20600), MPU-6050 und Adafruit ICM20948. Treiber: `grove_imu.py` auf\n> `CIRCUITPY/lib/` (beim ICM20948 zusätzlich `adafruit_icm20x.mpy` + `adafruit_register/`).",
+    "doc_en": "# Motion sensor – tilt (°)\n\nReturns the tilt angle in degrees: \"forward/back\" (−90…90) or \"left/right\" (−180…180).\n0 means level. Great for spirit levels, balance games and steering controls.\n\n> Supported sensors are detected automatically: Seeed **Grove IMU 9DOF** (MPU-9250\n> or ICM-20600), MPU-6050 and Adafruit ICM20948. Driver: `grove_imu.py` on\n> `CIRCUITPY/lib/` (for the ICM20948 also `adafruit_icm20x.mpy` + `adafruit_register/`)."
   },
   {
     "id": "sensor_imu_g",
