@@ -40,7 +40,7 @@ Spielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.
 - Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …
 - ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.
 
-**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger, Lautstärke (0–100 %).
+**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger/Lauter/Leiser, Lautstärke (0–100 %). „Lauter“/„Leiser“ ändern um eine von 30 Stufen.
 
 <!-- lang:en -->
 
@@ -55,4 +55,4 @@ Plays MP3 files from a microSD card through a speaker or headphones.
 - files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …
 - ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.
 
-**Blocks:** play track, pause/resume/stop/next/previous, volume (0–100 %).
+**Blocks:** play track, pause/resume/stop/next/previous/louder/quieter, volume (0–100 %). “Louder”/“quieter” change by one of 30 steps.

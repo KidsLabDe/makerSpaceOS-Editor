@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-11-15T09:02:24.924Z
+// Generiert: 2026-11-15T09:21:33.123Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -1874,8 +1874,8 @@ const BLOCKS_DB = [
     "label": "Musik steuern",
     "label_en": "control music",
     "colour": "#DC2626",
-    "tooltip": "Hält die Musik an, spielt weiter, stoppt oder springt zum nächsten/vorherigen Titel",
-    "tooltip_en": "Pauses, resumes or stops the music, or skips to the next/previous track",
+    "tooltip": "Hält die Musik an, spielt weiter, stoppt, springt zum nächsten/vorherigen Titel oder macht lauter/leiser",
+    "tooltip_en": "Pauses, resumes or stops the music, skips to the next/previous track or turns it up/down",
     "blockType": "statement",
     "inline": true,
     "inputs": [
@@ -1915,6 +1915,16 @@ const BLOCKS_DB = [
             "label": "vorheriger Titel",
             "label_en": "previous track",
             "value": "0x02"
+          },
+          {
+            "label": "lauter",
+            "label_en": "louder",
+            "value": "0x04"
+          },
+          {
+            "label": "leiser",
+            "label_en": "quieter",
+            "value": "0x05"
           }
         ]
       }
@@ -1926,8 +1936,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/mp3_control.md",
-    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger, Lautstärke (0–100 %).",
-    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous, volume (0–100 %)."
+    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger/Lauter/Leiser, Lautstärke (0–100 %). „Lauter“/„Leiser“ ändern um eine von 30 Stufen.",
+    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous/louder/quieter, volume (0–100 %). “Louder”/“quieter” change by one of 30 steps."
   },
   {
     "id": "mp3_play",
@@ -1966,8 +1976,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/mp3_play.md",
-    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger, Lautstärke (0–100 %).",
-    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous, volume (0–100 %)."
+    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger/Lauter/Leiser, Lautstärke (0–100 %). „Lauter“/„Leiser“ ändern um eine von 30 Stufen.",
+    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous/louder/quieter, volume (0–100 %). “Louder”/“quieter” change by one of 30 steps."
   },
   {
     "id": "mp3_volume",
@@ -2007,8 +2017,8 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/mp3_volume.md",
-    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger, Lautstärke (0–100 %).",
-    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous, volume (0–100 %)."
+    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger/Lauter/Leiser, Lautstärke (0–100 %). „Lauter“/„Leiser“ ändern um eine von 30 Stufen.",
+    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous/louder/quieter, volume (0–100 %). “Louder”/“quieter” change by one of 30 steps."
   },
   {
     "id": "actuator_servo",

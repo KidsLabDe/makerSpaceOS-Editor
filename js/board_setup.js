@@ -399,7 +399,7 @@ async function _writeFileVerified(fileHandle, file) {
 
 // ---------- Soft-Reboot über Serial + automatische Wiederverbindung ----------
 
-// Sendet microcontroller.reboot() (unterdrückt dabei den „Board getrennt"-
+// Sendet microcontroller.reset() (unterdrückt dabei den „Board getrennt"-
 // Toast), wartet auf das neu erscheinende USB-Gerät und öffnet den bereits
 // autorisierten Port wieder (getPorts() – KEIN neues requestPort()-Dialog).
 async function _softRebootAndReconnect() {
@@ -410,9 +410,11 @@ async function _softRebootAndReconnect() {
     // Erst sicher ins normale REPL: laufendes Programm unterbrechen (Ctrl+C)
     // und die Raw-REPL verlassen (Ctrl+B) – dort würde eine reine Zeile
     // nämlich NICHT ausgeführt. Danach den Reboot-Befehl senden.
+    // reset() (nicht reboot() – gibt es nicht!) = echter Neustart mit
+    // USB-Neuanmeldung → sys.modules leer, die neuen Libs werden geladen.
     await serial.stop();
     await _bsSleep(300);
-    await serial.sendLine('import microcontroller; microcontroller.reboot()');
+    await serial.sendLine('import microcontroller; microcontroller.reset()');
   } catch (_) { /* Board trennt sich, während die Zeile geschrieben wird */ }
 
   const ok = await _reconnectSerial(10000);
