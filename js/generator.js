@@ -1324,6 +1324,130 @@ Blockly.Python['actuator_isd1820_record'] = function(block) {
   return `_isd_rec_${portId}.value = True\nawait asyncio.sleep(min(${dauer}, 10))\n_isd_rec_${portId}.value = False\n`;
 };
 
+// ── UART (serielle Module: MP3-Player, später RFID …) ─────────────────────────
+// Ein busio.UART pro Port, geteilt von allen Blöcken dieses Ports (wie
+// _i2cBusDef). Grove-UART: TX = weißes Kabel (pin1), RX = gelbes Kabel
+// (signal). RX wird gleich mit angelegt, damit spätere Empfangs-Blöcke
+// dasselbe Objekt nutzen; timeout=0 → Lesen blockiert nie.
+// Liefert den Variablennamen oder null (Port fehlt/ungeeignet → Warnung).
+function _uartDef(block, portId, baud) {
+  if (!portId || portId === '__NONE__') {
+    block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!'));
+    return null;
+  }
+  const port = BOARD.grovePortById(portId);
+  if (!BOARD.uartPortOk(port)) {
+    block.setWarningText(L('⚠ An diesem Port geht keine serielle Verbindung – bitte anderen Port wählen!',
+                           '⚠ This port cannot do a serial connection – please choose another port!'));
+    return null;
+  }
+  const key = `init_0_uart_${portId}`;
+  const prev = _defs[key];
+  if (prev && !prev.includes(`baudrate=${baud},`)) {
+    block.setWarningText(L(`⚠ Am selben Port laufen Blöcke mit verschiedenem Tempo – alle auf ${baud} stellen!`,
+                           `⚠ Blocks on the same port use different speeds – set all to ${baud}!`));
+  } else {
+    block.setWarningText(_uartClash(portId));
+  }
+  const name = `_uart_${portId}`;
+  _defs['import_board'] = 'import board';
+  _defs['import_busio'] = 'import busio';
+  if (!prev) {
+    _defs[key] = `${name} = busio.UART(board.${port.pin1}, board.${port.signal}, baudrate=${baud}, timeout=0)`;
+  }
+  return name;
+}
+
+// RP2040 hat nur zwei UARTs: Ports auf derselben Einheit (MAKER-PI: Grove 1
+// und 4 = UART0) lassen sich nicht gleichzeitig nutzen.
+function _uartClash(portId) {
+  if (BOARD.mcu !== 'rp2040') return null;
+  const unit = (id) => {
+    const m = String((BOARD.grovePortById(id) || {}).pin1).match(/^GP(\d+)$/);
+    return m ? [0, 12, 16, 28].includes(Number(m[1])) ? 0 : 1 : -1;
+  };
+  const other = Object.keys(_defs)
+    .filter(k => k.startsWith('init_0_uart_'))
+    .map(k => k.slice('init_0_uart_'.length))
+    .find(id => id !== String(portId) && unit(id) === unit(portId));
+  if (!other) return null;
+  const a = BOARD.grovePortById(other).label, b = BOARD.grovePortById(portId).label;
+  return L(`⚠ ${a} und ${b} teilen sich eine serielle Schnittstelle – nur einen davon benutzen!`,
+           `⚠ ${a} and ${b} share one serial interface – use only one of them!`);
+}
+
+// Allgemeiner Sende-Block. MODE: text | line (Text + Zeilenende) | bytes.
+// Bytes: Zahl = ein Byte, Liste = mehrere Bytes, Text = Hex ("7E FF 06 …").
+Blockly.Python['uart_send'] = function(block) {
+  const baud = block.getFieldValue('BAUD') || '9600';
+  const u = _uartDef(block, block.getFieldValue('PORT'), baud);
+  if (!u) return '';
+  const data = Blockly.Python.valueToCode(block, 'DATA', Blockly.Python.ORDER_NONE) || "''";
+  const mode = block.getFieldValue('MODE') || 'text';
+  if (mode === 'bytes') {
+    _defs['init_0_0_uart_bytes'] =
+      `def _uart_bytes(x):\n` +
+      `    if isinstance(x, (bytes, bytearray)):\n` +
+      `        return bytes(x)\n` +
+      `    if isinstance(x, (int, float)):\n` +
+      `        return bytes([int(x) & 0xFF])\n` +
+      `    if isinstance(x, (list, tuple)):\n` +
+      `        return bytes([int(b) & 0xFF for b in x])\n` +
+      `    return bytes([int(h, 16) & 0xFF for h in str(x).replace(',', ' ').split()])`;
+    return `${u}.write(_uart_bytes(${data}))\n`;
+  }
+  const end = mode === 'line' ? " + '\\r\\n'" : '';
+  return `${u}.write((str(${data})${end}).encode())\n`;
+};
+
+// ── Grove-MP3 v2.0 (KT403A, 9600 Baud) ───────────────────────────────────────
+// Frame: 7E FF 06 CMD FB DH DL CHK_H CHK_L EF (Prüfsumme = -(Summe Byte 1–6)).
+// FB=0: keine Bestätigungen, damit sich der Empfangspuffer nicht füllt.
+function _mp3Def(block) {
+  const portId = block.getFieldValue('PORT');
+  const u = _uartDef(block, portId, 9600);
+  if (!u) return null;
+  _defs['import_time'] = 'import time';
+  _defs['init_0_0_mp3_cmd'] =
+    `def _mp3_cmd(uart, cmd, arg=0):\n` +
+    `    f = bytearray([0x7E, 0xFF, 0x06, cmd, 0, (arg >> 8) & 0xFF, arg & 0xFF])\n` +
+    `    c = -sum(f[1:7]) & 0xFFFF\n` +
+    `    f += bytes([c >> 8, c & 0xFF, 0xEF])\n` +
+    `    uart.write(f)`;
+  // Direkt nach dem Einschalten braucht das Modul ~1,5 s, sonst gehen
+  // Befehle verloren. Danach SD-Karte als Quelle wählen.
+  _defs[`init_1_mp3_${portId}`] =
+    `while time.monotonic() < 1.5:\n` +
+    `    time.sleep(0.1)\n` +
+    `_mp3_cmd(${u}, 0x09, 2)\n` +
+    `time.sleep(0.2)`;
+  return u;
+}
+
+// Kurze Pause nach jedem Befehl – zwei direkt aufeinanderfolgende Frames
+// verschluckt der KT403A sonst.
+const _MP3_GAP = 'await asyncio.sleep(0.03)\n';
+
+Blockly.Python['mp3_play'] = function(block) {
+  const u = _mp3Def(block);
+  if (!u) return '';
+  const nr = Blockly.Python.valueToCode(block, 'TRACK', Blockly.Python.ORDER_NONE) || '1';
+  return `_mp3_cmd(${u}, 0x03, max(1, int(${nr})))\n${_MP3_GAP}`;
+};
+
+Blockly.Python['mp3_control'] = function(block) {
+  const u = _mp3Def(block);
+  if (!u) return '';
+  return `_mp3_cmd(${u}, ${block.getFieldValue('ACTION') || '0x0E'})\n${_MP3_GAP}`;
+};
+
+Blockly.Python['mp3_volume'] = function(block) {
+  const u = _mp3Def(block);
+  if (!u) return '';
+  const v = Blockly.Python.valueToCode(block, 'VOLUME', Blockly.Python.ORDER_NONE) || '50';
+  return `_mp3_cmd(${u}, 0x06, max(0, min(30, round(${v} * 30 / 100))))\n${_MP3_GAP}`;
+};
+
 // ── Ereignis-Hut-Blöcke (je ein benannter Handler) ───────────────────────────
 // Diese Generatoren geben einen Deskriptor {name, expr, body, poll} zurück;
 // finish() baut daraus `async def <name>():` + `wenn(lambda: <expr>, <name>)`.

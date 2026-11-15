@@ -121,7 +121,8 @@
         }
         // Wert-Eingänge (z.B. blinken-Anzahl, Servo-Winkel, Motor-Tempo)
         for (const vi of (def.valueInputs || [])) {
-          const v = block.appendValueInput(vi.name).setCheck(vi.check || 'Number');
+          // check: any → Text, Zahl, Liste … (z. B. Seriell senden)
+          const v = block.appendValueInput(vi.name).setCheck(vi.check === 'any' ? null : (vi.check || 'Number'));
           if (vi.label)  v.appendField(LF(vi, 'label'));
           if (vi.suffix) block.appendDummyInput().appendField(LF(vi, 'suffix'));
         }
@@ -345,7 +346,7 @@
         const dv = (IS_EN && vi.defaultValue_en !== undefined) ? vi.defaultValue_en : vi.defaultValue;
         if (dv !== undefined) {
           // String-Eingänge bekommen einen editierbaren Text-Schatten, sonst eine Zahl
-          entry.inputs[vi.name] = (vi.check === 'String')
+          entry.inputs[vi.name] = (vi.check === 'String' || vi.check === 'any')
             ? { shadow: { type: 'text', fields: { TEXT: dv } } }
             : { shadow: { type: 'math_number', fields: { NUM: dv } } };
         }

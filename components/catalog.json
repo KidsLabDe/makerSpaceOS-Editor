@@ -223,6 +223,13 @@
       "label_en": "Beeper (external)",
       "shops": []
     },
+    "grove_mp3": {
+      "emoji": "🎵",
+      "label": "MP3-Player",
+      "label_en": "MP3 player",
+      "product": "Seeed Grove-MP3 v2.0",
+      "shops": []
+    },
     "isd1820": {
       "emoji": "🔊",
       "label": "Sprachmodul",

@@ -41,6 +41,9 @@ function _groveOptions(profile, role) {
         .filter(p => !Number.isNaN(num(p.pin1)) && Math.abs(num(p.pin1) - num(p.signal)) === 1)
         .map(p => [p.label, String(p.id)]);
     }
+    case 'uart':
+      // Grove-UART: TX = weißes Kabel (pin1), RX = gelbes Kabel (signal).
+      return _twoPinPorts(profile).filter(p => _uartPortOk(profile, p)).map(p => [p.label, String(p.id)]);
     case 'digital':
     default: {
       const usedSignals = new Set(profile.grovePorts.map(p => p.signal));
@@ -65,6 +68,19 @@ function _twoPinPorts(profile) {
   return profile.grovePorts.filter(p => p.pin1 && p.twoPin !== false);
 }
 
+// Taugt ein Port für busio.UART (TX = pin1, RX = signal)?
+// RP2040: nur Hardware-UART-Pins – TX auf GP0/4/8/12/16/20/24/28, RX = TX + 1.
+// ESP32: beliebige Pins (GPIO-Matrix), nur TX darf kein reiner Eingang sein.
+function _uartPortOk(profile, port) {
+  if (!port || !port.pin1) return false;
+  if (profile.mcu === 'rp2040') {
+    const num = (n) => { const m = String(n).match(/^GP(\d+)$/); return m ? Number(m[1]) : NaN; };
+    const tx = num(port.pin1), rx = num(port.signal);
+    return tx % 4 === 0 && rx === tx + 1;
+  }
+  return !(profile.inputOnlyPins || []).includes(port.pin1);
+}
+
 function _grovePortById(profile, id) {
   return profile.grovePorts.find(p => p.id === Number(id));
 }
@@ -75,12 +91,14 @@ function _attachGroveMethods(profile) {
   profile.groveOptions  = function (role) { return _groveOptions(this, role); };
   profile.grovePortById = function (id)   { return _grovePortById(this, id); };
   profile.digitalPorts  = function ()     { return _digitalPorts(this); };
+  profile.uartPortOk    = function (port) { return _uartPortOk(this, port); };
   return profile;
 }
 
 const BOARD_PROFILES = {
   maker_pi_rp2040: {
     name: 'Cytron MAKER-PI-RP2040',
+    mcu: 'rp2040',   // UART nur auf Hardware-Pins (Grove 1, 3, 4)
     // NeoPixel: 2 Onboard-Pixel (GP18). Externe Strips erhöhen count.
     neopixel:  { pin: 'GP18', count: 2 },
     buzzer:    'GP22',
@@ -128,6 +146,7 @@ const BOARD_PROFILES = {
   // (GP9=Signal, GP8). Krokodilklemmen-Pads: GP0–GP3, GP19, GP22.
   gamepad_pico: {
     name: 'GamePadPico',
+    mcu: 'rp2040',
     // Onboard-Matrix = 25 NeoPixel an GP12 – die Onboard-Licht-Blöcke und die
     // 5×5-Matrix-Blöcke (blocks/matrix5.js) teilen sich dieses _pixels-Objekt.
     // Alle 25 LEDs hängen am 3,3-V-Regler der Platine → Start-Helligkeit 0.1,
@@ -232,6 +251,8 @@ const BOARD_PROFILES = {
   // 5-V-tolerant!
   esp32_d1_r32: {
     name: 'ESP32 D1 R32 (Uno)',
+    // Reine Eingänge – taugen nicht als UART-TX (A2/A3 bzw. VP/VN).
+    inputOnlyPins: ['D34', 'D35', 'VP', 'VN'],
     // Kein Onboard-NeoPixel (nur einfache LED an GPIO2 = Uno A0) –
     // Onboard-LED-Blöcke sind ausgeblendet; dieser Default wird nie benutzt.
     neopixel:  { pin: 'D26', count: 1 },

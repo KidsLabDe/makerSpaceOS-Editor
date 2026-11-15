@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-11-14T18:00:36.370Z
+// Generiert: 2026-11-15T09:02:24.924Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -257,6 +257,13 @@ const BLOCKS_CATALOG = {
       "emoji": "🔔",
       "label": "Piepser (extern)",
       "label_en": "Beeper (external)",
+      "shops": []
+    },
+    "grove_mp3": {
+      "emoji": "🎵",
+      "label": "MP3-Player",
+      "label_en": "MP3 player",
+      "product": "Seeed Grove-MP3 v2.0",
       "shops": []
     },
     "isd1820": {
@@ -1860,6 +1867,150 @@ const BLOCKS_DB = [
     "doc_en": "# ISD1820 – recording via REC pin\n\nHold the REC pin HIGH = record. After the duration has elapsed the pin is set LOW.\nMax. 10 seconds (chip limit). Values above 10 are cut off automatically by the module.\n\n**Wiring:** REC → Grove signal pin of this block."
   },
   {
+    "id": "mp3_control",
+    "blockCategory": "Aktionen",
+    "component": "grove_mp3",
+    "subCategory": "Ton",
+    "label": "Musik steuern",
+    "label_en": "control music",
+    "colour": "#DC2626",
+    "tooltip": "Hält die Musik an, spielt weiter, stoppt oder springt zum nächsten/vorherigen Titel",
+    "tooltip_en": "Pauses, resumes or stops the music, or skips to the next/previous track",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Port:",
+        "label_en": "port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "uart"
+      },
+      {
+        "label": "",
+        "name": "ACTION",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "Pause",
+            "label_en": "pause",
+            "value": "0x0E"
+          },
+          {
+            "label": "▶ weiter",
+            "label_en": "▶ resume",
+            "value": "0x0D"
+          },
+          {
+            "label": "Stopp",
+            "label_en": "stop",
+            "value": "0x16"
+          },
+          {
+            "label": "nächster Titel",
+            "label_en": "next track",
+            "value": "0x01"
+          },
+          {
+            "label": "vorheriger Titel",
+            "label_en": "previous track",
+            "value": "0x02"
+          }
+        ]
+      }
+    ],
+    "hardware": {
+      "commonName": "Grove-MP3 v2.0 (KT403A)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/mp3_control.md",
+    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger, Lautstärke (0–100 %).",
+    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous, volume (0–100 %)."
+  },
+  {
+    "id": "mp3_play",
+    "blockCategory": "Aktionen",
+    "component": "grove_mp3",
+    "subCategory": "Ton",
+    "label": "Titel abspielen",
+    "label_en": "play track",
+    "colour": "#DC2626",
+    "tooltip": "Spielt einen Titel von der SD-Karte des MP3-Players (1 = Datei 0001.mp3)",
+    "tooltip_en": "Plays a track from the MP3 player's SD card (1 = file 0001.mp3)",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Port:",
+        "label_en": "port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "uart"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "TRACK",
+        "check": "Number",
+        "label": "spiele Titel Nr.",
+        "label_en": "play track no.",
+        "defaultValue": 1
+      }
+    ],
+    "hardware": {
+      "commonName": "Grove-MP3 v2.0 (KT403A)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/mp3_play.md",
+    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger, Lautstärke (0–100 %).",
+    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous, volume (0–100 %)."
+  },
+  {
+    "id": "mp3_volume",
+    "blockCategory": "Aktionen",
+    "component": "grove_mp3",
+    "subCategory": "Ton",
+    "label": "Lautstärke",
+    "label_en": "volume",
+    "colour": "#DC2626",
+    "tooltip": "Stellt die Lautstärke des MP3-Players ein (0 = stumm, 100 = ganz laut)",
+    "tooltip_en": "Sets the MP3 player's volume (0 = mute, 100 = loudest)",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Port:",
+        "label_en": "port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "uart"
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "VOLUME",
+        "check": "Number",
+        "label": "Lautstärke",
+        "label_en": "volume",
+        "defaultValue": 50,
+        "suffix": "%"
+      }
+    ],
+    "hardware": {
+      "commonName": "Grove-MP3 v2.0 (KT403A)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/mp3_volume.md",
+    "doc": "# Grove-MP3 v2.0 (MP3-Player)\n\nSpielt MP3-Dateien von einer microSD-Karte über Lautsprecher oder Kopfhörer.\n\n**Verdrahtung:** Grove-Kabel an **Grove 1, 3 oder 4** (MAKER-PI-RP2040) – das Modul braucht einen seriellen Port. Läuft auch an den 3,3 V der Grove-Ports.\n\n**SD-Karte vorbereiten:**\n- microSD bis 8 GB, formatiert als FAT32\n- Dateien direkt ins Hauptverzeichnis, Namen `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ „Titel Nr.“ zählt in der **Reihenfolge, in der die Dateien auf die Karte kopiert wurden** – am besten einzeln und der Reihe nach kopieren.\n\n**Blöcke:** Titel abspielen, Pause/Weiter/Stopp/Nächster/Vorheriger, Lautstärke (0–100 %).",
+    "doc_en": "# Grove-MP3 v2.0 (MP3 player)\n\nPlays MP3 files from a microSD card through a speaker or headphones.\n\n**Wiring:** Grove cable to **Grove 1, 3 or 4** (MAKER-PI-RP2040) – the module needs a serial port. Also works with the 3.3 V of the Grove ports.\n\n**Preparing the SD card:**\n- microSD up to 8 GB, formatted as FAT32\n- files directly in the root folder, named `0001.mp3`, `0002.mp3`, `0003.mp3` …\n- ⚠ “track no.” counts in the **order the files were copied to the card** – best copy them one by one, in order.\n\n**Blocks:** play track, pause/resume/stop/next/previous, volume (0–100 %)."
+  },
+  {
     "id": "actuator_servo",
     "blockCategory": "Aktionen",
     "component": "servo",
@@ -3109,5 +3260,96 @@ const BLOCKS_DB = [
     "_file": "actuators/pwm_write.md",
     "doc": "# PWM-Ausgabe\n\nSchaltet den Port nicht nur **an oder aus**, sondern stufenlos dazwischen:\n0 % = aus, 50 % = halbe Kraft, 100 % = voll an. Dafür schaltet der Pin sehr\nschnell (1000-mal pro Sekunde) an und aus. Je länger er jedes Mal an bleibt,\ndesto heller leuchtet eine LED oder desto schneller dreht ein Lüfter.\n\n**Typischer Einsatz: MOSFET-Modul.** Der Pin selbst liefert nur wenig Strom.\nEin MOSFET-Modul schaltet damit große Lasten mit eigener Stromversorgung:\nLED-Streifen dimmen, Lüfter oder kleine Motoren langsamer und schneller laufen\nlassen. Das Signal-Kabel (gelb / SIG) des Grove-Ports kommt an den Signal-Eingang\ndes Moduls.\n\n**Gut zu wissen:**\n- Am besten **Grove 1–4** nutzen. Auf dem MAKER-PI teilen sich immer zwei Pins\n  einen Taktgeber: Grove 5 und 6 vertragen sich nicht mit Motor M2, Grove 7\n  nicht mit Servo S1/S2 – wer beides gleichzeitig nutzt, bekommt beim Start\n  einen Fehler.\n- Auf dem **RoboBuddy** gehen neben den 4 Servos höchstens **2** PWM-/Buzzer-\n  Ausgänge gleichzeitig – ein dritter bricht beim Start mit einem Fehler ab.\n- Denselben Port im Programm nicht zusätzlich mit „🔌 Digital\" schalten.\n- Werte unter 0 % oder über 100 % werden automatisch begrenzt.",
     "doc_en": "# PWM output\n\nSwitches the port not just **on or off**, but smoothly in between:\n0 % = off, 50 % = half power, 100 % = fully on. To do this the pin switches\non and off very quickly (1000 times per second). The longer it stays on each\ntime, the brighter an LED shines or the faster a fan spins.\n\n**Typical use: MOSFET module.** The pin itself only supplies a little current.\nA MOSFET module uses it to switch big loads with their own power supply:\ndim LED strips, make fans or small motors run slower or faster. The signal wire\n(yellow / SIG) of the Grove port goes to the signal input of the module.\n\n**Good to know:**\n- Best use **Grove 1–4**. On the MAKER-PI two pins always share one timer:\n  Grove 5 and 6 do not get along with motor M2, Grove 7 not with servo S1/S2 –\n  using both at the same time gives an error at start.\n- On the **RoboBuddy**, besides the 4 servos at most **2** PWM/buzzer outputs\n  work at the same time – a third one stops with an error at start.\n- Do not also switch the same port with \"🔌 Digital\" in the program.\n- Values below 0 % or above 100 % are limited automatically."
+  },
+  {
+    "id": "uart_send",
+    "blockCategory": "Pins",
+    "subCategory": "",
+    "label": "Seriell senden",
+    "label_en": "Serial send",
+    "colour": "#64748B",
+    "tooltip": "Schickt Text oder Bytes über eine serielle Verbindung (UART) an ein Modul – z. B. MP3-Player, Funkmodule oder andere Mikrocontroller",
+    "tooltip_en": "Sends text or bytes over a serial connection (UART) to a module – e.g. MP3 players, radio modules or other microcontrollers",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Seriell  Port:",
+        "label_en": "Serial  port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "uart"
+      },
+      {
+        "label": "Tempo:",
+        "label_en": "speed:",
+        "name": "BAUD",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "9600",
+            "value": "9600"
+          },
+          {
+            "label": "19200",
+            "value": "19200"
+          },
+          {
+            "label": "38400",
+            "value": "38400"
+          },
+          {
+            "label": "57600",
+            "value": "57600"
+          },
+          {
+            "label": "115200",
+            "value": "115200"
+          }
+        ]
+      },
+      {
+        "label": "als",
+        "label_en": "as",
+        "name": "MODE",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "Text",
+            "label_en": "text",
+            "value": "text"
+          },
+          {
+            "label": "Text + neue Zeile",
+            "label_en": "text + new line",
+            "value": "line"
+          },
+          {
+            "label": "Bytes",
+            "label_en": "bytes",
+            "value": "bytes"
+          }
+        ]
+      }
+    ],
+    "valueInputs": [
+      {
+        "name": "DATA",
+        "check": "any",
+        "label": "senden:",
+        "label_en": "send:",
+        "defaultValue": "Hallo",
+        "defaultValue_en": "Hello"
+      }
+    ],
+    "hardware": {
+      "commonName": "Serielles Modul (UART)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/uart_send.md",
+    "doc": "# Seriell senden (UART)\n\nSchickt Daten über eine **serielle Verbindung** an ein angeschlossenes Modul. Viele Module (MP3-Player, Funk, GPS, andere Mikrocontroller) werden so gesteuert.\n\n**Verdrahtung (Grove-Port):**\n- weißes Kabel = **TX** (Board sendet) → RX des Moduls\n- gelbes Kabel = **RX** (Board empfängt) → TX des Moduls\n- Grove-Module von Seeed passen direkt.\n\n**Welche Ports?** Am MAKER-PI-RP2040 nur **Grove 1, 3 und 4** (dort liegen die seriellen Schnittstellen). Grove 1 und 4 teilen sich eine Schnittstelle – nicht beide gleichzeitig benutzen. Auf den ESP32-Boards geht fast jeder Port.\n\n**Tempo** (Baudrate) muss zum Modul passen – steht im Datenblatt, meist 9600.\n\n**als …**\n- **Text**: schickt den Text so, wie er ist.\n- **Text + neue Zeile**: hängt ein Zeilenende (`\\r\\n`) an – viele Module warten darauf.\n- **Bytes**: für Module mit Befehls-Codes. Eine Zahl = ein Byte (0–255), eine Liste = mehrere Bytes, ein Text wird als Hex gelesen, z. B. `7E FF 06 0D 00 00 00 EF`.",
+    "doc_en": "# Serial send (UART)\n\nSends data over a **serial connection** to a connected module. Many modules (MP3 players, radio, GPS, other microcontrollers) are controlled this way.\n\n**Wiring (Grove port):**\n- white wire = **TX** (board sends) → RX of the module\n- yellow wire = **RX** (board receives) → TX of the module\n- Seeed Grove modules plug in directly.\n\n**Which ports?** On the MAKER-PI-RP2040 only **Grove 1, 3 and 4** (that is where the serial interfaces are). Grove 1 and 4 share one interface – don't use both at the same time. On the ESP32 boards almost every port works.\n\n**Speed** (baud rate) must match the module – see its datasheet, usually 9600.\n\n**as …**\n- **text**: sends the text as it is.\n- **text + new line**: adds a line ending (`\\r\\n`) – many modules wait for it.\n- **bytes**: for modules with command codes. A number = one byte (0–255), a list = several bytes, a text is read as hex, e.g. `7E FF 06 0D 00 00 00 EF`."
   }
 ];
