@@ -248,6 +248,9 @@ function initButtons() {
   document.getElementById('btn-send').addEventListener('click', sendLine);
   document.getElementById('btn-save-board').addEventListener('click', saveToBoardClick);
   document.getElementById('btn-board-libs').addEventListener('click', onBoardLibsClick);
+  document.getElementById('lib-dl-close').addEventListener('click', closeLibDownload);
+  document.getElementById('lib-dl-zip').addEventListener('click', downloadLibZip);
+  document.getElementById('lib-dl-all').addEventListener('change', _bsRenderDownloadList);
   document.getElementById('btn-firmware').addEventListener('click', openFwHelp);   // erst die Anleitung, dann Picker + Flash
   document.getElementById('fw-close').addEventListener('click', closeFwModal);
   document.getElementById('fw-close-btn').addEventListener('click', closeFwModal);

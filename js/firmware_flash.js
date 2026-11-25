@@ -19,6 +19,9 @@
 //
 // Greift zur Laufzeit auf globale app.js-/i18n.js-/board_setup.js-Funktionen
 // zu (showToast, L, _entryExists) – diese existieren beim Aufruf bereits.
+//
+// Browser ohne File System Access API (z. B. Firefox) zeigen denselben Dialog
+// im Download-Modus: UF2 herunterladen und selbst aufs Laufwerk kopieren.
 
 const FW_CHUNK_SIZE = 256 * 1024;   // Schreib-Chunk: Fortschritt + Blockfluss des Bootloaders
 
@@ -37,8 +40,9 @@ function _fwSetStatus(text, cls) {
   el.className = 'fw-status' + (cls ? ' ' + cls : '');
 }
 
-// Rendert die UF2-Liste aus dem generierten Manifest (Radio-Auswahl).
-function _fwRenderList() {
+// Rendert die UF2-Liste aus dem generierten Manifest: Radio-Auswahl zum
+// Flashen bzw. Download-Links (download = true).
+function _fwRenderList(download) {
   const list = _fwEl('fw-list');
   if (!list) return;
   list.textContent = '';
@@ -53,13 +57,21 @@ function _fwRenderList() {
     return;
   }
   files.forEach((f, i) => {
-    const row = document.createElement('label');
+    const row = document.createElement(download ? 'a' : 'label');
     row.className = 'fw-item';
-    const radio = document.createElement('input');
-    radio.type = 'radio';
-    radio.name = 'fw-file';
-    radio.value = String(i);
-    if (i === 0) radio.checked = true;
+    let lead;
+    if (download) {
+      row.href = 'firmware/' + f.name;
+      row.download = f.name;
+      lead = document.createElement('span');
+      lead.textContent = '⬇';
+    } else {
+      lead = document.createElement('input');
+      lead.type = 'radio';
+      lead.name = 'fw-file';
+      lead.value = String(i);
+      if (i === 0) lead.checked = true;
+    }
     const info = document.createElement('span');
     info.className = 'fw-item-info';
     const name = document.createElement('span');
@@ -69,16 +81,24 @@ function _fwRenderList() {
     meta.className = 'fw-item-meta';
     meta.textContent = (f.size / (1024 * 1024)).toFixed(1) + ' MB · SHA-256 ' + f.sha256.slice(0, 16) + '…';
     info.append(name, meta);
-    row.append(radio, info);
+    row.append(lead, info);
     list.appendChild(row);
   });
 }
 
+// Ohne volumeHandle öffnet der Dialog im Download-Modus.
 function openFwModal(volumeHandle) {
+  const download = !volumeHandle;
   _fwVolume = volumeHandle;
-  _fwRenderList();
+  _fwRenderList(download);
   const vname = _fwEl('fw-volume-name');
-  if (vname) vname.textContent = volumeHandle.name;
+  if (vname) vname.textContent = volumeHandle ? volumeHandle.name : '–';
+  for (const id of ['fw-volume-block', 'fw-flash-btn']) _fwEl(id).hidden = download;
+  _fwEl('fw-download-hint').hidden = !download;
+  _fwEl('fw-title').textContent = download
+    ? L('UF2-Firmware herunterladen', 'Download UF2 firmware')
+    : L('UF2-Firmware flashen', 'Flash UF2 firmware');
+  _fwEl('fw-close-btn').textContent = download ? L('Schließen', 'Close') : L('Abbrechen', 'Cancel');
   _fwSetStatus('', '');
   const flashBtn = _fwEl('fw-flash-btn');
   if (flashBtn) flashBtn.disabled = false;
@@ -95,7 +115,17 @@ function closeFwModal() {
 
 // ---------- Hilfe (Schritt-für-Schritt-Fotos) ----------
 
+// Ohne Ordner-Zugriff bleibt nur Schritt 1 (Bootloader-Modus): Die Schritte
+// 2–4 zeigen die Laufwerk- und Berechtigungs-Dialoge des Browsers.
 function openFwHelp() {
+  const download = typeof window.showDirectoryPicker !== 'function';
+  document.querySelectorAll('.fw-help-step').forEach((step, i) => { step.hidden = download && i > 0; });
+  _fwEl('fw-help-title').textContent = download
+    ? L('Board in den Bootloader-Modus bringen', 'Put the board into bootloader mode')
+    : L('Flashen in 4 Schritten', 'Flashing in 4 steps');
+  _fwEl('fw-help-flash-btn').textContent = download
+    ? L('Weiter zum Download', 'Continue to download')
+    : L('Los geht\'s', 'Let\'s go');
   const help = _fwEl('fw-help-modal');
   if (help) help.hidden = false;
 }
@@ -119,12 +149,7 @@ function fwHelpContinue() {
 
 async function onFirmwareButton() {
   if (_fwBusy) return;
-  if (typeof window.showDirectoryPicker !== 'function') {
-    showToast(L('Browser unterstützt die File System Access API nicht – manuell flashen: Board in BOOTSEL-Modus und firmware/*.uf2 auf das RP2040-Laufwerk kopieren',
-                'Browser does not support the File System Access API – flash manually: put the board in BOOTSEL mode and copy firmware/*.uf2 to the RP2040 drive'),
-              'warn');
-    return;
-  }
+  if (typeof window.showDirectoryPicker !== 'function') { openFwModal(null); return; }
   let vol;
   try {
     vol = await window.showDirectoryPicker();

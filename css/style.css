@@ -451,7 +451,8 @@ html, body {
   justify-content: center;
   padding: 16px;
 }
-.fw-modal[hidden] { display: none; }
+.fw-modal[hidden],
+.fw-modal [hidden] { display: none; }
 
 .fw-modal-box {
   background: var(--surface);
@@ -511,6 +512,7 @@ html, body {
   background: var(--bg);
   transition: border-color .15s var(--ease-out), background .15s var(--ease-out);
 }
+a.fw-item { color: var(--text); text-decoration: none; }
 .fw-item:hover { border-color: var(--line-strong); }
 .fw-item:has(input:checked) { border-color: var(--accent); background: var(--bg-alt); }
 .fw-item input { accent-color: var(--accent); margin: 0; }
@@ -540,6 +542,44 @@ html, body {
   padding: 12px;
 }
 
+/* Libs einzeln herunterladen (nutzt den Rahmen des Firmware-Dialogs) */
+.lib-dl-zip {
+  width: 100%;
+  justify-content: center;
+  margin: 8px 0;
+}
+.lib-dl-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.lib-dl-folder {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  margin-top: 4px;
+}
+.lib-dl-file {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 7px 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  text-decoration: none;
+  word-break: break-all;
+}
+.lib-dl-file:hover { border-color: var(--line-strong); }
+.lib-dl-file--done { background: var(--bg-alt); border-color: var(--accent); }
+.lib-dl-size { color: var(--text-muted); white-space: nowrap; }
+
 .fw-status {
   min-height: 18px;
   margin-bottom: 12px;
@@ -567,7 +607,8 @@ html, body {
   justify-content: center;
   padding: 16px;
 }
-.fw-help-modal[hidden] { display: none; }
+.fw-help-modal[hidden],
+.fw-help-modal [hidden] { display: none; }
 
 .fw-help-box {
   background: var(--surface);
