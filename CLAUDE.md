@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projekt-Überblick
 
-makerSpaceOS ist eine **browser-basierte Blockly-IDE**, die visuelle Blöcke in **CircuitPython**-Code für den **Cytron MAKER-PI-RP2040** (RP2040, CircuitPython) übersetzt. Kein Build-Schritt, kein npm – reine statische HTML/JS/CSS-App.
+makerSpaceOS ist eine **browser-basierte Blockly-IDE**, die visuelle Blöcke in **CircuitPython**-Code übersetzt – Standard-Board ist der **Cytron MAKER-PI-RP2040**, dazu GamePadPico, Wemos S2 Mini, ESP32 D1 R32 und RoboBuddy (siehe „Board-Auswahl"). Kein Build-Schritt für die App, kein npm – reine statische HTML/JS/CSS-App.
 
 Zielgruppe: **Kinder und Einsteiger**. Code-Kommentare sind auf **Deutsch**. Die App-UI ist **zweisprachig** (Deutsch = Default, Englisch zuschaltbar) – siehe Abschnitt „Zweisprachigkeit (i18n)".
 
@@ -23,22 +23,36 @@ Deutsch ist Default; Englisch wird über das Sprach-Dropdown im Header gewählt 
 ## Architektur
 
 ```
-index.html           – Einstiegspunkt, lädt alle Skripte
-css/style.css        – Dunkles Theme, CSS-Variablen
+index.html           – Einstiegspunkt, lädt alle Skripte (Reihenfolge wichtig: gemeinsame Globals)
+viewer.html          – vollständige Anleitung
+shop.html            – Bezugsquellen
+admin.html           – internes Werkzeug
+css/style.css        – helles KidsLab-Theme, Code-/Serial-Bereich dunkel; CSS-Variablen
 js/
+  i18n.js            – Sprache (lädt als erstes App-Skript)
   boards.js          – Board-Profile + Pin-Konstanten (BOARD global)
   toolbox.js         – Statische Toolbox-Kategorien (Steuerung, Ereignisse, Mathe …)
   blocks/
     control.js       – SETUP- und FÜR-IMMER-Pflichtblöcke (handgeschrieben)
     events.js        – Ereignis-Hut-Blöcke (when_*, loop_parallel) → parallele async-Aufgaben
+    text.js, variables.js, lists.js – eigene Sprach-Blöcke
+    matrix.js, matrix5.js – NeoPixel-Matrix 8×8 / 5×5 (Custom-Felder)
   blocks_db.js       – GENERIERT aus components/*.md (nicht manuell bearbeiten!)
   block_builder.js   – registriert Sensor-/Aktor-Blöcke + Generatoren aus blocks_db.js
   generator.js       – Blockly → CircuitPython Transpiler (asyncio-Multitask-Modell)
-  app.js             – Workspace-Init, UI-Events
+  app.js             – Workspace-Init, UI-Events, Projekt-Menü, Teilen
+  storage.js         – Auto-Speichern, Versionsverlauf, code.py speichern, Migration alter Projekte
   serial.js          – Web Serial API (Raw REPL)
+  board_setup.js     – Board-Libs-Button
+  firmware_flash.js  – UF2-Firmware-Dialog
+  docs.js, docs_data.js – Hilfe-Leiste
+  ai_chat.js         – KI-Block-Generator (unfertig, Button ausgeblendet)
+  lib_manifest.js, firmware_manifest.js, examples_db.js – GENERIERT
+  agent/             – MCP-Brücke
 components/**/*.md   – Markdown-Quelle der Sensor-/Aktor-Blöcke (Frontmatter = Block-Definition)
-scripts/build_blocks.js – baut components/*.md → js/blocks_db.js (node scripts/build_blocks.js)
-RaspberryPico_allCodes_en/  – MicroPython-Referenzdateien (nicht geladen, nur Doku)
+lib/                 – CircuitPython-Bibliotheken fürs Board
+examples/projects/   – Beispielprojekte
+scripts/build_blocks.js – baut components/*.md → js/blocks_db.js, ruft die übrigen Generatoren auf
 ```
 
 Die JS-Dateien werden direkt im Browser geladen – es gibt keinen Build-Schritt für die App. Hardware-Blöcke (Sensoren/Aktoren) sind aber **markdown-getrieben**: Sie werden in `components/**/*.md` definiert und per `node scripts/build_blocks.js` nach `js/blocks_db.js` kompiliert. Ein Syntaxfehler in den geladenen JS-Dateien bricht die App stumm.
@@ -50,10 +64,10 @@ Hardware-Blöcke werden **nicht** mehr in JS-Dateien definiert, sondern als Mark
 ```yaml
 ---
 id: mein_block
-blockCategory: Aktoren        # Kategorie (siehe components/catalog.json)
+blockCategory: Aktionen       # Kategorie (siehe components/catalog.json)
 subCategory: LED
 label: "💡 Mein Block"
-colour: "#E65100"
+colour: "#DC2626"
 blockType: statement          # value | statement | event | event_simple
 inputs:                       # gerenderte Felder (Reihenfolge = Anzeige)
   - label: "💡 Mein Block  Port:"
@@ -107,24 +121,24 @@ Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein koopera
 - Registriert wird am Dateiende: `immer(fuer_immer)` (Endlosschleife), `wenn(lambda: <bedingung>, wenn_taster_a[, poll])` (kantengetriggert, feuert einmal beim Wahr-Werden), `start(beim_start)` (führt Setup einmal aus, dann laufen alle Aufgaben parallel).
 - `import asyncio`/`gather`/`run` tauchen im generierten Code **nicht mehr** auf – nur `from makerspaceos import immer, wenn, start`. `lib/makerspaceos.py` muss nach `CIRCUITPY/lib/` kopiert werden.
 - Helfer in `generator.js`: `_indent(code, levels)`, `_whenTask(name, expr, body, poll)` (liefert einen Deskriptor `{kind:'event', name, expr, body, poll}`, **kein** fertiger Code mehr). `workspaceToCode` sammelt Deskriptoren in `_tasks`; `finish()` baut daraus die `async def`-Handler + Registrierungszeilen und vergibt eindeutige Namen (Kollision → Suffix `_2`).
-- Ein neuer Ereignis-Hut-Block braucht: Definition in `js/blocks/events.js`, Generator in `generator.js` (gibt `_whenTask(name, ...)` zurück), Eintrag im `_HAT_TYPES`-Array **und** in der Toolbox-Kategorie „🎬 Ereignisse".
+- Ein neuer Ereignis-Hut-Block braucht: Definition in `js/blocks/events.js`, Generator in `generator.js` (gibt `_whenTask(name, ...)` zurück), Eintrag im `_HAT_TYPES`-Array **und** in der Toolbox-Kategorie „Ereignisse" (`js/toolbox.js`).
 
 ## Block-Design-Prinzipien
 
-- **Emoji im Label** – jeder Block bekommt ein passendes Emoji (🌡️, 🚧, ⚡ …).
+- **Emojis** – das Block-`label` im Frontmatter trägt meist ein passendes Emoji (🌡️, 📡, ⚡ …); am Block selbst steht es beim Bauteil-Kennzeichen, die Aktions-Labels (`inputs`) bleiben emoji-frei (siehe `component:`).
 - **Minimale Pflichtfelder** – so wenige Dropdowns/Eingaben wie möglich; sinnvolle Defaults.
 - **Kein Fachvokabular** – Kinder sollen Blöcke ohne Erklärung verstehen.
-- **Deutsche Labels und Tooltips** durchgängig.
+- **Labels und Tooltips immer zweisprachig** (Deutsch + `*_en`, siehe Zweisprachigkeit).
 - Sensor-Wert-Blöcke: `setOutput(true, 'Number')` oder `'Boolean'`.
 - Sensor-Ereignis-Blöcke und Aktor-Blöcke: `setPreviousStatement(true, null)` + `setNextStatement(true, null)`.
-- Farben: Sensoren `#1565C0` (Wert-Blöcke), `#0D47A1` (Ereignis-Blöcke); Aktoren `#E65100`.
+- Farben je Kategorie: Sensoren `#2563EB` (Ereignis-Blöcke `#D97706`), Aktionen `#DC2626`, Lichter `#EC4899`, Anzeigen `#0D9488`, Pins `#64748B`.
 
 ## Wichtige Gotchas
 
 - **HTTP-Cache-Busting**: Alle lokalen `js/`- und `css/`-Einbindungen in den HTML-Dateien tragen einen `?v=<Zeitstempel>`. `node scripts/bump_cache.js` erneuert den Stempel (läuft automatisch am Ende von `build_blocks.js`). Nach Änderungen an JS/CSS, die **nicht** über `build_blocks.js` laufen, vor dem Deploy einmal ausführen – sonst liefern Browser alte Dateien aus dem HTTP-Cache (304/heuristisches Caching).
-- **Web Serial API** funktioniert nur in Chrome/Edge. Firefox und Safari schlagen stumm fehl.
-- **Kein Persistenz-Layer** – Projekte werden nicht gespeichert (kommt in Phase 3).
-- **Board-Auswahl** – `boards.js` hält mehrere Profile in `BOARD_PROFILES` (`maker_pi_rp2040` = Default, `lolin_s2_mini` = Wemos S2 Mini, `esp32_d1_r32` = AZ-Delivery ESP32 D1 R32, `robobuddy` = MF26 Robo-Buddy mit ESP32-C6). Das aktive Profil steht in der globalen `let BOARD` und wird aus `localStorage['makerspaceos.board']` gewählt; `setBoard(id)` persistiert die Wahl und **lädt die Seite neu** (Dropdown-Optionen/Toolbox werden nur einmal zur Registrierung aus `BOARD` gebaut, daher Reload statt Live-Wechsel). Das Header-Dropdown `#board-select` steuert dies. Beim Verbinden liest `serial.readBoardId()` `board.board_id` per REPL; `detectAndSwitchBoard()` (app.js) schaltet automatisch auf das erkannte Profil um.
+- **Browser** – Web Serial gibt es in Chrome, Edge und Desktop-Firefox ab 151, nicht in Safari. Die File System Access API (`showDirectoryPicker`/`showSaveFilePicker`) fehlt in Firefox: neue Funktionen brauchen dafür einen Fallback (Hinweis-Toast, Download oder Raw-REPL).
+- **Persistenz nur im Browser** (`js/storage.js`) – Auto-Speichern nach `localStorage['makerspaceos.current']`, bis zu 15 Versionen (`makerspaceos.versions`, neu bei jedem „Ausführen"). Umbenannte/entfernte Felder in `migrateState` **und** `migrateXmlDom` nachziehen, sonst verlieren alte Projekte Werte.
+- **Board-Auswahl** – `boards.js` hält mehrere Profile in `BOARD_PROFILES` (`maker_pi_rp2040` = Default, `lolin_s2_mini` = Wemos S2 Mini, `esp32_d1_r32` = AZ-Delivery ESP32 D1 R32, `robobuddy` = MF26 Robo-Buddy mit ESP32-C6, `gamepad_pico` = GamePadPico). Das aktive Profil steht in der globalen `let BOARD` und wird aus `localStorage['makerspaceos.board']` gewählt; `setBoard(id)` persistiert die Wahl und **lädt die Seite neu** (Dropdown-Optionen/Toolbox werden nur einmal zur Registrierung aus `BOARD` gebaut, daher Reload statt Live-Wechsel). Das Header-Dropdown `#board-select` steuert dies (Optionen stehen fest in `index.html` – neue Profile dort ergänzen). Beim Verbinden liest `serial.readBoardId()` `board.board_id` per REPL; `detectAndSwitchBoard()` (app.js) schaltet automatisch auf das erkannte Profil um.
 - **Pin-Namen je Board** – Der Generator gibt Pins immer als `board.${pin}` aus. RP2040-Profile nutzen `GPxx`, der ESP32-S2 (`lolin_s2_mini`) nutzt `IOxx` (z.B. `board.IO2`). Ports beim S2 Mini sind physische **Pin-Paare** (`2/3`, `4/5`, … `39/40`) statt „Grove 1…7". Onboard: `board.LED`=IO15, `board.BUTTON`=IO0; ADC1 (WLAN-sicher): IO1–IO10.
 - **Board-spezifische Blöcke ausblenden** – Ein Profil kann `hideCategories` / `hideSubCategories` / `hideBlockIds` deklarieren (siehe `lolin_s2_mini`) + `buttons: {}` (keine Onboard-Taster). `block_builder.js` (`buildToolboxCategories`) und `toolbox.js` (`buildFinalToolbox`, Matrix) filtern die Toolbox danach. Beim S2 Mini ist **nur echte Onboard-Hardware** verborgen: Motortreiber (`actuator_motor_*`), Onboard-NeoPixel (Subkategorie „Onboard"), Onboard-Taster und der Batterie-Block (`sensor_battery`, fest auf GP29). **Externes bleibt verfügbar** – Matrix, 7-Segment (TM1637), LCD, Servo, Schrittmotor, Summer, alle Sensoren und externe NeoPixel-Streifen. Matrix/Servo nutzen `BOARD.servos` (S2: PWM-Pins IO37–IO40), LCD nutzt `i2c`-Ports (beim S2 sind alle Pin-Paare I2C-fähig).
 - **Runtime-Libs auch auf S2** – `makerspaceos.py`, `asyncio`, `adafruit_ticks`, `neopixel` laufen auf beiden Boards und müssen wie beim RP2040 nach `CIRCUITPY/lib/` kopiert werden.
@@ -168,7 +182,7 @@ Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein koopera
 - **Text-Anzeigen** – LCD-Text wandelt Werte über `_txt()` um (Kommazahlen auf 1 Stelle), sonst scheitert `zahl[:16]` mit „'float' … nicht abonnierbar“. Betrag (`math_single` ABS) erzeugt `abs()` statt `math.fabs()` und hat einen eigenen Toolbox-Eintrag.
 - **Listen** – Kategorie „Listen" (`js/toolbox.js`) mischt Blockly-Standardblöcke (`lists_create_empty`/`_with`, `lists_length`, `lists_isEmpty`, `controls_forEach`) mit handgeschriebenen Blöcken aus `js/blocks/lists.js` (`list_append`, `list_get`, `list_set`, `list_remove` → `del`, Liste per `field_variable`). Positionen zählen im Block **ab 1**, der Generator rechnet auf Python-Index 0 um. Da `finish()` alle Variablen mit `= None` vordeklariert, legt `list_append` die Liste bei Bedarf selbst an (`if not isinstance(x, list): x = []`). `finish()` übernimmt aus `Blockly.Python.definitions_` neben Imports auch `def`-Hilfsfunktionen (`provideFunction_`, z. B. von `lists_sort`).
 - **PWM-Block** (`components/actuators/pwm_write.md`, Kategorie „Pins") – rein markdown-getrieben: `pwmio.PWMOut(..., frequency=1000)` als `_pwmout_<PIN>` (bewusst anderes Präfix als die Servos mit `_pwm_`), Stärke 0–100 % wird auf `duty_cycle` 0–65535 begrenzt. RP2040: Zwei benachbarte GPIOs teilen sich einen PWM-Taktgeber (Slice = (GP >> 1) & 7), Pins auf einem Taktgeber müssen dieselbe Frequenz haben → Grove 5/6 (GP26/27) kollidieren mit Motor M2 (GP10/11, 50 Hz), Grove 7 (GP28) mit Servo S1/S2 (GP12/13, 50 Hz). In der Block-Doku steht deshalb „Grove 1–4 nutzen".
-- `RaspberryPico_allCodes_en/` enthält **MicroPython**-Referenzcode (nicht CircuitPython). Bei neuen Blöcken den Code in CircuitPython übersetzen (`digitalio`/`analogio` statt `machine`).
+- Beispielcode aus Sensor-Kits ist oft **MicroPython**. Bei neuen Blöcken in CircuitPython übersetzen (`digitalio`/`analogio` statt `machine`).
 
 ## KI-Agenten-Schnittstelle (MCP)
 
@@ -186,7 +200,8 @@ Deutsche Commit-Nachrichten, wie in der Git-History. Kein vorgeschriebenes Forma
 
 ## Testen
 
-Code direkt im Chrome/Edge-Browser öffnen (`index.html`), dann über Web Serial auf dem MAKER-PI-RP2040 testen. Kein lokaler Dev-Server nötig.
+Editor per lokalem Web-Server ausliefern (`python3 -m http.server 8000`) und in Chrome/Edge (oder Firefox, ohne Laufwerks-Funktionen) öffnen, dann über Web Serial auf dem Board testen. `file://` reicht nur zum Bauen von Blöcken – die Lib- und Firmware-Installation braucht HTTP (`fetch()`).
 
+- Für App und Hardware gibt es keine automatischen Tests: JS mit `node --check <datei>` prüfen (ein Hook in `.claude/settings.json` tut das nach jedem Edit), Rest im Browser. Der MCP-Server hat Tests: `cd mcp && npm install && npm test`.
 - **`scripts/sync_lib.sh`**: kopiert `lib/` auf das Board. Findet das CIRCUITPY-Volume automatisch (macOS `/Volumes/`, Linux `/run/media/` + `/media/`); `SEARCH_ROOTS`-Env var überschreibt die Suchpfade. Ohne `rsync` fällt auf `cp` zurück. Danach immer USB neu stecken (sys.modules-Cache).
 - **`scripts/pull_firmware.sh`**: zieht mit `picotool save -a` den kompletten Flash eines Boards im **BOOTSEL-Modus** (MAKER-PI: doppelter Reset beim USB-Anstecken) nach `firmware/makerSpaceOS_firmware_rp2040_<Zeitstempel>.uf2`.
