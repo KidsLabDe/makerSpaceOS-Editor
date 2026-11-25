@@ -12,7 +12,7 @@ var _HAT_TYPES = [
   'when_button', 'when_encoder',
   'when_distance', 'when_light', 'when_temperature', 'when_humidity',
   'when_sound', 'when_touch', 'when_motion', 'when_battery_low',
-  'when_touch_pad', 'when_shake',
+  'when_touch_pad', 'when_shake', 'when_barrier',
 ];
 
 Blockly.Python.workspaceToCode = function(workspace) {
@@ -1532,6 +1532,29 @@ Blockly.Python['when_light'] = function(block) {
   _defs['import_analogio'] = 'import analogio';
   _defs[`init_ldr_${pin}`] = `_ldr_${pin} = analogio.AnalogIn(board.${pin})`;
   return _whenTask(L('wenn_licht', 'when_light'), `(round((1 - _ldr_${pin}.value / 65535) * 100) ${op} ${val})`, body, '0.05');
+};
+
+// Lichtschranke: Die Lib misst und zählt im Hintergrund, jeder Hut holt sich
+// eine eigene Prüf-Funktion (mehrere Hüte am selben Port zählen unabhängig).
+Blockly.Python['when_barrier'] = function(block) {
+  const pin = block.getFieldValue('PIN');
+  if (!pin || pin === '__NONE__') { block.setWarningText(L('⚠ Bitte Port auswählen!', '⚠ Please select a port!')); return null; }
+  const sens = block.getFieldValue('SENS') || '2000';
+  const body = Blockly.Python.statementToCode(block, 'DO') || '    pass\n';
+  // gleiche Keys und Zeilen wie in components/sensors/barrier_*.md
+  _defs['import_board']       = 'import board';
+  _defs['from_Lichtschranke'] = 'from lichtschranke import Lichtschranke';
+  _defs[`init_ls_${pin}`]     = `_ls_${pin} = Lichtschranke(board.${pin}, "${pin}")`;
+  const sensKey = `init_ls_${pin}_schwelle`;
+  const sensVal = `_ls_${pin}.schwelle = ${sens}`;
+  block.setWarningText(_defs[sensKey] && _defs[sensKey] !== sensVal
+    ? L('⚠ Am selben Port gilt nur eine Empfindlichkeit!', '⚠ Only one sensitivity applies per port!') : null);
+  _defs[sensKey] = sensVal;
+  let n = 1;
+  while (_defs[`init_ls_${pin}_z${n}`]) n++;
+  const check = `_ls_${pin}_neu_${n}`;
+  _defs[`init_ls_${pin}_z${n}`] = `${check} = _ls_${pin}.ereignis()`;
+  return _whenTask(L('wenn_kugel', 'when_marble'), `${check}()`, body, '0.02');
 };
 
 Blockly.Python['when_temperature'] = function(block) {

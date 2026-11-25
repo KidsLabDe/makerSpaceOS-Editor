@@ -23,6 +23,7 @@ import asyncio
 
 _tasks = []   # alle registrierten Dauer-Aufgaben (Schleifen + Ereignisse)
 _ende = []    # Aufräum-Funktionen, laufen nach Programmende/Stopp/Absturz
+_hintergrund = []  # Mess-Aufgaben von Board-Libs (laufen schon bei BEIM START)
 
 
 def beim_beenden(fn):
@@ -31,6 +32,13 @@ def beim_beenden(fn):
     stromlos zu schalten (RoboBuddy: Servo-Schiene aus)."""
     if fn not in _ende:
         _ende.append(fn)
+
+
+def im_hintergrund(fn):
+    """Registriert eine async-Funktion, die neben dem ganzen Programm läuft –
+    auch schon während BEIM START. Board-Libs nutzen das zum laufenden Messen
+    (z. B. lichtschranke.py)."""
+    _hintergrund.append(fn)
 
 
 def immer(fn):
@@ -76,12 +84,19 @@ def start(setup=None):
     _tasks.clear()
     ende = list(_ende)
     _ende.clear()
+    hintergrund = list(_hintergrund)
+    _hintergrund.clear()
 
     async def _main():
-        if setup is not None:
-            await setup()
-        if tasks:
-            await asyncio.gather(*tasks)
+        laufend = [asyncio.create_task(fn()) for fn in hintergrund]
+        try:
+            if setup is not None:
+                await setup()
+            if tasks:
+                await asyncio.gather(*tasks)
+        finally:
+            for t in laufend:
+                t.cancel()
 
     # Stopp / erneutes Ausführen schickt Ctrl-C → sauber beenden statt Traceback
     try:

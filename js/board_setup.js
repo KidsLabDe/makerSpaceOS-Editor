@@ -462,6 +462,7 @@ const BS_LIB_DEPS = {
   adafruit_display_text: ['adafruit_ticks'],
   adafruit_icm20x:       ['adafruit_bus_device', 'adafruit_register'],
   grove_imu:             ['adafruit_icm20x'],
+  lichtschranke:         ['makerspaceos', 'asyncio'],
   robo_display:          ['gc9a01', 'adafruit_display_text'],
   robobuddy:             ['makerspaceos', 'asyncio', 'ina226'],
 };

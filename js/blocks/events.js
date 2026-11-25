@@ -197,6 +197,24 @@
     }
   };
 
+  Blockly.Blocks['when_barrier'] = {
+    init: function () {
+      this.appendDummyInput()
+          .appendField(L('Wenn Kugel vorbeirollt  Port:', 'When a marble passes  port:'))
+          .appendField(groveField('analog'), 'PIN')
+          .appendField(L('Empfindlichkeit:', 'sensitivity:'))
+          .appendField(new Blockly.FieldDropdown([
+            [L('normal', 'normal'), '2000'],
+            [L('hoch', 'high'), '1000'],
+            [L('niedrig', 'low'), '4000'],
+          ]), 'SENS');
+      this.appendStatementInput('DO').appendField(L('→ dann', '→ then'));
+      this.setColour(EVENT_COLOUR);
+      this.setTooltip(L('Startet für jede Kugel, die an der Lichtschranke vorbeirollt', 'Starts for every marble that rolls past the light barrier'));
+      addComponentBadge(this, 'light_barrier');
+    }
+  };
+
   Blockly.Blocks['when_temperature'] = {
     init: function () {
       this.appendDummyInput()
