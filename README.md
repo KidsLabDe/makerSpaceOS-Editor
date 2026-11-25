@@ -55,10 +55,11 @@ Ein günstiges **37-teiliges oder 45-teiliges KY-Sensor-Set** (z. B. „Elegoo S
 ### Browser
 
 Web Serial API wird benötigt – unterstützt von:
+- **Firefox** (empfohlen)
 - **Google Chrome** (empfohlen)
 - **Microsoft Edge**
 
-Firefox und Safari werden **nicht** unterstützt.
+Safari wird **nicht** unterstützt.
 
 ---
 
