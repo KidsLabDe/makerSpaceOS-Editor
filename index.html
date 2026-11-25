@@ -35,9 +35,9 @@
   <script src="vendor/codemirror/mode/python/python.min.js"></script>
 
   <!-- Webfonts: lokal gehostet (Pixelify Sans, Inter, Monofur) – keine externen Requests -->
-  <link rel="stylesheet" href="css/fonts.css?v=202611150921">
+  <link rel="stylesheet" href="css/fonts.css?v=202611252145">
 
-  <link rel="stylesheet" href="css/style.css?v=202611150921">
+  <link rel="stylesheet" href="css/style.css?v=202611252145">
 </head>
 <body>
 <div id="app-shell">
@@ -188,15 +188,18 @@
   <div id="fw-modal" class="fw-modal" hidden>
     <div class="fw-modal-box">
       <div class="fw-modal-head">
-        <h3 data-i18n="Flash UF2 firmware">UF2-Firmware flashen</h3>
+        <h3 id="fw-title" data-i18n="Flash UF2 firmware">UF2-Firmware flashen</h3>
         <button id="fw-close" class="btn-icon" title="Schließen" data-i18n-title="Close">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <p class="fw-modal-hint" data-i18n="Selected bootloader volume:">Gewähltes Bootloader-Laufwerk:</p>
-      <div class="fw-volume-row">
-        <span id="fw-volume-name" class="fw-volume-name">–</span>
+      <div id="fw-volume-block">
+        <p class="fw-modal-hint" data-i18n="Selected bootloader volume:">Gewähltes Bootloader-Laufwerk:</p>
+        <div class="fw-volume-row">
+          <span id="fw-volume-name" class="fw-volume-name">–</span>
+        </div>
       </div>
+      <p id="fw-download-hint" class="fw-modal-hint" data-i18n="This browser cannot write to the board itself. Hold BOOTSEL while plugging in the board (RP2040 boards only), download the file and copy it to the RP2040 / RPI-RP2 drive. The board then restarts by itself." hidden>Dieser Browser kann nicht selbst aufs Board schreiben. Halte BOOTSEL gedrückt, während du das Board ansteckst (nur RP2040-Boards), lade die Datei herunter und kopiere sie auf das Laufwerk RP2040 / RPI-RP2. Danach startet das Board von selbst neu.</p>
       <div id="fw-list" class="fw-list"></div>
       <div id="fw-status" class="fw-status"></div>
       <div class="fw-modal-foot">
@@ -210,11 +213,32 @@
     </div>
   </div>
 
+  <!-- Libs einzeln herunterladen (Browser ohne Ordner-Zugriff, z. B. Firefox) -->
+  <div id="lib-dl-modal" class="fw-modal" hidden>
+    <div class="fw-modal-box">
+      <div class="fw-modal-head">
+        <h3 data-i18n="Download libraries">Bibliotheken herunterladen</h3>
+        <button id="lib-dl-close" class="btn-icon" title="Schließen" data-i18n-title="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="fw-modal-hint" data-i18n="This browser cannot write to the board itself. Download each file and save it to the folder shown, on the CIRCUITPY drive. Create missing folders first.">Dieser Browser kann nicht selbst aufs Board schreiben. Lade jede Datei herunter und speichere sie in den angezeigten Ordner auf dem Laufwerk CIRCUITPY. Fehlende Ordner zuerst anlegen.</p>
+      <p class="fw-modal-hint" data-i18n="File names must stay exactly the same (no “(1)” added). Afterwards unplug the board and plug it in again. Boards without a drive: copy the files with Thonny.">Die Dateinamen müssen genau gleich bleiben (kein „(1)“ dahinter). Danach das Board ab- und wieder anstecken. Boards ohne Laufwerk: Dateien mit Thonny kopieren.</p>
+      <button id="lib-dl-zip" class="btn btn-primary lib-dl-zip" data-i18n="Download all libraries as ZIP">Alle Bibliotheken als ZIP herunterladen</button>
+      <p class="fw-modal-hint" data-i18n="Unpack the ZIP and copy the lib folder to the CIRCUITPY drive (replace existing files). Or download single files:">ZIP entpacken und den Ordner lib auf das Laufwerk CIRCUITPY kopieren (vorhandene Dateien ersetzen). Oder einzelne Dateien laden:</p>
+      <label class="lib-dl-toggle">
+        <input id="lib-dl-all" type="checkbox">
+        <span data-i18n="Show all libraries (not only those for this program)">Alle Bibliotheken zeigen (nicht nur die für dieses Programm)</span>
+      </label>
+      <div id="lib-dl-list" class="fw-list"></div>
+    </div>
+  </div>
+
   <!-- Firmware-Hilfe: Schritt-für-Schritt-Fotos (vor dem eigentlichen Flash) -->
   <div id="fw-help-modal" class="fw-help-modal" hidden>
     <div class="fw-help-box">
       <div class="fw-help-head">
-        <h3 data-i18n="Flashen in 4 Schritten">Flashen in 4 Schritten</h3>
+        <h3 id="fw-help-title">Flashen in 4 Schritten</h3>
         <button id="fw-help-close" class="btn-icon" title="Schließen" data-i18n-title="Close">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
         </button>
@@ -337,30 +361,30 @@
   <div id="history-overlay" onclick="closeHistory()"></div>
 
   <!-- App-Skripte -->
-  <script src="js/i18n.js?v=202611150921"></script>
-  <script src="js/boards.js?v=202611150921"></script>
-  <script src="js/blocks/control.js?v=202611150921"></script>
-  <script src="js/blocks/events.js?v=202611150921"></script>
-  <script src="js/blocks/text.js?v=202611150921"></script>
-  <script src="js/blocks/variables.js?v=202611150921"></script>
-  <script src="js/blocks/lists.js?v=202611150921"></script>
-  <script src="js/blocks_db.js?v=202611150921"></script>
-  <script src="js/block_builder.js?v=202611150921"></script>
-  <script src="js/toolbox.js?v=202611150921"></script>
-  <script src="js/blocks/matrix.js?v=202611150921"></script>
-  <script src="js/blocks/matrix5.js?v=202611150921"></script>
-  <script src="js/generator.js?v=202611150921"></script>
-  <script src="js/serial.js?v=202611150921"></script>
-  <script src="js/storage.js?v=202611150921"></script>
-  <script src="js/examples_db.js?v=202611150921"></script>
-  <script src="js/lib_manifest.js?v=202611150921"></script>
-  <script src="js/board_setup.js?v=202611150921"></script>
-  <script src="js/firmware_manifest.js?v=202611150921"></script>
-  <script src="js/firmware_flash.js?v=202611150921"></script>
-  <script src="js/docs_data.js?v=202611150921"></script>
-  <script src="js/docs.js?v=202611150921"></script>
-  <script src="js/ai_chat.js?v=202611150921"></script>
-  <script src="js/app.js?v=202611150921"></script>
+  <script src="js/i18n.js?v=202611252145"></script>
+  <script src="js/boards.js?v=202611252145"></script>
+  <script src="js/blocks/control.js?v=202611252145"></script>
+  <script src="js/blocks/events.js?v=202611252145"></script>
+  <script src="js/blocks/text.js?v=202611252145"></script>
+  <script src="js/blocks/variables.js?v=202611252145"></script>
+  <script src="js/blocks/lists.js?v=202611252145"></script>
+  <script src="js/blocks_db.js?v=202611252145"></script>
+  <script src="js/block_builder.js?v=202611252145"></script>
+  <script src="js/toolbox.js?v=202611252145"></script>
+  <script src="js/blocks/matrix.js?v=202611252145"></script>
+  <script src="js/blocks/matrix5.js?v=202611252145"></script>
+  <script src="js/generator.js?v=202611252145"></script>
+  <script src="js/serial.js?v=202611252145"></script>
+  <script src="js/storage.js?v=202611252145"></script>
+  <script src="js/examples_db.js?v=202611252145"></script>
+  <script src="js/lib_manifest.js?v=202611252145"></script>
+  <script src="js/board_setup.js?v=202611252145"></script>
+  <script src="js/firmware_manifest.js?v=202611252145"></script>
+  <script src="js/firmware_flash.js?v=202611252145"></script>
+  <script src="js/docs_data.js?v=202611252145"></script>
+  <script src="js/docs.js?v=202611252145"></script>
+  <script src="js/ai_chat.js?v=202611252145"></script>
+  <script src="js/app.js?v=202611252145"></script>
   <!-- KI-Agent-Brücke (MCP): nur mit ?agent=1&token=… – siehe mcp/README.md -->
   <script>
     if (/[?&]agent=1\b/.test(location.search)) {

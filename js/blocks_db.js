@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-11-15T09:21:33.123Z
+// Generiert: 2026-11-25T21:45:17.921Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -128,6 +128,19 @@ const BLOCKS_CATALOG = {
       "label": "Lichtsensor",
       "label_en": "Light sensor",
       "shops": []
+    },
+    "light_barrier": {
+      "emoji": "🚥",
+      "label": "Lichtschranke",
+      "label_en": "Light barrier",
+      "product": "Pololu QTR-HD-01A / QTR-HD-02A (Reflex-Sensor, analog)",
+      "product_en": "Pololu QTR-HD-01A / QTR-HD-02A (reflectance sensor, analog)",
+      "shops": [
+        {
+          "name": "Pololu (QTR-HD-02A)",
+          "url": "https://www.pololu.com/product/4202"
+        }
+      ]
     },
     "air_quality": {
       "emoji": "🌫️",
@@ -532,6 +545,124 @@ const BLOCKS_DB = [
     "_file": "sensors/dht11_temperature.md",
     "doc": "# DHT11 Temperatursensor\n\nGünstiger Sensor für Temperatur und Luftfeuchtigkeit. Weniger genau als DHT22, aber gut für Einsteigerprojekte.",
     "doc_en": "# DHT11 temperature sensor\n\nInexpensive sensor for temperature and humidity. Less accurate than the DHT22,\nbut great for beginner projects."
+  },
+  {
+    "id": "barrier_blocked",
+    "blockCategory": "Sensoren",
+    "component": "light_barrier",
+    "subCategory": "Abstand & Licht",
+    "label": "Kugel davor?",
+    "label_en": "marble in front?",
+    "colour": "#2563EB",
+    "tooltip": "Wahr, solange etwas vor der Lichtschranke ist",
+    "tooltip_en": "True while something is in front of the light barrier",
+    "blockType": "value",
+    "output": "Boolean",
+    "inputs": [
+      {
+        "label": "Kugel davor?  Port:",
+        "label_en": "marble in front?  port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import board",
+        "from lichtschranke import Lichtschranke"
+      ],
+      "defs": [
+        {
+          "key": "init_ls_${PIN}",
+          "val": "_ls_${PIN} = Lichtschranke(board.${PIN}, \"${PIN}\")"
+        }
+      ],
+      "expression": "_ls_${PIN}.davor()",
+      "order": "FUNCTION_CALL"
+    },
+    "legacyGenerator": false,
+    "_file": "sensors/barrier_blocked.md",
+    "doc": "# Lichtschranke: Kugel davor?\n\nWahr, solange etwas vor dem Sensor ist. Bleibt es länger als 3 Sekunden dort, gilt das als neuer Ruhezustand.\n\n**Anschluss:** Pololu QTR-HD-01A (oder ein Kanal des QTR-HD-02A) an einen analogen Port: OUT an das gelbe Kabel, VCC an 3V3, GND an GND, CTRL bleibt frei.",
+    "doc_en": "# Light barrier: marble in front?\n\nTrue while something is in front of the sensor. If it stays there for more than 3 seconds, this becomes the new resting state.\n\n**Wiring:** Pololu QTR-HD-01A (or one channel of the QTR-HD-02A) on an analog port: OUT to the yellow wire, VCC to 3V3, GND to GND, leave CTRL unconnected."
+  },
+  {
+    "id": "barrier_calibrate",
+    "blockCategory": "Sensoren",
+    "component": "light_barrier",
+    "subCategory": "Abstand & Licht",
+    "label": "neu einmessen",
+    "label_en": "recalibrate",
+    "colour": "#2563EB",
+    "tooltip": "Misst den Ruhezustand neu – dabei muss die Sicht frei sein",
+    "tooltip_en": "Measures the resting state again – the view has to be clear",
+    "blockType": "statement",
+    "inputs": [
+      {
+        "label": "neu einmessen  Port:",
+        "label_en": "recalibrate  port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import board",
+        "from lichtschranke import Lichtschranke"
+      ],
+      "defs": [
+        {
+          "key": "init_ls_${PIN}",
+          "val": "_ls_${PIN} = Lichtschranke(board.${PIN}, \"${PIN}\")"
+        }
+      ],
+      "code": "_ls_${PIN}.neu_einmessen()\n"
+    },
+    "legacyGenerator": false,
+    "_file": "sensors/barrier_calibrate.md",
+    "doc": "# Lichtschranke: neu einmessen\n\nNormalerweise nicht nötig: Die Lichtschranke misst sich beim Start selbst ein. Nützlich, nachdem der Sensor verschoben wurde.",
+    "doc_en": "# Light barrier: recalibrate\n\nUsually not needed: the light barrier calibrates itself at the start. Useful after the sensor has been moved."
+  },
+  {
+    "id": "barrier_count",
+    "blockCategory": "Sensoren",
+    "component": "light_barrier",
+    "subCategory": "Abstand & Licht",
+    "label": "Anzahl Kugeln",
+    "label_en": "number of marbles",
+    "colour": "#2563EB",
+    "tooltip": "Wie viele Kugeln seit dem Start vorbeigerollt sind",
+    "tooltip_en": "How many marbles have passed since the start",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Anzahl Kugeln  Port:",
+        "label_en": "number of marbles  port:",
+        "name": "PIN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
+      }
+    ],
+    "generator": {
+      "imports": [
+        "import board",
+        "from lichtschranke import Lichtschranke"
+      ],
+      "defs": [
+        {
+          "key": "init_ls_${PIN}",
+          "val": "_ls_${PIN} = Lichtschranke(board.${PIN}, \"${PIN}\")"
+        }
+      ],
+      "expression": "_ls_${PIN}.anzahl",
+      "order": "MEMBER"
+    },
+    "legacyGenerator": false,
+    "_file": "sensors/barrier_count.md",
+    "doc": "# Lichtschranke: Anzahl Kugeln\n\nZählt alle Kugeln, die seit dem Programmstart vorbeigerollt sind.",
+    "doc_en": "# Light barrier: number of marbles\n\nCounts all marbles that have passed since the program started."
   },
   {
     "id": "sensor_ldr",

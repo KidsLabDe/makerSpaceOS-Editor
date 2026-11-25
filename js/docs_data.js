@@ -241,6 +241,23 @@ die Bedingung erfüllt wird – z.B. Licht einschalten, wenn es dunkel wird.`,
 as the condition is met – e.g. turn on a light when it gets dark.`,
   },
   {
+    id: 'when_barrier', label: 'Wenn Kugel vorbeirollt', label_en: 'When a marble passes', colour: EVENT_COLOUR, section: 'Ereignisse',
+    tooltip: 'Startet für jede Kugel, die an der Lichtschranke vorbeirollt',
+    tooltip_en: 'Starts for every marble that rolls past the light barrier',
+    doc: `Startet **für jede Kugel**, die an der Reflex-Lichtschranke vorbeirollt.
+Beim Programmstart misst sich die Lichtschranke selbst ein – dann muss die
+Sicht frei sein. Langsame Änderungen des Umgebungslichts gleicht sie aus.
+
+Wird eine Kugel übersehen, stelle die **Empfindlichkeit** auf „hoch“. Löst sie
+ohne Kugel aus, stelle sie auf „niedrig“.`,
+    doc_en: `Starts **for every marble** that rolls past the reflective light barrier.
+The light barrier calibrates itself when the program starts – the view has to be
+clear then. It compensates for slow changes of the ambient light.
+
+If marbles are missed, set the **sensitivity** to “high”. If it triggers without
+a marble, set it to “low”.`,
+  },
+  {
     id: 'when_temperature', label: 'Wenn Temperatur …', label_en: 'When temperature …', colour: EVENT_COLOUR, section: 'Ereignisse',
     tooltip: 'Startet, sobald die Temperatur (DHT11) die Bedingung erfüllt',
     tooltip_en: 'Starts as soon as the temperature (DHT11) meets the condition',

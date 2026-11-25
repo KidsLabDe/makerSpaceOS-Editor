@@ -43,6 +43,7 @@ const TOOLBOX_STATIC_CONTENTS = [
       { kind: 'sep' },
       { kind: 'block', type: 'when_distance' },
       { kind: 'block', type: 'when_light' },
+      { kind: 'block', type: 'when_barrier' },
       { kind: 'block', type: 'when_temperature' },
       { kind: 'block', type: 'when_humidity' },
     ]

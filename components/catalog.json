@@ -108,6 +108,16 @@
       "label_en": "Light sensor",
       "shops": []
     },
+    "light_barrier": {
+      "emoji": "🚥",
+      "label": "Lichtschranke",
+      "label_en": "Light barrier",
+      "product": "Pololu QTR-HD-01A / QTR-HD-02A (Reflex-Sensor, analog)",
+      "product_en": "Pololu QTR-HD-01A / QTR-HD-02A (reflectance sensor, analog)",
+      "shops": [
+        { "name": "Pololu (QTR-HD-02A)", "url": "https://www.pololu.com/product/4202" }
+      ]
+    },
     "air_quality": {
       "emoji": "🌫️",
       "label": "Luftqualität",

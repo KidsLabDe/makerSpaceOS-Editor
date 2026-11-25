@@ -1,8 +1,8 @@
 // GENERIERT von scripts/build_lib_manifest.js – NICHT MANUELL BEARBEITEN!
-// Generiert am 2026-11-15T09:21:33.151Z aus lib/ (43 Dateien).
+// Generiert am 2026-11-25T21:45:17.938Z aus lib/ (44 Dateien).
 window.LIB_MANIFEST = {
-  generatedAt: "2026-11-15T09:21:33.151Z",
-  libVersion: "44d4dbc9a9d62dd038e681346a9067a4711e296c3d479c9dcf3d0b0be34d0294",
+  generatedAt: "2026-11-25T21:45:17.938Z",
+  libVersion: "1ee55a7ca32deec54ee8db5e2932e5ada6409ba253e2d51c25fa720b1375d92e",
   files: [
     {
       "path": "adafruit_bus_device/__init__.py",
@@ -185,14 +185,19 @@ window.LIB_MANIFEST = {
       "sha256": "ba074d22fe06033886afccc5f64a9d167fdbec4f7059415883413a28f2608294"
     },
     {
+      "path": "lichtschranke.py",
+      "size": 4714,
+      "sha256": "828267ed6b899aa562e11bc5af5b0c6872fe0c51df82efbc7e680147aac74b24"
+    },
+    {
       "path": "lsm6ds3.py",
       "size": 2752,
       "sha256": "d3ca29df6c36a5ed58beb8fafef32e5205aba6395d27a64579eb63b4ac39f5ce"
     },
     {
       "path": "makerspaceos.py",
-      "size": 3216,
-      "sha256": "139297fcaba967b83ff029d46f007744176edaab6b37b81df4c3d6215cf8ddc0"
+      "size": 3776,
+      "sha256": "f524acd25d21e344f5b75a903ee93e93dcfa12be4bb029364aba0267a09cb255"
     },
     {
       "path": "neopixel.py",

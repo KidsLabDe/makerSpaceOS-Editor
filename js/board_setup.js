@@ -20,8 +20,12 @@
 // CircuitPython lässt sein Laufwerk nicht per Serial beschreiben, daher
 // File System Access API – die einmalige Wahl des CIRCUITPY-Volumens (per
 // Picker) bleibt der einzige User-Gesture-Punkt. Greift zur Laufzeit auf
-// globale app.js-/i18n.js-Funktionen zu (serial, showToast, setConnected, L)
-// – diese existieren beim Aufruf bereits.
+// globale app.js-/i18n.js-Funktionen zu (serial, showToast, setConnected, L,
+// generateCode) – diese existieren beim Aufruf bereits.
+//
+// Browser ohne File System Access API (z. B. Firefox) können nicht aufs
+// Laufwerk schreiben: Dort öffnet der Button einen Dialog, in dem jede
+// benötigte Datei einzeln oder alles zusammen als ZIP heruntergeladen werden kann.
 
 const BS_DB_NAME      = 'makerspaceos-fs';
 const BS_DB_VERSION   = 1;
@@ -131,6 +135,9 @@ function setButtonState(state) {
     btn.classList.add('btn-board-libs--stale');
     if (label) label.textContent = L('Jetzt aktualisieren', 'Update now');
     btn.title = L('Bibliotheken (lib/) auf dem Board aktualisieren', 'Update the board\'s lib/ libraries');
+  } else if (_bsDownloadMode()) {
+    if (label) label.textContent = L('Libs laden', 'Get libs');
+    btn.title = L('Bibliotheken (lib/) für das Board herunterladen', 'Download the lib/ libraries for the board');
   } else {
     if (label) label.textContent = L('Libs prüfen', 'Check libs');
     btn.title = L('Bibliotheken (lib/) auf dem Board prüfen', 'Check the board\'s lib/ libraries');
@@ -248,12 +255,7 @@ async function _ensureSubDir(libRoot, subPath, cache) {
 async function onBoardLibsClick() {
   if (_bsCopying) return;
   if (_bsSerialMode()) return _onSerialLibsClick();
-  if (typeof window.showDirectoryPicker !== 'function') {
-    showToast(L('Browser unterstützt die Datei-System-API nicht – bitte lib/ manuell kopieren (scripts/sync_lib.sh)',
-                'Browser does not support the File System Access API – please copy lib/ manually (scripts/sync_lib.sh)'),
-              'warn');
-    return;
-  }
+  if (_bsDownloadMode()) { openLibDownload(); return; }
   try {
     if (_bsState === 'stale') {
       await updateBoardLibs();
@@ -447,6 +449,179 @@ async function _reconnectSerial(timeoutMs) {
     await _bsSleep(500);
   }
   return false;
+}
+
+// ---------- Browser ohne Ordner-Zugriff: Dateien einzeln herunterladen ----------
+
+// Welche Bibliothek braucht welche anderen? Schlüssel = Modulname (Datei ohne
+// Endung bzw. Ordner in lib/). Die .mpy-Dateien lassen sich im Browser nicht
+// lesen – neue Abhängigkeiten in lib/ deshalb hier nachtragen.
+const BS_LIB_DEPS = {
+  makerspaceos:          ['asyncio'],
+  asyncio:               ['adafruit_ticks'],
+  adafruit_display_text: ['adafruit_ticks'],
+  adafruit_icm20x:       ['adafruit_bus_device', 'adafruit_register'],
+  grove_imu:             ['adafruit_icm20x'],
+  lichtschranke:         ['makerspaceos', 'asyncio'],
+  robo_display:          ['gc9a01', 'adafruit_display_text'],
+  robobuddy:             ['makerspaceos', 'asyncio', 'ina226'],
+};
+
+function _bsDownloadMode() {
+  return typeof window.showDirectoryPicker !== 'function' && !_bsSerialMode();
+}
+
+// "asyncio/core.mpy" → "asyncio", "sr04.py" → "sr04"
+function _bsModuleName(path) {
+  return path.split('/')[0].replace(/\.m?py$/, '');
+}
+
+// Manifest-Einträge, die das Programm `code` braucht (inkl. Abhängigkeiten).
+// makerspaceos ist immer dabei, ohne die Laufzeit startet kein Programm.
+function _bsNeededFiles(code, files) {
+  const todo = ['makerspaceos'];
+  for (const m of code.matchAll(/^\s*(?:from|import)\s+(\w+)/gm)) todo.push(m[1]);
+  const needed = new Set();
+  while (todo.length) {
+    const name = todo.pop();
+    if (needed.has(name)) continue;
+    needed.add(name);
+    todo.push(...(BS_LIB_DEPS[name] || []));
+  }
+  return files.filter((f) => needed.has(_bsModuleName(f.path)));
+}
+
+// Liste nach Zielordner gruppiert: Der Browser speichert nur Dateien, die
+// Unterordner muss man auf dem Board selbst anlegen.
+function _bsRenderDownloadList() {
+  const list = document.getElementById('lib-dl-list');
+  if (!list) return;
+  list.textContent = '';
+  const all = (window.LIB_MANIFEST && window.LIB_MANIFEST.files) || [];
+  if (!all.length) {
+    list.textContent = L('lib_manifest.js fehlt – bitte Build ausführen (node scripts/build_blocks.js)',
+                         'lib_manifest.js is missing – please run the build (node scripts/build_blocks.js)');
+    return;
+  }
+  const showAll = document.getElementById('lib-dl-all').checked;
+  const files = showAll ? all : _bsNeededFiles(generateCode(), all);
+
+  const folders = new Map();   // Zielordner → Dateien
+  for (const f of files) {
+    const dir = f.path.slice(0, f.path.lastIndexOf('/') + 1);
+    if (!folders.has(dir)) folders.set(dir, []);
+    folders.get(dir).push(f);
+  }
+  // lib/ selbst zuerst, danach die Unterordner
+  for (const dir of [...folders.keys()].sort()) {
+    const head = document.createElement('h4');
+    head.className = 'lib-dl-folder';
+    head.textContent = '📁 lib/' + dir;
+    list.appendChild(head);
+    for (const f of folders.get(dir)) {
+      const name = f.path.slice(dir.length);
+      const link = document.createElement('a');
+      link.className = 'lib-dl-file';
+      link.href = 'lib/' + f.path;
+      link.download = name;
+      link.addEventListener('click', () => link.classList.add('lib-dl-file--done'));
+      const label = document.createElement('span');
+      label.textContent = '⬇ ' + name;
+      const size = document.createElement('span');
+      size.className = 'lib-dl-size';
+      size.textContent = (f.size / 1024).toFixed(1) + ' KB';
+      link.append(label, size);
+      list.appendChild(link);
+    }
+  }
+}
+
+// ---------- Alle Libs als ZIP ----------
+
+function _bsCrc32(bytes) {
+  let crc = 0xFFFFFFFF;
+  for (const b of bytes) {
+    crc ^= b;
+    for (let k = 0; k < 8; k++) crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+// Minimaler ZIP-Schreiber ohne Kompression (die Libs sind zusammen klein, so
+// braucht es keine Fremdbibliothek). entries = [{ name, bytes }].
+function _bsBuildZip(entries, date = new Date()) {
+  const enc = new TextEncoder();
+  const time = (date.getHours() << 11) | (date.getMinutes() << 5) | (date.getSeconds() >> 1);
+  const day  = ((date.getFullYear() - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
+  // Little-Endian-Block aus [Wert, Byte-Breite]-Paaren
+  const record = (...fields) => {
+    const out = [];
+    for (const [value, width] of fields) {
+      for (let i = 0; i < width; i++) out.push((value >>> (8 * i)) & 0xFF);
+    }
+    return new Uint8Array(out);
+  };
+  const parts = [];      // Dateien: Kopf + Name + Inhalt
+  const central = [];    // Inhaltsverzeichnis am Ende
+  let offset = 0;
+  for (const { name, bytes } of entries) {
+    const n = enc.encode(name);
+    // Version 2.0, Flags, Methode 0 (gespeichert), Zeit, Datum, CRC, Größen, Namenslänge
+    const common = [[20, 2], [0, 2], [0, 2], [time, 2], [day, 2], [_bsCrc32(bytes), 4],
+                    [bytes.length, 4], [bytes.length, 4], [n.length, 2], [0, 2]];
+    const local = record([0x04034B50, 4], ...common);
+    central.push(record([0x02014B50, 4], [20, 2], ...common,
+                        [0, 2], [0, 2], [0, 2], [0, 4], [offset, 4]), n);
+    parts.push(local, n, bytes);
+    offset += local.length + n.length + bytes.length;
+  }
+  const centralSize = central.reduce((sum, p) => sum + p.length, 0);
+  const end = record([0x06054B50, 4], [0, 2], [0, 2], [entries.length, 2], [entries.length, 2],
+                     [centralSize, 4], [offset, 4], [0, 2]);
+  return new Blob([...parts, ...central, end], { type: 'application/zip' });
+}
+
+// Lädt alle lib/-Dateien und bietet sie als ZIP an. Im Archiv liegt alles
+// unter lib/ – entpackt in die CIRCUITPY-Wurzel stimmt die Ordnerstruktur.
+async function downloadLibZip() {
+  const btn = document.getElementById('lib-dl-zip');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  try {
+    const files = (window.LIB_MANIFEST && window.LIB_MANIFEST.files) || [];
+    if (!files.length) throw new Error(L('lib_manifest.js fehlt', 'lib_manifest.js is missing'));
+    const entries = [];
+    for (const f of files) {
+      const bytes = new Uint8Array(await (await _fetchLibFile(f.path)).arrayBuffer());
+      // Lieber abbrechen als ein ZIP mit abgeschnittenen oder veralteten Dateien
+      if (bytes.length !== f.size) {
+        throw new Error(L('Dateigröße passt nicht: ', 'File size mismatch: ') + f.path);
+      }
+      entries.push({ name: 'lib/' + f.path, bytes });
+    }
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(_bsBuildZip(entries));
+    link.download = 'makerspaceos-lib.zip';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(link.href), 60000);
+  } catch (e) {
+    console.warn('board_setup: ZIP fehlgeschlagen:', e);
+    showToast(L('ZIP-Download fehlgeschlagen: ', 'ZIP download failed: ') + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function openLibDownload() {
+  document.getElementById('lib-dl-all').checked = false;
+  _bsRenderDownloadList();
+  document.getElementById('lib-dl-modal').hidden = false;
+}
+
+function closeLibDownload() {
+  document.getElementById('lib-dl-modal').hidden = true;
 }
 
 // ---------- Init (wird von app.js beim Start aufgerufen) ----------
