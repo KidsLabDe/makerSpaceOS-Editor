@@ -33,6 +33,8 @@ function _groveOptions(profile, role) {
       return profile.grovePorts.filter(p => p.i2c).map(p => [p.label, String(p.id)]);
     case '2pin':
       return _twoPinPorts(profile).map(p => [p.label, String(p.id)]);
+    case '2pin_analog':
+      return _analogPairPorts(profile).map(p => [p.label, String(p.id)]);
     case '2pin_sequential': {
       // Für den Drehgeber: rotaryio (PIO) braucht benachbarte GPIO-Pins
       // (GPn + GPn±1, gleiche Pin-Gruppe) → sonst RuntimeError auf dem Board.
@@ -68,6 +70,12 @@ function _twoPinPorts(profile) {
   return profile.grovePorts.filter(p => p.pin1 && p.twoPin !== false);
 }
 
+// Ports, deren BEIDE Pins analog lesen können (Grove-Joystick).
+function _analogPairPorts(profile) {
+  return _twoPinPorts(profile).filter(p =>
+    profile.analogPins.includes(p.pin1) && profile.analogPins.includes(p.signal));
+}
+
 // Taugt ein Port für busio.UART (TX = pin1, RX = signal)?
 // RP2040: nur Hardware-UART-Pins – TX auf GP0/4/8/12/16/20/24/28, RX = TX + 1.
 // ESP32: beliebige Pins (GPIO-Matrix), nur TX darf kein reiner Eingang sein.
@@ -92,6 +100,8 @@ function _attachGroveMethods(profile) {
   profile.grovePortById = function (id)   { return _grovePortById(this, id); };
   profile.digitalPorts  = function ()     { return _digitalPorts(this); };
   profile.uartPortOk    = function (port) { return _uartPortOk(this, port); };
+  // für requiresBoardFeature: analogPairs
+  profile.analogPairs   = _analogPairPorts(profile).length > 0;
   return profile;
 }
 
@@ -102,6 +112,7 @@ const BOARD_PROFILES = {
     // NeoPixel: 2 Onboard-Pixel (GP18). Externe Strips erhöhen count.
     neopixel:  { pin: 'GP18', count: 2 },
     buzzer:    'GP22',
+    usbHid:    true,                                   // Maus-/Tastatur-Blöcke (USB-HID)
     buttons:   { B1: 'GP20', B2: 'GP21' },
     // Motortreiber MX1508 – Pins laut Schaltplan (Sheet 4) / Demo-Code:
     motors: {
@@ -168,7 +179,7 @@ const BOARD_PROFILES = {
     // LED 1 (D401) sitzt oben rechts (USB-Buchse oben), Zeile 1 läuft nach
     // links, Zeile 2 zurück nach rechts usw. (Bestückungsplan, am Gerät geprüft).
     matrix5:   { width: 5, height: 5, serpentine: true, origin: 'top-right' },
-    usbHid:    true,                                   // Tastatur-Block (USB-HID)
+    usbHid:    true,                                   // Maus-/Tastatur-Blöcke (USB-HID)
     // Pins mit demselben PWM-Kanal/-Taktgeber (RP2040: Slice = (GP >> 1) & 7):
     // Summer GP20 = Slice 2A wie Servo S3 (GP4), S4 (GP5) = Slice 2B.
     pwmShared: [{ pins: ['GP20', 'GP4', 'GP5'],
@@ -202,6 +213,7 @@ const BOARD_PROFILES = {
     neopixel:  { pin: 'IO18', count: 1 },
     // Externer Summer (kein Onboard-Piezo) – fester Ausgang auf IO16.
     buzzer:    'IO16',
+    usbHid:    true,                                   // natives USB (ESP32-S2)
     // Keine Onboard-Taster (IO0 = BOOT/Strapping) → Taster nur extern über Ports.
     buttons:   {},
     // Kein Onboard-Motortreiber – Motor-Blöcke ausgeblendet.
@@ -372,6 +384,21 @@ try {
 } catch (e) { /* localStorage evtl. nicht verfügbar */ }
 
 let BOARD = BOARD_PROFILES[BOARD_ID];
+
+// ── Profi-Modus (blendet fortgeschrittene Blöcke ein) ───────────────────────
+// Frontmatter „advanced: true“ → nur im Profi-Modus in der Toolbox. Die Blöcke
+// sind immer registriert, Projekte mit Profi-Blöcken laden also auch ohne.
+const ADVANCED_STORAGE = 'makerspaceos.advanced';
+let ADVANCED = false;
+try { ADVANCED = localStorage.getItem(ADVANCED_STORAGE) === '1'; } catch (e) { /* ignorieren */ }
+
+function setAdvanced(on) {
+  if (!!on === ADVANCED) return;
+  try { localStorage.setItem(ADVANCED_STORAGE, on ? '1' : '0'); } catch (e) { /* ignorieren */ }
+  // Auto-Speichern ist verzögert – vor dem Reload sofort sichern.
+  if (typeof saveCurrent === 'function') saveCurrent();
+  location.reload();
+}
 
 // Board wechseln: Auswahl merken und Seite neu laden. Ein Reload ist nötig, weil
 // Dropdown-Optionen und Toolbox einmalig zur Registrierung aus BOARD gebaut werden.

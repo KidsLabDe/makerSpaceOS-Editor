@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-11-15T09:21:33.123Z
+// Generiert: 2026-11-26T11:26:24.716Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -38,7 +38,8 @@ const BLOCKS_CATALOG = {
         "Ton",
         "Servo & Pumpe",
         "Motor",
-        "Tastatur"
+        "Tastatur",
+        "Maus"
       ],
       "subCategories_en": {
         "Fahren": "Driving",
@@ -46,7 +47,8 @@ const BLOCKS_CATALOG = {
         "Ton": "Sound",
         "Servo & Pumpe": "Servo & Pump",
         "Motor": "Motor",
-        "Tastatur": "Keyboard"
+        "Tastatur": "Keyboard",
+        "Maus": "Mouse"
       },
       "groupBy": "component"
     },
@@ -173,6 +175,21 @@ const BLOCKS_CATALOG = {
           "note_en": "KY-040 without Grove plug – connect with a Grove-to-jumper cable"
         }
       ]
+    },
+    "joystick": {
+      "emoji": "🕹️",
+      "label": "Joystick",
+      "label_en": "Joystick",
+      "product": "KY-023 Joystick-Modul (z. B. ELEGOO 37-Sensor-Kit)",
+      "product_en": "KY-023 joystick module (e.g. ELEGOO 37 sensor kit)",
+      "shops": []
+    },
+    "joystick_grove": {
+      "emoji": "🕹️",
+      "label": "Joystick (Grove)",
+      "label_en": "Joystick (Grove)",
+      "product": "Seeed Grove Thumb Joystick",
+      "shops": []
     },
     "button": {
       "emoji": "🔘",
@@ -312,7 +329,19 @@ const BLOCKS_CATALOG = {
       "label": "Tastatur",
       "label_en": "Keyboard",
       "builtinOn": [
-        "gamepad_pico"
+        "maker_pi_rp2040",
+        "gamepad_pico",
+        "lolin_s2_mini"
+      ]
+    },
+    "mouse": {
+      "emoji": "🖱️",
+      "label": "Maus",
+      "label_en": "Mouse",
+      "builtinOn": [
+        "maker_pi_rp2040",
+        "gamepad_pico",
+        "lolin_s2_mini"
       ]
     },
     "neopixel": {
@@ -1034,6 +1063,209 @@ const BLOCKS_DB = [
     "_file": "sensors/encoder.md",
     "doc": "# Drehgeber / Rotary Encoder (Grove)\n\nZählt Drehbewegungen (unbegrenzt). Positiver Wert = Rechtsdrehung, negativer Wert = Linksdrehung.\nNutzt beide Pins des Grove-Ports (Pin1 = CLK, Pin2 = DT). Generator: siehe `js/generator.js`.\n\n**Wichtiger Hinweis:** CircuitPython liest den Drehgeber per PIO – die beiden Pins müssen\n**benachbarte GPIOs** sein (z. B. GP0/GP1). Deshalb bietet der Port-Auswahlbereich nur\ngeeignete Ports an (beim MAKER-PI: Grove 1, 2, 3, 4, 6 – **nicht** Grove 5 und 7).\n\nSo steckst du den Drehgeber an: **CLK** gelb, **DT** weiß, **+** rot, **GND** schwarz – **SW** bleibt frei.\nZählt er falsch herum, tausch einfach Gelb und Weiß.\n\n![Drehgeber mit Grove-Kabel: CLK gelb, DT weiß, + rot, GND schwarz](../images/anschluss-drehgeber.jpg)",
     "doc_en": "# Rotary encoder (Grove)\n\nCounts rotations (unlimited). Positive value = clockwise, negative value = counter-clockwise.\nUses both pins of the Grove port (pin 1 = CLK, pin 2 = DT). Generator: see `js/generator.js`.\n\n**Important:** CircuitPython reads the encoder via PIO – the two pins must be\n**adjacent GPIOs** (e.g. GP0/GP1). The port dropdown therefore only lists suitable\nports (on the MAKER-PI: Grove 1, 2, 3, 4, 6 – **not** Grove 5 and 7).\n\nHow to plug in the encoder: **CLK** yellow, **DT** white, **+** red, **GND** black – **SW** stays free.\nIf it counts the wrong way round, just swap yellow and white.\n\n![Rotary encoder with Grove cable: CLK yellow, DT white, + red, GND black](../images/anschluss-drehgeber.jpg)"
+  },
+  {
+    "id": "sensor_gjoy_axis",
+    "blockCategory": "Sensoren",
+    "component": "joystick_grove",
+    "subCategory": "Weitere",
+    "label": "Achse",
+    "label_en": "axis",
+    "colour": "#2563EB",
+    "tooltip": "Stellung des Joysticks: -100 bis 100, 0 = Mitte",
+    "tooltip_en": "Joystick position: -100 to 100, 0 = centre",
+    "blockType": "value",
+    "output": "Number",
+    "requiresBoardFeature": "analogPairs",
+    "inputs": [
+      {
+        "name": "AXIS",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "X (links / rechts)",
+            "label_en": "X (left / right)",
+            "value": "x"
+          },
+          {
+            "label": "Y (oben / unten)",
+            "label_en": "Y (up / down)",
+            "value": "y"
+          }
+        ]
+      },
+      {
+        "label": "Port:",
+        "label_en": "port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin_analog"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "sensors/gjoy_axis.md",
+    "doc": "# Grove-Joystick (Thumb Joystick)\n\nEin Grove-Kabel genügt: X = gelbes Kabel, Y = weißes Kabel. Weil beide Pins analog\nlesen müssen, bietet der Block nur passende Ports an (beim MAKER-PI: **Grove 6**).\n\nDer Block liefert -100 bis 100, in der Mitte 0. Während der Joystick gedrückt ist, liefert X immer 0.",
+    "doc_en": "# Grove joystick (Thumb Joystick)\n\nOne Grove cable is enough: X = yellow wire, Y = white wire. Both pins must read analog\nvalues, so the block only offers suitable ports (on the MAKER-PI: **Grove 6**).\n\nThe block returns -100 to 100, 0 in the centre. While the joystick is pressed, X always returns 0."
+  },
+  {
+    "id": "sensor_gjoy_direction",
+    "blockCategory": "Sensoren",
+    "component": "joystick_grove",
+    "subCategory": "Weitere",
+    "label": "nach … ?",
+    "label_en": "towards … ?",
+    "colour": "#2563EB",
+    "tooltip": "Wahr, wenn der Joystick deutlich in diese Richtung gedrückt wird",
+    "tooltip_en": "True if the joystick is clearly moved in this direction",
+    "blockType": "value",
+    "output": "Boolean",
+    "requiresBoardFeature": "analogPairs",
+    "inputs": [
+      {
+        "label": "nach",
+        "label_en": "towards",
+        "name": "DIR",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "links",
+            "label_en": "left",
+            "value": "left"
+          },
+          {
+            "label": "rechts",
+            "label_en": "right",
+            "value": "right"
+          },
+          {
+            "label": "oben",
+            "label_en": "up",
+            "value": "up"
+          },
+          {
+            "label": "unten",
+            "label_en": "down",
+            "value": "down"
+          }
+        ]
+      },
+      {
+        "label": "?  Port:",
+        "label_en": "?  port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin_analog"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "sensors/gjoy_direction.md",
+    "doc": "# Grove-Joystick (Thumb Joystick)\n\nEin Grove-Kabel genügt: X = gelbes Kabel, Y = weißes Kabel. Weil beide Pins analog\nlesen müssen, bietet der Block nur passende Ports an (beim MAKER-PI: **Grove 6**).\n\n`Wahr`, wenn der Joystick mehr als halb in die gewählte Richtung bewegt ist.",
+    "doc_en": "# Grove joystick (Thumb Joystick)\n\nOne Grove cable is enough: X = yellow wire, Y = white wire. Both pins must read analog\nvalues, so the block only offers suitable ports (on the MAKER-PI: **Grove 6**).\n\n`true` if the joystick is moved more than halfway in the chosen direction."
+  },
+  {
+    "id": "sensor_gjoy_pressed",
+    "blockCategory": "Sensoren",
+    "component": "joystick_grove",
+    "subCategory": "Weitere",
+    "label": "gedrückt?",
+    "label_en": "pressed?",
+    "colour": "#2563EB",
+    "tooltip": "Wahr, wenn der Joystick hineingedrückt wird",
+    "tooltip_en": "True if the joystick is pushed in",
+    "blockType": "value",
+    "output": "Boolean",
+    "requiresBoardFeature": "analogPairs",
+    "inputs": [
+      {
+        "label": "gedrückt?  Port:",
+        "label_en": "pressed?  port:",
+        "name": "PORT",
+        "fieldType": "grove_dropdown",
+        "groveRole": "2pin_analog"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "sensors/gjoy_pressed.md",
+    "doc": "# Grove-Joystick (Thumb Joystick)\n\nEin Grove-Kabel genügt: X = gelbes Kabel, Y = weißes Kabel. Weil beide Pins analog\nlesen müssen, bietet der Block nur passende Ports an (beim MAKER-PI: **Grove 6**).\n\n`Wahr`, wenn der Joystick hineingedrückt wird.",
+    "doc_en": "# Grove joystick (Thumb Joystick)\n\nOne Grove cable is enough: X = yellow wire, Y = white wire. Both pins must read analog\nvalues, so the block only offers suitable ports (on the MAKER-PI: **Grove 6**).\n\n`true` if the joystick is pushed in."
+  },
+  {
+    "id": "sensor_joystick_btn",
+    "blockCategory": "Sensoren",
+    "component": "joystick",
+    "subCategory": "Weitere",
+    "label": "gedrückt?",
+    "label_en": "pressed?",
+    "colour": "#2563EB",
+    "tooltip": "Wahr, wenn der Joystick hineingedrückt wird",
+    "tooltip_en": "True if the joystick is pushed in",
+    "blockType": "value",
+    "output": "Boolean",
+    "inputs": [
+      {
+        "label": "gedrückt?  Pin:",
+        "label_en": "pressed?  pin:",
+        "name": "PIN_BTN",
+        "fieldType": "grove_dropdown",
+        "groveRole": "digital"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "sensors/joystick_btn.md",
+    "doc": "# Joystick (KY-023, z. B. ELEGOO 37-Sensor-Kit)\n\nAnschluss mit Einzelkabeln: **GND** → GND, **+5V** → **3V3** (nicht 5 V!),\n**VRx** und **VRy** → je ein Analog-Pin, **SW** → ein beliebiger Digital-Pin.\nBeim MAKER-PI-RP2040 sind die Analog-Pins GP26, GP27 und GP28.\n\n`Wahr`, wenn der Joystick hineingedrückt wird (Kabel **SW**).",
+    "doc_en": "# Joystick (KY-023, e.g. ELEGOO 37 sensor kit)\n\nConnect with single wires: **GND** → GND, **+5V** → **3V3** (not 5 V!),\n**VRx** and **VRy** → one analog pin each, **SW** → any digital pin.\nOn the MAKER-PI-RP2040 the analog pins are GP26, GP27 and GP28.\n\n`true` if the joystick is pushed in (wire **SW**)."
+  },
+  {
+    "id": "sensor_joystick_x",
+    "blockCategory": "Sensoren",
+    "component": "joystick",
+    "subCategory": "Weitere",
+    "label": "X-Achse",
+    "label_en": "X axis",
+    "colour": "#2563EB",
+    "tooltip": "Stellung des Joysticks (links / rechts): -100 bis 100, 0 = Mitte",
+    "tooltip_en": "Joystick position (left / right): -100 to 100, 0 = centre",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "X-Achse  Pin:",
+        "label_en": "X axis  pin:",
+        "name": "PIN_X",
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "sensors/joystick_x.md",
+    "doc": "# Joystick (KY-023, z. B. ELEGOO 37-Sensor-Kit)\n\nAnschluss mit Einzelkabeln: **GND** → GND, **+5V** → **3V3** (nicht 5 V!),\n**VRx** und **VRy** → je ein Analog-Pin, **SW** → ein beliebiger Digital-Pin.\nBeim MAKER-PI-RP2040 sind die Analog-Pins GP26, GP27 und GP28.\n\nDer Block liefert -100 bis 100 (links / rechts), in der Mitte 0.\nZählt er falsch herum, dreh das Modul um.",
+    "doc_en": "# Joystick (KY-023, e.g. ELEGOO 37 sensor kit)\n\nConnect with single wires: **GND** → GND, **+5V** → **3V3** (not 5 V!),\n**VRx** and **VRy** → one analog pin each, **SW** → any digital pin.\nOn the MAKER-PI-RP2040 the analog pins are GP26, GP27 and GP28.\n\nThe block returns -100 to 100 (left / right), 0 in the centre.\nIf it counts the wrong way round, turn the module around."
+  },
+  {
+    "id": "sensor_joystick_y",
+    "blockCategory": "Sensoren",
+    "component": "joystick",
+    "subCategory": "Weitere",
+    "label": "Y-Achse",
+    "label_en": "Y axis",
+    "colour": "#2563EB",
+    "tooltip": "Stellung des Joysticks (oben / unten): -100 bis 100, 0 = Mitte",
+    "tooltip_en": "Joystick position (up / down): -100 to 100, 0 = centre",
+    "blockType": "value",
+    "output": "Number",
+    "inputs": [
+      {
+        "label": "Y-Achse  Pin:",
+        "label_en": "Y axis  pin:",
+        "name": "PIN_Y",
+        "fieldType": "grove_dropdown",
+        "groveRole": "analog"
+      }
+    ],
+    "legacyGenerator": true,
+    "_file": "sensors/joystick_y.md",
+    "doc": "# Joystick (KY-023, z. B. ELEGOO 37-Sensor-Kit)\n\nAnschluss mit Einzelkabeln: **GND** → GND, **+5V** → **3V3** (nicht 5 V!),\n**VRx** und **VRy** → je ein Analog-Pin, **SW** → ein beliebiger Digital-Pin.\nBeim MAKER-PI-RP2040 sind die Analog-Pins GP26, GP27 und GP28.\n\nDer Block liefert -100 bis 100 (oben / unten), in der Mitte 0.\nZählt er falsch herum, dreh das Modul um.",
+    "doc_en": "# Joystick (KY-023, e.g. ELEGOO 37 sensor kit)\n\nConnect with single wires: **GND** → GND, **+5V** → **3V3** (not 5 V!),\n**VRx** and **VRy** → one analog pin each, **SW** → any digital pin.\nOn the MAKER-PI-RP2040 the analog pins are GP26, GP27 and GP28.\n\nThe block returns -100 to 100 (up / down), 0 in the centre.\nIf it counts the wrong way round, turn the module around."
   },
   {
     "id": "sensor_lautstaerke",
@@ -2279,6 +2511,7 @@ const BLOCKS_DB = [
     "component": "keyboard",
     "subCategory": "Tastatur",
     "requiresBoardFeature": "usbHid",
+    "advanced": true,
     "label": "Taste",
     "label_en": "Key",
     "colour": "#DC2626",
@@ -2370,8 +2603,148 @@ const BLOCKS_DB = [
     },
     "legacyGenerator": true,
     "_file": "actuators/taste.md",
-    "doc": "# Taste drücken (USB-Tastatur)\n\nDas Board meldet sich am Computer auch als **Tastatur**. Mit diesem Block drückt\nes eine Taste – so wird der GamePadPico zum Gamecontroller für Spiele im Browser\noder Minecraft.\n\n- **kurz drücken** – einmal tippen\n- **gedrückt halten** – Taste bleibt unten (z. B. zum Laufen), bis „loslassen\" kommt\n- **loslassen** – gehaltene Taste wieder lösen\n\nBeispiel: „Wenn Pfeil links berührt → Taste ⬅️ gedrückt halten\", und in einer\nSchleife loslassen, sobald das Feld nicht mehr berührt wird.\n\n> Vorsicht: Die Tasten landen in dem Fenster, das gerade vorne ist – auch im Editor!",
-    "doc_en": "# Press key (USB keyboard)\n\nThe board also shows up on the computer as a **keyboard**. With this block it\npresses a key – turning the GamePadPico into a game controller for browser games\nor Minecraft.\n\n- **tap** – press once\n- **hold down** – the key stays down (e.g. for walking) until \"release\"\n- **release** – let go of a held key\n\nExample: \"When arrow left touched → hold down ⬅️\", and in a loop release it as\nsoon as the pad is no longer touched.\n\n> Careful: the keys go to whichever window is in front – including the editor!"
+    "doc": "# Taste drücken (USB-Tastatur)\n\nDas Board meldet sich am Computer auch als **Tastatur**. Mit diesem Block drückt\nes eine Taste – so wird dein Board zum Gamecontroller für Spiele im Browser\noder Minecraft. (Profi-Block, auf MAKER-PI-RP2040, GamePadPico und S2 Mini)\n\n- **kurz drücken** – einmal tippen\n- **gedrückt halten** – Taste bleibt unten (z. B. zum Laufen), bis „loslassen\" kommt\n- **loslassen** – gehaltene Taste wieder lösen\n\nBeispiel: „Wenn Pfeil links berührt → Taste ⬅️ gedrückt halten\", und in einer\nSchleife loslassen, sobald das Feld nicht mehr berührt wird.\n\n> Vorsicht: Die Tasten landen in dem Fenster, das gerade vorne ist – auch im Editor!",
+    "doc_en": "# Press key (USB keyboard)\n\nThe board also shows up on the computer as a **keyboard**. With this block it\npresses a key – turning your board into a game controller for browser games\nor Minecraft. (Advanced block, on MAKER-PI-RP2040, GamePadPico and S2 Mini)\n\n- **tap** – press once\n- **hold down** – the key stays down (e.g. for walking) until \"release\"\n- **release** – let go of a held key\n\nExample: \"When arrow left touched → hold down ⬅️\", and in a loop release it as\nsoon as the pad is no longer touched.\n\n> Careful: the keys go to whichever window is in front – including the editor!"
+  },
+  {
+    "id": "actuator_mouse_click",
+    "blockCategory": "Aktionen",
+    "component": "mouse",
+    "subCategory": "Maus",
+    "requiresBoardFeature": "usbHid",
+    "advanced": true,
+    "label": "Mausklick",
+    "label_en": "mouse click",
+    "colour": "#DC2626",
+    "tooltip": "Drückt eine Maustaste am Computer",
+    "tooltip_en": "Presses a mouse button on the computer",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Maustaste",
+        "label_en": "mouse button",
+        "name": "BUTTON",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "links",
+            "label_en": "left",
+            "value": "1"
+          },
+          {
+            "label": "rechts",
+            "label_en": "right",
+            "value": "2"
+          },
+          {
+            "label": "Mitte",
+            "label_en": "middle",
+            "value": "4"
+          }
+        ]
+      },
+      {
+        "name": "MODE",
+        "fieldType": "options_dropdown",
+        "options": [
+          {
+            "label": "kurz klicken",
+            "label_en": "click",
+            "value": "tippen"
+          },
+          {
+            "label": "gedrückt halten",
+            "label_en": "hold down",
+            "value": "halten"
+          },
+          {
+            "label": "loslassen",
+            "label_en": "release",
+            "value": "los"
+          }
+        ]
+      }
+    ],
+    "hardware": {
+      "commonName": "USB-Maus (eingebaut, über das USB-Kabel)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/mouse_click.md",
+    "doc": "# Mausklick (USB-Maus)\n\n- **kurz klicken** – einmal klicken\n- **gedrückt halten** – Taste bleibt unten (z. B. zum Ziehen), bis „loslassen“ kommt\n- **loslassen** – gehaltene Taste wieder lösen\n\nBeispiel: „Wenn Joystick gedrückt → Maustaste links kurz klicken“. Beim Stoppen\ndes Programms werden gehaltene Tasten automatisch losgelassen.",
+    "doc_en": "# Mouse click (USB mouse)\n\n- **click** – click once\n- **hold down** – the button stays down (e.g. for dragging) until “release”\n- **release** – let go of a held button\n\nExample: “when joystick pressed → click left mouse button”. Held buttons are\nreleased automatically when the program stops."
+  },
+  {
+    "id": "actuator_mouse_move",
+    "blockCategory": "Aktionen",
+    "component": "mouse",
+    "subCategory": "Maus",
+    "requiresBoardFeature": "usbHid",
+    "advanced": true,
+    "label": "Maus bewegen",
+    "label_en": "move mouse",
+    "colour": "#DC2626",
+    "tooltip": "Bewegt den Mauszeiger am Computer um so viele Schritte",
+    "tooltip_en": "Moves the mouse pointer on the computer by this many steps",
+    "blockType": "statement",
+    "inline": true,
+    "valueInputs": [
+      {
+        "name": "DX",
+        "label": "bewegen  rechts",
+        "label_en": "move  right",
+        "defaultValue": 10
+      },
+      {
+        "name": "DY",
+        "label": "hoch",
+        "label_en": "up",
+        "defaultValue": 0
+      }
+    ],
+    "hardware": {
+      "commonName": "USB-Maus (eingebaut, über das USB-Kabel)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/mouse_move.md",
+    "doc": "# Maus bewegen (USB-Maus)\n\nDas Board meldet sich am Computer auch als **Maus**. Der Block schiebt den\nMauszeiger ein Stück weiter: **rechts** und **hoch** in Pixeln, negative Zahlen\ngehen nach links bzw. unten.\n\n**Mit Joystick steuern:** In FÜR IMMER „Maus bewegen“ legen und bei *rechts*\n„Joystick X-Achse ÷ 10“, bei *hoch* „Joystick Y-Achse ÷ 10“ einsetzen.\nEine größere Teilzahl macht den Zeiger langsamer.\n\n> Vorsicht: Der Zeiger bewegt sich wirklich! Falls er nicht mehr zu bändigen ist:\n> USB-Kabel ziehen.",
+    "doc_en": "# Move mouse (USB mouse)\n\nThe board also shows up on the computer as a **mouse**. This block pushes the\npointer a bit further: **right** and **up** in pixels, negative numbers go left\nor down.\n\n**Steer with a joystick:** put “move mouse” into FOREVER and use\n“joystick X axis ÷ 10” for *right* and “joystick Y axis ÷ 10” for *up*.\nA bigger divisor makes the pointer slower.\n\n> Careful: the pointer really moves! If you cannot control it any more:\n> unplug the USB cable."
+  },
+  {
+    "id": "actuator_mouse_scroll",
+    "blockCategory": "Aktionen",
+    "component": "mouse",
+    "subCategory": "Maus",
+    "requiresBoardFeature": "usbHid",
+    "advanced": true,
+    "label": "Mausrad",
+    "label_en": "mouse wheel",
+    "colour": "#DC2626",
+    "tooltip": "Dreht das Mausrad: positive Zahl = nach oben, negative = nach unten",
+    "tooltip_en": "Turns the mouse wheel: positive = up, negative = down",
+    "blockType": "statement",
+    "inline": true,
+    "valueInputs": [
+      {
+        "name": "STEPS",
+        "label": "Mausrad drehen",
+        "label_en": "turn mouse wheel",
+        "defaultValue": 1
+      }
+    ],
+    "hardware": {
+      "commonName": "USB-Maus (eingebaut, über das USB-Kabel)",
+      "verbrauch3j": 0,
+      "kitStandard": false
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/mouse_scroll.md",
+    "doc": "# Mausrad drehen (USB-Maus)\n\nScrollt am Computer: **positive** Zahlen nach oben, **negative** nach unten.\nIn einer Schleife kurz warten, sonst rast die Seite davon.",
+    "doc_en": "# Turn mouse wheel (USB mouse)\n\nScrolls on the computer: **positive** numbers up, **negative** numbers down.\nWait briefly inside loops, otherwise the page races away."
   },
   {
     "id": "neopixel_brightness",

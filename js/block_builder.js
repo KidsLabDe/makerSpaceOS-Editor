@@ -276,7 +276,9 @@
     const hideIds   = new Set(BOARD.hideBlockIds      || []);
     // requiresBoardFeature: Block nur zeigen, wenn das Profil das Feature
     // deklariert (z. B. display, powerMonitor, drive beim RoboBuddy).
+    // advanced: Block nur im Profi-Modus zeigen (boards.js, ADVANCED).
     const visible   = b => !hideIds.has(b.id) && !hideSubs.has(b.subCategory) &&
+                           (!b.advanced || ADVANCED) &&
                            (!b.requiresBoardFeature || !!BOARD[b.requiresBoardFeature]);
 
     for (const catDef of BLOCKS_CATALOG.categories) {

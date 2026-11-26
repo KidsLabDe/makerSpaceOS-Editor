@@ -21,14 +21,15 @@
       "label": "Aktionen",
       "label_en": "Actions",
       "colour": "#DC2626",
-      "subCategories": ["Fahren", "LED", "Ton", "Servo & Pumpe", "Motor", "Tastatur"],
+      "subCategories": ["Fahren", "LED", "Ton", "Servo & Pumpe", "Motor", "Tastatur", "Maus"],
       "subCategories_en": {
         "Fahren": "Driving",
         "LED": "LED",
         "Ton": "Sound",
         "Servo & Pumpe": "Servo & Pump",
         "Motor": "Motor",
-        "Tastatur": "Keyboard"
+        "Tastatur": "Keyboard",
+        "Maus": "Mouse"
       },
       "groupBy": "component"
     },
@@ -150,6 +151,21 @@
           "note_en": "KY-040 without Grove plug – connect with a Grove-to-jumper cable"
         }
       ]
+    },
+    "joystick": {
+      "emoji": "🕹️",
+      "label": "Joystick",
+      "label_en": "Joystick",
+      "product": "KY-023 Joystick-Modul (z. B. ELEGOO 37-Sensor-Kit)",
+      "product_en": "KY-023 joystick module (e.g. ELEGOO 37 sensor kit)",
+      "shops": []
+    },
+    "joystick_grove": {
+      "emoji": "🕹️",
+      "label": "Joystick (Grove)",
+      "label_en": "Joystick (Grove)",
+      "product": "Seeed Grove Thumb Joystick",
+      "shops": []
     },
     "button": {
       "emoji": "🔘",
@@ -275,7 +291,13 @@
       "emoji": "⌨️",
       "label": "Tastatur",
       "label_en": "Keyboard",
-      "builtinOn": ["gamepad_pico"]
+      "builtinOn": ["maker_pi_rp2040", "gamepad_pico", "lolin_s2_mini"]
+    },
+    "mouse": {
+      "emoji": "🖱️",
+      "label": "Maus",
+      "label_en": "Mouse",
+      "builtinOn": ["maker_pi_rp2040", "gamepad_pico", "lolin_s2_mini"]
     },
     "neopixel": {
       "emoji": "🌈",

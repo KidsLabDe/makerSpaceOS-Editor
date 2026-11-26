@@ -4,6 +4,7 @@ blockCategory: Aktionen
 component: keyboard
 subCategory: Tastatur
 requiresBoardFeature: usbHid
+advanced: true
 label: "⌨️ Taste"
 label_en: "⌨️ Key"
 colour: "#DC2626"
@@ -65,8 +66,8 @@ legacyGenerator: true
 # Taste drücken (USB-Tastatur)
 
 Das Board meldet sich am Computer auch als **Tastatur**. Mit diesem Block drückt
-es eine Taste – so wird der GamePadPico zum Gamecontroller für Spiele im Browser
-oder Minecraft.
+es eine Taste – so wird dein Board zum Gamecontroller für Spiele im Browser
+oder Minecraft. (Profi-Block, auf MAKER-PI-RP2040, GamePadPico und S2 Mini)
 
 - **kurz drücken** – einmal tippen
 - **gedrückt halten** – Taste bleibt unten (z. B. zum Laufen), bis „loslassen" kommt
@@ -82,8 +83,8 @@ Schleife loslassen, sobald das Feld nicht mehr berührt wird.
 # Press key (USB keyboard)
 
 The board also shows up on the computer as a **keyboard**. With this block it
-presses a key – turning the GamePadPico into a game controller for browser games
-or Minecraft.
+presses a key – turning your board into a game controller for browser games
+or Minecraft. (Advanced block, on MAKER-PI-RP2040, GamePadPico and S2 Mini)
 
 - **tap** – press once
 - **hold down** – the key stays down (e.g. for walking) until "release"
