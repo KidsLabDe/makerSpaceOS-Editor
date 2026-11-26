@@ -492,7 +492,7 @@ function _servoPwmDef(s) {
 // PWM-Taktgeber belegt (BOARD.pwmShared, z. B. GamePadPico: Summer + S3/S4).
 function _pwmPinOf(b) {
   if (b.type === 'actuator_buzzer' || b.type === 'actuator_buzzer_off') return BOARD.buzzer;
-  if (b.type === 'actuator_servo' || b.type === 'actuator_wheel_servo') return BOARD.servos[b.getFieldValue('SERVO')];
+  if (['actuator_servo', 'actuator_servo_pulse', 'actuator_wheel_servo'].includes(b.type)) return BOARD.servos[b.getFieldValue('SERVO')];
   return null;
 }
 
@@ -509,14 +509,33 @@ function _pwmSharedWarning(block) {
   }
 }
 
+function _servoDef(s) {
+  const pwm = _servoPwmDef(s);
+  _defs['from_servo']    = 'from adafruit_motor import servo as _servo_mod';
+  _defs[`init_srv_${s}`] = `_servo_${s} = _servo_mod.Servo(${pwm})`;
+  return `_servo_${s}`;
+}
+
 Blockly.Python['actuator_servo'] = function(block) {
   _pwmSharedWarning(block);
   const s     = block.getFieldValue('SERVO');
   const angle = Blockly.Python.valueToCode(block, 'ANGLE', Blockly.Python.ORDER_NONE) || '90';
-  const pwm   = _servoPwmDef(s);
-  _defs['from_servo']    = 'from adafruit_motor import servo as _servo_mod';
-  _defs[`init_srv_${s}`] = `_servo_${s} = _servo_mod.Servo(${pwm})`;
-  return `_servo_${s}.angle = ${angle}\n`;
+  return `${_servoDef(s)}.angle = ${angle}\n`;
+};
+
+// Pulsbreiten für 0°/180° nachstellen (Standard der Bibliothek: 750…2250 µs,
+// viele Mini-Servos schaffen damit nur ca. 130°).
+Blockly.Python['actuator_servo_pulse'] = function(block) {
+  const s = block.getFieldValue('SERVO');
+  if (!s || s === '__NONE__') {
+    block.setWarningText(L('⚠ Bitte Servo auswählen!', '⚠ Please select a servo!'));
+    return L('pass  # ⚠ Kein Servo ausgewählt\n', 'pass  # ⚠ No servo selected\n');
+  }
+  block.setWarningText(null);
+  _pwmSharedWarning(block);
+  const min = block.getFieldValue('MIN');
+  const max = block.getFieldValue('MAX');
+  return `${_servoDef(s)}.set_pulse_width_range(${min}, ${max})\n`;
 };
 
 // ── Aktoren: Rad-Servo (Dauerdreh-Servo) + Fahren ────────────────────────────
