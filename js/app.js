@@ -267,6 +267,11 @@ function initButtons() {
     boardSel.value = BOARD_ID;
     boardSel.addEventListener('change', () => setBoard(boardSel.value));
   }
+  const advanced = document.getElementById('advanced-toggle');
+  if (advanced) {
+    advanced.checked = ADVANCED;
+    advanced.addEventListener('change', () => setAdvanced(advanced.checked));
+  }
   const logoSub = document.getElementById('logo-sub');
   if (logoSub) logoSub.textContent = BOARD.name;
 }

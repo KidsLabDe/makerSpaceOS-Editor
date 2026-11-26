@@ -82,7 +82,9 @@ Blockly.Python.finish = function() {
     _akkuDefs();
     _defs['from_robobuddy_waechter'] = 'from robobuddy import akku_waechter';
   }
-  const hasAsync = guard || _tasks.length > 0 || /\bawait\b/.test(_setupCode);
+  // alles mit beim_beenden läuft erst nach start() → immer über start()
+  const hasAsync = guard || _tasks.length > 0 || !!_defs['from_beim_beenden'] ||
+                   /\bawait\b/.test(_setupCode);
   if (hasAsync) _defs['import_asyncio'] = 'import asyncio';
 
   // Import-Einträge aus Standard-Blockly-Blöcken übernehmen (z.B. math_random_int →
@@ -841,28 +843,78 @@ Blockly.Python['sensor_lux'] = function(block) {
   return [`_lux_${pin}()`, Blockly.Python.ORDER_FUNCTION_CALL];
 };
 
-// ── Joystick-Generatoren (KY-023) ─────────────────────────────────────────────
+// ── Joystick-Generatoren (KY-023 und Grove Thumb Joystick) ────────────────────
+// Ergebnis -100 … 100, 0 = Mitte (mit Totzone gegen Zittern). „weg“ = Rohwert-
+// Abstand von der Mitte bis zum Anschlag: KY-023 nutzt den ganzen Bereich, der
+// Grove-Joystick nur ca. 20–80 % (Datenblatt: 206…798 von 1023).
+const _JOY_RANGE = { ky023: 32000, grove: 19000 };
+// Grove: Drücken zieht die X-Achse auf Vollausschlag (kein eigener Taster-Pin).
+const _JOY_PRESSED = 60000;
 
-Blockly.Python['sensor_joystick_x'] = function(block) {
-  const pin = block.getFieldValue('PIN');
+// Nicht gewählte Pins fängt der blockToCode-Wrapper am Dateiende ab.
+// Gleicher Key/Variablenname wie „Analog lesen“ → Pin wird nur einmal belegt.
+function _joyAnalogDef(pin) {
   _defs['import_board']    = 'import board';
   _defs['import_analogio'] = 'import analogio';
-  _defs[`init_joy_x_${pin}`] = `_joy_x_${pin} = analogio.AnalogIn(board.${pin})`;
-  return [`round(_joy_x_${pin}.value / 65535 * 100)`, Blockly.Python.ORDER_FUNCTION_CALL];
-};
+  _defs[`init_ain_${pin}`] = `_ain_${pin} = analogio.AnalogIn(board.${pin})`;
+  return `_ain_${pin}.value`;
+}
 
-Blockly.Python['sensor_joystick_y'] = function(block) {
-  const pin = block.getFieldValue('PIN');
-  _defs['import_board']    = 'import board';
-  _defs['import_analogio'] = 'import analogio';
-  _defs[`init_joy_y_${pin}`] = `_joy_y_${pin} = analogio.AnalogIn(board.${pin})`;
-  return [`round(_joy_y_${pin}.value / 65535 * 100)`, Blockly.Python.ORDER_FUNCTION_CALL];
-};
+function _joyScale(raw, range) {
+  _defs['fn_joystick'] =
+    `def _joystick(wert, weg):\n` +
+    `    p = round((wert - 32768) * 100 / weg)\n` +
+    `    if -10 < p < 10:\n` +
+    `        return 0\n` +
+    `    return max(-100, min(100, p))`;
+  return `_joystick(${raw}, ${range})`;
+}
+
+function _joyKyAxis(block, field) {
+  const pin = block.getFieldValue(field);
+  return [_joyScale(_joyAnalogDef(pin), _JOY_RANGE.ky023), Blockly.Python.ORDER_FUNCTION_CALL];
+}
+
+Blockly.Python['sensor_joystick_x'] = block => _joyKyAxis(block, 'PIN_X');
+Blockly.Python['sensor_joystick_y'] = block => _joyKyAxis(block, 'PIN_Y');
 
 Blockly.Python['sensor_joystick_btn'] = function(block) {
-  const pin = block.getFieldValue('PIN');
+  const pin = block.getFieldValue('PIN_BTN');
   _digitalInDef(pin, 'joy_btn', 'UP');
   return [`(not _joy_btn_${pin}.value)`, Blockly.Python.ORDER_NONE];
+};
+
+// Grove-Stecker: X = gelb (signal), Y = weiß (pin1).
+function _groveJoyAxis(portId, axis) {
+  const port = BOARD.grovePortById(portId);
+  if (axis === 'y') return _joyScale(_joyAnalogDef(port.pin1), _JOY_RANGE.grove);
+  const scaled = _joyScale('wert', _JOY_RANGE.grove);   // legt fn_joystick an
+  _joyAnalogDef(port.signal);
+  _defs['fn_joystick_grove_x'] =
+    `def _grove_joystick_x(eingang):\n` +
+    `    wert = eingang.value\n` +
+    `    if wert > ${_JOY_PRESSED}:  # gedrückt\n` +
+    `        return 0\n` +
+    `    return ${scaled}`;
+  return `_grove_joystick_x(_ain_${port.signal})`;
+}
+
+Blockly.Python['sensor_gjoy_axis'] = function(block) {
+  const port = block.getFieldValue('PORT');
+  return [_groveJoyAxis(port, block.getFieldValue('AXIS')), Blockly.Python.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Python['sensor_gjoy_direction'] = function(block) {
+  const port = block.getFieldValue('PORT');
+  const [axis, cmp] = { left:  ['x', '< -50'], right: ['x', '> 50'],
+                        up:    ['y', '> 50'],  down:  ['y', '< -50'] }[block.getFieldValue('DIR')];
+  return [`(${_groveJoyAxis(port, axis)} ${cmp})`, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['sensor_gjoy_pressed'] = function(block) {
+  const port = block.getFieldValue('PORT');
+  const raw = _joyAnalogDef(BOARD.grovePortById(port).signal);
+  return [`(${raw} > ${_JOY_PRESSED})`, Blockly.Python.ORDER_NONE];
 };
 
 // ── DHT11-Generatoren (KY-015) ────────────────────────────────────────────────
@@ -1094,6 +1146,60 @@ Blockly.Python['when_touch_pad'] = function(block) {
   return _whenTask(`${L('wenn_pfeil', 'when_arrow')}_${L(name, en[name] || name)}`, `_touch_${pin}.value`, body, '0.02');
 };
 
+// ── USB-Maus (BOARD.usbHid) ──────────────────────────────────────────────────
+// Report des eingebauten Maus-Geräts: [Tasten, x, y, Rad], je -127 … 127.
+// Größere Bewegungen werden auf mehrere Reports verteilt.
+function _mouseDefs() {
+  _defs['import_usb_hid'] = 'import usb_hid';
+  // nach Stopp/Absturz gehaltene Tasten lösen → Programm läuft über start()
+  _defs['from_beim_beenden'] = 'from makerspaceos import beim_beenden';
+  _defs['init_maus'] =
+    `_maus = None\n` +
+    `for _d in usb_hid.devices:\n` +
+    `    if _d.usage_page == 0x01 and _d.usage == 0x02:\n` +
+    `        _maus = _d\n` +
+    `if _maus is None:\n` +
+    `    raise RuntimeError("` + L('USB-Maus ist auf diesem Board ausgeschaltet', 'USB mouse is disabled on this board') + `")\n` +
+    `_maustasten = 0\n` +
+    `def _maus_bewegen(x=0, y=0, rad=0):\n` +
+    `    rest = [round(x), round(y), round(rad)]\n` +
+    `    while any(rest):\n` +
+    `        teil = [max(-127, min(127, w)) for w in rest]\n` +
+    `        _maus.send_report(bytes([_maustasten] + [w & 0xFF for w in teil]))\n` +
+    `        rest = [w - t for w, t in zip(rest, teil)]\n` +
+    `def _maus_klick(taste, modus):\n` +
+    `    global _maustasten\n` +
+    `    if modus != 'los':\n` +
+    `        _maustasten |= taste\n` +
+    `        _maus.send_report(bytes([_maustasten, 0, 0, 0]))\n` +
+    `    if modus != 'halten':\n` +
+    `        _maustasten &= ~taste\n` +
+    `        _maus.send_report(bytes([_maustasten, 0, 0, 0]))\n` +
+    `beim_beenden(lambda: _maus_klick(7, 'los'))`;
+}
+
+Blockly.Python['actuator_mouse_move'] = function(block) {
+  if (!BOARD.usbHid) return '';
+  _mouseDefs();
+  const dx = Blockly.Python.valueToCode(block, 'DX', Blockly.Python.ORDER_NONE) || '0';
+  const dy = Blockly.Python.valueToCode(block, 'DY', Blockly.Python.ORDER_UNARY_SIGN) || '0';
+  // Block zählt „hoch“ positiv (wie der Joystick), am Bildschirm ist y nach unten.
+  return `_maus_bewegen(${dx}, -${dy})\n`;
+};
+
+Blockly.Python['actuator_mouse_scroll'] = function(block) {
+  if (!BOARD.usbHid) return '';
+  _mouseDefs();
+  const steps = Blockly.Python.valueToCode(block, 'STEPS', Blockly.Python.ORDER_NONE) || '0';
+  return `_maus_bewegen(rad=${steps})\n`;
+};
+
+Blockly.Python['actuator_mouse_click'] = function(block) {
+  if (!BOARD.usbHid) return '';
+  _mouseDefs();
+  return `_maus_klick(${block.getFieldValue('BUTTON')}, '${block.getFieldValue('MODE')}')\n`;
+};
+
 // ── USB-Tastatur (BOARD.usbHid) ──────────────────────────────────────────────
 // Ohne adafruit_hid: direkt 8-Byte-Reports an das Tastatur-Gerät von usb_hid
 // (Modifier, 0, bis zu 6 Tasten). Gehaltene Tasten stehen in _tasten.
@@ -1103,6 +1209,7 @@ Blockly.Python['actuator_taste'] = function(block) {
   const code = block.getFieldValue('KEY');
   const mode = block.getFieldValue('MODE');
   _defs['import_usb_hid'] = 'import usb_hid';
+  _defs['from_beim_beenden'] = 'from makerspaceos import beim_beenden';
   _defs['init_tastatur'] =
     `_tastatur = None\n` +
     `for _d in usb_hid.devices:\n` +
@@ -1117,7 +1224,8 @@ Blockly.Python['actuator_taste'] = function(block) {
     `    _tastatur.send_report(bytes([0, 0] + _tasten + [0] * (6 - len(_tasten))))\n` +
     `    if modus != 'halten' and code in _tasten:\n` +
     `        _tasten.remove(code)\n` +
-    `        _tastatur.send_report(bytes([0, 0] + _tasten + [0] * (6 - len(_tasten))))`;
+    `        _tastatur.send_report(bytes([0, 0] + _tasten + [0] * (6 - len(_tasten))))\n` +
+    `beim_beenden(lambda: _tastatur.send_report(bytes(8)))`;
   return `_taste(${code}, '${mode}')\n`;
 };
 

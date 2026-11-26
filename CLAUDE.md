@@ -78,6 +78,7 @@ generator:
   code: "_x_${PIN}.value = ${SPEED}\n"   # oder: expression + order (für value-Blöcke)
 legacyGenerator: false        # true ⇒ Generator bleibt handgeschrieben in generator.js
 requiresBoardFeature: display # optional: Block nur, wenn das Board-Profil dieses Feld hat
+advanced: true                # optional: Block nur im Profi-Modus in der Toolbox
 component: round_display       # optional: Bauteil-Kennzeichen (siehe unten)
 ---
 ```
@@ -145,6 +146,7 @@ Der Generator erzeugt **kein einzelnes `while True:`** mehr, sondern ein koopera
   - **Display** GC9A01 (`lib/gc9a01.py`, `lib/robo_display.py`, braucht `adafruit_display_text`); Display/SPI bleiben im Modul über mehrere Läufe bestehen.
   - **Kein CIRCUITPY/UF2** (`noMassStorage: true`): „Libs prüfen" liest/schreibt über die Raw-REPL (`serial.withRawRepl`, base64-Stücke, `supervisor.reload()`); UF2-Button ausgeblendet. PWM: 4 Servos + **max. 2** weitere Frequenzen.
 - **Gemeinsamer I²C-Bus** – `_i2cBusDef(port)` (generator.js) legt je Pin-Paar **einen** `busio.I2C` an (Key `init_0_i2c_*`, sortiert vor allen Geräten, mit Bus-Clear vorab). LCD, ICM20948 und Akku nutzen ihn; vorher erzeugte jedes Gerät einen eigenen Bus → „in Benutzung", sobald zwei I²C-Blöcke am selben Port hingen.
+- **Profi-Modus** – Header-Häkchen `#advanced-toggle` → `localStorage['makerspaceos.advanced']`, Wechsel per Reload (`setAdvanced`, boards.js). `advanced: true` blendet nur den Toolbox-Eintrag aus; die Blöcke bleiben registriert (alte/geteilte Projekte laden immer). Derzeit Maus- und Tastatur-Blöcke (`usbHid`: MAKER-PI, GamePadPico, S2 Mini).
 - **Grove-Ports statt Roh-Pins**: Hardware-Blöcke nutzen `fieldType: grove_dropdown` (zeigt „Grove 1…7"). `groveRole` bestimmt Wert + Auswahl: `digital`/`analog` → Wert = Signal-Pin (Pin 2 des Steckers, GPxx); `i2c`/`2pin` → Wert = Port-ID (String), Generator löst Pins über `BOARD.grovePortById(id)` auf. Mapping/Helfer in `js/boards.js` (`grovePorts`, `groveOptions(role)`). `analog` bietet nur die ADC-Ports 5/6/7 (GP26/27/28).
 - **Motor-Pins**: M1=GP8/GP9, M2=GP10/GP11 (MX1508, Schaltplan Sheet 4). NeoPixel: 2 Onboard-Pixel auf GP18. Battery: GP29 = VBAT/2 (Teiler).
 - **`grove_rgb_lcd.py`** (LCD-Blöcke) liegt unter `lib/` im Repo und muss nach `CIRCUITPY/lib/` kopiert werden. Text-Controller (JHD1313/JHD1802) immer @ 0x3E; die **RGB-Beleuchtung wird automatisch erkannt** (erst 0x30/SGM31323 = V5, dann 0x62/PCA9633 = V4). **Grove-16x2-LCD (Mono-Versionen)** haben **keinen** I2C-Beleuchtungstriever → Library fällt auf Text-Modus zurück (keine `OSError`, `set_rgb()` no-op, Hinweis im Serial-Monitor). Generator erzeugt `GroveRgbLcd(<gemeinsamer Bus>)` ohne `rgb_addr`.

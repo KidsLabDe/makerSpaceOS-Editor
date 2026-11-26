@@ -103,6 +103,8 @@ html, body {
   cursor: pointer;
 }
 .board-select:hover { border-color: var(--line-strong); }
+.advanced-toggle { display: inline-flex; align-items: center; gap: 6px; }
+.advanced-toggle input { margin: 0; cursor: pointer; }
 
 .status-indicator {
   display: inline-flex;
