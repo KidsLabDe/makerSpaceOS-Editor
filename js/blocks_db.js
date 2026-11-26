@@ -1,6 +1,6 @@
 // js/blocks_db.js – GENERIERT von scripts/build_blocks.js
 // Nicht manuell bearbeiten! Neu generieren: node scripts/build_blocks.js
-// Generiert: 2026-11-15T09:21:33.123Z
+// Generiert: 2026-11-26T10:22:38.891Z
 
 const BLOCKS_CATALOG = {
   "categories": [
@@ -2063,6 +2063,56 @@ const BLOCKS_DB = [
     "_file": "actuators/servo.md",
     "doc": "# Servo-Motor\n\nDreht den Servo auf einen Winkel von 0–180 Grad.\n\nSo steckst du den Servo an: Das **orange** Kabel kommt an **S**, **rot** an **+**, **braun** an **−**.\nAuf dem MAKER-PI steht neben jeder Reihe der Pin: **GP12 = S1**, GP13 = S2, GP14 = S3, GP15 = S4.\n\n![Servo-Stecker am MAKER-PI auf S1 (GP12): orange an S, rot an +, braun an −](../images/anschluss-servo.jpg)",
     "doc_en": "# Servo motor\n\nTurns the servo to an angle of 0–180 degrees.\n\nHow to plug in the servo: the **orange** wire goes to **S**, **red** to **+**, **brown** to **−**.\nOn the MAKER-PI each row is labelled with its pin: **GP12 = S1**, GP13 = S2, GP14 = S3, GP15 = S4.\n\n![Servo plug on the MAKER-PI at S1 (GP12): orange to S, red to +, brown to −](../images/anschluss-servo.jpg)"
+  },
+  {
+    "id": "actuator_servo_pulse",
+    "blockCategory": "Aktionen",
+    "component": "servo",
+    "subCategory": "Servo & Pumpe",
+    "label": "Puls einstellen (Profi)",
+    "label_en": "set pulse (advanced)",
+    "colour": "#DC2626",
+    "tooltip": "Für Profis: stellt ein, wie weit ein Servo wirklich dreht. Einmal beim SETUP verwenden – gilt dann für alle Servo-Blöcke an diesem Anschluss",
+    "tooltip_en": "Advanced: sets how far a servo really turns. Use once in SETUP – then applies to all servo blocks on this connector",
+    "blockType": "statement",
+    "inline": true,
+    "inputs": [
+      {
+        "label": "Puls einstellen (Profi)",
+        "label_en": "set pulse (advanced)",
+        "name": "SERVO",
+        "fieldType": "servo_dropdown"
+      },
+      {
+        "label": "0° =",
+        "name": "MIN",
+        "fieldType": "number_field",
+        "default": 350,
+        "min": 300,
+        "max": 1200
+      },
+      {
+        "label": "µs   180° =",
+        "name": "MAX",
+        "fieldType": "number_field",
+        "default": 2400,
+        "min": 1800,
+        "max": 2700
+      },
+      {
+        "label": "µs",
+        "fieldType": "fixed_label"
+      }
+    ],
+    "hardware": {
+      "commonName": "Servo SG90",
+      "verbrauch3j": 0,
+      "kitStandard": true
+    },
+    "legacyGenerator": true,
+    "_file": "actuators/servo_pulse.md",
+    "doc": "# Servo-Puls einstellen (für Profis)\n\nManche Mini-Servos drehen nur etwa **130°**, obwohl du **0 bis 180** eingibst. Mit diesem Block stellst du ein, welches Signal der Servo für 0° und für 180° bekommt.\n\nLege den Block **ganz oben in SETUP**. Danach benutzt du wie gewohnt den Block **Servo auf … Grad**.\n\nJedes Servo-Modell ist etwas anders. **350 bis 2400** passt zum Beispiel beim **TIANKONGRC MG90S** – andere Servos brauchen vielleicht andere Werte.\n\nSo findest du die richtigen Werte:\n\n1. Starte mit **350** (0°) und **2400** (180°).\n2. Lass den Servo auf 0 und auf 180 Grad fahren.\n3. **Brummt oder zittert** er am Ende, stößt er an den Anschlag: Mach den Bereich kleiner (0°-Wert größer bzw. 180°-Wert kleiner).\n4. Dreht er **zu wenig**, mach den Bereich größer (0°-Wert kleiner bzw. 180°-Wert größer).\n\n> ⚠️ Lass den Servo nicht längere Zeit am Anschlag brummen – er wird heiß und kann kaputtgehen.\n\nOhne diesen Block gelten **750** und **2250** µs.",
+    "doc_en": "# Set servo pulse (advanced)\n\nSome micro servos only turn about **130°**, although you enter **0 to 180**. This block sets which signal the servo gets for 0° and for 180°.\n\nPut the block **at the very top of SETUP**. After that, use the **servo to … degrees** block as usual.\n\nEvery servo model is a bit different. **350 to 2400** works for the **TIANKONGRC MG90S**, for example – other servos may need other values.\n\nHow to find the right values:\n\n1. Start with **350** (0°) and **2400** (180°).\n2. Move the servo to 0 and to 180 degrees.\n3. If it **hums or jitters** at an end, it is hitting the end stop: make the range smaller (increase the 0° value or decrease the 180° value).\n4. If it turns **too little**, make the range wider (decrease the 0° value or increase the 180° value).\n\n> ⚠️ Do not let the servo hum against the end stop for long – it gets hot and may break.\n\nWithout this block, **750** and **2250** µs apply."
   },
   {
     "id": "actuator_wheel_servo",
